@@ -1,8 +1,29 @@
 ﻿<UserControl x:Class="ArcMapAddinGeodesyAndRange.DockableWindowGeodesyAndRange"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
+    xmlns:prop="clr-namespace:ArcMapAddinGeodesyAndRange.Properties"
     Height="300" Width="300">
-    <Grid>
-            
+    <UserControl.Resources>
+        <viewModels:MainViewModel x:Key="viewModelMain" />
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <StaticResourceExtension ResourceKey="viewModelMain" />
+    </UserControl.DataContext>
+    <Grid Margin="3,3,3,3">
+        <TabControl>
+            <TabItem Header="{x:Static prop:Resources.LabelTabLines}">
+                <UserControl Content="{Binding LinesView}" />
+            </TabItem>
+            <TabItem Header="{x:Static prop:Resources.LabelTabCircle}">
+                <UserControl Content="{Binding CircleView}" />
+            </TabItem>
+            <TabItem Header="{x:Static prop:Resources.LabelTabEllipse}">
+                <UserControl Content="{Binding EllipseView}" />
+            </TabItem>
+            <TabItem Header="{x:Static prop:Resources.LabelTabRange}">
+                <UserControl Content="{Binding RangeView}" />
+            </TabItem>
+        </TabControl>
     </Grid>
 </UserControl>
