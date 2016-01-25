@@ -24,5 +24,6 @@ namespace ArcMapAddinGeodesyAndRange
 {
     public class Constants
     {
+        public const string NEW_MAP_POINT = "NEW_MAP_POINT";
     }
 }
