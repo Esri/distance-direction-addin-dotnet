@@ -24,7 +24,19 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
     {
         public LinesViewModel()
         {
-
+            LineType = LineTypes.Geodesic;
+            LineFromType = LineFromTypes.Points;
+            LineDistanceType = DistanceTypes.Meters;
+            LineAzimuthType = AzimuthTypes.Degrees;
         }
+
+        #region Properties
+
+        public LineTypes LineType { get; set; }
+        public LineFromTypes LineFromType { get; set; }
+        public DistanceTypes LineDistanceType { get; set; }
+        public AzimuthTypes LineAzimuthType { get; set; }
+
+        #endregion
     }
 }

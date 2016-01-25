@@ -61,6 +61,276 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Bearing and Distance.
+        /// </summary>
+        public static string EnumBearingAndDistance {
+            get {
+                return ResourceManager.GetString("EnumBearingAndDistance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to degrees.
+        /// </summary>
+        public static string EnumDegrees {
+            get {
+                return ResourceManager.GetString("EnumDegrees", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Diameter.
+        /// </summary>
+        public static string EnumDiameter {
+            get {
+                return ResourceManager.GetString("EnumDiameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to feet.
+        /// </summary>
+        public static string EnumFeet {
+            get {
+                return ResourceManager.GetString("EnumFeet", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Full.
+        /// </summary>
+        public static string EnumFull {
+            get {
+                return ResourceManager.GetString("EnumFull", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Geodesic.
+        /// </summary>
+        public static string EnumGeodesic {
+            get {
+                return ResourceManager.GetString("EnumGeodesic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Great Elliptic.
+        /// </summary>
+        public static string EnumGreatElliptic {
+            get {
+                return ResourceManager.GetString("EnumGreatElliptic", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Kilometers.
+        /// </summary>
+        public static string EnumKilometers {
+            get {
+                return ResourceManager.GetString("EnumKilometers", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loxodrome.
+        /// </summary>
+        public static string EnumLoxodrome {
+            get {
+                return ResourceManager.GetString("EnumLoxodrome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to meters.
+        /// </summary>
+        public static string EnumMeters {
+            get {
+                return ResourceManager.GetString("EnumMeters", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to mils.
+        /// </summary>
+        public static string EnumMils {
+            get {
+                return ResourceManager.GetString("EnumMils", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Points.
+        /// </summary>
+        public static string EnumPoints {
+            get {
+                return ResourceManager.GetString("EnumPoints", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Radius.
+        /// </summary>
+        public static string EnumRadius {
+            get {
+                return ResourceManager.GetString("EnumRadius", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Semi.
+        /// </summary>
+        public static string EnumSemi {
+            get {
+                return ResourceManager.GetString("EnumSemi", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Center Point.
+        /// </summary>
+        public static string LabelCenterPoint {
+            get {
+                return ResourceManager.GetString("LabelCenterPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Clear Graphics.
+        /// </summary>
+        public static string LabelClearGraphics {
+            get {
+                return ResourceManager.GetString("LabelClearGraphics", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Ellipse with.
+        /// </summary>
+        public static string LabelCreateEllipseWith {
+            get {
+                return ResourceManager.GetString("LabelCreateEllipseWith", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create Feature.
+        /// </summary>
+        public static string LabelCreateFeature {
+            get {
+                return ResourceManager.GetString("LabelCreateFeature", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Direction / Azimuth.
+        /// </summary>
+        public static string LabelDirectionAzimuth {
+            get {
+                return ResourceManager.GetString("LabelDirectionAzimuth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Distance / Length.
+        /// </summary>
+        public static string LabelDistanceLength {
+            get {
+                return ResourceManager.GetString("LabelDistanceLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ending Point.
+        /// </summary>
+        public static string LabelEndingPoint {
+            get {
+                return ResourceManager.GetString("LabelEndingPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to From:.
+        /// </summary>
+        public static string LabelFrom {
+            get {
+                return ResourceManager.GetString("LabelFrom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Interval Between Rings.
+        /// </summary>
+        public static string LabelInterval {
+            get {
+                return ResourceManager.GetString("LabelInterval", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Major Axis.
+        /// </summary>
+        public static string LabelMajorAxis {
+            get {
+                return ResourceManager.GetString("LabelMajorAxis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Minor Axis.
+        /// </summary>
+        public static string LabelMinorAxis {
+            get {
+                return ResourceManager.GetString("LabelMinorAxis", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of Radials.
+        /// </summary>
+        public static string LabelNumberOfRadials {
+            get {
+                return ResourceManager.GetString("LabelNumberOfRadials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of Rings.
+        /// </summary>
+        public static string LabelNumberOfRings {
+            get {
+                return ResourceManager.GetString("LabelNumberOfRings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Orientation Angle.
+        /// </summary>
+        public static string LabelOrientationAngle {
+            get {
+                return ResourceManager.GetString("LabelOrientationAngle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Radius / Diameter.
+        /// </summary>
+        public static string LabelRadiusDiameter {
+            get {
+                return ResourceManager.GetString("LabelRadiusDiameter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting Point.
+        /// </summary>
+        public static string LabelStartingPoint {
+            get {
+                return ResourceManager.GetString("LabelStartingPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Circle.
         /// </summary>
         public static string LabelTabCircle {

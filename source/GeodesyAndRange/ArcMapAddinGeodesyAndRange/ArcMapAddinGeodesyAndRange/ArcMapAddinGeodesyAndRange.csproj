@@ -74,10 +74,12 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Config.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Config.esriaddinx</DependentUpon>
     </Compile>
+    <Compile Include="Enums\Enums.cs" />
     <Compile Include="GeodesyAndRangeButton.cs" />
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\Mediator.cs" />
@@ -88,6 +90,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ValueConverters\EnumToFriendlyNameConverter.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\CircleViewModel.cs" />
     <Compile Include="ViewModels\EllipseViewModel.cs" />
