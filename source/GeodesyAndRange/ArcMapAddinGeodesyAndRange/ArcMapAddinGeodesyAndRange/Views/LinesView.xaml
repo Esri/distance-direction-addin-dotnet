@@ -81,8 +81,8 @@
                 SelectedItem="{Binding Path=LineFromType, Mode=TwoWay}"                      
                 Height="Auto" Margin="3,3,0,0">
         </ComboBox>
-        <TextBox Grid.Row="1" Margin="3,3,0,0"/>
-        <TextBox Grid.Row="2" Margin="3,3,0,0"/>
+        <TextBox Grid.Row="1" Text="{Binding Path=Point1Formatted, Mode=OneWay}" Margin="3,3,0,0"/>
+        <TextBox Grid.Row="2" Text="{Binding Path=Point2Formatted, Mode=OneWay}" Margin="3,3,0,0"/>
         <TextBox Grid.Row="3" Margin="3,3,0,0"/>
         <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbLineDistanceType"
             ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
@@ -95,6 +95,6 @@
             SelectedItem="{Binding Path=LineAzimuthType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
         </ComboBox>
-        <Button Grid.Row="5" Grid.Column="2" Content="Create GeoPolyline" ToolTip="Create Line" Command="{Binding CreateGeoPolylineCommand}" Margin="3,3,0,0" />
+        <Button Grid.Row="5" Grid.Column="2" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,3,0,0" />
     </Grid>
 </UserControl>

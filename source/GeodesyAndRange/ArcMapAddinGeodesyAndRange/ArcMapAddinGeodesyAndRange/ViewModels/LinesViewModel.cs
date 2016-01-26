@@ -19,6 +19,9 @@ using System.Text;
 using System.Threading.Tasks;
 using ArcMapAddinGeodesyAndRange.Helpers;
 using ESRI.ArcGIS.Geometry;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
+using ESRI.ArcGIS.Display;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
@@ -34,10 +37,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             // commands
 
-            CreateGeoPolylineCommand = new RelayCommand(OnCreateGeoPolylineCommand);
+            ClearGraphicsCommand = new RelayCommand(OnClearGraphicsCommand);
 
             // lets listen for new points from the map point tool
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPoint);
+            Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMovePoint);
         }
 
         #region Properties
@@ -47,64 +51,227 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         public DistanceTypes LineDistanceType { get; set; }
         public AzimuthTypes LineAzimuthType { get; set; }
 
-        public IPoint Point1 { get; set; }
-        public IPoint Point2 { get; set; }
+        private IPoint point1 = null;
+        public IPoint Point1
+        {
+            get
+            {
+                return point1;
+            }
+            set
+            {
+                point1 = value;
+                RaisePropertyChanged(() => Point1);
+                RaisePropertyChanged(() => Point1Formatted);
+            }
+        }
+        private IPoint point2 = null;
+        public IPoint Point2
+        {
+            get
+            {
+                return point2;
+            }
+            set
+            {
+                point2 = value;
+                RaisePropertyChanged(() => Point2);
+                RaisePropertyChanged(() => Point2Formatted);
+            }
+        }
+
+        public string Point1Formatted
+        {
+            get { return string.Format("{0:0.0#####} {1:0.0#####}", Point1.X, Point1.Y); }
+        }
+
+        public string Point2Formatted
+        {
+            get { return string.Format("{0:0.0#####} {1:0.0#####}", Point2.X, Point2.Y); }
+        }
 
         #endregion
 
         #region Commands
 
-        public RelayCommand CreateGeoPolylineCommand { get; set; }
+        public RelayCommand ClearGraphicsCommand { get; set; }
 
-        private void OnCreateGeoPolylineCommand(object obj)
+        private void OnClearGraphicsCommand(object obj)
         {
-            //var polycollection = new Polyline() as IGeometryCollection;
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            if (mxdoc == null)
+                return;
+            var av = mxdoc.FocusMap as IActiveView;
+            if (av == null)
+                return;
+            var gc = av as IGraphicsContainer;
+            if (gc == null)
+                return;
 
-            //if (polycollection == null)
-            //    return;
-
-            //Point1 = new  as IPoint;
-            //var cn = Point1 as IConversionNotation;
-            //cn.PutCoordsFromDD("-121 77");
-            //Point1.SpatialReference = GetSR();
-
-            ////var point2 = new PointClass();
-            ////point2.PutCoords(-77, 44);
-            ////point2.SpatialReference = GetSR();
-
-            //// add some test data
-            //polycollection.AddGeometry(point);
-            ////polycollection.AddGeometry(point2);
-
-            //var pc = polycollection as IPolycurve4;
-
-
-            ////polyCurveGeo.DensifyGeodetic(esriGeodeticType.esriGeodeticTypeGeodesic, pLU, esriCurveDensifyMethod.esriCurveDensifyByAngle, 1.0);
-            //pc.GeodesicDensify(500);
+            gc.DeleteAllElements();
+            av.Refresh();
         }
 
-        private ISpatialReference GetSR()
+        private void CreatePolyline()
         {
-            Type t = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
-            System.Object obj = Activator.CreateInstance(t);
-            ISpatialReferenceFactory srFact = obj as ISpatialReferenceFactory;
+            try
+            {
+                var construct = new Polyline() as IConstructGeodetic;
 
-            // Use the enumeration to create an instance of the predefined object.
+                if (construct == null)
+                    return;
 
-            IGeographicCoordinateSystem geographicCS =
-                srFact.CreateGeographicCoordinateSystem((int)
-                esriSRGeoCSType.esriSRGeoCS_WGS1984);
+                var srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+                var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
 
-            return geographicCS as ISpatialReference;
+                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 1000.0);
+
+                var mxdoc = ArcMap.Application.Document as IMxDocument;
+                var av = mxdoc.FocusMap as IActiveView;
+                
+                AddGraphicToMap(construct as IGeometry);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
+        private esriGeodeticType GetEsriGeodeticType()
+        {
+            esriGeodeticType type = esriGeodeticType.esriGeodeticTypeGeodesic;
+
+            switch(LineType)
+            {
+                case LineTypes.Geodesic:
+                    type = esriGeodeticType.esriGeodeticTypeGeodesic;
+                    break;
+                case LineTypes.GreatElliptic:
+                    type = esriGeodeticType.esriGeodeticTypeGreatElliptic;
+                    break;
+                case LineTypes.Loxodrome:
+                    type = esriGeodeticType.esriGeodeticTypeLoxodrome;
+                    break;
+                default:
+                    type = esriGeodeticType.esriGeodeticTypeGeodesic;
+                    break;
+            }
+
+            return type;
+        }
+
+        private void AddGraphicToMap(IGeometry geom)
+        {
+            var pc = geom as IPolycurve;
+
+            if(pc !=  null)
+            {
+                // create graphic then add to map
+                var le = new LineElementClass() as ILineElement;
+                var element = le as IElement;
+                element.Geometry = geom;
+                ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
+                rgbColor.Red = 255;
+
+                ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
+                var lineSymbol = new SimpleLineSymbolClass();
+                lineSymbol.Color = color;
+                lineSymbol.Width = 2;
+                var mxdoc = ArcMap.Application.Document as IMxDocument;
+                var av = mxdoc.FocusMap as IActiveView;
+                var gc = av as IGraphicsContainer;
+                gc.AddElement(element, 0);
+
+                av.Refresh();
+            }
+        }
+
+        private void DrawPolyline(ESRI.ArcGIS.Carto.IActiveView activeView, IGeometry geom)
+        {
+            if (activeView == null || geom == null)
+            {
+                return;
+            }
+
+            ESRI.ArcGIS.Display.IScreenDisplay screenDisplay = activeView.ScreenDisplay;
+
+            // Constant.
+            screenDisplay.StartDrawing(screenDisplay.hDC, (System.Int16)
+                ESRI.ArcGIS.Display.esriScreenCache.esriNoScreenCache); // Explicit cast.
+            ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
+            rgbColor.Red = 255;
+
+            ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
+            ESRI.ArcGIS.Display.ISimpleLineSymbol simpleLineSymbol = new
+                ESRI.ArcGIS.Display.SimpleLineSymbolClass();
+            simpleLineSymbol.Color = color;
+
+            ESRI.ArcGIS.Display.ISymbol symbol = (ESRI.ArcGIS.Display.ISymbol)
+                simpleLineSymbol; // Explicit cast.
+
+            screenDisplay.SetSymbol(symbol);
+            screenDisplay.DrawPolyline(geom);
+            screenDisplay.FinishDrawing();
+        }
+        
         #endregion
 
         #region Mediator methods
 
+        bool HasPoint1 = false;
+        bool HasPoint2 = false;
+        INewLineFeedback feedback = null;
+        IGeodeticLineFeedback geoFeedback = null;
+
         private void OnNewMapPoint(object obj)
         {
-            throw new NotImplementedException();
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxdoc.FocusMap as IActiveView;
+            var point = obj as IPoint;
+
+            if (point == null)
+                return;
+
+            if (!HasPoint1)
+            {
+                Point1 = point;
+                HasPoint1 = true;
+
+                // lets try feedback
+                feedback = new NewLineFeedback();
+                geoFeedback = feedback as IGeodeticLineFeedback;
+                geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
+                geoFeedback.UseGeodeticConstruction = true;
+                geoFeedback.SpatialReference = point.SpatialReference;
+                var displayFB = feedback as IDisplayFeedback;
+                displayFB.Display = av.ScreenDisplay;
+                feedback.Start(point);
+            }
+            else if(!HasPoint2)
+            {
+                feedback.Stop();
+                Point2 = point;
+                HasPoint2 = true;
+            }
+
+            if(HasPoint1 && HasPoint2)
+            {
+                CreatePolyline();
+                HasPoint1 = HasPoint2 = false;
+            }
+        }
+
+        private void OnMouseMovePoint(object obj)
+        {
+            var point = obj as IPoint;
+
+            if (point == null)
+                return;
+
+            if(HasPoint1 && !HasPoint2)
+            {
+                feedback.MoveTo(point);
+            }
         }
 
         #endregion

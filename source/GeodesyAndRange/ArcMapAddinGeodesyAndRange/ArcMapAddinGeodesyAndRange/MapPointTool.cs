@@ -32,24 +32,17 @@ namespace ArcMapAddinGeodesyAndRange
 
                 var point = activeView.ScreenDisplay.DisplayTransformation.ToMapPoint(arg.X, arg.Y) as IPoint;
 
-                // always use WGS84
-                //var sr = GetSR();
-
-                //if (sr != null)
-                //{
-                //    point.Project(sr);
-                //}
-
-                //var doc = AddIn.FromID<ArcMapAddinGeodesyAndRange.DockableWindowGeodesyAndRange.AddinImpl>(ThisAddIn.IDs.DockableWindowGeodesyAndRange);
-
-                //if (doc != null)
-                //{
-                //    doc.SetInput(point.X, point.Y);
-                //}
-
                 Mediator.NotifyColleagues(Constants.NEW_MAP_POINT, point);
             }
             catch { }
+        }
+        protected override void OnMouseMove(MouseEventArgs arg)
+        {
+            IActiveView activeView = ArcMap.Document.FocusMap as IActiveView;
+
+            var point = activeView.ScreenDisplay.DisplayTransformation.ToMapPoint(arg.X, arg.Y) as IPoint;
+
+            Mediator.NotifyColleagues(Constants.MOUSE_MOVE_POINT, point);
         }
 
     }
