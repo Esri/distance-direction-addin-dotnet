@@ -151,6 +151,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 var av = mxdoc.FocusMap as IActiveView;
 
                 UpdateDistance(construct as IGeometry);
+                UpdateBearing(construct as IGeometry);
 
                 AddGraphicToMap(construct as IGeometry);
             }
@@ -158,6 +159,36 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 Console.WriteLine(ex);
             }
+        }
+
+        private void UpdateBearing(IGeometry geometry)
+        {
+            var curve = geometry as ICurve;
+
+            if (curve == null)
+                return;
+
+            var line = new Line() as ILine;
+            curve.QueryTangent(esriSegmentExtension.esriNoExtension, 0.5, true, 10, line);
+            if(line == null)
+                return;
+            AzimuthString = string.Format("{0:0.00}", GetAngle(line.Angle));
+            RaisePropertyChanged(()=> AzimuthString);
+        }
+
+        private double GetAngle(double angle)
+        {
+            if (LineAzimuthType == AzimuthTypes.Degrees)
+            {
+                return (180.0 * angle) / Math.PI;
+            }
+
+            if (LineAzimuthType == AzimuthTypes.Mils)
+            {
+                return ((180.0 * angle) / Math.PI ) * 17.777777778;
+            }
+
+            return 0.0;
         }
 
         private void UpdateDistance(IGeometry geometry)
