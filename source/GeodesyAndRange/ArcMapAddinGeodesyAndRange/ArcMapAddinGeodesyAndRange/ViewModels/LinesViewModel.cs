@@ -49,8 +49,28 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         public LineTypes LineType { get; set; }
         public LineFromTypes LineFromType { get; set; }
-        public DistanceTypes LineDistanceType { get; set; }
-        public AzimuthTypes LineAzimuthType { get; set; }
+
+        DistanceTypes lineDistanceType = DistanceTypes.Meters;
+        public DistanceTypes LineDistanceType
+        {
+            get { return lineDistanceType; }
+            set
+            {
+                UpdateDistanceFromTo(lineDistanceType, value);
+                lineDistanceType = value;
+            }
+        }
+
+        AzimuthTypes lineAzimuthType = AzimuthTypes.Degrees;
+        public AzimuthTypes LineAzimuthType 
+        {
+            get { return lineAzimuthType; }
+            set
+            {
+                UpdateAzimuthFromTo(lineAzimuthType, value);
+                lineAzimuthType = value;
+            }
+        }
 
         private IPoint point1 = null;
         public IPoint Point1
@@ -91,7 +111,31 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             get { return string.Format("{0:0.0#####} {1:0.0#####}", Point2.X, Point2.Y); }
         }
 
+        double distance = 0.0;
+        public double Distance
+        {
+            get { return distance; }
+            set
+            {
+                distance = value;
+                DistanceString = string.Format("{0:0.00}", distance);
+                RaisePropertyChanged(() => Distance);
+                RaisePropertyChanged(() => DistanceString);
+            }
+        }
         public string DistanceString { get; set; }
+        double azimuth = 0.0;
+        public double Azimuth
+        {
+            get { return azimuth; }
+            set
+            {
+                azimuth = value;
+                AzimuthString = string.Format("{0:0.00}", azimuth);
+                RaisePropertyChanged(() => Azimuth);
+                RaisePropertyChanged(() => AzimuthString);
+            }
+        }
         public string AzimuthString { get; set; }
 
         #endregion
@@ -151,7 +195,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 var av = mxdoc.FocusMap as IActiveView;
 
                 UpdateDistance(construct as IGeometry);
-                UpdateBearing(construct as IGeometry);
+                UpdateAzimuth(construct as IGeometry);
 
                 AddGraphicToMap(construct as IGeometry);
             }
@@ -161,7 +205,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
-        private void UpdateBearing(IGeometry geometry)
+        private void UpdateAzimuth(IGeometry geometry)
         {
             var curve = geometry as ICurve;
 
@@ -169,11 +213,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
 
             var line = new Line() as ILine;
+            
             curve.QueryTangent(esriSegmentExtension.esriNoExtension, 0.5, true, 10, line);
+            
             if(line == null)
                 return;
-            AzimuthString = string.Format("{0:0.00}", GetAngle(line.Angle));
-            RaisePropertyChanged(()=> AzimuthString);
+
+            Azimuth = GetAngle(line.Angle);
         }
 
         private double GetAngle(double angle)
@@ -202,8 +248,53 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             var geodeticLength = polycurvegeo.get_LengthGeodetic(GetEsriGeodeticType(), GetLinearUnit());
 
-            DistanceString = string.Format("{0:0.00}", geodeticLength);
-            RaisePropertyChanged(() => DistanceString);
+            Distance = geodeticLength;
+        }
+
+        private void UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType)
+        {
+            try
+            {
+                double length = Distance;
+
+                if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Kilometers)
+                    length /= 1000.0;
+                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Feet)
+                    length *= 3.28084;
+                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Meters)
+                    length *= 1000.0;
+                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Feet)
+                    length *= 3280.84;
+                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Kilometers)
+                    length *= 0.0003048;
+                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Meters)
+                    length *= 0.3048;
+
+                Distance = length;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        private void UpdateAzimuthFromTo(AzimuthTypes fromType, AzimuthTypes toType)
+        {
+            try
+            {
+                double angle = Azimuth;
+
+                if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Mils)
+                    angle *= 17.777777778;
+                else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Degrees)
+                    angle *= 0.05625;
+
+                Azimuth = angle;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         private ILinearUnit GetLinearUnit()
