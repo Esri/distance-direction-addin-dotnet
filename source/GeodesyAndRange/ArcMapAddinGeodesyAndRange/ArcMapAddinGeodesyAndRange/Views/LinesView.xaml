@@ -82,8 +82,10 @@
                 Height="Auto" Margin="3,3,0,0">
         </ComboBox>
         <TextBox Grid.Row="1" Text="{Binding Path=Point1Formatted, Mode=OneWay}" Margin="3,3,0,0"/>
-        <Button Grid.Row="1" Grid.Column="1" Command="{Binding ActivateToolCommand}" Margin="3,3,0,0" />
-        <TextBox Grid.Row="2" Text="{Binding Path=Point2Formatted, Mode=OneWay}" Margin="3,3,0,0"/>
+        <Button Grid.Row="1" Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" Margin="3,3,0,0">
+            <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+        </Button>
+        <TextBox Grid.Row="2" Text="{Binding Path=Point2Formatted, Mode=OneWay}" Height="24" Margin="3,3,0,0"/>
         <TextBox Grid.Row="3" Text="{Binding Path=DistanceString}" Margin="3,3,0,0"/>
         <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbLineDistanceType"
             ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 

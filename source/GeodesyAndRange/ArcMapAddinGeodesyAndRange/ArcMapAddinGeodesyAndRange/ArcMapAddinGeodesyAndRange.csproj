@@ -206,6 +206,9 @@
   <ItemGroup>
     <AddInContent Include="Images\MapPointTool.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Add_Point32_d.png" />
+  </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>
     <AddInTargetProduct>Desktop</AddInTargetProduct>
