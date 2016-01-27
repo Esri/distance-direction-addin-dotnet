@@ -38,6 +38,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             // commands
 
             ClearGraphicsCommand = new RelayCommand(OnClearGraphicsCommand);
+            ActivateToolCommand = new RelayCommand(OnActivateToolCommand);
 
             // lets listen for new points from the map point tool
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPoint);
@@ -90,11 +91,15 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             get { return string.Format("{0:0.0#####} {1:0.0#####}", Point2.X, Point2.Y); }
         }
 
+        public string DistanceString { get; set; }
+        public string AzimuthString { get; set; }
+
         #endregion
 
         #region Commands
 
         public RelayCommand ClearGraphicsCommand { get; set; }
+        public RelayCommand ActivateToolCommand { get; set; }
 
         private void OnClearGraphicsCommand(object obj)
         {
@@ -110,6 +115,22 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             gc.DeleteAllElements();
             av.Refresh();
+        }
+
+        private void OnActivateToolCommand(object obj)
+        {
+            SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+        }
+
+        public void SetToolActiveInToolBar(ESRI.ArcGIS.Framework.IApplication application, System.String toolName)
+        {
+            ESRI.ArcGIS.Framework.ICommandBars commandBars = application.Document.CommandBars;
+            ESRI.ArcGIS.esriSystem.UID commandID = new ESRI.ArcGIS.esriSystem.UIDClass();
+            commandID.Value = toolName; 
+            ESRI.ArcGIS.Framework.ICommandItem commandItem = commandBars.Find(commandID, false, false);
+
+            if (commandItem != null)
+                application.CurrentTool = commandItem;
         }
 
         private void CreatePolyline()
@@ -128,13 +149,54 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 var mxdoc = ArcMap.Application.Document as IMxDocument;
                 var av = mxdoc.FocusMap as IActiveView;
-                
+
+                UpdateDistance(construct as IGeometry);
+
                 AddGraphicToMap(construct as IGeometry);
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex);
             }
+        }
+
+        private void UpdateDistance(IGeometry geometry)
+        {
+            var polyline = geometry as IPolyline;
+
+            if (polyline == null)
+                return;
+
+            var polycurvegeo = geometry as IPolycurveGeodetic;
+
+            var geodeticLength = polycurvegeo.get_LengthGeodetic(GetEsriGeodeticType(), GetLinearUnit());
+
+            DistanceString = string.Format("{0:0.00}", geodeticLength);
+            RaisePropertyChanged(() => DistanceString);
+        }
+
+        private ILinearUnit GetLinearUnit()
+        {
+            int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
+            var srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+
+            switch(LineDistanceType)
+            {
+                case DistanceTypes.Feet:
+                    unitType = (int)esriSRUnitType.esriSRUnit_Foot;
+                    break;
+                case DistanceTypes.Kilometers:
+                    unitType = (int)esriSRUnitType.esriSRUnit_Kilometer;
+                    break;
+                case DistanceTypes.Meters:
+                    unitType = (int)esriSRUnitType.esriSRUnit_Meter;
+                    break;
+                default:
+                    unitType = (int)esriSRUnitType.esriSRUnit_Meter;
+                    break;
+            }
+
+            return srf3.CreateUnit(unitType) as ILinearUnit;
         }
 
         private esriGeodeticType GetEsriGeodeticType()

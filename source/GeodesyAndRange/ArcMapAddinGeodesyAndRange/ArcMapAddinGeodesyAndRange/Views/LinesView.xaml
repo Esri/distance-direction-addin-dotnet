@@ -82,14 +82,15 @@
                 Height="Auto" Margin="3,3,0,0">
         </ComboBox>
         <TextBox Grid.Row="1" Text="{Binding Path=Point1Formatted, Mode=OneWay}" Margin="3,3,0,0"/>
+        <Button Grid.Row="1" Grid.Column="1" Command="{Binding ActivateToolCommand}" Margin="3,3,0,0" />
         <TextBox Grid.Row="2" Text="{Binding Path=Point2Formatted, Mode=OneWay}" Margin="3,3,0,0"/>
-        <TextBox Grid.Row="3" Margin="3,3,0,0"/>
+        <TextBox Grid.Row="3" Text="{Binding Path=DistanceString}" Margin="3,3,0,0"/>
         <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbLineDistanceType"
             ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
             SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
         </ComboBox>
-        <TextBox Grid.Row="4" Margin="3,3,0,0"/>
+        <TextBox Grid.Row="4" Text="{Binding Path=AzimuthString}" Margin="3,3,0,0"/>
         <ComboBox Grid.Row="4" Grid.Column="1" x:Name="cmbLineAzimuthType"
             ItemsSource="{Binding Source={StaticResource lineAzimuthData}}" 
             SelectedItem="{Binding Path=LineAzimuthType, Mode=TwoWay}"                      
