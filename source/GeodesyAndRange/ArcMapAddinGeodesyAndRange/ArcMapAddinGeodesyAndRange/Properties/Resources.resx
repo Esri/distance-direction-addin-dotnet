@@ -165,6 +165,9 @@
   <data name="LabelClearGraphics" xml:space="preserve">
     <value>Clear Graphics</value>
   </data>
+  <data name="LabelCreateCircleFrom" xml:space="preserve">
+    <value>Create Circle From</value>
+  </data>
   <data name="LabelCreateEllipseWith" xml:space="preserve">
     <value>Create Ellipse with</value>
   </data>
@@ -188,6 +191,9 @@
   </data>
   <data name="LabelMajorAxis" xml:space="preserve">
     <value>Major Axis</value>
+  </data>
+  <data name="LabelMapPoint" xml:space="preserve">
+    <value>Map Point</value>
   </data>
   <data name="LabelMinorAxis" xml:space="preserve">
     <value>Minor Axis</value>
