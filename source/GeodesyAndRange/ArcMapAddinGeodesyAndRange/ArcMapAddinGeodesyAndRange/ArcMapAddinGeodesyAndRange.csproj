@@ -230,5 +230,8 @@
     <ESRIAddInProperties>
       <Host>ArcMap</Host>
     </ESRIAddInProperties>
+    <VisualStudio>
+      <UserProperties ESRIImportCache="ESRI.ArcGIS.esriSystem" />
+    </VisualStudio>
   </ProjectExtensions>
 </Project>

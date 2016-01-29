@@ -45,6 +45,7 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
@@ -58,37 +59,39 @@
         </Grid.RowDefinitions>
         <Label Content="{x:Static prop:Resources.LabelCreateCircleFrom}"                
                HorizontalAlignment="Stretch" 
-               Grid.ColumnSpan="2" Grid.Row="0" />
+               Grid.ColumnSpan="3" Grid.Row="0" />
         <ComboBox x:Name="cmbCircleFromType"
                 ItemsSource="{Binding Source={StaticResource circleFromData}}" 
                 SelectedItem="{Binding Path=CircleType, Mode=TwoWay}"                      
                 Height="Auto"
-                Grid.Row="1" Grid.ColumnSpan="2">
+                Grid.Row="1" Grid.ColumnSpan="3">
         </ComboBox>
         <Label Content="{x:Static prop:Resources.LabelCenterPoint}"
-               Grid.Row="2" Grid.ColumnSpan="2"/>
-        <TextBox Height="30"
+               Grid.Row="2" Grid.ColumnSpan="3"/>
+        <TextBox Height="Auto"
                  Text="{Binding Path=StartPointFormatted, Mode=OneWay}"
-                 Grid.Row="3" Grid.Column="0" />
-        <Button Content="{x:Static prop:Resources.LabelMapPoint}"
-                Command="{Binding ActivateToolCommand}"
-                Width="Auto"
-                Grid.Row="3" Grid.Column="1" Margin="5,1,0,0" />
+                 Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,1,0,0" />
+        <Button Command="{Binding ActivateToolCommand}"
+                Width="Auto" HorizontalAlignment="Left" 
+                Grid.Row="3" Grid.Column="2" Margin="5,0,0,0">
+            <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+        </Button>
         <Label Content="{x:Static prop:Resources.LabelRadiusDiameter}"
-               Grid.Row="4" Grid.ColumnSpan="2"/>
-        <TextBox Height="30" 
-                 Margin="0,0,0,0"
+               Grid.Row="4" Grid.ColumnSpan="3"/>
+        <TextBox Height="Auto" 
+                 Margin="0,2"
+                 Text="{Binding Path=DistanceString, Mode=OneWay}"
                  Grid.Row="5" Grid.Column="0"/>
         <ComboBox x:Name="cmbLineDistanceType"
                   ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
                   SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
                   Height="Auto" Margin="5,0,0,0"
-                  Grid.Row="5" Grid.Column="1">
+                  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2">
         </ComboBox>
         <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
                 ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
                 Command="{Binding ClearGraphicsCommand}"
                 Width="100" Height="30" Margin="0,20,0,0"
-                Grid.Row="6" Grid.Column="1"/>
+                Grid.Row="6" Grid.Column="2"/>
     </Grid>
 </UserControl>

@@ -37,8 +37,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             LineDistanceType = DistanceTypes.Meters;
 
             //commands
-            ClearGraphicsCommand = new RelayCommand(OnClearGraphicsCommand);
-            ActivateToolCommand = new RelayCommand(OnActivateToolCommand);
+            ClearGraphicsCommand = new RelayCommand(OnClearGraphics);
+            ActivateToolCommand = new RelayCommand(OnActivateTool);
+
+            // lets listen for new points from the map point tool
+            Mediator.Register(Constants.NEW_MAP_POINT, OnNewCenterPoint);
+            Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
         }
 
         #region Commands
@@ -48,7 +52,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
         public CircleFromTypes CircleType { get; set; }
-        public DistanceTypes LineDistanceType { get; set; }
+        public LineTypes LineType { get; set; }
+
+        DistanceTypes lineDistanceType = DistanceTypes.Meters;
+        public DistanceTypes LineDistanceType
+        {
+            get { return lineDistanceType; }
+            set
+            {
+                UpdateDistanceFromTo(lineDistanceType, value);
+                lineDistanceType = value;
+            }
+        }
 
         private IPoint startPoint = null;
         /// <summary>
@@ -86,6 +101,30 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
+        double distance = 0.0;
+        public double Distance
+        {
+            get { return distance; }
+            set
+            {
+                distance = value;
+                DistanceString = string.Format("#,##0.00", distance);
+                RaisePropertyChanged(() => Distance);
+                RaisePropertyChanged(() => DistanceString);
+            }
+        }
+        string distanceString = String.Empty;
+        public string DistanceString { 
+            get 
+            {
+                return string.Format("#,##0.00", Distance);
+            }
+            set
+            {
+                distanceString = value;
+            } 
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -108,8 +147,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// 
         /// </summary>
         /// <param name="obj"></param>
-        private void OnClearGraphicsCommand(object obj)
+        private void OnClearGraphics(object obj)
         {
+            HasPoint1 = HasPoint2 = false;
+
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             if (mxdoc == null)
                 return;
@@ -128,7 +169,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// 
         /// </summary>
         /// <param name="obj"></param>
-        private void OnActivateToolCommand(object obj)
+        private void OnActivateTool(object obj)
         {
             SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
         }
@@ -186,95 +227,153 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="activeView"></param>
-        /// <param name="geom"></param>
-        private void DrawCircle(ESRI.ArcGIS.Carto.IActiveView activeView, IGeometry geom)
-        {            
-            if (activeView == null || geom == null)
+        private void CreateCircle()
+        {
+            if (StartPoint == null || EndPoint == null)
             {
                 return;
             }
 
-            double Px, Py, Radius;
+            //var srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+            //var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
+            //var constructLine = new Polyline() as IConstructGeodetic;
+            //constructLine.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), StartPoint, EndPoint, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 1000.0);
+            //var newPolyLine = constructLine as IPolycurve;
+            //if (CircleType == CircleFromTypes.Diameter)
+            //{
+            //    var centerPoint = new Point() as IPoint;
+            //    newPolyLine.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, centerPoint);
+            //    newPolyLine.FromPoint = StartPoint = centerPoint;
+            //}
+            //UpdateDistance(newPolyLine as IGeometry);
 
-            IGraphicsContainer graphicsContainer = activeView.GraphicsContainer;
+            var polyLine = new Polyline() as IPolyline;
+            polyLine.SpatialReference = StartPoint.SpatialReference;
+            var ptCol = polyLine as IPointCollection;
+            ptCol.AddPoint(StartPoint);
+            ptCol.AddPoint(EndPoint);
+            if (CircleType == CircleFromTypes.Diameter)
+            {
+                var centerPoint = new Point() as IPoint;
+                polyLine.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, centerPoint);
+                polyLine.FromPoint = StartPoint = centerPoint;
+            }
+            UpdateDistance(polyLine as IGeometry);
 
-            // set up the color
-            IRgbColor rgbColor = new RgbColor();
-            rgbColor.Red = 0;
-            rgbColor.Green = 255;
-            rgbColor.Blue = 0;
+            var construct = new Polyline() as IConstructGeodetic;
+            construct.ConstructGeodesicCircle(StartPoint, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 1000.0);
 
-            IColor color = rgbColor;
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxdoc.FocusMap as IActiveView;
 
-            // make the line and define its color, style and width
-            ISimpleLineSymbol LineSymbol = new SimpleLineSymbol();
-            LineSymbol.Color = color;
-            LineSymbol.Style = esriSimpleLineStyle.esriSLSSolid;
-            LineSymbol.Width = 2;
-
-            ISymbol symbol = LineSymbol as ISymbol;
-
-            //create circle element
-            ILineElement pCircleLineElement = new LineElementClass();
-            pCircleLineElement.Symbol = LineSymbol;
-            IElement pCircleElement = pCircleLineElement as IElement;
-
-            // create point and radius
-            Px = 0.0;
-            Py = 0.0;
-            Radius = 10.0;
-
-            // Create circle geometry
-            IPoint centerPoint = new Point();
-            centerPoint.PutCoords(Px,Py);
-
-            IConstructCircularArc pCircularArc = new CircularArcClass();
-
-            pCircularArc.ConstructCircle(centerPoint, Radius, true);
-
-
-            ISegment Seg = (ISegment)pCircularArc;
-            ISegmentCollection SegCollection = new PolylineClass();
-            SegCollection.AddSegment(Seg,null,null);
-
-            pCircleElement.Geometry = SegCollection as IGeometry;
-
-            //add the element to the map and draw it.
-            graphicsContainer.AddElement(pCircleElement,0);
-
-            activeView.PartialRefresh(esriViewDrawPhase.esriViewGraphics,null,null);
+            AddGraphicToMap(construct as IGeometry);
         }
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="activeView"></param>
-        /// <param name="geom"></param>
-        private void DrawPolyline(ESRI.ArcGIS.Carto.IActiveView activeView, IGeometry geom)
+        /// <returns></returns>
+        private ILinearUnit GetLinearUnit()
         {
-            if (activeView == null || geom == null)
+            int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
+            var srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+
+            switch (LineDistanceType)
             {
-                return;
+                case DistanceTypes.Feet:
+                    unitType = (int)esriSRUnitType.esriSRUnit_Foot;
+                    break;
+                case DistanceTypes.Kilometers:
+                    unitType = (int)esriSRUnitType.esriSRUnit_Kilometer;
+                    break;
+                case DistanceTypes.Meters:
+                    unitType = (int)esriSRUnitType.esriSRUnit_Meter;
+                    break;
+                default:
+                    unitType = (int)esriSRUnitType.esriSRUnit_Meter;
+                    break;
             }
 
-            ESRI.ArcGIS.Display.IScreenDisplay screenDisplay = activeView.ScreenDisplay;
+            return srf3.CreateUnit(unitType) as ILinearUnit;
+        }
 
-            // Constant.
-            screenDisplay.StartDrawing(screenDisplay.hDC, (System.Int16)
-                ESRI.ArcGIS.Display.esriScreenCache.esriNoScreenCache); // Explicit cast.
-            ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
-            rgbColor.Red = 255;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="geometry"></param>
+        private void UpdateDistance(IGeometry geometry)
+        {
+            var polyline = geometry as IPolyline;
 
-            ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
-            ESRI.ArcGIS.Display.ISimpleLineSymbol simpleLineSymbol = new ESRI.ArcGIS.Display.SimpleLineSymbolClass();
-            simpleLineSymbol.Color = color;
+            if (polyline == null)
+                return;
 
-            ESRI.ArcGIS.Display.ISymbol symbol = (ESRI.ArcGIS.Display.ISymbol) simpleLineSymbol; // Explicit cast.
+            var polycurvegeo = geometry as IPolycurveGeodetic;
 
-            screenDisplay.SetSymbol(symbol);
-            screenDisplay.DrawPolyline(geom);
-            screenDisplay.FinishDrawing();
+            var geodeticType = GetEsriGeodeticType();
+            var linearUnit = GetLinearUnit();
+            var geodeticLength = polycurvegeo.get_LengthGeodetic(geodeticType, linearUnit);
+
+            Distance = geodeticLength;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        private esriGeodeticType GetEsriGeodeticType()
+        {
+            esriGeodeticType type = esriGeodeticType.esriGeodeticTypeGeodesic;
+
+            switch (LineType)
+            {
+                case LineTypes.Geodesic:
+                    type = esriGeodeticType.esriGeodeticTypeGeodesic;
+                    break;
+                case LineTypes.GreatElliptic:
+                    type = esriGeodeticType.esriGeodeticTypeGreatElliptic;
+                    break;
+                case LineTypes.Loxodrome:
+                    type = esriGeodeticType.esriGeodeticTypeLoxodrome;
+                    break;
+                default:
+                    type = esriGeodeticType.esriGeodeticTypeGeodesic;
+                    break;
+            }
+
+            return type;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="fromType"></param>
+        /// <param name="toType"></param>
+        private void UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType)
+        {
+            try
+            {
+                double length = Distance;
+
+                if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Kilometers)
+                    length /= 1000.0;
+                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Feet)
+                    length *= 3.28084;
+                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Meters)
+                    length *= 1000.0;
+                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Feet)
+                    length *= 3280.84;
+                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Kilometers)
+                    length *= 0.0003048;
+                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Meters)
+                    length *= 0.3048;
+
+                Distance = length;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         /// <summary>
@@ -313,7 +412,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         INewLineFeedback feedback = null;
         IGeodeticLineFeedback geoFeedback = null;
 
-        private void OnNewMapPoint(object obj)
+        private void OnNewCenterPoint(object obj)
         {
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             var av = mxdoc.FocusMap as IActiveView;
@@ -330,6 +429,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 // lets try feedback
                 feedback = new NewLineFeedback();
                 geoFeedback = feedback as IGeodeticLineFeedback;
+                geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
+                geoFeedback.UseGeodeticConstruction = true;
                 geoFeedback.SpatialReference = point.SpatialReference;
                 var displayFB = feedback as IDisplayFeedback;
                 displayFB.Display = av.ScreenDisplay;
@@ -344,12 +445,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             if(HasPoint1 && HasPoint2)
             {
-                CreatePolyline();
+                CreateCircle();
                 HasPoint1 = HasPoint2 = false;
             }
         }
 
-        private void OnMouseMovePoint(object obj)
+        private void OnMouseMoveEvent(object obj)
         {
             var point = obj as IPoint;
 
