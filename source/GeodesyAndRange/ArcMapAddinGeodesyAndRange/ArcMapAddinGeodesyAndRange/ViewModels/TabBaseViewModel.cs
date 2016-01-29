@@ -80,9 +80,38 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 RaisePropertyChanged(() => Point2Formatted);
             }
         }
+        string point1Formatted = string.Empty;
         public string Point1Formatted
         {
-            get { return string.Format("{0:0.0#####} {1:0.0#####}", Point1.X, Point1.Y); }
+            get 
+            {
+                if (string.IsNullOrWhiteSpace(point1Formatted))
+                {
+                    return string.Format("{0:0.0#####} {1:0.0#####}", Point1.X, Point1.Y);
+                }
+                else
+                {
+                    return point1Formatted;
+                }
+            }
+
+            set
+            {
+                var point = GetPointFromString(value);
+                if(point != null)
+                {
+                    point1Formatted = value;
+                    HasPoint1 = true;
+                    Point1 = point;
+                    // lets try feedback
+                    //TODO move this into a function
+                    var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    var av = mxdoc.FocusMap as IActiveView;
+                    CreateFeedback(point, av);
+                    feedback.Start(point);
+                    //RaisePropertyChanged(() => Point1Formatted);
+                }
+            }
         }
 
         public string Point2Formatted
@@ -447,6 +476,45 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             displayFB.Display = av.ScreenDisplay;
         }
 
+        internal IPoint GetPointFromString(string coordinate)
+        {
+            Type t = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
+            System.Object obj = Activator.CreateInstance(t);
+            ISpatialReferenceFactory srFact = obj as ISpatialReferenceFactory;
+
+            // Use the enumeration to create an instance of the predefined object.
+
+            IGeographicCoordinateSystem geographicCS =
+                srFact.CreateGeographicCoordinateSystem((int)
+                esriSRGeoCSType.esriSRGeoCS_WGS1984);
+
+            var point = new Point() as IPoint;
+            point.SpatialReference = geographicCS;
+            var cn = point as IConversionNotation;
+
+            if (cn == null)
+                return null;
+
+            try { cn.PutCoordsFromDD(coordinate); return point; } catch { }
+            try { cn.PutCoordsFromDDM(coordinate); return point; } catch { }
+            try { cn.PutCoordsFromDMS(coordinate); return point; } catch { }
+            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeCENTER, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeLL, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_Automatic); return point; } catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewStyle); return point; } catch { } 
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewWith180InZone01); return point; } catch { } 
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldStyle); return point; } catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldWith180InZone01); return point; } catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_USNG); return point; } catch { }
+            try { cn.PutCoordsFromUSNG(coordinate); return point; } catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces|esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMNoOptions, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromGeoRef(coordinate); return point; } catch { }
+
+            return null;
+        }
         #endregion Private Functions
 
     }
