@@ -39,6 +39,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             ClearGraphicsCommand = new RelayCommand(OnClearGraphicsCommand);
             ActivateToolCommand = new RelayCommand(OnActivateToolCommand);
+            EnterKeyCommand = new RelayCommand(OnEnterKeyCommand);
 
             // lets listen for new points from the map point tool
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPoint);
@@ -48,7 +49,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #region Properties
 
         public LineTypes LineType { get; set; }
-        public LineFromTypes LineFromType { get; set; }
+
+        LineFromTypes lineFromType = LineFromTypes.Points;
+        public LineFromTypes LineFromType 
+        {
+            get { return lineFromType; }
+            set
+            {
+                lineFromType = value;
+                RaisePropertyChanged(() => LineFromType);
+                
+                // reset points
+                ResetPoints();
+
+                // stop feedback when from type changes
+                ResetFeedback();
+            }
+        }
 
         DistanceTypes lineDistanceType = DistanceTypes.Meters;
         public DistanceTypes LineDistanceType
@@ -56,8 +73,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             get { return lineDistanceType; }
             set
             {
-                UpdateDistanceFromTo(lineDistanceType, value);
+                var before = lineDistanceType;
                 lineDistanceType = value;
+                UpdateDistanceFromTo(before, value);
             }
         }
 
@@ -67,8 +85,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             get { return lineAzimuthType; }
             set
             {
-                UpdateAzimuthFromTo(lineAzimuthType, value);
+                var before = lineAzimuthType;
                 lineAzimuthType = value;
+                UpdateAzimuthFromTo(before, value);
             }
         }
 
@@ -84,7 +103,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 point1 = value;
                 RaisePropertyChanged(() => Point1);
                 RaisePropertyChanged(() => Point1Formatted);
+
+                if (LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    ResetFeedback();
+                }
+
+                UpdateFeedback();
             }
+        }
+
+        private void ResetFeedback()
+        {
+            if (feedback == null)
+                return;
+
+            feedback.Stop();
+            feedback = null;
         }
         private IPoint point2 = null;
         public IPoint Point2
@@ -118,12 +153,48 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 distance = value;
-                DistanceString = string.Format("{0:0.00}", distance);
                 RaisePropertyChanged(() => Distance);
+
+                if(LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    // update feedback
+                    UpdateFeedback();
+                }
+
+                DistanceString = string.Format("{0:0.00}", distance);
                 RaisePropertyChanged(() => DistanceString);
             }
         }
-        public string DistanceString { get; set; }
+
+        string distanceString = string.Empty;
+        public string DistanceString 
+        {
+            get { return distanceString; }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(distanceString, value))
+                    return;
+
+                distanceString = value;
+                if(LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    try
+                    {
+                        // update distance
+                        double d = 0.0;
+                        if (double.TryParse(distanceString, out d))
+                        {
+                            Distance = d;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+            }
+        }
         double azimuth = 0.0;
         public double Azimuth
         {
@@ -131,12 +202,47 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 azimuth = value;
-                AzimuthString = string.Format("{0:0.00}", azimuth);
                 RaisePropertyChanged(() => Azimuth);
+
+                if (LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    // update feedback
+                    UpdateFeedback();
+                }
+
+                AzimuthString = string.Format("{0:0.00}", azimuth);
                 RaisePropertyChanged(() => AzimuthString);
             }
         }
-        public string AzimuthString { get; set; }
+        string azimuthString = string.Empty;
+        public string AzimuthString 
+        {
+            get { return azimuthString; } 
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(azimuthString, value))
+                    return;
+                
+                azimuthString = value;
+                if(LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    try
+                    {
+                        // update azimuth
+                        double d = 0.0;
+                        if(double.TryParse(azimuthString, out d))
+                        {
+                            Azimuth = d;
+                        }
+                    }
+                    catch(Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                }
+            }
+        }
 
         #endregion
 
@@ -144,6 +250,25 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         public RelayCommand ClearGraphicsCommand { get; set; }
         public RelayCommand ActivateToolCommand { get; set; }
+        public RelayCommand EnterKeyCommand { get; set; }
+
+        // when someone hits the enter key, create geodetic graphic
+        private void OnEnterKeyCommand(object obj)
+        {
+            if(LineFromType == LineFromTypes.Points)
+            {
+                CreatePolyline();
+            }
+            else
+            {
+                // Bearing and Distance
+                UpdateFeedback();
+                feedback.AddPoint(Point2);
+                var polyline = feedback.Stop();
+                ResetFeedback();
+                AddGraphicToMap(polyline);
+            }
+        }
 
         private void OnClearGraphicsCommand(object obj)
         {
@@ -181,6 +306,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             try
             {
+                if (Point1 == null || Point2 == null)
+                    return;
+
                 var construct = new Polyline() as IConstructGeodetic;
 
                 if (construct == null)
@@ -198,6 +326,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 UpdateAzimuth(construct as IGeometry);
 
                 AddGraphicToMap(construct as IGeometry);
+
+                ResetPoints();
             }
             catch(Exception ex)
             {
@@ -219,19 +349,25 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if(line == null)
                 return;
 
-            Azimuth = GetAngle(line.Angle);
+            Azimuth = GetAngleDegrees(line.Angle);
         }
 
-        private double GetAngle(double angle)
+        private double GetAngleDegrees(double angle)
         {
+            double bearing = (180.0 * angle) / Math.PI;
+            if (bearing < 90.0)
+                bearing = 90 - bearing;
+            else
+                bearing= 360.0 - (bearing - 90);
+
             if (LineAzimuthType == AzimuthTypes.Degrees)
             {
-                return (180.0 * angle) / Math.PI;
+                return bearing;
             }
 
             if (LineAzimuthType == AzimuthTypes.Mils)
             {
-                return ((180.0 * angle) / Math.PI ) * 17.777777778;
+                return bearing * 17.777777778;
             }
 
             return 0.0;
@@ -370,33 +506,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
-        private void DrawPolyline(ESRI.ArcGIS.Carto.IActiveView activeView, IGeometry geom)
-        {
-            if (activeView == null || geom == null)
-            {
-                return;
-            }
-
-            ESRI.ArcGIS.Display.IScreenDisplay screenDisplay = activeView.ScreenDisplay;
-
-            // Constant.
-            screenDisplay.StartDrawing(screenDisplay.hDC, (System.Int16)
-                ESRI.ArcGIS.Display.esriScreenCache.esriNoScreenCache); // Explicit cast.
-            ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
-            rgbColor.Red = 255;
-
-            ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
-            ESRI.ArcGIS.Display.ISimpleLineSymbol simpleLineSymbol = new
-                ESRI.ArcGIS.Display.SimpleLineSymbolClass();
-            simpleLineSymbol.Color = color;
-
-            ESRI.ArcGIS.Display.ISymbol symbol = (ESRI.ArcGIS.Display.ISymbol)
-                simpleLineSymbol; // Explicit cast.
-
-            screenDisplay.SetSymbol(symbol);
-            screenDisplay.DrawPolyline(geom);
-            screenDisplay.FinishDrawing();
-        }
         
         #endregion
 
@@ -416,24 +525,28 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (point == null)
                 return;
 
+            // Bearing and Distance Mode
+            if(LineFromType == LineFromTypes.BearingAndDistance)
+            {
+                Point1 = point;
+                HasPoint1 = true;
+                return;
+            }
+
+            // Points Mode
+            
             if (!HasPoint1)
             {
                 Point1 = point;
                 HasPoint1 = true;
 
                 // lets try feedback
-                feedback = new NewLineFeedback();
-                geoFeedback = feedback as IGeodeticLineFeedback;
-                geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
-                geoFeedback.UseGeodeticConstruction = true;
-                geoFeedback.SpatialReference = point.SpatialReference;
-                var displayFB = feedback as IDisplayFeedback;
-                displayFB.Display = av.ScreenDisplay;
+                CreateFeedback(point, av);
                 feedback.Start(point);
             }
             else if(!HasPoint2)
             {
-                feedback.Stop();
+                ResetFeedback(); 
                 Point2 = point;
                 HasPoint2 = true;
             }
@@ -441,12 +554,25 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if(HasPoint1 && HasPoint2)
             {
                 CreatePolyline();
-                HasPoint1 = HasPoint2 = false;
             }
+        }
+
+        private void CreateFeedback(IPoint point, IActiveView av)
+        {
+            feedback = new NewLineFeedback();
+            geoFeedback = feedback as IGeodeticLineFeedback;
+            geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
+            geoFeedback.UseGeodeticConstruction = true;
+            geoFeedback.SpatialReference = point.SpatialReference;
+            var displayFB = feedback as IDisplayFeedback;
+            displayFB.Display = av.ScreenDisplay;
         }
 
         private void OnMouseMovePoint(object obj)
         {
+            if (LineFromType == LineFromTypes.BearingAndDistance)
+                return;
+
             var point = obj as IPoint;
 
             if (point == null)
@@ -459,5 +585,63 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         #endregion
+
+        private void UpdateFeedback()
+        {
+            // for now lets stick with only updating feedback here with Bearing and Distance case
+            if (LineFromType != LineFromTypes.BearingAndDistance)
+                return;
+
+            if(Point1 != null && HasPoint1)
+            {
+                if(feedback == null)
+                {
+                    var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
+                    feedback.Start(Point1);
+                }
+
+                // now get second point from distance and bearing
+                var construct = new Polyline() as IConstructGeodetic;
+                if (construct == null)
+                    return;
+
+                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, 1000.0);
+
+                var line = construct as IPolyline;
+
+                if (line.ToPoint != null)
+                {
+                    feedback.MoveTo(line.ToPoint);
+                    Point2 = line.ToPoint;
+                }
+            }
+        }
+
+        private double GetAzimuthAsDegrees()
+        {
+            if(LineAzimuthType == AzimuthTypes.Mils)
+            {
+                return Azimuth * 0.05625;
+            }
+
+            return Azimuth;
+        }
+
+        private void ResetPoints()
+        {
+            if(LineFromType == LineFromTypes.Points)
+            {
+                HasPoint1 = HasPoint2 = false;
+            }
+            else
+            {
+                if(Point1 != null)
+                {
+                    HasPoint1 = true;
+                }
+            }
+        }
+
     }
 }
