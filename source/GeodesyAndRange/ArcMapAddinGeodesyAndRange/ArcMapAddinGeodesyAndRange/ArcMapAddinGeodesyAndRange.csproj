@@ -67,7 +67,8 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="ESRI.ArcGIS.Geometry, Version=10.3.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=MSIL">
-      <EmbedInteropTypes>True</EmbedInteropTypes>
+      <SpecificVersion>False</SpecificVersion>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="ESRI.ArcGIS.System">
       <Private>False</Private>
@@ -110,6 +111,7 @@
     <Compile Include="ViewModels\LinesViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\RangeViewModel.cs" />
+    <Compile Include="ViewModels\TabBaseViewModel.cs" />
     <Compile Include="Views\CircleView.xaml.cs">
       <DependentUpon>CircleView.xaml</DependentUpon>
     </Compile>

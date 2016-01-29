@@ -69,7 +69,7 @@
         <Label Content="{x:Static prop:Resources.LabelCenterPoint}"
                Grid.Row="2" Grid.ColumnSpan="3"/>
         <TextBox Height="Auto"
-                 Text="{Binding Path=StartPointFormatted, Mode=OneWay}"
+                 Text="{Binding Path=Point1Formatted, Mode=OneWay}"
                  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,1,0,0" />
         <Button Command="{Binding ActivateToolCommand}"
                 Width="Auto" HorizontalAlignment="Left" 

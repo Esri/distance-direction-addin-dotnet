@@ -17,7 +17,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using ArcMapAddinGeodesyAndRange.Views;
+using ArcMapAddinGeodesyAndRange.Helpers;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
@@ -31,6 +33,25 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             _ellipseView = new GREllipseView();
             _rangeView = new GRRangeView();
         }
+
+        #region Properties
+
+        object selectedTab = null;
+        public object SelectedTab
+        {
+            get { return selectedTab; }
+            set
+            {
+                if (selectedTab == value)
+                    return;
+
+                selectedTab = value;
+                var tabItem = selectedTab as TabItem;
+                Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
+            }
+        }
+
+        #endregion
 
         #region Views
 
