@@ -11,7 +11,7 @@
         <StaticResourceExtension ResourceKey="viewModelMain" />
     </UserControl.DataContext>
     <Grid Margin="3,3,3,3">
-        <TabControl>
+        <TabControl SelectedItem="{Binding SelectedTab, Mode=OneWayToSource}">
             <TabItem Header="{x:Static prop:Resources.LabelTabLines}">
                 <UserControl Content="{Binding LinesView}" />
             </TabItem>
