@@ -48,7 +48,7 @@ namespace ArcMapAddinGeodesyAndRange
 
                 Mediator.NotifyColleagues(Constants.NEW_MAP_POINT, point);
             }
-            catch { }
+            catch (Exception ex) { Console.WriteLine(ex.Message); }
         }
         protected override void OnMouseMove(MouseEventArgs arg)
         {
