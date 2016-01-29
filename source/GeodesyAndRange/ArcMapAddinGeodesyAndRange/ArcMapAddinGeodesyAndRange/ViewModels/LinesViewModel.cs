@@ -227,7 +227,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 var srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
 
-                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 1000.0);
+                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
 
                 var mxdoc = ArcMap.Application.Document as IMxDocument;
                 var av = mxdoc.FocusMap as IActiveView;
@@ -362,7 +362,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 if (construct == null)
                     return;
 
-                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, 1000.0);
+                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
 
                 var line = construct as IPolyline;
 
