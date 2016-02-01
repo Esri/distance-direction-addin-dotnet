@@ -80,14 +80,71 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 RaisePropertyChanged(() => Point2Formatted);
             }
         }
+        string point1Formatted = string.Empty;
         public string Point1Formatted
         {
-            get { return string.Format("{0:0.0#####} {1:0.0#####}", Point1.X, Point1.Y); }
+            get 
+            {
+                if (string.IsNullOrWhiteSpace(point1Formatted))
+                {
+                    return string.Format("{0:0.0#####} {1:0.0#####}", Point1.Y, Point1.X);
+                }
+                else
+                {
+                    return point1Formatted;
+                }
+            }
+
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    return;
+
+                var point = GetPointFromString(value);
+                if(point != null)
+                {
+                    point1Formatted = value;
+                    HasPoint1 = true;
+                    Point1 = point;
+                    // lets try feedback
+                    //TODO move this into a function
+                    var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    var av = mxdoc.FocusMap as IActiveView;
+                    CreateFeedback(point, av);
+                    feedback.Start(point);
+                    //RaisePropertyChanged(() => Point1Formatted);
+                }
+            }
         }
 
+        string point2Formatted = string.Empty;
         public string Point2Formatted
         {
-            get { return string.Format("{0:0.0#####} {1:0.0#####}", Point2.X, Point2.Y); }
+            get 
+            {
+                if (string.IsNullOrWhiteSpace(point2Formatted))
+                {
+                    return string.Format("{0:0.0#####} {1:0.0#####}", Point2.Y, Point2.X);
+                }
+                else
+                {
+                    return point2Formatted;
+                }
+            }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    return;
+
+                var point = GetPointFromString(value);
+                if (point != null)
+                {
+                    point2Formatted = value;
+                    HasPoint2 = true;
+                    Point2 = point;
+                }
+            }
+
         }
 
 
@@ -206,6 +263,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 Point1 = point;
                 HasPoint1 = true;
+                point1Formatted = string.Empty;
+                RaisePropertyChanged(() => Point1Formatted);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -216,6 +275,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 ResetFeedback();
                 Point2 = point;
                 HasPoint2 = true;
+                point2Formatted = string.Empty;
+                RaisePropertyChanged(() => Point2Formatted);
             }
 
             if (HasPoint1 && HasPoint2)
@@ -307,7 +368,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 av.Refresh();
             }
         }
-
+        internal ISpatialReferenceFactory3 srf3 = null;
         /// <summary>
         /// 
         /// </summary>
@@ -315,7 +376,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal ILinearUnit GetLinearUnit()
         {
             int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
-            var srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+            if(srf3 == null)
+                srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
 
             switch (LineDistanceType)
             {
@@ -447,6 +509,45 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             displayFB.Display = av.ScreenDisplay;
         }
 
+        internal IPoint GetPointFromString(string coordinate)
+        {
+            Type t = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
+            System.Object obj = Activator.CreateInstance(t);
+            ISpatialReferenceFactory srFact = obj as ISpatialReferenceFactory;
+
+            // Use the enumeration to create an instance of the predefined object.
+
+            IGeographicCoordinateSystem geographicCS =
+                srFact.CreateGeographicCoordinateSystem((int)
+                esriSRGeoCSType.esriSRGeoCS_WGS1984);
+
+            var point = new Point() as IPoint;
+            point.SpatialReference = geographicCS;
+            var cn = point as IConversionNotation;
+
+            if (cn == null)
+                return null;
+
+            try { cn.PutCoordsFromDD(coordinate); return point; } catch { }
+            try { cn.PutCoordsFromDDM(coordinate); return point; } catch { }
+            try { cn.PutCoordsFromDMS(coordinate); return point; } catch { }
+            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeCENTER, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeLL, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_Automatic); return point; } catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewStyle); return point; } catch { } 
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewWith180InZone01); return point; } catch { } 
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldStyle); return point; } catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldWith180InZone01); return point; } catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_USNG); return point; } catch { }
+            try { cn.PutCoordsFromUSNG(coordinate); return point; } catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces|esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMNoOptions, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromGeoRef(coordinate); return point; } catch { }
+
+            return null;
+        }
         #endregion Private Functions
 
     }
