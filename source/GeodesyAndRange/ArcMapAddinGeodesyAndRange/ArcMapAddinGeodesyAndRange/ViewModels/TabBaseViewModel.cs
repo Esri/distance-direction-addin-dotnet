@@ -181,7 +181,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 distance = value;
-                DistanceString = string.Format("{0:0.00}", distance);
+                DistanceString = distance.ToString("N"); // use current culture number format
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
             }
@@ -191,7 +191,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             get
             {
-                return string.Format("{0:0.00}", Distance);
+                return Distance.ToString("N"); // use current culture number format
             }
             set
             {

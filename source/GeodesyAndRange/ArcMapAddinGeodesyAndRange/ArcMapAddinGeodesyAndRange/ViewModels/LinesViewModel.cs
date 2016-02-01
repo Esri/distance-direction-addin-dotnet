@@ -105,7 +105,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     UpdateFeedback();
                 }
 
-                DistanceString = string.Format("{0:0.00}", distance);
+                DistanceString = distance.ToString("N");
                 RaisePropertyChanged(() => DistanceString);
             }
         }
@@ -154,7 +154,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     UpdateFeedback();
                 }
 
-                AzimuthString = string.Format("{0:0.00}", azimuth);
+                AzimuthString = azimuth.ToString("N");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }

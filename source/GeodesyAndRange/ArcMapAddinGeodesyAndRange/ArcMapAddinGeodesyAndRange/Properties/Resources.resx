@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="EnumBearingAndDistance" xml:space="preserve">
-    <value>Bearing and Distance</value>
+    <value>Distance and Bearing</value>
   </data>
   <data name="EnumDegrees" xml:space="preserve">
     <value>degrees</value>
@@ -224,5 +224,8 @@
   </data>
   <data name="LabelTabRange" xml:space="preserve">
     <value>Range</value>
+  </data>
+  <data name="TooltipMapPointTool" xml:space="preserve">
+    <value>Map Point Tool</value>
   </data>
 </root>
