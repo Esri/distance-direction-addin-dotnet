@@ -87,7 +87,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(point1Formatted))
                 {
-                    return string.Format("{0:0.0#####} {1:0.0#####}", Point1.X, Point1.Y);
+                    return string.Format("{0:0.0#####} {1:0.0#####}", Point1.Y, Point1.X);
                 }
                 else
                 {
@@ -97,6 +97,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             set
             {
+                if (string.IsNullOrWhiteSpace(value))
+                    return;
+
                 var point = GetPointFromString(value);
                 if(point != null)
                 {
@@ -114,9 +117,34 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
+        string point2Formatted = string.Empty;
         public string Point2Formatted
         {
-            get { return string.Format("{0:0.0#####} {1:0.0#####}", Point2.X, Point2.Y); }
+            get 
+            {
+                if (string.IsNullOrWhiteSpace(point2Formatted))
+                {
+                    return string.Format("{0:0.0#####} {1:0.0#####}", Point2.Y, Point2.X);
+                }
+                else
+                {
+                    return point2Formatted;
+                }
+            }
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                    return;
+
+                var point = GetPointFromString(value);
+                if (point != null)
+                {
+                    point2Formatted = value;
+                    HasPoint2 = true;
+                    Point2 = point;
+                }
+            }
+
         }
 
 
@@ -235,6 +263,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 Point1 = point;
                 HasPoint1 = true;
+                point1Formatted = string.Empty;
+                RaisePropertyChanged(() => Point1Formatted);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -245,6 +275,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 ResetFeedback();
                 Point2 = point;
                 HasPoint2 = true;
+                point2Formatted = string.Empty;
+                RaisePropertyChanged(() => Point2Formatted);
             }
 
             if (HasPoint1 && HasPoint2)
@@ -336,7 +368,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 av.Refresh();
             }
         }
-
+        internal ISpatialReferenceFactory3 srf3 = null;
         /// <summary>
         /// 
         /// </summary>
@@ -344,7 +376,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal ILinearUnit GetLinearUnit()
         {
             int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
-            var srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+            if(srf3 == null)
+                srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
 
             switch (LineDistanceType)
             {
