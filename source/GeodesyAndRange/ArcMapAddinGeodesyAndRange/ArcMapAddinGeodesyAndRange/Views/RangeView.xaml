@@ -3,9 +3,93 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ArcMapAddinGeodesyAndRange"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+             xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
+             xmlns:prop="clr-namespace:ArcMapAddinGeodesyAndRange.Properties"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <viewModels:RangeViewModel x:Key="rangeViewModel" />
+        <local:EnumToFriendlyNameConverter x:Key="enumItemsConverter" />
+        <ObjectDataProvider x:Key="lineDistanceData"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+            <ObjectDataProvider.MethodParameters>
+                <x:TypeExtension TypeName="local:DistanceTypes" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <ControlTemplate x:Key="errorTemplate">
+            <Grid ClipToBounds="False">
+                <Image HorizontalAlignment="Right" VerticalAlignment="Center"
+                               Source="/ArcMapAddinGeodesyAndRange;component/Images/GenericErrorStop32_d.png" 
+                               Width="16" Height="16" Margin="0,0,3,0"
+                               ToolTip="{Binding [0].ErrorContent}" />
+                <Border BorderBrush="Red" BorderThickness="1" Margin="-1">
+                    <AdornedElementPlaceholder Name="adornedElement" />
+                </Border>
+            </Grid>
+        </ControlTemplate>
+        <Style TargetType="ComboBox">
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Label  Content="{Binding Path=., Mode=OneWay, Converter={StaticResource enumItemsConverter}}"
+                                Height="Auto"
+                                Margin="0" 
+                                VerticalAlignment="Center"/>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <StaticResourceExtension ResourceKey="rangeViewModel" />
+    </UserControl.DataContext>
     <Grid>
-        <TextBlock>Range View</TextBlock>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBox Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
+        <Button Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="3,3,0,0">
+            <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+        </Button>
+        <TextBox Grid.Row="1" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged}"
+                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
+        <TextBox Grid.Row="2" Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
+        <ComboBox Grid.Row="2" Grid.Column="1" x:Name="cmbLineDistanceType"
+            ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
+            SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
+            Height="Auto" Margin="3,3,0,0">
+        </ComboBox>
+        <TextBox Grid.Row="3" Text="{Binding Path=NumberOfRadials, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
+        <Button Grid.Row="4" Grid.Column="1" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,10,0,0" />
     </Grid>
 </UserControl>

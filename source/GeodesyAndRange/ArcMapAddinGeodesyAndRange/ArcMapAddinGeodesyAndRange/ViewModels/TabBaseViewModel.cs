@@ -38,6 +38,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             //commands
             ClearGraphicsCommand = new RelayCommand(OnClearGraphics);
             ActivateToolCommand = new RelayCommand(OnActivateTool);
+            EnterKeyCommand = new RelayCommand(OnEnterKeyCommand);
 
             // Mediator
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
@@ -207,6 +208,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         public RelayCommand ClearGraphicsCommand { get; set; }
         public RelayCommand ActivateToolCommand { get; set; }
+        public RelayCommand EnterKeyCommand { get; set; }
         
         #endregion
 
@@ -245,6 +247,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         private void OnActivateTool(object obj)
         {
             SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+        }
+
+        internal virtual void OnEnterKeyCommand(object obj)
+        {
+            CreateMapElement();
         }
 
         internal virtual void OnNewMapPointEvent(object obj)
