@@ -39,7 +39,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 if (value < 1 || value > 180)
-                    throw new ArgumentException("The number of rings must be between 0 and 180");
+                    throw new ArgumentException("The number of rings must be between 1 and 180");
 
                 numberOfRings = value;
                 RaisePropertyChanged(() => NumberOfRings);
@@ -71,18 +71,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     return;
 
                 distanceString = value;
-                try
+
+                // update distance
+                double d = 0.0;
+                if (double.TryParse(distanceString, out d))
                 {
-                    // update distance
-                    double d = 0.0;
-                    if (double.TryParse(distanceString, out d))
-                    {
-                        Distance = d;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex);
+                    Distance = d;
                 }
             }
         }
@@ -164,16 +158,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (!IsActiveTab)
                 return;
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            var av = mxdoc.FocusMap as IActiveView;
             var point = obj as IPoint;
 
             if (point == null)
                 return;
 
             Point1 = point;
-            //point1Formatted = string.Empty;
-            //RaisePropertyChanged(() => Point1Formatted);
+            // Reset formatted string
+            Point1Formatted = string.Empty;
         }
 
         internal override void OnMouseMoveEvent(object obj)

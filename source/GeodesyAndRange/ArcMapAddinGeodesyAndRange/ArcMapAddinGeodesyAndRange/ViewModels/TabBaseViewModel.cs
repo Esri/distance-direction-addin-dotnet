@@ -99,7 +99,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
+                {
+                    point1Formatted = string.Empty;
+                    RaisePropertyChanged(() => Point1Formatted);
                     return;
+                }
 
                 var point = GetPointFromString(value);
                 if(point != null)
@@ -135,7 +139,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
+                {
+                    point2Formatted = string.Empty;
+                    RaisePropertyChanged(() => Point2Formatted);
                     return;
+                }
 
                 var point = GetPointFromString(value);
                 if (point != null)
@@ -181,6 +189,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             get { return distance; }
             set
             {
+                if ( value < 0.0 )
+                    throw new ArgumentException("The number must be positive");
+
                 distance = value;
                 DistanceString = distance.ToString("N"); // use current culture number format
                 RaisePropertyChanged(() => Distance);
@@ -270,8 +281,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 Point1 = point;
                 HasPoint1 = true;
-                point1Formatted = string.Empty;
-                RaisePropertyChanged(() => Point1Formatted);
+                Point1Formatted = string.Empty;
+                
 
                 // lets try feedback
                 CreateFeedback(point, av);
