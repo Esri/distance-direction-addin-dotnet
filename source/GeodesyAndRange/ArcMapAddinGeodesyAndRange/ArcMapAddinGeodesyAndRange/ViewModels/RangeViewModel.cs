@@ -38,6 +38,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             get{return numberOfRings;}
             set
             {
+                if (value < 1 || value > 180)
+                    throw new ArgumentException("The number of rings must be between 0 and 180");
+
                 numberOfRings = value;
                 RaisePropertyChanged(() => NumberOfRings);
             }
@@ -51,6 +54,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 if (value < 0 || value > 180)
                     throw new ArgumentException("The number of radials must be between 0 and 180");
+
                 numberOfRadials = value;
                 RaisePropertyChanged(() => NumberOfRadials);
             }

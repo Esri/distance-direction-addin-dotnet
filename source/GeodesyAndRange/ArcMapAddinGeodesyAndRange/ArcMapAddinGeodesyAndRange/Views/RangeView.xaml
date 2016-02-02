@@ -68,7 +68,7 @@
         <Button Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="3,3,0,0">
             <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
         </Button>
-        <TextBox Grid.Row="1" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged}"
+        <TextBox Grid.Row="1" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
