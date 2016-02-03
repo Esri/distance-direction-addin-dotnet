@@ -211,6 +211,9 @@
   <ItemGroup>
     <Resource Include="Images\Add_Point32_d.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\GenericErrorStop32_d.png" />
+  </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>
     <AddInTargetProduct>Desktop</AddInTargetProduct>

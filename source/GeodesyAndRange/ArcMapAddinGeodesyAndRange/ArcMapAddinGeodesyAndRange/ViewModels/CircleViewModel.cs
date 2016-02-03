@@ -75,8 +75,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             var construct = new Polyline() as IConstructGeodetic;
             construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            var av = mxdoc.FocusMap as IActiveView;
+            //var mxdoc = ArcMap.Application.Document as IMxDocument;
+            //var av = mxdoc.FocusMap as IActiveView;
 
             AddGraphicToMap(construct as IGeometry);
         }

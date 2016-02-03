@@ -38,6 +38,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             //commands
             ClearGraphicsCommand = new RelayCommand(OnClearGraphics);
             ActivateToolCommand = new RelayCommand(OnActivateTool);
+            EnterKeyCommand = new RelayCommand(OnEnterKeyCommand);
 
             // Mediator
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
@@ -98,7 +99,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
+                {
+                    point1Formatted = string.Empty;
+                    RaisePropertyChanged(() => Point1Formatted);
                     return;
+                }
 
                 var point = GetPointFromString(value);
                 if(point != null)
@@ -112,7 +117,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     var av = mxdoc.FocusMap as IActiveView;
                     CreateFeedback(point, av);
                     feedback.Start(point);
-                    //RaisePropertyChanged(() => Point1Formatted);
+                }
+                else 
+                {
+                    Point1 = null;
+                    HasPoint1 = false;
+                    throw new ArgumentException("Invalid coordinate");
                 }
             }
         }
@@ -134,7 +144,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
+                {
+                    point2Formatted = string.Empty;
+                    RaisePropertyChanged(() => Point2Formatted);
                     return;
+                }
 
                 var point = GetPointFromString(value);
                 if (point != null)
@@ -143,8 +157,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     HasPoint2 = true;
                     Point2 = point;
                 }
+                else
+                {
+                    Point2 = null;
+                    HasPoint2 = false;
+                    throw new ArgumentException("Invalid coordinate");
+                }
             }
-
         }
 
 
@@ -180,8 +199,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             get { return distance; }
             set
             {
+                if ( value < 0.0 )
+                    throw new ArgumentException("The number must be positive");
+
                 distance = value;
-                DistanceString = string.Format("{0:0.00}", distance);
+                DistanceString = distance.ToString("N"); // use current culture number format
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
             }
@@ -191,7 +213,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             get
             {
-                return string.Format("{0:0.00}", Distance);
+                return Distance.ToString("N"); // use current culture number format
             }
             set
             {
@@ -207,6 +229,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         public RelayCommand ClearGraphicsCommand { get; set; }
         public RelayCommand ActivateToolCommand { get; set; }
+        public RelayCommand EnterKeyCommand { get; set; }
         
         #endregion
 
@@ -247,6 +270,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
         }
 
+        internal virtual void OnEnterKeyCommand(object obj)
+        {
+            CreateMapElement();
+        }
+
         internal virtual void OnNewMapPointEvent(object obj)
         {
             if (!IsActiveTab)
@@ -263,8 +291,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 Point1 = point;
                 HasPoint1 = true;
-                point1Formatted = string.Empty;
-                RaisePropertyChanged(() => Point1Formatted);
+                Point1Formatted = string.Empty;
+                
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -345,6 +373,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="geom"></param>
         internal void AddGraphicToMap(IGeometry geom)
         {
+            if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
+                return;
+
+            geom.Project(ArcMap.Document.FocusMap.SpatialReference);
+
             var pc = geom as IPolycurve;
 
             if (pc != null)

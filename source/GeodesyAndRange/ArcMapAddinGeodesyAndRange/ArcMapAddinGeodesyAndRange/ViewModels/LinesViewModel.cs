@@ -30,14 +30,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         public LinesViewModel()
         {
             // props
-            //LineType = LineTypes.Geodesic;
             LineFromType = LineFromTypes.Points;
-            //LineDistanceType = DistanceTypes.Meters;
             LineAzimuthType = AzimuthTypes.Degrees;
-
-            // commands
-            EnterKeyCommand = new RelayCommand(OnEnterKeyCommand);
-
         }
 
         #region Properties
@@ -105,7 +99,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     UpdateFeedback();
                 }
 
-                DistanceString = string.Format("{0:0.00}", distance);
+                DistanceString = distance.ToString("N");
                 RaisePropertyChanged(() => DistanceString);
             }
         }
@@ -154,7 +148,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     UpdateFeedback();
                 }
 
-                AzimuthString = string.Format("{0:0.00}", azimuth);
+                AzimuthString = azimuth.ToString("N");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }
@@ -192,14 +186,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Commands
 
-        public RelayCommand EnterKeyCommand { get; set; }
-
         // when someone hits the enter key, create geodetic graphic
-        private void OnEnterKeyCommand(object obj)
+        internal override void OnEnterKeyCommand(object obj)
         {
             if(LineFromType == LineFromTypes.Points)
             {
-                CreatePolyline();
+                base.OnEnterKeyCommand(obj);
             }
             else
             {
