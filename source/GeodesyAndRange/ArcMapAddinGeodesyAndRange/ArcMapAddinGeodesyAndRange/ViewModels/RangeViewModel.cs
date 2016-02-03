@@ -33,13 +33,16 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #region Properties
 
         int numberOfRings = 3;
+        /// <summary>
+        /// Property for the number or rings
+        /// </summary>
         public int NumberOfRings
         {
-            get{return numberOfRings;}
+            get { return numberOfRings; }
             set
             {
                 if (value < 1 || value > 180)
-                    throw new ArgumentException("The number of rings must be between 1 and 180");
+                    throw new ArgumentException(string.Format(Properties.Resources.AENumOfRings, 1, 180));
 
                 numberOfRings = value;
                 RaisePropertyChanged(() => NumberOfRings);
@@ -47,37 +50,19 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         int numberOfRadials = 0;
+        /// <summary>
+        /// Property for the number of radials
+        /// </summary>
         public int NumberOfRadials
         {
-            get{return numberOfRadials;}
+            get { return numberOfRadials; }
             set
             {
                 if (value < 0 || value > 180)
-                    throw new ArgumentException("The number of radials must be between 0 and 180");
+                    throw new ArgumentException(string.Format(Properties.Resources.AENumOfRadials, 0, 180));
 
                 numberOfRadials = value;
                 RaisePropertyChanged(() => NumberOfRadials);
-            }
-        }
-
-        string distanceString = string.Empty;
-        public override string DistanceString
-        {
-            get { return distanceString; }
-            set
-            {
-                // lets avoid an infinite loop here
-                if (string.Equals(distanceString, value))
-                    return;
-
-                distanceString = value;
-
-                // update distance
-                double d = 0.0;
-                if (double.TryParse(distanceString, out d))
-                {
-                    Distance = d;
-                }
             }
         }
 
@@ -89,7 +74,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// </summary>
         internal override void CreateMapElement()
         {
-            // do we have enough data
+            // do we have enough data?
             if (Point1 == null && NumberOfRings <= 0 && NumberOfRadials < 0 && Distance <= 0.0)
                 return;
 
@@ -98,8 +83,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             DrawRadials();
         }
 
+        /// <summary>
+        /// Method to draw the radials inside the range rings
+        /// Must have at least 1 radial
+        /// All radials are drawn from the center point to the farthest ring
+        /// </summary>
         private void DrawRadials()
         {
+            // must have at least 1
             if (NumberOfRadials < 1)
                 return;
 
@@ -132,6 +123,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         /// <summary>
         /// Method used to draw the rings at the desired interval
+        /// Rings are constructed as geodetic circles
         /// </summary>
         private void DrawRings()
         {
@@ -183,6 +175,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="obj"></param>
         internal override void OnMouseMoveEvent(object obj)
         {
+            // DO NOTHING HERE
         }
     }
 }
