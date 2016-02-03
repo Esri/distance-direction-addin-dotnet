@@ -60,7 +60,8 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBox Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
+        <TextBox Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
             </TextBox.InputBindings>

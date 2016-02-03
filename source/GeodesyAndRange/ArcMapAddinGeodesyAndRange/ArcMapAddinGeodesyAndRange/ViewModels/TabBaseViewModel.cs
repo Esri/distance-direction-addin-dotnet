@@ -117,7 +117,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     var av = mxdoc.FocusMap as IActiveView;
                     CreateFeedback(point, av);
                     feedback.Start(point);
-                    //RaisePropertyChanged(() => Point1Formatted);
+                }
+                else 
+                {
+                    Point1 = null;
+                    HasPoint1 = false;
+                    throw new ArgumentException("Invalid coordinate");
                 }
             }
         }
@@ -152,8 +157,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     HasPoint2 = true;
                     Point2 = point;
                 }
+                else
+                {
+                    Point2 = null;
+                    HasPoint2 = false;
+                    throw new ArgumentException("Invalid coordinate");
+                }
             }
-
         }
 
 
@@ -363,6 +373,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="geom"></param>
         internal void AddGraphicToMap(IGeometry geom)
         {
+            if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
+                return;
+
+            geom.Project(ArcMap.Document.FocusMap.SpatialReference);
+
             var pc = geom as IPolycurve;
 
             if (pc != null)

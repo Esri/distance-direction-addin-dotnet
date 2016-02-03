@@ -83,13 +83,15 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #endregion Properties
 
+        /// <summary>
+        /// Method used to create the needed map elements to add to the graphics container
+        /// Is called by the base class when the "Enter" key is pressed
+        /// </summary>
         internal override void CreateMapElement()
         {
             // do we have enough data
             if (Point1 == null && NumberOfRings <= 0 && NumberOfRadials < 0 && Distance <= 0.0)
                 return;
-
-            DrawCenterPoint();
 
             DrawRings();
 
@@ -128,13 +130,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
+        /// <summary>
+        /// Method used to draw the rings at the desired interval
+        /// </summary>
         private void DrawRings()
         {
             double radius = 0.0;
+
             try
             {
                 for (int x = 0; x < numberOfRings; x++)
                 {
+                    // set the current radius
                     radius += Distance;
                     var polyLine = new Polyline() as IPolyline;
                     polyLine.SpatialReference = Point1.SpatialReference;
@@ -149,12 +156,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
-        private void DrawCenterPoint()
-        {
-        }
-
+        /// <summary>
+        /// Override the on new map point event to only handle one point for the center point
+        /// </summary>
+        /// <param name="obj"></param>
         internal override void OnNewMapPointEvent(object obj)
         {
+            // only if we are the active tab
             if (!IsActiveTab)
                 return;
 
@@ -164,10 +172,15 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
 
             Point1 = point;
+
             // Reset formatted string
             Point1Formatted = string.Empty;
         }
 
+        /// <summary>
+        /// Override the mouse move event to ignore it
+        /// </summary>
+        /// <param name="obj"></param>
         internal override void OnMouseMoveEvent(object obj)
         {
         }
