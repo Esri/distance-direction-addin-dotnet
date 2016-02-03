@@ -210,6 +210,15 @@
   <data name="LabelRadiusDiameter" xml:space="preserve">
     <value>Radius / Diameter</value>
   </data>
+  <data name="LabelRangeRingsCenterPoint" xml:space="preserve">
+    <value>Center Point</value>
+  </data>
+  <data name="LabelRangeRingsDistanceBetween" xml:space="preserve">
+    <value>Distance Between Rings</value>
+  </data>
+  <data name="LabelRangeRingsNumberofRadials" xml:space="preserve">
+    <value>Number of Radials</value>
+  </data>
   <data name="LabelStartingPoint" xml:space="preserve">
     <value>Starting Point</value>
   </data>
