@@ -14,6 +14,7 @@ Add-in provides the ability to easily and quickly create geodesy lines, circles,
 
 * [Requirements](#requirements)
 * [Instructions](#instructions)
+* [Usage](#usage)
 * [Resources](#resources)
 * [Issues](#issues)
 * [Contributing](#contributing)
@@ -64,6 +65,49 @@ Add-in provides the ability to easily and quickly create geodesy lines, circles,
 				* Open tool by clicking the "Show Geodesy and Range" command you just added
 				* Dockable geodesy and range tool appears
 				
+## Usage
+
+* Create Lines Interactively 
+	* Choose the Lines tab on the Geodesy and Range Tool
+	* Choose the type of line that is needed to be created
+	* Start an interactive session by selecting the arrow icon 
+	* Enter a starting and ending point on the map by first selecting the arrow icon
+	* Repeat until all desired graphics have been included
+
+* Create Lines from Known Coordinates
+	* Choose the type of line that is needed to be created
+	* Input the first coordinate of where your line is going to start
+	* Input the second coordinate of where your line is going to end
+	* Repeat until all desired graphics have been included. 
+
+* Create a Line with a Range and Bearing
+	* Choose the type of line that you would like the create
+	* Choose Bearing and Distance from the second drop down menu
+	* Input the length of the line and choose the unit type
+	* Input the azimuth or angle of the line
+	* Hit enter and the graphic will be drawn on the map
+
+* Create a Circle Interactively 
+	* Choose the Circles tab on the Geodesy and Range Tool
+	* Start an interactive session by selecting the arrow icon 
+	* Enter a starting point and the distance of the circles radius on the map
+	* A graphic will then be displayed on the map showing the circle you created
+	* If desired you can clear all graphics with the clear graphics button
+
+* Create Range Rings Interactively 
+	* Choose the Range Rings tab on the Geodesy and Range Tool
+	* Fill in the associated parameters for “Number of Rings”, “Ring Interval”, “Distance Units”, and “Number of Radials”
+	* Start an interactive session by selecting the arrow icon next to the “Center Point” text box
+	* Choose the location of the Range Rings center by selecting the desired location on the map
+	* Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set
+
+* Create Range Rings Manually 
+	* Choose the Range Rings tab on the Geodesy and Range Tool
+	* Fill in the associated parameters for “Number of Rings”, “Ring Interval”, “Distance Units”, and “Number of Radials”
+	* Input the coordinates for the Range Rings center in the “Center Point” text box and select the Enter key on the keyboard
+	* Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set
+	* If desired you can clear all graphics with the clear graphics button
+
 ## Resources
 
 * [ArcGIS 10.3 Help](http://resources.arcgis.com/en/help/)
