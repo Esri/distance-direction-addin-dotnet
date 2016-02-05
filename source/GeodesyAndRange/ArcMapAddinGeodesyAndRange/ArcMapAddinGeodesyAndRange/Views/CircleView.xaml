@@ -64,7 +64,7 @@
         </Button>
         <Label Content="{x:Static prop:Resources.LabelRadiusDiameter}"
                Grid.Row="4" Grid.ColumnSpan="3"/>
-        <TextBox Height="Auto" 
+        <TextBox Height="22" 
                  Margin="0,2"
                  Text="{Binding Path=DistanceString, Mode=OneWay}"
                  Grid.Row="5" Grid.Column="0"/>
