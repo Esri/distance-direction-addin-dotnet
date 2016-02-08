@@ -74,6 +74,7 @@
                VerticalAlignment="Bottom"
                Margin="0,0,0,0"/>
         <TextBox Height="Auto"
+                 IsReadOnly="True"
                  Text="{Binding Path=Point1Formatted, Mode=OneWay}"                 
                  ToolTip="{x:Static prop:Resources.LabelCenterPoint}"
                  Grid.Row="2" Grid.ColumnSpan="2"
@@ -100,10 +101,10 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <Label Content="{x:Static prop:Resources.LabelMinorAxis}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
-                <TextBox Height="23" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch"
+                <TextBox Height="23" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
                          Text="{Binding Path=MinorAxisDistanceString, Mode=OneWay}" />
                 <Label Content="{x:Static prop:Resources.LabelMajorAxis}" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
-                <TextBox Height="23" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch"
+                <TextBox Height="23" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch" IsReadOnly="True"
                          Text="{Binding Path=MajorAxisDistanceString, Mode=OneWay}"/>
                 <Label Content="{x:Static prop:Resources.LabelAxisUnits}" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                 <ComboBox x:Name="cmbAxisUnits"
@@ -114,7 +115,7 @@
         </GroupBox>
         <Label  Content="{x:Static prop:Resources.LabelOrientationAngle}" Grid.Row="4" Grid.Column="0" 
                 Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
-        <TextBox Grid.Row="5" Grid.ColumnSpan="2" Height="23"
+        <TextBox Grid.Row="5" Grid.ColumnSpan="2" Height="23" IsReadOnly="True"
                  Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged}"/>
         <Label Content="{x:Static prop:Resources.LabelOrientationUnit}" Grid.Row="6" Grid.Column="0" 
                        Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />

@@ -39,18 +39,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #region Properties
         public CircleFromTypes CircleType { get; set; }
 
-        double distance = 0.0;
-        public override double Distance
-        {
-            get { return distance; }
-            set
-            {
-                distance = value;
-                DistanceString = string.Format("{0:0.00}", distance);
-                RaisePropertyChanged(() => Distance);
-                RaisePropertyChanged(() => DistanceString);
-            }
-        }
+        //double distance = 0.0;
+        //public override double Distance
+        //{
+        //    get { return distance; }
+        //    set
+        //    {
+        //        distance = value;
+        //        DistanceString = string.Format("{0:0.00}", distance);
+        //        RaisePropertyChanged(() => Distance);
+        //        RaisePropertyChanged(() => DistanceString);
+        //    }
+        //}
         string distanceString = String.Empty;
         public override string DistanceString
         {
@@ -109,22 +109,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             var construct = new Polyline() as IConstructGeodetic;
             if (construct != null)
             {
-                construct.ConstructGeodesicCircle(this.Point1,
-                    this.GetLinearUnit(), this.Distance,
-                    esriCurveDensifyMethod.esriCurveDensifyByDeviation, 1000.0);
-                var mxdoc = ArcMap.Application.Document as IMxDocument;
-                if (mxdoc != null)
-                {
-                    var av = mxdoc.FocusMap as IActiveView;
-                    this.AddGraphicToMap(construct as IGeometry);
-                }
-            }
-            construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
-            this.AddGraphicToMap(construct as IGeometry);
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                this.AddGraphicToMap(construct as IGeometry);
 
-            if (CircleType == CircleFromTypes.Diameter)
-            {
-                DistanceString = string.Format("{0:0.00}", (Distance / 1000.0));
+                if (CircleType == CircleFromTypes.Diameter)
+                {
+                    DistanceString = string.Format("{0:0.00}", (Distance / 1000.0));
+                }
             }
         }
 

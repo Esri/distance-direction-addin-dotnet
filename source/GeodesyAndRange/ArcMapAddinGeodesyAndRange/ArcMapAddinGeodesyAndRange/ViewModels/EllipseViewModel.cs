@@ -359,7 +359,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 simpleMarkerSymbol.Color = rgbColor;
                 simpleMarkerSymbol.Outline = true;
                 simpleMarkerSymbol.OutlineColor = outlineRgbColor;
-                simpleMarkerSymbol.Size = 10;
+                simpleMarkerSymbol.Size = 5;
                 simpleMarkerSymbol.Style = esriSimpleMarkerStyle.esriSMSCircle;
 
                 var markerElement = new MarkerElement() as IMarkerElement;
@@ -372,7 +372,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 var simpleLineSymbol = new SimpleLineSymbol() as ISimpleLineSymbol;
                 simpleLineSymbol.Color = rgbColor;
                 simpleLineSymbol.Style = esriSimpleLineStyle.esriSLSSolid;
-                simpleLineSymbol.Width = 2;
+                simpleLineSymbol.Width = 1;
 
                 var lineElement = new LineElement() as ILineElement;
                 lineElement.Symbol = simpleLineSymbol;
@@ -498,8 +498,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             try
             {
-                RemoveGraphics(((IMxDocument)ArcMap.Application.Document).ActivatedView.GraphicsContainer, ElementTag, esriGeometryType.esriGeometryPolyline);
-                RemoveGraphics(((IMxDocument)ArcMap.Application.Document).ActivatedView.GraphicsContainer, ElementTag, esriGeometryType.esriGeometryPoint);
+                RemoveGraphics(((IMxDocument)ArcMap.Application.Document).ActivatedView.GraphicsContainer, 
+                    ElementTag, esriGeometryType.esriGeometryPolyline);
+                RemoveGraphics(((IMxDocument)ArcMap.Application.Document).ActivatedView.GraphicsContainer, 
+                    ElementTag, esriGeometryType.esriGeometryPoint);
 
                 var majorPolyline = new Polyline() as IPolyline;
                 majorPolyline.SpatialReference = Point1.SpatialReference;
@@ -566,22 +568,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 MajorAxisDistance = majorAxis;
                 MinorAxisDistance = minorAxis;
-
-                //Add polyline graphic from center to Point3
-                AddGraphicToMap(((IMxDocument)ArcMap.Application.Document).FocusMap, CreateGeodeticLine(CenterPoint, Point3) as IGeometry,
-                    CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
-                //Add polyline graphic from center to Point2
-                AddGraphicToMap(((IMxDocument)ArcMap.Application.Document).FocusMap, CreateGeodeticLine(CenterPoint, Point2) as IGeometry,
-                    CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
-                //Add point graphic for center point
-                AddGraphicToMap(((IMxDocument)ArcMap.Application.Document).FocusMap, CenterPoint as IGeometry,
-                    CreateRGBColor(ElementColor.Green, 255), CreateRGBColor(ElementColor.Green, 255));
-                //Add point graphic for Point2
-                AddGraphicToMap(((IMxDocument)ArcMap.Application.Document).FocusMap, Point2 as IGeometry,
-                    CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
-                //Add point graphic for Point3
-                AddGraphicToMap(((IMxDocument)ArcMap.Application.Document).FocusMap, Point3 as IGeometry,
-                    CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
 
                 Azimuth = GetAzimuth(majorPolyline as IGeometry);
 
