@@ -437,6 +437,33 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Center Point.
+        /// </summary>
+        public static string LabelRangeRingsCenterPoint {
+            get {
+                return ResourceManager.GetString("LabelRangeRingsCenterPoint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Distance Between Rings.
+        /// </summary>
+        public static string LabelRangeRingsDistanceBetween {
+            get {
+                return ResourceManager.GetString("LabelRangeRingsDistanceBetween", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Number of Radials.
+        /// </summary>
+        public static string LabelRangeRingsNumberofRadials {
+            get {
+                return ResourceManager.GetString("LabelRangeRingsNumberofRadials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting Point.
         /// </summary>
         public static string LabelStartingPoint {

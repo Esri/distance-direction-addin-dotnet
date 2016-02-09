@@ -586,5 +586,16 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 Console.WriteLine(ex.Message);
             }
         }
+
+        internal override void Reset()
+        {
+            base.Reset();
+            HasPoint3 = false;
+            Point3 = null;
+
+            MajorAxisDistance = 0.0;
+            MinorAxisDistance = 0.0;
+            Azimuth = 0.0;
+        }
     }
 }

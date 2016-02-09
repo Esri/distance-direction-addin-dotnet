@@ -205,6 +205,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
+                Reset();
                 isActiveTab = value;
                 RaisePropertyChanged(() => IsActiveTab);
             }
@@ -381,6 +382,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Public Functions
         /// <summary>
+        /// Method used to deactivate tool
+        /// </summary>
+        public void DeactivateTool(string toolname)
+        {
+            if (ArcMap.Application != null
+                && ArcMap.Application.CurrentTool != null
+                && ArcMap.Application.CurrentTool.Name.Equals(toolname))
+            {
+                ArcMap.Application.CurrentTool = null;
+            }
+        }
+        /// <summary>
         /// Method to set the map tool as the active tool for the map
         /// </summary>
         /// <param name="application"></param>
@@ -398,6 +411,25 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #endregion
 
         #region Private Functions
+        /// <summary>
+        /// Method used to totally reset the tool
+        /// reset points, feedback
+        /// clear out textboxes
+        /// </summary>
+        internal virtual void Reset()
+        {
+            DeactivateTool("Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+
+            ResetPoints();
+            Point1 = null;
+            Point2 = null;
+            Point1Formatted = string.Empty;
+            Point2Formatted = string.Empty;
+
+            ResetFeedback();
+
+            Distance = 0.0;
+        }
         /// <summary>
         /// Resets Points 1 and 2
         /// </summary>

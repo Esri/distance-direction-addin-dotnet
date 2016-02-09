@@ -32,7 +32,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
 
-        int numberOfRings = 3;
+        int numberOfRings = 10;
         /// <summary>
         /// Property for the number or rings
         /// </summary>
@@ -176,6 +176,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal override void OnMouseMoveEvent(object obj)
         {
             // DO NOTHING HERE
+        }
+
+        internal override void Reset()
+        {
+            base.Reset();
+
+            NumberOfRadials = 0;
         }
     }
 }
