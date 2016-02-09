@@ -377,19 +377,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             return Azimuth;
         }
 
-        internal override void ResetPoints()
+        internal override void Reset()
         {
-            if(LineFromType == LineFromTypes.Points)
-            {
-                HasPoint1 = HasPoint2 = false;
-            }
-            else
-            {
-                if(Point1 != null)
-                {
-                    HasPoint1 = true;
-                }
-            }
+            base.Reset();
+
+            Azimuth = 0.0;
         }
 
     }

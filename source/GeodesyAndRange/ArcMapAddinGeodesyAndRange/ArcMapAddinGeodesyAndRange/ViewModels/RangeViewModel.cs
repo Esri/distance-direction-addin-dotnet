@@ -177,5 +177,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             // DO NOTHING HERE
         }
+
+        internal override void Reset()
+        {
+            base.Reset();
+
+            NumberOfRadials = 0;
+        }
     }
 }
