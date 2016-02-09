@@ -32,7 +32,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
 
-        int numberOfRings = 3;
+        int numberOfRings = 10;
         /// <summary>
         /// Property for the number or rings
         /// </summary>

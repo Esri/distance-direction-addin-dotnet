@@ -37,8 +37,32 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         #region Properties
-        
         public CircleFromTypes CircleType { get; set; }
+
+        //double distance = 0.0;
+        //public override double Distance
+        //{
+        //    get { return distance; }
+        //    set
+        //    {
+        //        distance = value;
+        //        DistanceString = string.Format("{0:0.00}", distance);
+        //        RaisePropertyChanged(() => Distance);
+        //        RaisePropertyChanged(() => DistanceString);
+        //    }
+        //}
+        string distanceString = String.Empty;
+        public override string DistanceString
+        {
+            get
+            {
+                return string.Format("{0:0.00}", Distance);
+            }
+            set
+            {
+                distanceString = value;
+            }
+        }
 
         #endregion
 
@@ -54,7 +78,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// </summary>
         private void CreateCircle()
         {
-            if (Point1 == null || Point2 == null)
+            if (this.Point1 == null || this.Point2 == null)
             {
                 return;
             }
@@ -66,19 +90,33 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             ptCol.AddPoint(Point2);
             if (CircleType == CircleFromTypes.Diameter)
             {
-                var centerPoint = new Point() as IPoint;
-                polyLine.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, centerPoint);
-                polyLine.FromPoint = Point1 = centerPoint;
+                var area = polyLine.Envelope as IArea;
+                var queryPoint = area.Centroid as IPoint;
+                var hitTest = polyLine as IHitTest;
+                var centroidPoint = new Point() as IPoint;
+                var distance = 0.0;
+                var hitPartIndex = 0;
+                var hitSegmentIndex = 0;
+                var isOnRightSide = false;
+                var isHit = hitTest.HitTest(queryPoint, 2.0,
+                    esriGeometryHitPartType.esriGeometryPartMidpoint,
+                    centroidPoint, ref distance, ref hitPartIndex,
+                    ref hitSegmentIndex, ref isOnRightSide);
+                polyLine.FromPoint = this.Point1 = centroidPoint;
             }
-            UpdateDistance(polyLine as IGeometry);
+            this.UpdateDistance(polyLine as IGeometry);
 
             var construct = new Polyline() as IConstructGeodetic;
-            construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+            if (construct != null)
+            {
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                this.AddGraphicToMap(construct as IGeometry);
 
-            //var mxdoc = ArcMap.Application.Document as IMxDocument;
-            //var av = mxdoc.FocusMap as IActiveView;
-
-            AddGraphicToMap(construct as IGeometry);
+                if (CircleType == CircleFromTypes.Diameter)
+                {
+                    DistanceString = string.Format("{0:0.00}", (Distance / 1000.0));
+                }
+            }
         }
 
         #endregion
