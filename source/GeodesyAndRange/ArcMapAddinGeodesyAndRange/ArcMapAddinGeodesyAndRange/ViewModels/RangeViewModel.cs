@@ -78,6 +78,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (Point1 == null && NumberOfRings <= 0 && NumberOfRadials < 0 && Distance <= 0.0)
                 return;
 
+            base.CreateMapElement();
+
             DrawRings();
 
             DrawRadials();
@@ -164,6 +166,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
 
             Point1 = point;
+
+            AddGraphicToMap(Point1, true);
 
             // Reset formatted string
             Point1Formatted = string.Empty;
