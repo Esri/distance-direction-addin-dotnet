@@ -38,10 +38,5 @@ namespace ArcMapAddinGeodesyAndRange.Views
         {
             InitializeComponent();
         }
-
-        private void Number_of_Rings_Text_Box_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
     }
 }
