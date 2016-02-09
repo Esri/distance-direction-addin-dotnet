@@ -61,6 +61,42 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid coordinate.
+        /// </summary>
+        public static string AEInvalidCoordinate {
+            get {
+                return ResourceManager.GetString("AEInvalidCoordinate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number must be positive.
+        /// </summary>
+        public static string AEMustBePositive {
+            get {
+                return ResourceManager.GetString("AEMustBePositive", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of radials must be between {0} and {1}.
+        /// </summary>
+        public static string AENumOfRadials {
+            get {
+                return ResourceManager.GetString("AENumOfRadials", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The number of rings must be between {0} and {1}.
+        /// </summary>
+        public static string AENumOfRings {
+            get {
+                return ResourceManager.GetString("AENumOfRings", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Distance and Bearing.
         /// </summary>
         public static string EnumBearingAndDistance {
@@ -70,7 +106,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to degrees.
+        ///   Looks up a localized string similar to Degrees.
         /// </summary>
         public static string EnumDegrees {
             get {
@@ -88,7 +124,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to feet.
+        ///   Looks up a localized string similar to Feet.
         /// </summary>
         public static string EnumFeet {
             get {
@@ -142,7 +178,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to meters.
+        ///   Looks up a localized string similar to Meters.
         /// </summary>
         public static string EnumMeters {
             get {
@@ -151,11 +187,20 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to mils.
+        ///   Looks up a localized string similar to Mils.
         /// </summary>
         public static string EnumMils {
             get {
                 return ResourceManager.GetString("EnumMils", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nautical Mile.
+        /// </summary>
+        public static string EnumNauticalMile {
+            get {
+                return ResourceManager.GetString("EnumNauticalMile", resourceCulture);
             }
         }
         
@@ -185,6 +230,47 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
                 return ResourceManager.GetString("EnumSemi", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to US Survey Foot.
+        /// </summary>
+        public static string EnumSurveyFoot {
+            get {
+                return ResourceManager.GetString("EnumSurveyFoot", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Axis.
+        /// </summary>
+        public static string LabelAxisGroup {
+            get {
+                return ResourceManager.GetString("LabelAxisGroup", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Axis.
+        /// </summary>
+        public static string LabelEllipseType
+        {
+            get
+            {
+                return ResourceManager.GetString("LabelEllipseType", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Axis Units.
+        /// </summary>
+        public static string LabelAxisUnits
+        {
+            get
+            {
+                return ResourceManager.GetString("LabelAxisGroup", resourceCulture);
+            }
+        }
+        
         
         /// <summary>
         ///   Looks up a localized string similar to Center Point.
@@ -327,6 +413,17 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         public static string LabelOrientationAngle {
             get {
                 return ResourceManager.GetString("LabelOrientationAngle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Orientation Angle.
+        /// </summary>
+        public static string LabelOrientationUnit
+        {
+            get
+            {
+                return ResourceManager.GetString("LabelOrientationUnit", resourceCulture);
             }
         }
         

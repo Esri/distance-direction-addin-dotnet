@@ -10,48 +10,33 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
-        <viewModels:LinesViewModel x:Key="linesViewModel" />
-        <local:EnumToFriendlyNameConverter x:Key="enumItemsConverter" />
-        <ObjectDataProvider x:Key="lineData"
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ArcMapAddinGeodesyAndRange;component/MAResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <viewModels:LinesViewModel x:Key="linesViewModel" />
+            <ObjectDataProvider x:Key="lineData"
                             MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:TypeExtension TypeName="local:LineTypes" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <ObjectDataProvider x:Key="lineFromData"
+                <ObjectDataProvider.MethodParameters>
+                    <x:TypeExtension TypeName="local:LineTypes" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ObjectDataProvider x:Key="lineFromData"
                             MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:TypeExtension TypeName="local:LineFromTypes" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <ObjectDataProvider x:Key="lineDistanceData"
+                <ObjectDataProvider.MethodParameters>
+                    <x:TypeExtension TypeName="local:LineFromTypes" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ObjectDataProvider x:Key="lineAzimuthData"
                             MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:TypeExtension TypeName="local:DistanceTypes" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <ObjectDataProvider x:Key="lineAzimuthData"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:TypeExtension TypeName="local:AzimuthTypes" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-        <Style TargetType="ComboBox">
-            <Setter Property="ItemTemplate">
-                <Setter.Value>
-                    <DataTemplate>
-                        <Label  Content="{Binding Path=., Mode=OneWay, Converter={StaticResource enumItemsConverter}}"
-                                Height="Auto"
-                                Margin="0" 
-                                VerticalAlignment="Center"/>
-                    </DataTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
+                <ObjectDataProvider.MethodParameters>
+                    <x:TypeExtension TypeName="local:AzimuthTypes" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </ResourceDictionary>
     </UserControl.Resources>
     <UserControl.DataContext>
         <StaticResourceExtension ResourceKey="linesViewModel" />
@@ -81,7 +66,8 @@
                 SelectedItem="{Binding Path=LineFromType, Mode=TwoWay}"                      
                 Height="Auto" Margin="3,3,0,0">
         </ComboBox>
-        <TextBox Grid.Row="1" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
+        <TextBox Grid.Row="1" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
             </TextBox.InputBindings>
@@ -89,7 +75,8 @@
         <Button Grid.Row="1" Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="3,3,0,0">
             <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
         </Button>
-        <TextBox Grid.Row="2" Text="{Binding Path=Point2Formatted, UpdateSourceTrigger=PropertyChanged}" Height="24" Margin="3,3,0,0">
+        <TextBox Grid.Row="2" Text="{Binding Path=Point2Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Height="24" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
             </TextBox.InputBindings>

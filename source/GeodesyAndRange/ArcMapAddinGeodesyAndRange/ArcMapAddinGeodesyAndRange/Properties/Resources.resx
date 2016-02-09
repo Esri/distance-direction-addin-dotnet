@@ -117,17 +117,29 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AEInvalidCoordinate" xml:space="preserve">
+    <value>Invalid coordinate</value>
+  </data>
+  <data name="AEMustBePositive" xml:space="preserve">
+    <value>The number must be positive</value>
+  </data>
+  <data name="AENumOfRadials" xml:space="preserve">
+    <value>The number of radials must be between {0} and {1}</value>
+  </data>
+  <data name="AENumOfRings" xml:space="preserve">
+    <value>The number of rings must be between {0} and {1}</value>
+  </data>
   <data name="EnumBearingAndDistance" xml:space="preserve">
     <value>Distance and Bearing</value>
   </data>
   <data name="EnumDegrees" xml:space="preserve">
-    <value>degrees</value>
+    <value>Degrees</value>
   </data>
   <data name="EnumDiameter" xml:space="preserve">
     <value>Diameter</value>
   </data>
   <data name="EnumFeet" xml:space="preserve">
-    <value>feet</value>
+    <value>Feet</value>
   </data>
   <data name="EnumFull" xml:space="preserve">
     <value>Full</value>
@@ -145,10 +157,13 @@
     <value>Loxodrome</value>
   </data>
   <data name="EnumMeters" xml:space="preserve">
-    <value>meters</value>
+    <value>Meters</value>
   </data>
   <data name="EnumMils" xml:space="preserve">
-    <value>mils</value>
+    <value>Mils</value>
+  </data>
+  <data name="EnumNauticalMile" xml:space="preserve">
+    <value>Nautical Mile</value>
   </data>
   <data name="EnumPoints" xml:space="preserve">
     <value>Points</value>
@@ -158,6 +173,15 @@
   </data>
   <data name="EnumSemi" xml:space="preserve">
     <value>Semi</value>
+  </data>
+  <data name="EnumSurveyFoot" xml:space="preserve">
+    <value>US Survey Foot</value>
+  </data>
+  <data name="LabelAxisGroup" xml:space="preserve">
+    <value>Axis</value>
+  </data>
+  <data name="LabelAxisUnits" xml:space="preserve">
+    <value>Units</value>
   </data>
   <data name="LabelCenterPoint" xml:space="preserve">
     <value>Center Point</value>
@@ -179,6 +203,9 @@
   </data>
   <data name="LabelDistanceLength" xml:space="preserve">
     <value>Distance / Length</value>
+  </data>
+  <data name="LabelEllipseType" xml:space="preserve">
+    <value>Ellipse Type</value>
   </data>
   <data name="LabelEndingPoint" xml:space="preserve">
     <value>Ending Point</value>
@@ -207,6 +234,9 @@
   <data name="LabelOrientationAngle" xml:space="preserve">
     <value>Orientation Angle</value>
   </data>
+  <data name="LabelOrientationUnit" xml:space="preserve">
+    <value>Orientation Unit</value>
+  </data>
   <data name="LabelRadiusDiameter" xml:space="preserve">
     <value>Radius / Diameter</value>
   </data>
@@ -232,7 +262,7 @@
     <value>Lines</value>
   </data>
   <data name="LabelTabRange" xml:space="preserve">
-    <value>Range</value>
+    <value>Rings</value>
   </data>
   <data name="TooltipMapPointTool" xml:space="preserve">
     <value>Map Point Tool</value>

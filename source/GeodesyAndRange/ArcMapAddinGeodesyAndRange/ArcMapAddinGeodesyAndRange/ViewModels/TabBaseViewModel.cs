@@ -27,6 +27,9 @@ using ESRI.ArcGIS.Display;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
+    /// <summary>
+    /// Base class for all the common properties, commands and events for tab items
+    /// </summary>
     public class TabBaseViewModel : BaseViewModel
     {
         public TabBaseViewModel()
@@ -53,6 +56,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal INewLineFeedback feedback = null;
 
         private IPoint point1 = null;
+        /// <summary>
+        /// Property for the first IPoint
+        /// </summary>
         public virtual IPoint Point1
         {
             get
@@ -68,6 +74,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         private IPoint point2 = null;
+        /// <summary>
+        /// Property for the second IPoint
+        /// Not all tools need a second point
+        /// </summary>
         public virtual IPoint Point2
         {
             get
@@ -82,16 +92,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
         string point1Formatted = string.Empty;
+        /// <summary>
+        /// String property for the first IPoint
+        /// This is used to format the point for the UI and allow string input of different types of coordinates
+        /// </summary>
         public string Point1Formatted
         {
             get 
             {
+                // return a formatted first point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point1Formatted))
                 {
+                    // only format if the Point1 data was generated from a mouse click
                     return string.Format("{0:0.0#####} {1:0.0#####}", Point1.Y, Point1.X);
                 }
                 else
                 {
+                    // this was user inputed so just return the inputed string
                     return point1Formatted;
                 }
             }
@@ -104,7 +121,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     RaisePropertyChanged(() => Point1Formatted);
                     return;
                 }
-
+                // try to convert string to an IPoint
                 var point = GetPointFromString(value);
                 if(point != null)
                 {
@@ -112,7 +129,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     HasPoint1 = true;
                     Point1 = point;
                     // lets try feedback
-                    //TODO move this into a function
                     var mxdoc = ArcMap.Application.Document as IMxDocument;
                     var av = mxdoc.FocusMap as IActiveView;
                     CreateFeedback(point, av);
@@ -120,24 +136,33 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 }
                 else 
                 {
+                    // invalid coordinate, reset and throw exception
                     Point1 = null;
                     HasPoint1 = false;
-                    throw new ArgumentException("Invalid coordinate");
+                    throw new ArgumentException(Properties.Resources.AEInvalidCoordinate);
                 }
             }
         }
 
         string point2Formatted = string.Empty;
+        /// <summary>
+        /// String property for the second IPoint
+        /// This is used to format the point for the UI and allow string input of different types of coordinates
+        /// Input types like GARS, MGRS, USNG, UTM
+        /// </summary>
         public string Point2Formatted
         {
             get 
             {
+                // return a formatted second point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point2Formatted))
                 {
+                    // only format if the Point2 data was generated from a mouse click
                     return string.Format("{0:0.0#####} {1:0.0#####}", Point2.Y, Point2.X);
                 }
                 else
                 {
+                    // this was user inputed so just return the inputed string
                     return point2Formatted;
                 }
             }
@@ -149,7 +174,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     RaisePropertyChanged(() => Point2Formatted);
                     return;
                 }
-
+                // try to convert string to an IPoint
                 var point = GetPointFromString(value);
                 if (point != null)
                 {
@@ -159,15 +184,19 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 }
                 else
                 {
+                    // invalid coordinate, reset and throw exception
                     Point2 = null;
                     HasPoint2 = false;
-                    throw new ArgumentException("Invalid coordinate");
+                    throw new ArgumentException(Properties.Resources.AEInvalidCoordinate);
                 }
             }
         }
 
 
         private bool isActiveTab = false;
+        /// <summary>
+        /// Property to keep track of which tab/viewmodel is the active item
+        /// </summary>
         public bool IsActiveTab
         {
             get
@@ -182,6 +211,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         DistanceTypes lineDistanceType = DistanceTypes.Meters;
+        /// <summary>
+        /// Property for the distance type
+        /// </summary>
         public DistanceTypes LineDistanceType
         {
             get { return lineDistanceType; }
@@ -194,13 +226,16 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         double distance = 0.0;
+        /// <summary>
+        /// Property for the distance/length
+        /// </summary>
         public virtual double Distance
         {
             get { return distance; }
             set
             {
                 if ( value < 0.0 )
-                    throw new ArgumentException("The number must be positive");
+                    throw new ArgumentException(Properties.Resources.AEMustBePositive);
 
                 distance = value;
                 DistanceString = distance.ToString("N"); // use current culture number format
@@ -209,6 +244,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
         string distanceString = String.Empty;
+        /// <summary>
+        /// Distance property as a string
+        /// </summary>
         public virtual string DistanceString
         {
             get
@@ -217,10 +255,24 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
+                // lets avoid an infinite loop here
+                if (string.Equals(distanceString, value))
+                    return;
+
                 distanceString = value;
+
+                // update distance
+                double d = 0.0;
+                if (double.TryParse(distanceString, out d))
+                {
+                    Distance = d;
+                }
             }
         }
 
+        /// <summary>
+        /// Property for the type of geodesy line
+        /// </summary>
         public LineTypes LineType { get; set; }
 
         #endregion Properties
@@ -233,6 +285,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         
         #endregion
 
+        /// <summary>
+        /// Method is called when a user pressed the "Enter" key or when a second point is created for a line from mouse clicks
+        /// Derived class must override this method in order to create map elements
+        /// </summary>
         internal virtual void CreateMapElement()
         {
             throw new NotImplementedException();
@@ -241,7 +297,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #region Private Event Functions
 
         /// <summary>
-        /// 
+        /// Clears all the graphics from the maps graphic container
         /// </summary>
         /// <param name="obj"></param>
         private void OnClearGraphics(object obj)
@@ -262,19 +318,26 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             av.Refresh();
         }
         /// <summary>
-        /// 
+        /// Activates the map tool to get map points from mouse clicks/movement
         /// </summary>
         /// <param name="obj"></param>
         private void OnActivateTool(object obj)
         {
             SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
         }
-
+        /// <summary>
+        /// Handler for the "Enter"key command
+        /// Calls CreateMapElement
+        /// </summary>
+        /// <param name="obj"></param>
         internal virtual void OnEnterKeyCommand(object obj)
         {
             CreateMapElement();
         }
-
+        /// <summary>
+        /// Handler for the new map point click event
+        /// </summary>
+        /// <param name="obj">IPoint</param>
         internal virtual void OnNewMapPointEvent(object obj)
         {
             if (!IsActiveTab)
@@ -318,7 +381,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Public Functions
         /// <summary>
-        /// 
+        /// Method to set the map tool as the active tool for the map
         /// </summary>
         /// <param name="application"></param>
         /// <param name="toolName"></param>
@@ -336,7 +399,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Private Functions
         /// <summary>
-        /// 
+        /// Resets Points 1 and 2
         /// </summary>
         internal virtual void ResetPoints()
         {
@@ -344,7 +407,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         /// <summary>
-        /// 
+        /// Resets feedback aka cancels feedback
         /// </summary>
         internal void ResetFeedback()
         {
@@ -356,9 +419,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         /// <summary>
-        /// 
+        /// Handler for the tab item selected event
+        /// Helps keep track of which tab item/viewmodel is active
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="obj">bool if selected or not</param>
         private void OnTabItemSelected(object obj)
         {
             if (obj == null)
@@ -368,9 +432,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         /// <summary>
-        /// 
+        /// Adds a graphic element to the map graphics container
         /// </summary>
-        /// <param name="geom"></param>
+        /// <param name="geom">IGeometry</param>
         internal void AddGraphicToMap(IGeometry geom)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
@@ -403,9 +467,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
         internal ISpatialReferenceFactory3 srf3 = null;
         /// <summary>
-        /// 
+        /// Gets the linear unit from the esri constants for linear units
         /// </summary>
-        /// <returns></returns>
+        /// <returns>ILinearUnit</returns>
         internal ILinearUnit GetLinearUnit()
         {
             int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
@@ -423,6 +487,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 case DistanceTypes.Meters:
                     unitType = (int)esriSRUnitType.esriSRUnit_Meter;
                     break;
+                case DistanceTypes.NauticalMile:
+                    unitType = (int)esriSRUnitType.esriSRUnit_NauticalMile;
+                    break;
+                case DistanceTypes.SurveyFoot:
+                    unitType = (int)esriSRUnitType.esriSRUnit_SurveyFoot;
+                    break;
                 default:
                     unitType = (int)esriSRUnitType.esriSRUnit_Meter;
                     break;
@@ -432,10 +502,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         /// <summary>
-        /// 
+        /// Ugly method to convert to/from different types of distance units
         /// </summary>
-        /// <param name="fromType"></param>
-        /// <param name="toType"></param>
+        /// <param name="fromType">DistanceTypes</param>
+        /// <param name="toType">DistanceTypes</param>
         private void UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType)
         {
             try
@@ -446,14 +516,42 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     length /= 1000.0;
                 else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Feet)
                     length *= 3.28084;
+                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.SurveyFoot)
+                    length *= 3.280833333;
+                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.NauticalMile)
+                    length *= 0.000539957;
                 else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Meters)
                     length *= 1000.0;
                 else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Feet)
                     length *= 3280.84;
+                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.SurveyFoot)
+                    length *= 3280.833333;
+                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.NauticalMile)
+                    length *= 0.539957;
                 else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Kilometers)
                     length *= 0.0003048;
                 else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Meters)
                     length *= 0.3048;
+                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.SurveyFoot)
+                    length *= 0.999998000004;
+                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.NauticalMile)
+                    length *= 0.000164579;
+                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Kilometers)
+                    length *= 0.0003048006096;
+                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Meters)
+                    length *= 0.3048006096;
+                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Feet)
+                    length *= 1.000002;
+                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.NauticalMile)
+                    length *= 0.00016457916285097;
+                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Kilometers)
+                    length *= 1.852001376036;
+                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Meters)
+                    length *= 1852.001376036;
+                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Feet)
+                    length *= 6076.1154855643;
+                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.SurveyFoot)
+                    length *= 6076.1033333576;
 
                 Distance = length;
             }
@@ -464,9 +562,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         /// <summary>
-        /// 
+        /// Get the currently selected geodetic type
         /// </summary>
-        /// <returns></returns>
+        /// <returns>esriGeodeticType</returns>
         internal esriGeodeticType GetEsriGeodeticType()
         {
             esriGeodeticType type = esriGeodeticType.esriGeodeticTypeGeodesic;
@@ -491,9 +589,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         /// <summary>
-        /// 
+        /// Gets the distance/lenght of a polyline
         /// </summary>
-        /// <param name="geometry"></param>
+        /// <param name="geometry">IGeometry</param>
         internal void UpdateDistance(IGeometry geometry)
         {
             var polyline = geometry as IPolyline;
@@ -509,7 +607,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             Distance = geodeticLength;
         }
-
+        /// <summary>
+        /// Handler for the mouse move event
+        /// When the mouse moves accross the map, IPoints are returned to aid in updating feedback to user
+        /// </summary>
+        /// <param name="obj">IPoint</param>
         internal virtual void OnMouseMoveEvent(object obj)
         {
             if (!IsActiveTab)
@@ -527,10 +629,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         /// <summary>
-        /// 
+        /// Creates a new geodetic line feedback to visualize the line to the user
         /// </summary>
-        /// <param name="point"></param>
-        /// <param name="av"></param>
+        /// <param name="point">IPoint, start point</param>
+        /// <param name="av">The current active view</param>
         internal void CreateFeedback(IPoint point, IActiveView av)
         {
             feedback = new NewLineFeedback();
@@ -541,7 +643,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             var displayFB = feedback as IDisplayFeedback;
             displayFB.Display = av.ScreenDisplay;
         }
-
+        /// <summary>
+        /// Method used to convert a string to a known coordinate
+        /// Assumes WGS84 for now
+        /// Uses the IConversionNotation interface
+        /// </summary>
+        /// <param name="coordinate">the coordinate as a string</param>
+        /// <returns>IPoint if successful, null if not</returns>
         internal IPoint GetPointFromString(string coordinate)
         {
             Type t = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");

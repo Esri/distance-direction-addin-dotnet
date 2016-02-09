@@ -46,14 +46,20 @@ namespace ArcMapAddinGeodesyAndRange
 
     public enum DistanceTypes : int 
     {
-        [LocalizableDescription(@"EnumMeters", typeof(Resources))]
-        Meters = 1,
-
+        [LocalizableDescription(@"EnumFeet", typeof(Resources))]
+        Feet = 1,
+        
         [LocalizableDescription(@"EnumKilometers", typeof(Resources))]
         Kilometers = 2,
+        
+        [LocalizableDescription(@"EnumMeters", typeof(Resources))]
+        Meters = 3,
 
-        [LocalizableDescription(@"EnumFeet", typeof(Resources))]
-        Feet = 3
+        [LocalizableDescription(@"EnumNauticalMile", typeof(Resources))]
+        NauticalMile = 4,
+
+        [LocalizableDescription(@"EnumSurveyFoot", typeof(Resources))]
+        SurveyFoot = 5
     }
 
     public enum AzimuthTypes : int
