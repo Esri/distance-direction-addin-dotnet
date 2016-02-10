@@ -178,9 +178,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             // DO NOTHING HERE
         }
 
-        internal override void Reset()
+        internal override void Reset(bool toolReset)
         {
-            base.Reset();
+            base.Reset(toolReset);
 
             NumberOfRadials = 0;
         }

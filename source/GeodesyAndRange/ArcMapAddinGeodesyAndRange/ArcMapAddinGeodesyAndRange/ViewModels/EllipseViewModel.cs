@@ -587,9 +587,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
-        internal override void Reset()
+        internal override void Reset(bool toolReset)
         {
-            base.Reset();
+            base.Reset(toolReset);
             HasPoint3 = false;
             Point3 = null;
 

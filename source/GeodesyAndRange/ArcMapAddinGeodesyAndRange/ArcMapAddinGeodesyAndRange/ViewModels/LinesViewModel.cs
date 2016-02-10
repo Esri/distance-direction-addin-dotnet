@@ -203,24 +203,25 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 AddGraphicToMap(polyline);
             }
         }
-
-        private void CreatePolyline()
+        
+        private IPolyline CreatePolyline(IPoint startPoint, IPoint endPoint, bool IsFinal)
         {
             try
             {
-                if (Point1 == null || Point2 == null)
-                    return;
+                if (startPoint == null || endPoint == null)
+                    return null;
 
                 var construct = new Polyline() as IConstructGeodetic;
 
                 if (construct == null)
-                    return;
-                if(srf3 == null)
+                    return null;
+
+                if (srf3 == null)
                     srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
 
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
 
-                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), startPoint, endPoint, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
 
                 var mxdoc = ArcMap.Application.Document as IMxDocument;
                 var av = mxdoc.FocusMap as IActiveView;
@@ -228,14 +229,21 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 UpdateDistance(construct as IGeometry);
                 UpdateAzimuth(construct as IGeometry);
 
-                AddGraphicToMap(construct as IGeometry);
+                if(IsFinal)
+                {
+                    AddGraphicToMap(construct as IGeometry);
+                    ResetPoints();
+                    Reset(false);
+                }
 
-                ResetPoints();
+                return construct as IPolyline;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+
+            return null;
         }
 
         private void UpdateAzimuth(IGeometry geometry)
@@ -322,11 +330,30 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         internal override void CreateMapElement()
         {
-            CreatePolyline();
+            CreatePolyline(Point1, Point2, true);
         }
 
         internal override void OnMouseMoveEvent(object obj)
         {
+            if (!IsActiveTab)
+                return;
+
+            var point = obj as IPoint;
+
+            if (point == null)
+                return;
+
+            // dynamically update start point if not set yet
+            if (!HasPoint1)
+            {
+                Point1 = point;
+            }
+            else if (HasPoint1 && !HasPoint2)
+            {
+                Point2 = point;
+                CreatePolyline(Point1, Point2, false);
+            }
+
             if (LineFromType == LineFromTypes.BearingAndDistance)
                 return;
 
@@ -377,9 +404,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             return Azimuth;
         }
 
-        internal override void Reset()
+        internal override void Reset(bool toolReset)
         {
-            base.Reset();
+            base.Reset(toolReset);
 
             Azimuth = 0.0;
         }

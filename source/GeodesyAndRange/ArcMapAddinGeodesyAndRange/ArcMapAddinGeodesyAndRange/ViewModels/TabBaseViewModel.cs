@@ -205,7 +205,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
-                Reset();
+                Reset(true);
                 isActiveTab = value;
                 RaisePropertyChanged(() => IsActiveTab);
             }
@@ -416,9 +416,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// reset points, feedback
         /// clear out textboxes
         /// </summary>
-        internal virtual void Reset()
+        internal virtual void Reset(bool toolReset)
         {
-            DeactivateTool("Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+            if (toolReset)
+            {
+                DeactivateTool("Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+            }
 
             ResetPoints();
             Point1 = null;
@@ -654,6 +657,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (point == null)
                 return;
 
+            // update feedback
             if (HasPoint1 && !HasPoint2)
             {
                 feedback.MoveTo(point);
