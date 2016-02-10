@@ -14,7 +14,7 @@ Add-in provides the ability to create geodesic features such as lines, circles, 
 
 * [Requirements](#requirements)
 * [Instructions](#instructions)
-* [Usage](#usage)
+* [Workflows](#workflows)
 * [Resources](#resources)
 * [Issues](#issues)
 * [Contributing](#contributing)
@@ -22,7 +22,7 @@ Add-in provides the ability to create geodesic features such as lines, circles, 
 
 ## Requirements
 
-### Devs
+### Development 
 
 * Visual Studio 2013
 * ArcGIS Desktop SDK for .NET 10.3.1
@@ -30,10 +30,8 @@ Add-in provides the ability to create geodesic features such as lines, circles, 
 
 ### Desktop Users
 
-* ArcGIS Desktop 10.3.1
-* [ArcGIS Desktop for .NET Requirements](http://desktop.arcgis.com/en/arcmap/10.3/get-started/system-requirements/arcgis-desktop-system-requirements.htm)
-* 
-## Getting Started
+* [ArcGIS Desktop 10.3.1](http://desktop.arcgis.com/en/arcmap/10.3/get-started/system-requirements/arcgis-desktop-system-requirements.htm)
+## Instructions
 
 ###New to Github
 
@@ -41,7 +39,7 @@ Add-in provides the ability to create geodesic features such as lines, circles, 
 
 ### Working with the Add-In
 
-## Devs
+## Development Environment 
 
 * Building
 	* To Build Using Visual Studio
@@ -52,7 +50,7 @@ Add-in provides the ability to create geodesic features such as lines, circles, 
 		* ``` msbuild ArcMapAddinGeodesyAndRange.sln /property:Configuration=Release ```
 	* Note : Assembly references are based on a default install of the SDK, you may have to update the references if you chose an alternate install option
 
-## Users
+## Desktop Users
 * Running
 	* To run from a stand-alone deployment
 		* ArcMap
