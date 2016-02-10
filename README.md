@@ -1,13 +1,13 @@
 # geodesy-and-range-addin-dotnet
 
-Add-in provides the ability to easily and quickly create geodesy lines, circles, ellipses and range rings.
+Add-in provides the ability to create geodesic features such as lines, circles, ellipses and range rings.
 
 ![Image of Geodesy and Range Addin](GeodesyAndRange.PNG) 
 
 ## Features
 
 * Creates geodesy lines, circles, ellipses and range rings.
-* Inputs can be entered manually or via a map point tool
+* Inputs can be entered manually or via a known coordinate 
 * Addin for ArcMap 10.3.1
 
 ## Sections
@@ -28,17 +28,18 @@ Add-in provides the ability to easily and quickly create geodesy lines, circles,
 * ArcGIS Desktop SDK for .NET 10.3.1
 	* [ArcGIS Desktop for .NET Requirements](https://desktop.arcgis.com/en/desktop/latest/get-started/system-requirements/arcobjects-sdk-system-requirements.htm)
 
-### Users
+### Desktop Users
 
 * ArcGIS Desktop 10.3.1
 * [ArcGIS Desktop for .NET Requirements](http://desktop.arcgis.com/en/arcmap/10.3/get-started/system-requirements/arcgis-desktop-system-requirements.htm)
-## Instructions
+* 
+## Getting Started
 
-### General Help
+###New to Github
 
 * [New to Github? Get started here.](http://htmlpreview.github.com/?https://github.com/Esri/esri.github.com/blob/master/help/esri-getting-to-know-github.html)
 
-### Getting Started with the Geodesy and Range Addin (.NET)
+### Working with the Add-In
 
 ## Devs
 
@@ -68,35 +69,35 @@ Add-in provides the ability to easily and quickly create geodesy lines, circles,
 				
 ## Workflows
 
-* Create Lines Interactively 
+### Create Lines Interactively 
 	* Choose the Lines tab on the Geodesy and Range Tool
 	* Choose the type of line that is needed to be created
 	* Start an interactive session by selecting the arrow icon 
 	* Enter a starting and ending point on the map by clicking on the map
 	* Repeat until all desired graphics have been included
 
-* Create Lines from Known Coordinates
+### Create Lines from Known Coordinates
 	* Choose the type of line that is needed to be created
 	* Input the first coordinate of where your line is going to start
 	* Input the second coordinate of where your line is going to end
 	* Press "Enter" key and the graphic will be drawn on the map
 	* Repeat until all desired graphics have been included. 
 
-* Create a Line with a Range and Bearing
+### Create a Line with a Range and Bearing
 	* Choose the type of line that you would like the create
 	* Choose Bearing and Distance from the second drop down menu
 	* Input the length of the line and choose the unit type
 	* Input the azimuth or angle of the line
 	* Press "Enter" key and the graphic will be drawn on the map
 
-* Create a Circle Interactively 
+### Create a Circle Interactively 
 	* Choose the Circles tab on the Geodesy and Range Tool
 	* Start an interactive session by selecting the arrow icon 
 	* Enter a starting point and the distance of the circles radius by clicking on the map
 	* A graphic will then be displayed on the map showing the circle you created
 	* If desired you can clear all graphics with the clear graphics button
 
-* Create Range Rings Interactively 
+### Create Range Rings Interactively 
 	* Choose the Range Rings tab on the Geodesy and Range Tool
 	* Start an interactive session by selecting the arrow icon next to the “Center Point” text box
 	* Choose the location of the Range Rings center by selecting the desired location on the map
@@ -104,7 +105,7 @@ Add-in provides the ability to easily and quickly create geodesy lines, circles,
 	* Press "Enter" key
 	* Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set
 
-* Create Range Rings Manually 
+### Create Range Rings Manually 
 	* Choose the Range Rings tab on the Geodesy and Range Tool
 	* Fill in the associated parameters for “Number of Rings”, “Ring Interval”, “Distance Units”, and “Number of Radials”
 	* Input the coordinates for the Range Rings center in the “Center Point” text box and select the Enter key on the keyboard
