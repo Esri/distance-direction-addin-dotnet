@@ -64,7 +64,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 				* Close customize mode
 				* Open tool by clicking the "Show Geodesy and Range" command you just added
 				* Dockable geodesy and range tool appears
-				* If you add this to a toolbar that you contstantly use the add-in will stay to get remove the add-in delete your Normal.MXT file [Delete your Normal.MXT file](https://geonet.esri.com/thread/78692)
+				* If you add this to a toolbar that you contstantly use the add-in will stay. To remove the add-in delete your [Normal.MXT](https://geonet.esri.com/thread/78692) file
 				
 ## Workflows
 
@@ -83,7 +83,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 	* Repeat until all desired graphics have been included. 
 
 ### Create a Line with a Range and Bearing
-	* Choose the type of line that you would like the create
+	* Choose the type of line that you would like to create
 	* Choose Bearing and Distance from the second drop down menu
 	* Input the length of the line and choose the unit type
 	* Input the azimuth or angle of the line
@@ -99,7 +99,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 	* Choose the Ellipse tab on the Geodesy and Range Tool
 	* Start an interactive session by selecting the arrow icon next to the “Center Point” text box
 	* Choose the location where you want the ellipse to be started from 
-	* Drag the cursor to the location where the major will end
+	* Drag the cursor to the location where the major axis will end
 	* Select the orientation angle of the major axis
 	* select the length of the minor axis
 	* Graphic(s) will then be displayed on the map showing the Ellipse you created based on the values of the parameters that were set
