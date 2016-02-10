@@ -1,6 +1,6 @@
 # geodesy-and-range-addin-dotnet
 
-Add-in provides the ability to create geodesic features such as lines, circles, ellipses and range rings.
+The add-in provides the ability to create geodesic features such as lines, circles, ellipses and range rings.
 
 ![Image of Geodesy and Range Addin](GeodesyAndRange.PNG) 
 
@@ -22,15 +22,16 @@ Add-in provides the ability to create geodesic features such as lines, circles, 
 
 ## Requirements
 
-### Development 
+### Developers 
 
 * Visual Studio 2013
 * ArcGIS Desktop SDK for .NET 10.3.1
 	* [ArcGIS Desktop for .NET Requirements](https://desktop.arcgis.com/en/desktop/latest/get-started/system-requirements/arcobjects-sdk-system-requirements.htm)
 
-### Desktop Users
+### ArcGIS for Desktop Users
 
 * [ArcGIS Desktop 10.3.1](http://desktop.arcgis.com/en/arcmap/10.3/get-started/system-requirements/arcgis-desktop-system-requirements.htm)
+
 ## Instructions
 
 ###New to Github
@@ -51,7 +52,7 @@ Add-in provides the ability to create geodesic features such as lines, circles, 
 	* Note : Assembly references are based on a default install of the SDK, you may have to update the references if you chose an alternate install option
 
 ## Desktop Users
-* Running
+* Running the add-in
 	* To run from a stand-alone deployment
 		* ArcMap
 			* Install the add-in from the application folder by double clicking the add-in
