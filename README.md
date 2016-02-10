@@ -2,7 +2,7 @@
 
 Add-in provides the ability to easily and quickly create geodesy lines, circles, ellipses and range rings.
 
-![Image of Geodesy and Range Addin](ScreenShot.PNG) 
+![Image of Geodesy and Range Addin](GeodesyAndRange.PNG) 
 
 ## Features
 
@@ -31,7 +31,7 @@ Add-in provides the ability to easily and quickly create geodesy lines, circles,
 ### Users
 
 * ArcGIS Desktop 10.3.1
-
+* [ArcGIS Desktop for .NET Requirements](http://desktop.arcgis.com/en/arcmap/10.3/get-started/system-requirements/arcgis-desktop-system-requirements.htm)
 ## Instructions
 
 ### General Help
@@ -55,7 +55,7 @@ Add-in provides the ability to easily and quickly create geodesy lines, circles,
 * Running
 	* To run from a stand-alone deployment
 		* ArcMap
-			* Install the add-in from the application folder by double clicking it
+			* Install the add-in from the application folder by double clicking the add-in
 			* Add the add-in command to a toolbar via menu option 
 				* "Customize -> Customize mode"
 				* Select "Commands" Tab
@@ -64,8 +64,9 @@ Add-in provides the ability to easily and quickly create geodesy lines, circles,
 				* Close customize mode
 				* Open tool by clicking the "Show Geodesy and Range" command you just added
 				* Dockable geodesy and range tool appears
+				* If you add this to a toolbar that you contstantly use the add-in will stay to get remove the add-in delete your Normal.MXT file [Delete your Normal.MXT file](https://geonet.esri.com/thread/78692)
 				
-## Usage
+## Workflows
 
 * Create Lines Interactively 
 	* Choose the Lines tab on the Geodesy and Range Tool
