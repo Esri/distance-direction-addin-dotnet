@@ -96,7 +96,14 @@ Add-in provides the ability to create geodesic features such as lines, circles, 
 	* Enter a starting point and the distance of the circles radius by clicking on the map
 	* A graphic will then be displayed on the map showing the circle you created
 	* If desired you can clear all graphics with the clear graphics button
-
+### Create Ellipses Interactively
+	* Choose the Ellipse tab on the Geodesy and Range Tool
+	* Start an interactive session by selecting the arrow icon next to the “Center Point” text box
+	* Choose the location where you want the ellipse to be started from 
+	* Drag the cursor to the location where the major will end
+	* Select the orientation angle of the major axis
+	* select the length of the minor axis
+	* Graphic(s) will then be displayed on the map showing the Ellipse you created based on the values of the parameters that were set
 ### Create Range Rings Interactively 
 	* Choose the Range Rings tab on the Geodesy and Range Tool
 	* Start an interactive session by selecting the arrow icon next to the “Center Point” text box
