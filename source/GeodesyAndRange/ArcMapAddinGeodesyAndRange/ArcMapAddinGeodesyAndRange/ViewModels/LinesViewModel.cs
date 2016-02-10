@@ -204,11 +204,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
         
-        private IPolyline CreatePolyline(IPoint startPoint, IPoint endPoint, bool IsFinal)
+        private IPolyline CreatePolyline()
         {
             try
             {
-                if (startPoint == null || endPoint == null)
+                if (Point1 == null || Point2 == null)
                     return null;
 
                 var construct = new Polyline() as IConstructGeodetic;
@@ -221,7 +221,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
 
-                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), startPoint, endPoint, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
 
                 var mxdoc = ArcMap.Application.Document as IMxDocument;
                 var av = mxdoc.FocusMap as IActiveView;
@@ -229,12 +229,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 UpdateDistance(construct as IGeometry);
                 UpdateAzimuth(construct as IGeometry);
 
-                if(IsFinal)
-                {
-                    AddGraphicToMap(construct as IGeometry);
-                    ResetPoints();
-                    Reset(false);
-                }
+                AddGraphicToMap(construct as IGeometry);
+                ResetPoints();
 
                 return construct as IPolyline;
             }
@@ -330,7 +326,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         internal override void CreateMapElement()
         {
-            CreatePolyline(Point1, Point2, true);
+            CreatePolyline();
+            Reset(false);
         }
 
         internal override void OnMouseMoveEvent(object obj)
@@ -343,19 +340,15 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (point == null)
                 return;
 
-            // dynamically update start point if not set yet
-            if (!HasPoint1)
-            {
-                Point1 = point;
-            }
-            else if (HasPoint1 && !HasPoint2)
-            {
-                Point2 = point;
-                CreatePolyline(Point1, Point2, false);
-            }
-
             if (LineFromType == LineFromTypes.BearingAndDistance)
                 return;
+
+            if (HasPoint1 && !HasPoint2)
+            {
+                // update azimuth from feedback
+                var polyline = GetPolylineFromFeedback(Point1, point);
+                UpdateAzimuth(polyline);
+            }
 
             base.OnMouseMoveEvent(obj);
         }

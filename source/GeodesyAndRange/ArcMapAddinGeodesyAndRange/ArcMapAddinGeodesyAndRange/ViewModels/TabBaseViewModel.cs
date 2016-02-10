@@ -622,7 +622,19 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             return type;
         }
+        internal double GetGeodeticLengthFromPolyline(IPolyline polyline)
+        {
+            if (polyline == null)
+                return 0.0;
 
+            var polycurvegeo = polyline as IPolycurveGeodetic;
+
+            var geodeticType = GetEsriGeodeticType();
+            var linearUnit = GetLinearUnit();
+            var geodeticLength = polycurvegeo.get_LengthGeodetic(geodeticType, linearUnit);
+
+            return geodeticLength;
+        }
         /// <summary>
         /// Gets the distance/lenght of a polyline
         /// </summary>
@@ -634,13 +646,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (polyline == null)
                 return;
 
-            var polycurvegeo = geometry as IPolycurveGeodetic;
-
-            var geodeticType = GetEsriGeodeticType();
-            var linearUnit = GetLinearUnit();
-            var geodeticLength = polycurvegeo.get_LengthGeodetic(geodeticType, linearUnit);
-
-            Distance = geodeticLength;
+            Distance = GetGeodeticLengthFromPolyline(polyline);
         }
         /// <summary>
         /// Handler for the mouse move event
@@ -657,11 +663,43 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (point == null)
                 return;
 
+            // dynamically update start point if not set yet
+            if (!HasPoint1)
+            {
+                Point1 = point;
+            }
+            else if (HasPoint1 && !HasPoint2)
+            {
+                Point2 = point;
+                // get distance from feedback
+                var polyline = GetPolylineFromFeedback(Point1, point);
+                UpdateDistance(polyline);
+            }
+
             // update feedback
             if (HasPoint1 && !HasPoint2)
             {
                 feedback.MoveTo(point);
             }
+        }
+        /// <summary>
+        /// Gets a polyline from the feedback object
+        /// startPoint is where it will restart from
+        /// endPoint is where you want it to end for the return of the polyline
+        /// </summary>
+        /// <param name="startPoint">startPoint is where it will restart from</param>
+        /// <param name="endPoint">endPoint is where you want it to end for the return of the polyline</param>
+        /// <returns></returns>
+        internal IPolyline GetPolylineFromFeedback(IPoint startPoint, IPoint endPoint)
+        {
+            if (feedback == null)
+                return null;
+
+            feedback.AddPoint(endPoint);
+            var polyline = feedback.Stop();
+            // restart feedback
+            feedback.Start(startPoint);
+            return polyline;
         }
 
         /// <summary>

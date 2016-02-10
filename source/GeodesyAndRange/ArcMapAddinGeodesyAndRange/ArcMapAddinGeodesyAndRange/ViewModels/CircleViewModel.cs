@@ -37,41 +37,17 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         #region Properties
+        
         public CircleFromTypes CircleType { get; set; }
 
-        //double distance = 0.0;
-        //public override double Distance
-        //{
-        //    get { return distance; }
-        //    set
-        //    {
-        //        distance = value;
-        //        DistanceString = string.Format("{0:0.00}", distance);
-        //        RaisePropertyChanged(() => Distance);
-        //        RaisePropertyChanged(() => DistanceString);
-        //    }
-        //}
-        string distanceString = String.Empty;
-        public override string DistanceString
-        {
-            get
-            {
-                return string.Format("{0:0.00}", Distance);
-            }
-            set
-            {
-                distanceString = value;
-            }
-        }
-
         #endregion
-
 
         #region Private Functions
 
         internal override void CreateMapElement()
         {
             CreateCircle();
+            Reset(false);
         }
         /// <summary>
         /// 
