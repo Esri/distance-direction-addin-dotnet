@@ -252,6 +252,17 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Axis.
         /// </summary>
+        public static string LabelOrientationGroup
+        {
+            get
+            {
+                return ResourceManager.GetString("LabelOrientationGroup", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Axis.
+        /// </summary>
         public static string LabelEllipseType
         {
             get
@@ -267,7 +278,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         {
             get
             {
-                return ResourceManager.GetString("LabelAxisGroup", resourceCulture);
+                return ResourceManager.GetString("LabelAxisUnits", resourceCulture);
             }
         }
         

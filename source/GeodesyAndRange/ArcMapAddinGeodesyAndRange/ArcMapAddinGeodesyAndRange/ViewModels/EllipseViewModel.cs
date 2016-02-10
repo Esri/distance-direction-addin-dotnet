@@ -46,6 +46,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         public EllipseTypes EllipseType { get; set; }
         public IPoint CenterPoint { get; set; }
         public string ElementTag { get; set; }
+        public IGeometry EllipseBuffer { get; set; }
 
         AzimuthTypes azimuthType = AzimuthTypes.Degrees;
         public AzimuthTypes AzimuthType
@@ -198,6 +199,27 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
         #endregion
 
+        #region Commands
+        // when someone hits the enter key, create geodetic graphic
+        internal override void OnEnterKeyCommand(object obj)
+        {
+            if (Distance == 0 || Point1 == null)
+            {
+                return;
+            }
+            if (ArcMap.Application.CurrentTool.Name != "Esri_ArcMapAddinGeodesyAndRange_MapPointTool")
+            {
+                SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+            }
+            if (Point2 == null)
+            {
+               
+            }
+            base.OnEnterKeyCommand(obj);
+        }
+        #endregion
+
+        #region Overriden Functions
         internal override void CreateMapElement()
         {
             if (Point1 == null || Point2 == null || Point3 == null)
@@ -226,11 +248,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             if (HasPoint1 && !HasPoint2)
             {
-                feedback.MoveTo(point);
+                feedback.MoveTo(point);                
             }
             else if (HasPoint1 && HasPoint2 && !HasPoint3)
             {
-                feedback.MoveTo(point);
+                if (IsWithin(point, EllipseBuffer))
+                {
+                    feedback.MoveTo(point);
+                }                
             }
         }
 
@@ -276,6 +301,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 Distance = GetDistance(line);
                 AddGraphicToMap(mxdoc.FocusMap, point as IGeometry, CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
                 AddGraphicToMap(mxdoc.FocusMap, line as IGeometry, CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
+
+                var before = LineDistanceType;              
+                EllipseBuffer = CreateBuffer(Point1, Distance);
+                AddGraphicToMap(mxdoc.FocusMap, EllipseBuffer as IGeometry, CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
             }
             else if (!HasPoint3)
             {
@@ -285,6 +314,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 var line = CreateGeodeticLine(Point1, Point3);
                 Distance2 = GetDistance(line);
+                if (Distance2 > Distance)
+                {
+                    line = CreateGeodeticLine(Point1, Point3, Distance);
+                    Distance2 = GetDistance(line);
+                }
                 AddGraphicToMap(mxdoc.FocusMap, point as IGeometry, CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
                 AddGraphicToMap(mxdoc.FocusMap, line as IGeometry, CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
             }
@@ -296,6 +330,19 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
+        internal override void Reset()
+        {
+            base.Reset();
+            HasPoint3 = false;
+            Point3 = null;
+
+            MajorAxisDistance = 0.0;
+            MinorAxisDistance = 0.0;
+            Azimuth = 0.0;
+        }
+        #endregion
+
+        #region Private Functions
         private void UpdateAzimuthFromTo(AzimuthTypes fromType, AzimuthTypes toType)
         {
             try
@@ -348,7 +395,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             return polycurvegeo.get_LengthGeodetic(geodeticType, linearUnit);
         }
 
-        public void AddGraphicToMap(IMap map, IGeometry geometry, IRgbColor rgbColor, IRgbColor outlineRgbColor)
+        private void AddGraphicToMap(IMap map, IGeometry geometry, IRgbColor rgbColor, IRgbColor outlineRgbColor)
         {
             var graphicsContainer = map as IGraphicsContainer;
             IElement element = null;
@@ -460,17 +507,29 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             return 0.0;
         }
 
-        private IPolyline CreateGeodeticLine(IPoint fromPoint, IPoint toPoint)
+        private IPolyline CreateGeodeticLine(IPoint fromPoint, IPoint toPoint, double distance = 0.0)
         {
             var construct = new Polyline() as IConstructGeodetic;
             if (construct == null)
             {
                 return null;
             }
-            construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), fromPoint, toPoint, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+            if (distance == 0)
+            {
+                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), fromPoint, toPoint, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+            }
+            else
+            {
+                var minorPolyline = new Polyline() as IPolyline;
+                minorPolyline.SpatialReference = Point1.SpatialReference;
+                minorPolyline.FromPoint = Point1;
+                minorPolyline.ToPoint = Point3;
+                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), fromPoint, GetLinearUnit(), distance, GetAzimuth(minorPolyline as IGeometry), 
+                    esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+            }
 
             return construct as IPolyline;
-        }
+        }        
 
         private IRgbColor CreateRGBColor(ElementColor color, int colorCode)
         {
@@ -493,6 +552,28 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             return rgbColor;
         }
 
+        private IGeometry CreateBuffer(IPoint centerPoint, double bufferSize)
+        {
+            var topoOp = centerPoint as ITopologicalOperator;
+            if (topoOp != null)
+            {
+                return topoOp.Buffer(bufferSize);
+            }
+            return null;
+        }
+
+        private bool IsWithin(IPoint checkPoint, IGeometry bufferGeom)
+        {
+            var rel = checkPoint as IRelationalOperator;
+            if (rel != null)
+            {
+                if (rel.Within(bufferGeom))
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
 
         private void DrawEllipse()
         {
@@ -505,31 +586,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 var majorPolyline = new Polyline() as IPolyline;
                 majorPolyline.SpatialReference = Point1.SpatialReference;
+                majorPolyline.FromPoint = Point1;
+                majorPolyline.ToPoint = Point2;
 
                 var minorPolyline = new Polyline() as IPolyline;
                 minorPolyline.SpatialReference = Point1.SpatialReference;
-
-                double majorAxis, minorAxis;
-                if (Distance > Distance2)
-                {
-                    majorAxis = Distance; minorAxis = Distance2;
-
-                    majorPolyline.FromPoint = Point1;
-                    majorPolyline.ToPoint = Point2;
-
-                    minorPolyline.FromPoint = Point1;
-                    minorPolyline.ToPoint = Point3;
-                }
-                else
-                {
-                    majorAxis = Distance2; minorAxis = Distance;
-
-                    majorPolyline.FromPoint = Point1;
-                    majorPolyline.ToPoint = Point3;
-
-                    minorPolyline.FromPoint = Point1;
-                    minorPolyline.ToPoint = Point2;
-                }
+                minorPolyline.FromPoint = Point1;
+                minorPolyline.ToPoint = Point3;
 
                 if (EllipseType == EllipseTypes.Semi)
                 {
@@ -538,37 +601,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 else
                 {
                     CenterPoint = new Point() as IPoint;
-                    minorPolyline.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, CenterPoint);
-
-                    Distance = GetDistance(CreateGeodeticLine(CenterPoint, Point2) as IGeometry);
-                    Distance2 = GetDistance(CreateGeodeticLine(CenterPoint, Point3) as IGeometry);
-
-                    if (Distance > Distance2)
-                    {
-                        majorAxis = Distance; minorAxis = Distance2;
-
-                        majorPolyline.FromPoint = CenterPoint;
-                        majorPolyline.ToPoint = Point2;
-
-                        minorPolyline.FromPoint = CenterPoint;
-                        minorPolyline.ToPoint = Point3;
-                    }
-                    else
-                    {
-                        majorAxis = Distance2; minorAxis = Distance;
-
-                        majorPolyline.FromPoint = CenterPoint;
-                        majorPolyline.ToPoint = Point3;
-
-                        minorPolyline.FromPoint = CenterPoint;
-                        minorPolyline.ToPoint = Point2;
-                    }
-
+                    minorPolyline.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, CenterPoint);                    
                 }
 
-                MajorAxisDistance = majorAxis;
-                MinorAxisDistance = minorAxis;
-
+                MajorAxisDistance = GetDistance(CreateGeodeticLine(CenterPoint, Point2) as IGeometry);
+                MinorAxisDistance = GetDistance(CreateGeodeticLine(CenterPoint, Point3) as IGeometry);
                 Azimuth = GetAzimuth(majorPolyline as IGeometry);
 
                 var ellipticArc = new Polyline() as IConstructGeodetic;
@@ -586,16 +623,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 Console.WriteLine(ex.Message);
             }
         }
-
-        internal override void Reset()
-        {
-            base.Reset();
-            HasPoint3 = false;
-            Point3 = null;
-
-            MajorAxisDistance = 0.0;
-            MinorAxisDistance = 0.0;
-            Azimuth = 0.0;
-        }
+        #endregion
     }
 }
