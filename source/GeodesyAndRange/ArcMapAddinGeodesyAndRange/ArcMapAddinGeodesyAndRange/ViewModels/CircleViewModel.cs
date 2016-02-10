@@ -39,18 +39,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #region Properties
         public CircleFromTypes CircleType { get; set; }
 
-        //double distance = 0.0;
-        //public override double Distance
-        //{
-        //    get { return distance; }
-        //    set
-        //    {
-        //        distance = value;
-        //        DistanceString = string.Format("{0:0.00}", distance);
-        //        RaisePropertyChanged(() => Distance);
-        //        RaisePropertyChanged(() => DistanceString);
-        //    }
-        //}
         string distanceString = String.Empty;
         public override string DistanceString
         {
@@ -60,15 +48,41 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
+                if (string.Equals(distanceString, value))
+                    return;
+
                 distanceString = value;
+
+                double d = 0.0;
+                if (double.TryParse(distanceString, out d))
+                {
+                    Distance = d;
+                }
             }
         }
-
         #endregion
 
+        #region Commands
+        // when someone hits the enter key, create geodetic graphic
+        internal override void OnEnterKeyCommand(object obj)
+        {
+            if (Distance == 0 || Point1 == null)
+            {
+                return;
+            }
+            if (ArcMap.Application.CurrentTool.Name != "Esri_ArcMapAddinGeodesyAndRange_MapPointTool") 
+            {
+                SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+            }
+            if (Point2 == null)
+            {
+                UpdateFeedback();
+            }
+            base.OnEnterKeyCommand(obj);
+        }
+        #endregion
 
         #region Private Functions
-
         internal override void CreateMapElement()
         {
             CreateCircle();
@@ -78,7 +92,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// </summary>
         private void CreateCircle()
         {
-            if (this.Point1 == null || this.Point2 == null)
+            if (Point1 == null && Point2 == null)
             {
                 return;
             }
@@ -86,8 +100,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             var polyLine = new Polyline() as IPolyline;
             polyLine.SpatialReference = Point1.SpatialReference;
             var ptCol = polyLine as IPointCollection;
-            ptCol.AddPoint(Point1);
-            ptCol.AddPoint(Point2);
+            ptCol.AddPoint(Point1); ptCol.AddPoint(Point2);
+
             if (CircleType == CircleFromTypes.Diameter)
             {
                 var area = polyLine.Envelope as IArea;
@@ -104,7 +118,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     ref hitSegmentIndex, ref isOnRightSide);
                 polyLine.FromPoint = this.Point1 = centroidPoint;
             }
-            this.UpdateDistance(polyLine as IGeometry);
+            UpdateDistance(polyLine as IGeometry);
 
             var construct = new Polyline() as IConstructGeodetic;
             if (construct != null)
@@ -116,9 +130,39 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     DistanceString = string.Format("{0:0.00}", (Distance / 1000.0));
                 }
+
+                Point2 = null; HasPoint2 = false;
+                ResetFeedback();
             }
         }
 
+        private void UpdateFeedback()
+        {
+            if (Point1 != null)
+            {
+                if (feedback == null)
+                {
+                    var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
+                    feedback.Start(Point1);
+                }
+
+                // now get second point from distance and bearing
+                var construct = new Polyline() as IConstructGeodetic;
+                if (construct == null)
+                    return;
+
+                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, 0.0, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+
+                var line = construct as IPolyline;
+
+                if (line.ToPoint != null)
+                {
+                    feedback.MoveTo(line.ToPoint);
+                    Point2 = line.ToPoint;                    
+                }
+            }
+        }
         #endregion
     }
 }
