@@ -256,7 +256,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 // update bearing
                 Azimuth = GetAzimuth(polyline);
                 // update feedback
-                feedback.MoveTo(point);   
+                FeedbackMoveTo(point); 
             }
             else if (HasPoint1 && HasPoint2 && !HasPoint3)
             {
@@ -278,7 +278,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     {
                         feedback.Symbol = FeedbackSymbol;
                     }                    
-                    feedback.MoveTo(point);
+                    FeedbackMoveTo(point);
                 }                
             }
         }
