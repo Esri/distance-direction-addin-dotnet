@@ -54,9 +54,13 @@
         <Label Content="{x:Static prop:Resources.LabelCenterPoint}"
                Grid.Row="2" Grid.ColumnSpan="3"/>
         <TextBox Height="Auto"
-                 IsReadOnly="True"
-                 Text="{Binding Path=Point1Formatted, Mode=OneWay}"
-                 Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,1,0,0" />
+                 Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}"
+                 Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,1,0,0">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
         <Button Command="{Binding ActivateToolCommand}"
                 Width="Auto" HorizontalAlignment="Left" 
                 Grid.Row="3" Grid.Column="2" 
@@ -67,9 +71,12 @@
                Grid.Row="4" Grid.ColumnSpan="3"/>
         <TextBox Height="22" 
                  Margin="0,2"
-                 IsReadOnly="True"
-                 Text="{Binding Path=DistanceString, Mode=OneWay}"
-                 Grid.Row="5" Grid.Column="0"/>
+                 Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged}"
+                 Grid.Row="5" Grid.Column="0">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
         <ComboBox x:Name="cmbLineDistanceType"
                   ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
                   SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
