@@ -71,7 +71,7 @@
                Grid.Row="4" Grid.ColumnSpan="3"/>
         <TextBox Height="22" 
                  Margin="0,2"
-                 Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                 Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged}"
                  Grid.Row="5" Grid.Column="0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />

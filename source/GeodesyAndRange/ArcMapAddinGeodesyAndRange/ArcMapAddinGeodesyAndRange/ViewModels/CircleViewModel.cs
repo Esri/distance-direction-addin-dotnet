@@ -38,28 +38,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
         public CircleFromTypes CircleType { get; set; }
-
-        string distanceString = String.Empty;
-        public override string DistanceString
-        {
-            get
-            {
-                return string.Format("{0:0.00}", Distance);
-            }
-            set
-            {
-                if (string.Equals(distanceString, value))
-                    return;
-
-                distanceString = value;
-
-                double d = 0.0;
-                if (double.TryParse(distanceString, out d))
-                {
-                    Distance = d;
-                }
-            }
-        }
         #endregion
 
         #region Commands
@@ -70,10 +48,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 return;
             }
-            if (ArcMap.Application.CurrentTool.Name != "Esri_ArcMapAddinGeodesyAndRange_MapPointTool") 
-            {
-                SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
-            }
             if (Point2 == null)
             {
                 UpdateFeedback();
@@ -83,8 +57,33 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #endregion
 
         #region Private Functions
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        internal override void OnMouseMoveEvent(object obj)
+        {
+            if (!IsActiveTab)
+                return;
+
+            var point = obj as IPoint;
+
+            if (point == null)
+                return;
+
+            if (HasPoint1 && !HasPoint2)
+            {
+                if (feedback == null)
+                {
+                    CreateFeedback(Point1, ((IMxDocument)ArcMap.Application.Document).FocusMap as IActiveView);
+                }
+                feedback.MoveTo(point);
+            }
+        }
+
         internal override void CreateMapElement()
         {
+            base.CreateMapElement();
             CreateCircle();
         }
         /// <summary>
@@ -120,19 +119,26 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             UpdateDistance(polyLine as IGeometry);
 
-            var construct = new Polyline() as IConstructGeodetic;
-            if (construct != null)
+            try
             {
-                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
-                this.AddGraphicToMap(construct as IGeometry);
-
-                if (CircleType == CircleFromTypes.Diameter)
+                var construct = new Polyline() as IConstructGeodetic;
+                if (construct != null)
                 {
-                    DistanceString = string.Format("{0:0.00}", (Distance / 1000.0));
-                }
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    this.AddGraphicToMap(construct as IGeometry);
 
-                Point2 = null; HasPoint2 = false;
-                ResetFeedback();
+                    if (CircleType == CircleFromTypes.Diameter)
+                    {
+                        DistanceString = string.Format("{0:0.00}", (Distance / 2));
+                    }
+
+                    Point2 = null; HasPoint2 = false;
+                    ResetFeedback();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
             }
         }
 
