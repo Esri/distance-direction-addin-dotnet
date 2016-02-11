@@ -204,7 +204,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 AddGraphicToMap(polyline);
             }
         }
-
+        
         private void CreatePolyline()
         {
             try
@@ -216,7 +216,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 if (construct == null)
                     return;
-                if(srf3 == null)
+
+                if (srf3 == null)
                     srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
 
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
@@ -230,10 +231,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 UpdateAzimuth(construct as IGeometry);
 
                 AddGraphicToMap(construct as IGeometry);
-
                 ResetPoints();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
@@ -325,12 +325,28 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             base.CreateMapElement();
             CreatePolyline();
+            Reset(false);
         }
 
         internal override void OnMouseMoveEvent(object obj)
         {
+            if (!IsActiveTab)
+                return;
+
+            var point = obj as IPoint;
+
+            if (point == null)
+                return;
+
             if (LineFromType == LineFromTypes.BearingAndDistance)
                 return;
+
+            if (HasPoint1 && !HasPoint2)
+            {
+                // update azimuth from feedback
+                var polyline = GetPolylineFromFeedback(Point1, point);
+                UpdateAzimuth(polyline);
+            }
 
             base.OnMouseMoveEvent(obj);
         }
@@ -379,9 +395,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             return Azimuth;
         }
 
-        internal override void Reset()
+        internal override void Reset(bool toolReset)
         {
-            base.Reset();
+            base.Reset(toolReset);
 
             Azimuth = 0.0;
         }

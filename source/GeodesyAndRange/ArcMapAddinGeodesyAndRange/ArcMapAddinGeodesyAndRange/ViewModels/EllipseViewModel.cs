@@ -227,6 +227,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
             }
             DrawEllipse();
+            Reset(false);
         }
 
         internal override void OnMouseMoveEvent(object obj)
@@ -246,6 +247,28 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 CreateFeedback(point, av);
             }
 
+            //dynamic updates
+            if (!HasPoint1)
+            {
+                Point1 = point;
+            }
+            else if (HasPoint1 && !HasPoint2)
+            {
+                // update major
+                var polyline = GetPolylineFromFeedback(Point1, point);
+                // get major distance from polyline
+                MajorAxisDistance = GetGeodeticLengthFromPolyline(polyline);
+                // update bearing
+                Azimuth = GetAzimuth(polyline);
+            }
+            else if (HasPoint1 && HasPoint2 && !HasPoint3)
+            {
+                var polyline = GetPolylineFromFeedback(Point1, point);
+                // get minor distance from polyline
+                MinorAxisDistance = GetGeodeticLengthFromPolyline(polyline);
+            }
+
+            //update feedback
             if (HasPoint1 && !HasPoint2)
             {
                 feedback.MoveTo(point);                
@@ -623,6 +646,20 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 Console.WriteLine(ex.Message);
             }
         }
+<<<<<<< HEAD
         #endregion
+=======
+
+        internal override void Reset(bool toolReset)
+        {
+            base.Reset(toolReset);
+            HasPoint3 = false;
+            Point3 = null;
+
+            MajorAxisDistance = 0.0;
+            MinorAxisDistance = 0.0;
+            Azimuth = 0.0;
+        }
+>>>>>>> refs/remotes/origin/dev
     }
 }
