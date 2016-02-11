@@ -61,30 +61,31 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// 
         /// </summary>
         /// <param name="obj"></param>
-        internal override void OnMouseMoveEvent(object obj)
-        {
-            if (!IsActiveTab)
-                return;
+        //internal override void OnMouseMoveEvent(object obj)
+        //{
+        //    if (!IsActiveTab)
+        //        return;
 
-            var point = obj as IPoint;
+        //    var point = obj as IPoint;
 
-            if (point == null)
-                return;
+        //    if (point == null)
+        //        return;
 
-            if (HasPoint1 && !HasPoint2)
-            {
-                if (feedback == null)
-                {
-                    CreateFeedback(Point1, ((IMxDocument)ArcMap.Application.Document).FocusMap as IActiveView);
-                }
-                feedback.MoveTo(point);
-            }
-        }
+        //    if (HasPoint1 && !HasPoint2)
+        //    {
+        //        if (feedback == null)
+        //        {
+        //            CreateFeedback(Point1, ((IMxDocument)ArcMap.Application.Document).FocusMap as IActiveView);
+        //        }
+        //        feedback.MoveTo(point);
+        //    }
+        //}
 
         internal override void CreateMapElement()
         {
             base.CreateMapElement();
             CreateCircle();
+            Reset(false);
         }
         /// <summary>
         /// 
@@ -121,14 +122,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             try
             {
-                var construct = new Polyline() as IConstructGeodetic;
-                if (construct != null)
-                {
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
-                    this.AddGraphicToMap(construct as IGeometry);
+            var construct = new Polyline() as IConstructGeodetic;
+            if (construct != null)
+            {
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                this.AddGraphicToMap(construct as IGeometry);
 
-                    if (CircleType == CircleFromTypes.Diameter)
-                    {
+                if (CircleType == CircleFromTypes.Diameter)
+                {
                         DistanceString = string.Format("{0:0.00}", (Distance / 2));
                     }
 
@@ -139,8 +140,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                }
             }
-        }
 
         private void UpdateFeedback()
         {
@@ -151,7 +152,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     var mxdoc = ArcMap.Application.Document as IMxDocument;
                     CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
                     feedback.Start(Point1);
-                }
+        }
 
                 // now get second point from distance and bearing
                 var construct = new Polyline() as IConstructGeodetic;
