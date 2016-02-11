@@ -38,6 +38,20 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
         public CircleFromTypes CircleType { get; set; }
+
+        public override string DistanceString
+        {
+            get
+            {
+                return base.DistanceString;
+            }
+            set
+            {
+                base.DistanceString = value;
+
+                UpdateFeedback();
+            }
+        }
         #endregion
 
         #region Commands
@@ -100,14 +114,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             try
             {
-            var construct = new Polyline() as IConstructGeodetic;
-            if (construct != null)
-            {
-                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
-                this.AddGraphicToMap(construct as IGeometry);
-
-                if (CircleType == CircleFromTypes.Diameter)
+                var construct = new Polyline() as IConstructGeodetic;
+                if (construct != null)
                 {
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    this.AddGraphicToMap(construct as IGeometry);
+
+                    if (CircleType == CircleFromTypes.Diameter)
+                    {
                         DistanceString = string.Format("{0:0.00}", (Distance / 2));
                     }
 
@@ -118,8 +132,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                }
             }
+        }
 
         private void UpdateFeedback()
         {
@@ -130,7 +144,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     var mxdoc = ArcMap.Application.Document as IMxDocument;
                     CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
                     feedback.Start(Point1);
-        }
+                }
 
                 // now get second point from distance and bearing
                 var construct = new Polyline() as IConstructGeodetic;
@@ -143,7 +157,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 if (line.ToPoint != null)
                 {
-                    feedback.MoveTo(line.ToPoint);
+                    FeedbackMoveTo(line.ToPoint);
                     Point2 = line.ToPoint;                    
                 }
             }
