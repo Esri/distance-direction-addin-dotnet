@@ -204,21 +204,25 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 AddGraphicToMap(polyline);
             }
         }
-        
-        private IPolyline CreatePolyline()
+
+        private void CreatePolyline()
         {
             try
             {
                 if (Point1 == null || Point2 == null)
-                    return null;
+                    return;
 
                 var construct = new Polyline() as IConstructGeodetic;
 
                 if (construct == null)
-                    return null;
+                    return;
 
                 if (srf3 == null)
-                    srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+                {
+                    // if you don't use the activator, you will get exceptions
+                    Type srType = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
+                    srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
+                }
 
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
 
@@ -232,15 +236,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 AddGraphicToMap(construct as IGeometry);
                 ResetPoints();
-
-                return construct as IPolyline;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
-
-            return null;
         }
 
         private void UpdateAzimuth(IGeometry geometry)
