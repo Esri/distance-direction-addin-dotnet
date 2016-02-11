@@ -142,7 +142,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     if(HasPoint2 && Point2 != null)
                     {
                         feedback.MoveTo(Point2);
-                }
+                    }
                 }
                 else 
                 {
@@ -188,21 +188,21 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 var point = GetPointFromString(value);
                 if (point != null)
                 {
-                    ResetFeedback();
                     point2Formatted = value;
                     HasPoint2 = true;
                     Point2 = point;
+                    var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    var av = mxdoc.FocusMap as IActiveView;
+                    Point2.Project(mxdoc.FocusMap.SpatialReference);
 
                     if (feedback != null)
                     {
+                        // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
                         feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
                     }
                     else if (HasPoint1)
                     {
                         // lets try feedback
-                        var mxdoc = ArcMap.Application.Document as IMxDocument;
-                        var av = mxdoc.FocusMap as IActiveView;
-                        Point2.Project(mxdoc.FocusMap.SpatialReference);
                         CreateFeedback(Point1, av);
                         feedback.Start(Point1);
                         // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
