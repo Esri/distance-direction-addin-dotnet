@@ -195,6 +195,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             else
             {
+                ClearTempGraphics();
                 // Bearing and Distance
                 UpdateFeedback();
                 feedback.AddPoint(Point2);
@@ -326,6 +327,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         internal override void CreateMapElement()
         {
+            base.CreateMapElement();
             CreatePolyline();
             Reset(false);
         }

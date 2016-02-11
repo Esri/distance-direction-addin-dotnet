@@ -51,6 +51,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
 
+        // lists to store GUIDs of graphics, temp feedback and map graphics
+        private static List<string> TempGraphicsList = new List<string>();
+        private static List<string> MapGraphicsList = new List<string>();
+
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
         internal INewLineFeedback feedback = null;
@@ -289,22 +293,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <summary>
         /// Method is called when a user pressed the "Enter" key or when a second point is created for a line from mouse clicks
         /// Derived class must override this method in order to create map elements
+        /// Clears temp graphics by default
         /// </summary>
         internal virtual void CreateMapElement()
         {
-            throw new NotImplementedException();
+            ClearTempGraphics();
         }
 
         #region Private Event Functions
 
         /// <summary>
         /// Clears all the graphics from the maps graphic container
+        /// Inlucdes temp and map graphics
+        /// Only removes temp and map graphics that were created by this add-in
         /// </summary>
         /// <param name="obj"></param>
         private void OnClearGraphics(object obj)
         {
-            //HasPoint1 = HasPoint2 = false;
-
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             if (mxdoc == null)
                 return;
@@ -315,9 +320,65 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (gc == null)
                 return;
 
-            gc.DeleteAllElements();
+            RemoveGraphics(gc, TempGraphicsList);
+            RemoveGraphics(gc, MapGraphicsList);
+            
+            //gc.DeleteAllElements();
             av.Refresh();
         }
+
+        /// <summary>
+        /// Method to clear all temp graphics
+        /// </summary>
+        internal void ClearTempGraphics()
+        {
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            if (mxdoc == null)
+                return;
+            var av = mxdoc.FocusMap as IActiveView;
+            if (av == null)
+                return;
+            var gc = av as IGraphicsContainer;
+            if (gc == null)
+                return;
+
+            RemoveGraphics(gc, TempGraphicsList);
+
+            av.Refresh();
+        }
+        /// <summary>
+        /// Method used to remove graphics from the graphics container
+        /// Elements are tagged with a GUID on the IElementProperties.Name property
+        /// </summary>
+        /// <param name="gc">map graphics container</param>
+        /// <param name="list">list of GUIDs to remove</param>
+        private void RemoveGraphics(IGraphicsContainer gc, List<string> list)
+        {
+            if (gc == null || !list.Any())
+                return;
+
+            var elementList = new List<IElement>();
+            gc.Reset();
+            var element = gc.Next();
+            while (element != null)
+            {
+                var eleProps = element as IElementProperties;
+                if (list.Contains(eleProps.Name))
+                {
+                    elementList.Add(element);
+                }
+                element = gc.Next();
+            }
+
+            foreach (var ele in elementList)
+            {
+                gc.DeleteElement(ele);
+            }
+
+            list.Clear();
+            elementList.Clear();
+        }
+
         /// <summary>
         /// Activates the map tool to get map points from mouse clicks/movement
         /// </summary>
@@ -356,7 +417,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
-                
+
+                AddGraphicToMap(Point1, true);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -470,35 +532,69 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom)
+        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
+            IElement element = null;
+            ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
+            rgbColor.Red = 255;
+            ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
+            double width = 2.0;
 
             geom.Project(ArcMap.Document.FocusMap.SpatialReference);
 
-            var pc = geom as IPolycurve;
+            if(geom.GeometryType == esriGeometryType.esriGeometryPoint)
+            {
+                // Marker symbols
+                var simpleMarkerSymbol = new SimpleMarkerSymbol() as ISimpleMarkerSymbol;
+                simpleMarkerSymbol.Color = rgbColor;
+                simpleMarkerSymbol.Outline = true;
+                simpleMarkerSymbol.OutlineColor = rgbColor;
+                simpleMarkerSymbol.Size = 5;
+                simpleMarkerSymbol.Style = esriSimpleMarkerStyle.esriSMSCircle;
 
-            if (pc != null)
+                var markerElement = new MarkerElement() as IMarkerElement;
+                markerElement.Symbol = simpleMarkerSymbol;
+                element = markerElement as IElement;
+            }
+            else if(geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
                 // create graphic then add to map
                 var le = new LineElementClass() as ILineElement;
-                var element = le as IElement;
-                element.Geometry = geom;
-                ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
-                rgbColor.Red = 255;
+                element = le as IElement;
 
-                ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
                 var lineSymbol = new SimpleLineSymbolClass();
                 lineSymbol.Color = color;
-                lineSymbol.Width = 2;
-                var mxdoc = ArcMap.Application.Document as IMxDocument;
-                var av = mxdoc.FocusMap as IActiveView;
-                var gc = av as IGraphicsContainer;
-                gc.AddElement(element, 0);
-
-                av.Refresh();
+                lineSymbol.Width = width;
             }
+
+            if (element == null)
+                return;
+
+            element.Geometry = geom;
+
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxdoc.FocusMap as IActiveView;
+            var gc = av as IGraphicsContainer;
+
+            // store guid
+            var eprop = element as IElementProperties;
+            eprop.Name = Guid.NewGuid().ToString();
+            
+            if (IsTempGraphic)
+                TempGraphicsList.Add(eprop.Name);
+            else
+                MapGraphicsList.Add(eprop.Name);
+
+            gc.AddElement(element, 0);
+
+            //refresh map
+            av.Refresh();
+        }
+        internal void AddGraphicToMap(IGeometry geom)
+        {
+            AddGraphicToMap(geom, false);
         }
         internal ISpatialReferenceFactory3 srf3 = null;
         /// <summary>

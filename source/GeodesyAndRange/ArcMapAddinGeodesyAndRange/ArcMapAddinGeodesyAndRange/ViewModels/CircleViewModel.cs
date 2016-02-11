@@ -61,6 +61,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         internal override void CreateMapElement()
         {
+            base.CreateMapElement();
             CreateCircle();
             Reset(false);
         }
