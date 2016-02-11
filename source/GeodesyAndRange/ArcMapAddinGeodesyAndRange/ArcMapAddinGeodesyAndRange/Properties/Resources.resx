@@ -217,13 +217,13 @@
     <value>Interval Between Rings</value>
   </data>
   <data name="LabelMajorAxis" xml:space="preserve">
-    <value>Axis</value>
+    <value>Major</value>
   </data>
   <data name="LabelMapPoint" xml:space="preserve">
     <value>Map Point</value>
   </data>
   <data name="LabelMinorAxis" xml:space="preserve">
-    <value>Axis</value>
+    <value>Minor</value>
   </data>
   <data name="LabelNumberOfRadials" xml:space="preserve">
     <value>Number of Radials</value>

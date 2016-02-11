@@ -149,8 +149,7 @@
                 <ComboBox x:Name="cmbOrientationAngleUnits"
                           ItemsSource="{Binding Source={StaticResource azimuthData}}" 
                           SelectedItem="{Binding Path=AzimuthType, Mode=TwoWay}" 
-                          Grid.Row="3" Grid.Column="0"
-                  Height="32"  />
+                          Grid.Row="3" Grid.Column="0"  />
             </Grid>
         </GroupBox>
         <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
