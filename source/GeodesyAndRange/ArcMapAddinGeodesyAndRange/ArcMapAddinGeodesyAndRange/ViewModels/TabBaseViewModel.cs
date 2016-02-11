@@ -133,6 +133,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     var av = mxdoc.FocusMap as IActiveView;
                     CreateFeedback(point, av);
                     feedback.Start(point);
+
+                    if(HasPoint2 && Point2 != null)
+                    {
+                        feedback.MoveTo(Point2);
+                    }
                 }
                 else 
                 {
@@ -178,9 +183,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 var point = GetPointFromString(value);
                 if (point != null)
                 {
+                    ResetFeedback();
                     point2Formatted = value;
                     HasPoint2 = true;
                     Point2 = point;
+                    if (feedback != null)
+                    {
+                        feedback.MoveTo(new Point(){X=point.X, Y=point.Y, SpatialReference=point.SpatialReference});
+                    }
+                    else if(HasPoint1)
+                    {
+                        // lets try feedback
+                        var mxdoc = ArcMap.Application.Document as IMxDocument;
+                        var av = mxdoc.FocusMap as IActiveView;
+                        CreateFeedback(Point1, av);
+                        feedback.Start(Point1);
+                        feedback.MoveTo(Point2);
+                    }
                 }
                 else
                 {
@@ -667,6 +686,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="av">The current active view</param>
         internal void CreateFeedback(IPoint point, IActiveView av)
         {
+            ResetFeedback();
             feedback = new NewLineFeedback();
             var geoFeedback = feedback as IGeodeticLineFeedback;
             geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
