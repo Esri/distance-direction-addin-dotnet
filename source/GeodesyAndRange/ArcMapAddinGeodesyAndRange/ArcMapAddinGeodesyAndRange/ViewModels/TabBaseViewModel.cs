@@ -107,6 +107,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 // return a formatted first point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point1Formatted))
                 {
+                    if (Point1 == null)
+                        return string.Empty;
+
                     // only format if the Point1 data was generated from a mouse click
                     return string.Format("{0:0.0#####} {1:0.0#####}", Point1.Y, Point1.X);
                 }
@@ -129,19 +132,22 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 var point = GetPointFromString(value);
                 if(point != null)
                 {
+                    // clear temp graphics
+                    ClearTempGraphics();
                     point1Formatted = value;
                     HasPoint1 = true;
                     Point1 = point;
+                    AddGraphicToMap(Point1, true);
                     // lets try feedback
                     var mxdoc = ArcMap.Application.Document as IMxDocument;
                     var av = mxdoc.FocusMap as IActiveView;
                     point.Project(mxdoc.FocusMap.SpatialReference);
                     CreateFeedback(point, av);
                     feedback.Start(point);
-
-                    if(HasPoint2 && Point2 != null)
+                    if(Point2 != null)
                     {
-                        feedback.MoveTo(Point2);
+                        UpdateDistance(GetPolylineFromFeedback(Point1, Point2));
+                        FeedbackMoveTo(Point2);
                     }
                 }
                 else 
@@ -167,6 +173,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 // return a formatted second point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point2Formatted))
                 {
+                    if (Point2 == null)
+                        return string.Empty;
+
                     // only format if the Point2 data was generated from a mouse click
                     return string.Format("{0:0.0#####} {1:0.0#####}", Point2.Y, Point2.X);
                 }
@@ -189,25 +198,27 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 if (point != null)
                 {
                     point2Formatted = value;
-                    HasPoint2 = true;
+                    //HasPoint2 = true;
                     Point2 = point;
                     var mxdoc = ArcMap.Application.Document as IMxDocument;
                     var av = mxdoc.FocusMap as IActiveView;
                     Point2.Project(mxdoc.FocusMap.SpatialReference);
 
-                    if (feedback != null)
-                    {
-                        // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
-                        feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
-                    }
-                    else if (HasPoint1)
+                    //if (feedback != null)
+                    //{
+                    //    // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
+                    //    FeedbackMoveTo(point);
+                    //}
+                    if (HasPoint1)
                     {
                         // lets try feedback
                         CreateFeedback(Point1, av);
                         feedback.Start(Point1);
+                        UpdateDistance(GetPolylineFromFeedback(Point1, Point2));
                         // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
-                        feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
+                        FeedbackMoveTo(point);
                     }
+
                 }
                 else
                 {
@@ -437,11 +448,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             if (!HasPoint1)
             {
+                // clear temp graphics
+                ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                //AddGraphicToMap(Point1, true);
+                AddGraphicToMap(Point1, true);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -505,7 +518,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             if (toolReset)
             {
-            DeactivateTool("Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+                DeactivateTool("Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
             }
 
             ResetPoints();
@@ -627,8 +640,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal ILinearUnit GetLinearUnit()
         {
             int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
-            if(srf3 == null)
-                srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+             if (srf3 == null)
+            {
+                Type srType = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
+                srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
+            }
 
             switch (LineDistanceType)
             {
@@ -798,7 +814,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             // update feedback
             if (HasPoint1 && !HasPoint2)
             {
-                feedback.MoveTo(point);
+                FeedbackMoveTo(point);
             }
         }
         /// <summary>
@@ -882,6 +898,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             try { cn.PutCoordsFromGeoRef(coordinate); return point; } catch { }
 
             return null;
+        }
+        /// <summary>
+        /// Method to use when you need to move a feedback line to a point
+        /// This forces a new point to be used, sometimes this method projects the point to a different spatial reference
+        /// </summary>
+        /// <param name="point"></param>
+        internal void FeedbackMoveTo(IPoint point)
+        {
+            if (feedback == null || point == null)
+                return;
+
+            feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
         }
         #endregion Private Functions
 

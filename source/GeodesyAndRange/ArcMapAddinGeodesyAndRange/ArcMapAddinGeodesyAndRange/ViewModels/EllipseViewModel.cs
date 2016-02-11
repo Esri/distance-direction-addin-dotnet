@@ -249,11 +249,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             //update feedback
             if (HasPoint1 && !HasPoint2)
             {
-                feedback.MoveTo(point);
+                FeedbackMoveTo(point);
             }
             else if (HasPoint1 && HasPoint2 && !HasPoint3)
             {
-                feedback.MoveTo(point);
+                FeedbackMoveTo(point);
             }
         }
 

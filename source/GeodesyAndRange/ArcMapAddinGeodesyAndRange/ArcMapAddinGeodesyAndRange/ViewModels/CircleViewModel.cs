@@ -38,6 +38,20 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
         public CircleFromTypes CircleType { get; set; }
+
+        public override string DistanceString
+        {
+            get
+            {
+                return base.DistanceString;
+            }
+            set
+            {
+                base.DistanceString = value;
+
+                UpdateFeedback();
+            }
+        }
         #endregion
 
         #region Commands
@@ -143,7 +157,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 if (line.ToPoint != null)
                 {
-                    feedback.MoveTo(line.ToPoint);
+                    FeedbackMoveTo(line.ToPoint);
                     Point2 = line.ToPoint;                    
                 }
             }

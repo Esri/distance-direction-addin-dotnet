@@ -383,7 +383,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 if (line.ToPoint != null)
                 {
-                    feedback.MoveTo(line.ToPoint);
+                    FeedbackMoveTo(line.ToPoint);
                     Point2 = line.ToPoint;
                 }
             }
