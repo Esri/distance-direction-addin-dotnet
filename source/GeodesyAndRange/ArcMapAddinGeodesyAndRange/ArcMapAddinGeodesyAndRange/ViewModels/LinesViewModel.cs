@@ -104,37 +104,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
-        string distanceString = string.Empty;
-        public override string DistanceString 
-        {
-            get { return distanceString; }
-            set
-            {
-                // lets avoid an infinite loop here
-                if (string.Equals(distanceString, value))
-                    return;
-
-                distanceString = value;
-                if(LineFromType == LineFromTypes.BearingAndDistance)
-                {
-                    try
-                    {
-                        // update distance
-                        double d = 0.0;
-                        if (double.TryParse(distanceString, out d))
-                        {
-                            Distance = d;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex);
-                    }
-                }
-            }
-        }
-        double azimuth = 0.0;
-        public double Azimuth
+        double? azimuth = 0.0;
+        public double? Azimuth
         {
             get { return azimuth; }
             set
@@ -142,13 +113,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
 
-                if (LineFromType == LineFromTypes.BearingAndDistance)
-                {
-                    // update feedback
-                    UpdateFeedback();
-                }
+                if (!azimuth.HasValue)
+                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
 
-                AzimuthString = azimuth.ToString("N");
+                // update feedback
+                UpdateFeedback();
+
+                AzimuthString = azimuth.Value.ToString("N");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }
@@ -165,20 +136,29 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 azimuthString = value;
                 if(LineFromType == LineFromTypes.BearingAndDistance)
                 {
-                    try
+                    // update azimuth
+                    double d = 0.0;
+                    if (double.TryParse(azimuthString, out d))
                     {
-                        // update azimuth
-                        double d = 0.0;
-                        if(double.TryParse(azimuthString, out d))
-                        {
-                            Azimuth = d;
-                        }
+                        Azimuth = d;
                     }
-                    catch(Exception ex)
+                    else
                     {
-                        Console.WriteLine(ex);
+                        Azimuth = null;
+                        throw new ArgumentException(Properties.Resources.AEInvalidInput);
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// On top of the base class we need to make sure we have an azimuth
+        /// </summary>
+        public override bool CanCreateElement
+        {
+            get
+            {
+                return (Azimuth.HasValue && base.CanCreateElement);
             }
         }
 
@@ -189,6 +169,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         // when someone hits the enter key, create geodetic graphic
         internal override void OnEnterKeyCommand(object obj)
         {
+            if (!CanCreateElement)
+                return;
+
             if(LineFromType == LineFromTypes.Points)
             {
                 base.OnEnterKeyCommand(obj);
@@ -285,7 +268,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             try
             {
-                double angle = Azimuth;
+                double angle = Azimuth.GetValueOrDefault();
 
                 if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Mils)
                     angle *= 17.777777778;
@@ -317,8 +300,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             // Bearing and Distance Mode
             if(LineFromType == LineFromTypes.BearingAndDistance)
             {
+                ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
+                AddGraphicToMap(Point1, true);
                 return;
             }
 
@@ -327,6 +312,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         internal override void CreateMapElement()
         {
+            if (!CanCreateElement)
+                return;
+
             base.CreateMapElement();
             CreatePolyline();
             Reset(false);
@@ -393,10 +381,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             if(LineAzimuthType == AzimuthTypes.Mils)
             {
-                return Azimuth * 0.05625;
+                return Azimuth.GetValueOrDefault() * 0.05625;
             }
 
-            return Azimuth;
+            return Azimuth.GetValueOrDefault();
         }
 
         internal override void Reset(bool toolReset)

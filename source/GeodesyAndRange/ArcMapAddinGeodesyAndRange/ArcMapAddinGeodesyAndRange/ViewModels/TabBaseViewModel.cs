@@ -71,6 +71,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
+                // do not add anything to the map from here
                 point1 = value;
                 RaisePropertyChanged(() => Point1);
                 RaisePropertyChanged(() => Point1Formatted);
@@ -306,6 +307,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     Distance = d;
                 }
+                else
+                {
+                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                }
             }
         }
 
@@ -313,6 +318,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// Property for the type of geodesy line
         /// </summary>
         public LineTypes LineType { get; set; }
+
+        /// <summary>
+        /// Property used to test if there is enough info to create a line map element
+        /// </summary>
+        public virtual bool CanCreateElement
+        {
+            get
+            {
+                return (Point1 != null && Point2 != null);
+            }
+        }
+
 
         #endregion Properties
 
@@ -428,6 +445,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="obj"></param>
         internal virtual void OnEnterKeyCommand(object obj)
         {
+            if (!CanCreateElement)
+                return;
+
             CreateMapElement();
         }
         /// <summary>

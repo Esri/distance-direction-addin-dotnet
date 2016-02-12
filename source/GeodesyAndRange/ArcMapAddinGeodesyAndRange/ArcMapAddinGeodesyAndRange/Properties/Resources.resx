@@ -120,6 +120,9 @@
   <data name="AEInvalidCoordinate" xml:space="preserve">
     <value>Invalid coordinate</value>
   </data>
+  <data name="AEInvalidInput" xml:space="preserve">
+    <value>Invalid input</value>
+  </data>
   <data name="AEMustBePositive" xml:space="preserve">
     <value>The number must be positive</value>
   </data>
