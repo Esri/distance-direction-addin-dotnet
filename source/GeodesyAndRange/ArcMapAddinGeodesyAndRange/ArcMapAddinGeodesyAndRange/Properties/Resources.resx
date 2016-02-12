@@ -177,6 +177,9 @@
   <data name="EnumSurveyFoot" xml:space="preserve">
     <value>US Survey Foot</value>
   </data>
+  <data name="LabelAngle" xml:space="preserve">
+    <value>Angle</value>
+  </data>
   <data name="LabelAxisGroup" xml:space="preserve">
     <value>Axis</value>
   </data>
