@@ -98,10 +98,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 return;
             }
-            if (Point2 == null)
-            {
-                UpdateFeedback();
-            }
+
             base.OnEnterKeyCommand(obj);
         }
         #endregion
@@ -130,22 +127,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             var ptCol = polyLine as IPointCollection;
             ptCol.AddPoint(Point1); ptCol.AddPoint(Point2);
 
-            //if (CircleType == CircleFromTypes.Diameter)
-            //{
-            //    var area = polyLine.Envelope as IArea;
-            //    var queryPoint = area.Centroid as IPoint;
-            //    var hitTest = polyLine as IHitTest;
-            //    var centroidPoint = new Point() as IPoint;
-            //    var distance = 0.0;
-            //    var hitPartIndex = 0;
-            //    var hitSegmentIndex = 0;
-            //    var isOnRightSide = false;
-            //    var isHit = hitTest.HitTest(queryPoint, 2.0,
-            //        esriGeometryHitPartType.esriGeometryPartMidpoint,
-            //        centroidPoint, ref distance, ref hitPartIndex,
-            //        ref hitSegmentIndex, ref isOnRightSide);
-            //    polyLine.FromPoint = this.Point1 = centroidPoint;
-            //}
             UpdateDistance(polyLine as IGeometry);
 
             try
@@ -155,13 +136,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
                     this.AddGraphicToMap(construct as IGeometry);
-
-                    //if (CircleType == CircleFromTypes.Diameter)
-                    //{
-                    //    DistanceString = string.Format("{0:0.00}", (Distance / 2));
-                    //}
-
-                    Point2 = null; HasPoint2 = false;
+                    Point2 = null; 
+                    HasPoint2 = false;
                     ResetFeedback();
                 }
             }
@@ -194,7 +170,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 if (line.ToPoint != null)
                 {
                     FeedbackMoveTo(line.ToPoint);
-                    Point2 = line.ToPoint;                    
+                    Point2 = line.ToPoint;
                 }
             }
         }
