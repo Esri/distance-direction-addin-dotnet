@@ -49,44 +49,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         public string ElementTag { get; set; }
         public ISymbol FeedbackSymbol { get; set; }
 
-        /// <summary>
-        /// Distance is always the radius
-        /// Update DistanceString for user
-        /// Do nothing for Radius mode, double the radius for Diameter mode
-        /// </summary>
-        public override string DistanceString
-        {
-            get
-            {
-                if (EllipseType == EllipseTypes.Full)
-                {
-                    return (Distance * 2.0).ToString("N");
-                }
-
-                return base.DistanceString;
-            }
-            set
-            {
-                // lets avoid an infinite loop here
-                if (string.Equals(base.DistanceString, value))
-                    return;
-
-                // divide the manual input by 2
-                double d = 0.0;
-                if (double.TryParse(value, out d))
-                {
-                    if (EllipseType == EllipseTypes.Full)
-                        d /= 2.0;
-
-                    Distance = d;
-
-                    var axisPt = new Point() as IPoint;
-                    UpdateFeedback(Point1, MajorAxisDistance, ref axisPt);
-                    Point2 = axisPt;
-                }
-            }
-        }
-
         AzimuthTypes azimuthType = AzimuthTypes.Degrees;
         public AzimuthTypes AzimuthType
         {
@@ -139,14 +101,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 minorAxisDistance = value;
 
-                // update feedback
-                var axisPt = new Point() as IPoint;
-                UpdateFeedback(Point1, minorAxisDistance, ref axisPt);
-                Point3 = axisPt;
-
                 MinorAxisDistanceString = string.Format("{0:0.00}", minorAxisDistance);
                 RaisePropertyChanged(() => MinorAxisDistance);
-                RaisePropertyChanged(() => MinorAxisDistanceString);
+                RaisePropertyChanged(() => MinorAxisDistanceString);                
             }
         }
 
@@ -170,6 +127,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     {
                         MinorAxisDistance = d;
                         RaisePropertyChanged(() => MinorAxisDistance);
+
+                        // update feedback
+                        //Point3 = UpdateFeedback(Point1, minorAxisDistance);
                     }
                 }
                 catch (Exception ex)
@@ -190,10 +150,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 majorAxisDistance = value;
 
-                // update feedback
-                var axisPt = new Point() as IPoint;
-                UpdateFeedback(Point1, majorAxisDistance, ref axisPt);
-                Point2 = axisPt;
+                Point2 = UpdateFeedback(Point1, MajorAxisDistance);
 
                 MajorAxisDistanceString = string.Format("{0:0.00}", majorAxisDistance);
                 RaisePropertyChanged(() => MajorAxisDistance);
@@ -206,6 +163,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             get
             {
+                if (EllipseType == EllipseTypes.Full)
+                {
+                    return (MajorAxisDistance * 2.0).ToString("N");
+                }
                 return string.Format("{0:0.00}", MajorAxisDistance);
             }
             set
@@ -218,9 +179,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     double d = 0.0;
                     if (double.TryParse(majorAxisDistanceString, out d))
-                    {
+                    {                            
                         MajorAxisDistance = d;
-                        RaisePropertyChanged(() => MajorAxisDistance);
                     }
                 }
                 catch (Exception ex)
@@ -265,9 +225,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 RaisePropertyChanged(() => Azimuth);
 
                 // update feedback
-                var axisPt = new Point() as IPoint;
-                UpdateFeedback(Point1, MajorAxisDistance, ref axisPt);
-                Point2 = axisPt;
+                Point2 = UpdateFeedback(Point1, MajorAxisDistance);
 
                 AzimuthString = azimuth.ToString("N");
                 RaisePropertyChanged(() => AzimuthString);
@@ -312,9 +270,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             if (Point3 == null)
             {
-                var axisPt = new Point() as IPoint;
-                UpdateFeedback(Point1, MinorAxisDistance, ref axisPt);
-                Point3 = axisPt;
+                Point3 = UpdateFeedback(Point1, MinorAxisDistance);
             }
             base.OnEnterKeyCommand(obj);
         }
@@ -383,7 +339,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     if (FeedbackSymbol != null)
                     {
                         feedback.Symbol = FeedbackSymbol;
-                    }                    
+                    }
                     FeedbackMoveTo(point);
                 }                
             }
@@ -472,7 +428,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #endregion
 
         #region Private Functions
-        private void UpdateFeedback(IPoint centerPoint, double axisTypeDistance, ref IPoint axisPoint)
+        private IPoint UpdateFeedback(IPoint centerPoint, double axisTypeDistance)
         {
             if (centerPoint != null && axisTypeDistance > 0.0)
             {
@@ -486,7 +442,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 // now get second point from distance and bearing
                 var construct = new Polyline() as IConstructGeodetic;
                 if (construct == null)
-                    return;
+                {
+                    return null;
+                }                    
 
                 construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), centerPoint, GetLinearUnit(), axisTypeDistance, 
                     GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
@@ -496,9 +454,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 if (line.ToPoint != null)
                 {
                     FeedbackMoveTo(line.ToPoint);
-                    axisPoint = line.ToPoint;
+                    return line.ToPoint;
                 }
             }
+            return null;
         }
 
         private void UpdateAzimuthFromTo(AzimuthTypes fromType, AzimuthTypes toType)
@@ -763,33 +722,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     ElementTag, esriGeometryType.esriGeometryPolyline);
                 RemoveGraphics(((IMxDocument)ArcMap.Application.Document).ActivatedView.GraphicsContainer, 
                     ElementTag, esriGeometryType.esriGeometryPoint);
-
-                var majorPolyline = new Polyline() as IPolyline;
-                majorPolyline.SpatialReference = Point1.SpatialReference;
-                majorPolyline.FromPoint = Point1;
-                majorPolyline.ToPoint = Point2;
-
-                var minorPolyline = new Polyline() as IPolyline;
-                minorPolyline.SpatialReference = Point1.SpatialReference;
-                minorPolyline.FromPoint = Point1;
-                minorPolyline.ToPoint = Point3;
-
-                if (EllipseType == EllipseTypes.Semi)
-                {
-                    CenterPoint = Point1;
-                }
-                else
-                {
-                    CenterPoint = new Point() as IPoint;
-                    minorPolyline.QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, true, CenterPoint);                    
-                }
-
-                MajorAxisDistance = GetDistance(CreateGeodeticLine(CenterPoint, Point2) as IGeometry);
-                MinorAxisDistance = GetDistance(CreateGeodeticLine(CenterPoint, Point3) as IGeometry);
-                Azimuth = GetAzimuth(majorPolyline as IGeometry);
-
+                
                 var ellipticArc = new Polyline() as IConstructGeodetic;
-                ellipticArc.ConstructGeodesicEllipse(CenterPoint, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
