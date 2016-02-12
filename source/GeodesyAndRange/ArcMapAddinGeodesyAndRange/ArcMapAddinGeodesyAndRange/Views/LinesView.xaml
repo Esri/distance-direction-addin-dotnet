@@ -70,9 +70,8 @@
                 SelectedItem="{Binding Path=LineFromType, Mode=TwoWay}"                      
                 Height="Auto" Margin="3,3,0,0">
         </ComboBox>
-        <Label  Content="{x:Static prop:Resources.LabelStartingPoint}" Grid.Row="1" Grid.Column="0" 
-                Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" 
-        />
+        <TextBlock Text="{x:Static prop:Resources.LabelStartingPoint}" Grid.Row="1" Grid.Column="0" 
+                Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <TextBox Grid.Row="2" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
             <TextBox.InputBindings>
@@ -82,9 +81,8 @@
         <Button Grid.Row="2" Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="3,3,0,0">
             <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
         </Button>
-        <Label  Content="{x:Static prop:Resources.LabelEndingPoint}" Grid.Row="3" Grid.Column="0" 
-                Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" 
-        />
+        <TextBlock Text="{x:Static prop:Resources.LabelEndingPoint}" Grid.Row="3" Grid.Column="0" 
+                Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <TextBox Grid.Row="4" Text="{Binding Path=Point2Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Height="24" 
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
             <TextBox.InputBindings>
@@ -103,9 +101,8 @@
                 </Style>
             </TextBox.Style>
         </TextBox>
-        <Label  Content="{x:Static prop:Resources.LabelDistanceLength}" Grid.Row="5" Grid.Column="0" 
-                Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" 
-        />
+        <TextBlock  Text="{x:Static prop:Resources.LabelDistanceLength}" Grid.Row="5" Grid.Column="0" 
+                Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <TextBox Grid.Row="6" Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
@@ -128,9 +125,8 @@
             SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
         </ComboBox>
-        <Label  Content="{x:Static prop:Resources.LabelStartingPoint}" Grid.Row="7" Grid.Column="0" 
-                Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" 
-        />
+        <TextBlock Text="{x:Static prop:Resources.LabelAngle}" Grid.Row="7" Grid.Column="0" 
+                Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <TextBox Grid.Row="8" Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
