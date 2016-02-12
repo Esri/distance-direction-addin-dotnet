@@ -37,19 +37,55 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         #region Properties
-        public CircleFromTypes CircleType { get; set; }
+        CircleFromTypes circleType = CircleFromTypes.Radius;
+        public CircleFromTypes CircleType
+        {
+            get { return circleType; }
+            set
+            {
+                if (circleType == value)
+                    return;
 
+                circleType = value;
+
+                // reset distance
+                RaisePropertyChanged(() => Distance);
+                RaisePropertyChanged(() => DistanceString);
+            }
+        }
+        /// <summary>
+        /// Distance is always the radius
+        /// Update DistanceString for user
+        /// Do nothing for Radius mode, double the radius for Diameter mode
+        /// </summary>
         public override string DistanceString
         {
             get
             {
+                if(CircleType == CircleFromTypes.Diameter)
+                {
+                    return (Distance * 2.0).ToString("N");
+                }
+
                 return base.DistanceString;
             }
             set
             {
-                base.DistanceString = value;
+                // lets avoid an infinite loop here
+                if (string.Equals(base.DistanceString, value))
+                    return;
 
-                UpdateFeedback();
+                // divide the manual input by 2
+                double d = 0.0;
+                if(double.TryParse(value, out d))
+                {
+                    if(CircleType == CircleFromTypes.Diameter)
+                        d /= 2.0;
+
+                    Distance = d;
+
+                    UpdateFeedback();
+                }
             }
         }
         #endregion
@@ -62,10 +98,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 return;
             }
-            if (Point2 == null)
-            {
-                UpdateFeedback();
-            }
+
             base.OnEnterKeyCommand(obj);
         }
         #endregion
@@ -94,22 +127,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             var ptCol = polyLine as IPointCollection;
             ptCol.AddPoint(Point1); ptCol.AddPoint(Point2);
 
-            if (CircleType == CircleFromTypes.Diameter)
-            {
-                var area = polyLine.Envelope as IArea;
-                var queryPoint = area.Centroid as IPoint;
-                var hitTest = polyLine as IHitTest;
-                var centroidPoint = new Point() as IPoint;
-                var distance = 0.0;
-                var hitPartIndex = 0;
-                var hitSegmentIndex = 0;
-                var isOnRightSide = false;
-                var isHit = hitTest.HitTest(queryPoint, 2.0,
-                    esriGeometryHitPartType.esriGeometryPartMidpoint,
-                    centroidPoint, ref distance, ref hitPartIndex,
-                    ref hitSegmentIndex, ref isOnRightSide);
-                polyLine.FromPoint = this.Point1 = centroidPoint;
-            }
             UpdateDistance(polyLine as IGeometry);
 
             try
@@ -119,13 +136,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
                     this.AddGraphicToMap(construct as IGeometry);
-
-                    if (CircleType == CircleFromTypes.Diameter)
-                    {
-                        DistanceString = string.Format("{0:0.00}", (Distance / 2));
-                    }
-
-                    Point2 = null; HasPoint2 = false;
+                    Point2 = null; 
+                    HasPoint2 = false;
                     ResetFeedback();
                 }
             }
@@ -158,7 +170,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 if (line.ToPoint != null)
                 {
                     FeedbackMoveTo(line.ToPoint);
-                    Point2 = line.ToPoint;                    
+                    Point2 = line.ToPoint;
                 }
             }
         }
