@@ -37,8 +37,22 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         #region Properties
-        public CircleFromTypes CircleType { get; set; }
+        CircleFromTypes circleType = CircleFromTypes.Radius;
+        public CircleFromTypes CircleType
+        {
+            get { return circleType; }
+            set
+            {
+                if (circleType == value)
+                    return;
 
+                circleType = value;
+
+                // reset distance
+                RaisePropertyChanged(() => Distance);
+                RaisePropertyChanged(() => DistanceString);
+            }
+        }
         /// <summary>
         /// Distance is always the radius
         /// Update DistanceString for user
