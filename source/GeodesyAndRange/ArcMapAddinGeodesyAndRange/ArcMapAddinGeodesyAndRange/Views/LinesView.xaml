@@ -149,6 +149,6 @@
             SelectedItem="{Binding Path=LineAzimuthType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
         </ComboBox>
-        <Button Grid.Row="9" Grid.Column="2" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,3,0,0" />
+        <Button Grid.Row="9" Grid.Column="2" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,20,0,0" />
     </Grid>
 </UserControl>
