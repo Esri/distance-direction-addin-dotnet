@@ -99,14 +99,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
 
             double azimuth = 0.0;
-            int count = NumberOfRadials * 2;
-            double interval = 360.0 / count;
+            double interval = 360.0 / NumberOfRadials;
             double radialLength = Distance * NumberOfRings;
 
             try
             {
                 // for each radial, draw from center point
-                for (int x = 0; x < count; x++)
+                for (int x = 0; x < NumberOfRadials; x++)
                 {
                     var construct = new Polyline() as IConstructGeodetic;
                     if (construct == null)
