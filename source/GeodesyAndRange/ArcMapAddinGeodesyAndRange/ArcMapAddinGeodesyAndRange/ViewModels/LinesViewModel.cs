@@ -195,6 +195,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             else
             {
+                ClearTempGraphics();
                 // Bearing and Distance
                 UpdateFeedback();
                 feedback.AddPoint(Point2);
@@ -215,8 +216,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 if (construct == null)
                     return;
-                if(srf3 == null)
-                    srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+
+                if (srf3 == null)
+                {
+                    // if you don't use the activator, you will get exceptions
+                    Type srType = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
+                    srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
+                }
 
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
 
@@ -229,10 +235,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 UpdateAzimuth(construct as IGeometry);
 
                 AddGraphicToMap(construct as IGeometry);
-
                 ResetPoints();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
@@ -322,13 +327,30 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         internal override void CreateMapElement()
         {
+            base.CreateMapElement();
             CreatePolyline();
+            Reset(false);
         }
 
         internal override void OnMouseMoveEvent(object obj)
         {
+            if (!IsActiveTab)
+                return;
+
+            var point = obj as IPoint;
+
+            if (point == null)
+                return;
+
             if (LineFromType == LineFromTypes.BearingAndDistance)
                 return;
+
+            if (HasPoint1 && !HasPoint2)
+            {
+                // update azimuth from feedback
+                var polyline = GetPolylineFromFeedback(Point1, point);
+                UpdateAzimuth(polyline);
+            }
 
             base.OnMouseMoveEvent(obj);
         }
@@ -361,7 +383,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 if (line.ToPoint != null)
                 {
-                    feedback.MoveTo(line.ToPoint);
+                    FeedbackMoveTo(line.ToPoint);
                     Point2 = line.ToPoint;
                 }
             }
@@ -377,9 +399,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             return Azimuth;
         }
 
-        internal override void Reset()
+        internal override void Reset(bool toolReset)
         {
-            base.Reset();
+            base.Reset(toolReset);
 
             Azimuth = 0.0;
         }

@@ -78,9 +78,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (Point1 == null && NumberOfRings <= 0 && NumberOfRadials < 0 && Distance <= 0.0)
                 return;
 
+            base.CreateMapElement();
+
             DrawRings();
 
             DrawRadials();
+
+            Reset(false);
         }
 
         /// <summary>
@@ -164,23 +168,38 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
 
             Point1 = point;
+            HasPoint1 = true;
+
+            AddGraphicToMap(Point1, true);
 
             // Reset formatted string
             Point1Formatted = string.Empty;
         }
 
         /// <summary>
-        /// Override the mouse move event to ignore it
+        /// Override the mouse move event to dynamically update the center point
         /// </summary>
         /// <param name="obj"></param>
         internal override void OnMouseMoveEvent(object obj)
         {
-            // DO NOTHING HERE
+            // only if we are the active tab
+            if (!IsActiveTab)
+                return;
+
+            var point = obj as IPoint;
+
+            if (point == null)
+                return;
+
+            if (!HasPoint1)
+            {
+                Point1 = point;
+            }
         }
 
-        internal override void Reset()
+        internal override void Reset(bool toolReset)
         {
-            base.Reset();
+            base.Reset(toolReset);
 
             NumberOfRadials = 0;
         }
