@@ -81,6 +81,7 @@
                  Margin="0,0,24,0" />
         <Button Command="{Binding ActivateToolCommand}"
                 Width="Auto" HorizontalAlignment="Right" 
+                ToolTip="{x:Static prop:Resources.TooltipMapPointTool}"
                 Grid.Row="2" Grid.Column="1" Margin="0,0,0,0">
             <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
         </Button>
