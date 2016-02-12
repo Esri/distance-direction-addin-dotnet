@@ -47,8 +47,45 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         public EllipseTypes EllipseType { get; set; }
         public IPoint CenterPoint { get; set; }
         public string ElementTag { get; set; }
-        public IGeometry EllipseBuffer { get; set; }
         public ISymbol FeedbackSymbol { get; set; }
+
+        /// <summary>
+        /// Distance is always the radius
+        /// Update DistanceString for user
+        /// Do nothing for Radius mode, double the radius for Diameter mode
+        /// </summary>
+        public override string DistanceString
+        {
+            get
+            {
+                if (EllipseType == EllipseTypes.Full)
+                {
+                    return (Distance * 2.0).ToString("N");
+                }
+
+                return base.DistanceString;
+            }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(base.DistanceString, value))
+                    return;
+
+                // divide the manual input by 2
+                double d = 0.0;
+                if (double.TryParse(value, out d))
+                {
+                    if (EllipseType == EllipseTypes.Full)
+                        d /= 2.0;
+
+                    Distance = d;
+
+                    var axisPt = new Point() as IPoint;
+                    UpdateFeedback(Point1, MajorAxisDistance, ref axisPt);
+                    Point2 = axisPt;
+                }
+            }
+        }
 
         AzimuthTypes azimuthType = AzimuthTypes.Degrees;
         public AzimuthTypes AzimuthType
@@ -101,6 +138,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 minorAxisDistance = value;
+
+                // update feedback
+                var axisPt = new Point() as IPoint;
+                UpdateFeedback(Point1, minorAxisDistance, ref axisPt);
+                Point3 = axisPt;
+
                 MinorAxisDistanceString = string.Format("{0:0.00}", minorAxisDistance);
                 RaisePropertyChanged(() => MinorAxisDistance);
                 RaisePropertyChanged(() => MinorAxisDistanceString);
@@ -116,7 +159,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
+                if (string.Equals(minorAxisDistanceString, value))
+                    return;
+
                 minorAxisDistanceString = value;
+                try
+                {
+                    double d = 0.0;
+                    if (double.TryParse(minorAxisDistanceString, out d))
+                    {
+                        MinorAxisDistance = d;
+                        RaisePropertyChanged(() => MinorAxisDistance);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
         }
 
@@ -130,6 +189,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             set
             {
                 majorAxisDistance = value;
+
+                // update feedback
+                var axisPt = new Point() as IPoint;
+                UpdateFeedback(Point1, majorAxisDistance, ref axisPt);
+                Point2 = axisPt;
+
                 MajorAxisDistanceString = string.Format("{0:0.00}", majorAxisDistance);
                 RaisePropertyChanged(() => MajorAxisDistance);
                 RaisePropertyChanged(() => MajorAxisDistanceString);
@@ -145,7 +210,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
+                if (string.Equals(majorAxisDistanceString, value))
+                    return;
+
                 majorAxisDistanceString = value;
+                try
+                {
+                    double d = 0.0;
+                    if (double.TryParse(majorAxisDistanceString, out d))
+                    {
+                        MajorAxisDistance = d;
+                        RaisePropertyChanged(() => MajorAxisDistance);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
         }
 
@@ -183,7 +264,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
 
-                AzimuthString = string.Format("{0:0.00}", azimuth);
+                // update feedback
+                var axisPt = new Point() as IPoint;
+                UpdateFeedback(Point1, MajorAxisDistance, ref axisPt);
+                Point2 = axisPt;
+
+                AzimuthString = azimuth.ToString("N");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }
@@ -193,10 +279,24 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             get { return azimuthString; }
             set
             {
+                // lets avoid an infinite loop here
                 if (string.Equals(azimuthString, value))
                     return;
 
                 azimuthString = value;
+                try
+                {
+                    // update azimuth
+                    double d = 0.0;
+                    if (double.TryParse(azimuthString, out d))
+                    {
+                        Azimuth = d;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
         }
         #endregion
@@ -206,9 +306,15 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal override void OnEnterKeyCommand(object obj)
         {
             if (MajorAxisDistance == 0.0 || Point1 == null || 
-                MinorAxisDistance == 0.0 || Azimuth > 0.0)
+                MinorAxisDistance == 0.0 || Azimuth == 0.0)
             {
                 return;
+            }
+            if (Point3 == null)
+            {
+                var axisPt = new Point() as IPoint;
+                UpdateFeedback(Point1, MinorAxisDistance, ref axisPt);
+                Point3 = axisPt;
             }
             base.OnEnterKeyCommand(obj);
         }
@@ -325,14 +431,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 Distance = GetDistance(line);
                 AddGraphicToMap(mxdoc.FocusMap, point as IGeometry, CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
                 AddGraphicToMap(mxdoc.FocusMap, line as IGeometry, CreateRGBColor(ElementColor.Red, 255), CreateRGBColor(ElementColor.Red, 255));
-             
-                var conv = new UnitConverter() as IUnitConverter;
-                if (conv != null)
-                {
-                    var datasetUnits = conv.ConvertUnits(Distance, esriUnits.esriMeters, esriUnits.esriDecimalDegrees);
-                    EllipseBuffer = CreateBuffer(Point1, datasetUnits);
-                }
-
             }
             else if (!HasPoint3)
             {
@@ -374,6 +472,35 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #endregion
 
         #region Private Functions
+        private void UpdateFeedback(IPoint centerPoint, double axisTypeDistance, ref IPoint axisPoint)
+        {
+            if (centerPoint != null && axisTypeDistance > 0.0)
+            {
+                if (feedback == null)
+                {
+                    var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    CreateFeedback(centerPoint, mxdoc.FocusMap as IActiveView);
+                    feedback.Start(centerPoint);
+                }
+
+                // now get second point from distance and bearing
+                var construct = new Polyline() as IConstructGeodetic;
+                if (construct == null)
+                    return;
+
+                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), centerPoint, GetLinearUnit(), axisTypeDistance, 
+                    GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+
+                var line = construct as IPolyline;
+
+                if (line.ToPoint != null)
+                {
+                    FeedbackMoveTo(line.ToPoint);
+                    axisPoint = line.ToPoint;
+                }
+            }
+        }
+
         private void UpdateAzimuthFromTo(AzimuthTypes fromType, AzimuthTypes toType)
         {
             try
@@ -626,29 +753,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     break;
             }
             return rgbColor;
-        }
-
-        private IGeometry CreateBuffer(IPoint centerPoint, double bufferSize)
-        {
-            var topoOp = centerPoint as ITopologicalOperator;
-            if (topoOp != null)
-            {
-                return topoOp.Buffer(bufferSize);
-            }
-            return null;
-        }
-
-        private bool IsWithin(IPoint checkPoint, IGeometry bufferGeom)
-        {
-            var rel = checkPoint as IRelationalOperator;
-            if (rel != null)
-            {
-                if (rel.Within(bufferGeom))
-                {
-                    return true;
-                }
-            }
-            return false;
         }
 
         private void DrawEllipse()
