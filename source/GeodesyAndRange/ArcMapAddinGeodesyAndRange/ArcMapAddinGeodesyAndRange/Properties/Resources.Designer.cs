@@ -241,11 +241,33 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Axis.
+        ///   Looks up a localized string similar to Axis Group.
         /// </summary>
         public static string LabelAxisGroup {
             get {
                 return ResourceManager.GetString("LabelAxisGroup", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Angle.
+        /// </summary>
+        public static string LabelAngle
+        {
+            get
+            {
+                return ResourceManager.GetString("LabelAngle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Orientation Group.
+        /// </summary>
+        public static string LabelOrientationGroup
+        {
+            get
+            {
+                return ResourceManager.GetString("LabelOrientationGroup", resourceCulture);
             }
         }
 
@@ -267,7 +289,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         {
             get
             {
-                return ResourceManager.GetString("LabelAxisGroup", resourceCulture);
+                return ResourceManager.GetString("LabelAxisUnits", resourceCulture);
             }
         }
         
