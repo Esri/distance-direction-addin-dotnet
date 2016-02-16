@@ -257,7 +257,18 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
                 return ResourceManager.GetString("LabelAngle", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized string similar to Orientation Group.
+        /// </summary>
+        public static string LabelOrientationGroup
+        {
+            get
+            {
+                return ResourceManager.GetString("LabelOrientationGroup", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Axis.
         /// </summary>
@@ -266,7 +277,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
                 return ResourceManager.GetString("LabelAxisGroup", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Units.
         /// </summary>
@@ -428,7 +439,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
                 return ResourceManager.GetString("LabelOrientationAngle", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Orientation Unit.
         /// </summary>
