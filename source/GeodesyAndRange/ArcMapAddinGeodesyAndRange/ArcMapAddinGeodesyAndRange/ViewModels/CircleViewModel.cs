@@ -86,6 +86,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                     UpdateFeedback();
                 }
+                else
+                {
+                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                }
             }
         }
         #endregion
