@@ -103,14 +103,16 @@
                 </Grid.RowDefinitions>
                 <Label Content="{x:Static prop:Resources.LabelMinorAxis}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                 <TextBox Height="23" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" 
-                         Text="{Binding Path=MinorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}">
+                         Text="{Binding Path=MinorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
                     </TextBox.InputBindings>
                 </TextBox>
                 <Label Content="{x:Static prop:Resources.LabelMajorAxis}" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
                 <TextBox Height="23" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch"
-                         Text="{Binding Path=MajorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}">
+                         Text="{Binding Path=MajorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
                     </TextBox.InputBindings>
@@ -139,7 +141,8 @@
                 <Label  Content="{x:Static prop:Resources.LabelOrientationAngle}" Grid.Row="0" Grid.Column="0" 
                 Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
                 <TextBox Grid.Row="1" Grid.ColumnSpan="2" Height="23" 
-                         Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}">
+                         Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
                     </TextBox.InputBindings>

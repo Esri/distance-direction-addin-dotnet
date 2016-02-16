@@ -120,21 +120,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     return;
 
                 minorAxisDistanceString = value;
-                try
+                double d = 0.0;
+                if (double.TryParse(minorAxisDistanceString, out d))
                 {
-                    double d = 0.0;
-                    if (double.TryParse(minorAxisDistanceString, out d))
-                    {
-                        MinorAxisDistance = d;
-                        RaisePropertyChanged(() => MinorAxisDistance);
+                    MinorAxisDistance = d;
+                    RaisePropertyChanged(() => MinorAxisDistance);
 
-                        // update feedback
-                        //Point3 = UpdateFeedback(Point1, minorAxisDistance);
-                    }
+                    // update feedback
+                    //Point3 = UpdateFeedback(Point1, minorAxisDistance);
                 }
-                catch (Exception ex)
+                else
                 {
-                    Console.WriteLine(ex);
+                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -175,17 +172,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     return;
 
                 majorAxisDistanceString = value;
-                try
-                {
-                    double d = 0.0;
-                    if (double.TryParse(majorAxisDistanceString, out d))
-                    {                            
-                        MajorAxisDistance = d;
-                    }
+                double d = 0.0;
+                if (double.TryParse(majorAxisDistanceString, out d))
+                {                            
+                    MajorAxisDistance = d;
                 }
-                catch (Exception ex)
+                else
                 {
-                    Console.WriteLine(ex);
+                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -242,18 +236,15 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     return;
 
                 azimuthString = value;
-                try
+                // update azimuth
+                double d = 0.0;
+                if (double.TryParse(azimuthString, out d))
                 {
-                    // update azimuth
-                    double d = 0.0;
-                    if (double.TryParse(azimuthString, out d))
-                    {
-                        Azimuth = d;
-                    }
+                    Azimuth = d;
                 }
-                catch (Exception ex)
+                else
                 {
-                    Console.WriteLine(ex);
+                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
                 }
             }
         }
