@@ -66,6 +66,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
+        public override bool CanCreateElement
+        {
+            get
+            {
+                return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && Distance > 0.0);
+            }
+        }
+
         #endregion Properties
 
         /// <summary>
@@ -75,7 +83,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal override void CreateMapElement()
         {
             // do we have enough data?
-            if (Point1 == null && NumberOfRings <= 0 && NumberOfRadials < 0 && Distance <= 0.0)
+            if (!CanCreateElement)
                 return;
 
             base.CreateMapElement();
@@ -169,6 +177,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             Point1 = point;
             HasPoint1 = true;
 
+            ClearTempGraphics();
             AddGraphicToMap(Point1, true);
 
             // Reset formatted string

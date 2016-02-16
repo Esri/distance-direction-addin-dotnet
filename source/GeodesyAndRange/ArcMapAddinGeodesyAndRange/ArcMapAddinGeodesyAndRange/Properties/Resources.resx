@@ -120,6 +120,9 @@
   <data name="AEInvalidCoordinate" xml:space="preserve">
     <value>Invalid coordinate</value>
   </data>
+  <data name="AEInvalidInput" xml:space="preserve">
+    <value>Invalid input</value>
+  </data>
   <data name="AEMustBePositive" xml:space="preserve">
     <value>The number must be positive</value>
   </data>
@@ -220,13 +223,13 @@
     <value>Interval Between Rings</value>
   </data>
   <data name="LabelMajorAxis" xml:space="preserve">
-    <value>Major Axis</value>
+    <value>Major</value>
   </data>
   <data name="LabelMapPoint" xml:space="preserve">
     <value>Map Point</value>
   </data>
   <data name="LabelMinorAxis" xml:space="preserve">
-    <value>Minor Axis</value>
+    <value>Minor</value>
   </data>
   <data name="LabelNumberOfRadials" xml:space="preserve">
     <value>Number of Radials</value>
@@ -235,10 +238,13 @@
     <value>Number of Rings</value>
   </data>
   <data name="LabelOrientationAngle" xml:space="preserve">
-    <value>Orientation Angle</value>
+    <value>Angle</value>
+  </data>
+  <data name="LabelOrientationGroup" xml:space="preserve">
+    <value>Orientation</value>
   </data>
   <data name="LabelOrientationUnit" xml:space="preserve">
-    <value>Orientation Unit</value>
+    <value>Unit</value>
   </data>
   <data name="LabelRadiusDiameter" xml:space="preserve">
     <value>Radius / Diameter</value>

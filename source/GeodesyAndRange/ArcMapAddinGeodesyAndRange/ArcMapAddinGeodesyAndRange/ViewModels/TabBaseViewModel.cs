@@ -24,6 +24,7 @@ using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
+using System.Text.RegularExpressions;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
@@ -71,6 +72,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
+                // do not add anything to the map from here
                 point1 = value;
                 RaisePropertyChanged(() => Point1);
                 RaisePropertyChanged(() => Point1Formatted);
@@ -306,6 +308,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     Distance = d;
                 }
+                else
+                {
+                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                }
             }
         }
 
@@ -313,6 +319,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// Property for the type of geodesy line
         /// </summary>
         public LineTypes LineType { get; set; }
+
+        /// <summary>
+        /// Property used to test if there is enough info to create a line map element
+        /// </summary>
+        public virtual bool CanCreateElement
+        {
+            get
+            {
+                return (Point1 != null && Point2 != null);
+            }
+        }
+
 
         #endregion Properties
 
@@ -428,6 +446,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="obj"></param>
         internal virtual void OnEnterKeyCommand(object obj)
         {
+            if (!CanCreateElement)
+                return;
+
             CreateMapElement();
         }
         /// <summary>
@@ -805,6 +826,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             else if (HasPoint1 && !HasPoint2)
             {
+                Point2Formatted = string.Empty;
                 Point2 = point;
                 // get distance from feedback
                 var polyline = GetPolylineFromFeedback(Point1, point);
@@ -896,6 +918,41 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces|esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
             try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMNoOptions, coordinate); return point; } catch { }
             try { cn.PutCoordsFromGeoRef(coordinate); return point; } catch { }
+
+            // lets see if we have a PCS coordinate
+            // we'll assume the same units as the map units
+            // get spatial reference of map
+            if (ArcMap.Document == null || ArcMap.Document.FocusMap == null || ArcMap.Document.FocusMap.SpatialReference == null)
+                return null;
+
+            var map = ArcMap.Document.FocusMap;
+            var pcs = map.SpatialReference as IProjectedCoordinateSystem;
+
+            if (pcs == null)
+                return null;
+
+            point.SpatialReference = map.SpatialReference;
+            // get pcs coordinate from input
+            coordinate = coordinate.Trim();
+
+            Regex regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
+
+            var matchMercator = regexMercator.Match(coordinate);
+
+            if (matchMercator.Success && matchMercator.Length == coordinate.Length)
+            {
+                try
+                {
+                    var Lat = Double.Parse(matchMercator.Groups["latitude"].Value);
+                    var Lon = Double.Parse(matchMercator.Groups["longitude"].Value);
+                    point.PutCoords(Lon, Lat);
+                    return point;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
 
             return null;
         }

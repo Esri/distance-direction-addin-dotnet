@@ -84,7 +84,7 @@
         <TextBlock Text="{x:Static prop:Resources.LabelEndingPoint}" Grid.Row="3" Grid.Column="0" 
                 Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
         <TextBox Grid.Row="4" Text="{Binding Path=Point2Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Height="24" 
-                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
             </TextBox.InputBindings>
@@ -103,7 +103,8 @@
         </TextBox>
         <TextBlock  Text="{x:Static prop:Resources.LabelDistanceLength}" Grid.Row="5" Grid.Column="0" 
                 Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
-        <TextBox Grid.Row="6" Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
+        <TextBox Grid.Row="6" Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
             </TextBox.InputBindings>
@@ -127,7 +128,8 @@
         </ComboBox>
         <TextBlock Text="{x:Static prop:Resources.LabelAngle}" Grid.Row="7" Grid.Column="0" 
                 Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
-        <TextBox Grid.Row="8" Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
+        <TextBox Grid.Row="8" Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
             <TextBox.InputBindings>
                 <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
             </TextBox.InputBindings>
