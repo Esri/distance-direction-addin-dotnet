@@ -177,6 +177,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             Point1 = point;
             HasPoint1 = true;
 
+            ClearTempGraphics();
             AddGraphicToMap(Point1, true);
 
             // Reset formatted string

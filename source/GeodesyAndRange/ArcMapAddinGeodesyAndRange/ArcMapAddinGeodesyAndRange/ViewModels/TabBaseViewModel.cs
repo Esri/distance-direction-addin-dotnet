@@ -825,6 +825,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             else if (HasPoint1 && !HasPoint2)
             {
+                Point2Formatted = string.Empty;
                 Point2 = point;
                 // get distance from feedback
                 var polyline = GetPolylineFromFeedback(Point1, point);
