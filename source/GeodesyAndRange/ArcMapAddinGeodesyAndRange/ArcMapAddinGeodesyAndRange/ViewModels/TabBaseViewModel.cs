@@ -24,6 +24,7 @@ using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
+using System.Text.RegularExpressions;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
@@ -896,6 +897,41 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces|esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
             try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMNoOptions, coordinate); return point; } catch { }
             try { cn.PutCoordsFromGeoRef(coordinate); return point; } catch { }
+
+            // lets see if we have a PCS coordinate
+            // we'll assume the same units as the map units
+            // get spatial reference of map
+            if (ArcMap.Document == null || ArcMap.Document.FocusMap == null || ArcMap.Document.FocusMap.SpatialReference == null)
+                return null;
+
+            var map = ArcMap.Document.FocusMap;
+            var pcs = map.SpatialReference as IProjectedCoordinateSystem;
+
+            if (pcs == null)
+                return null;
+
+            point.SpatialReference = map.SpatialReference;
+            // get pcs coordinate from input
+            coordinate = coordinate.Trim();
+
+            Regex regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
+
+            var matchMercator = regexMercator.Match(coordinate);
+
+            if (matchMercator.Success && matchMercator.Length == coordinate.Length)
+            {
+                try
+                {
+                    var Lat = Double.Parse(matchMercator.Groups["latitude"].Value);
+                    var Lon = Double.Parse(matchMercator.Groups["longitude"].Value);
+                    point.PutCoords(Lon, Lat);
+                    return point;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
 
             return null;
         }
