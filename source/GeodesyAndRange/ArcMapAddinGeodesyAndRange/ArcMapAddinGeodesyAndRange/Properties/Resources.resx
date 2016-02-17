@@ -207,6 +207,9 @@
   <data name="LabelDirectionAzimuth" xml:space="preserve">
     <value>Direction / Azimuth</value>
   </data>
+  <data name="LabelDistanceCalculator" xml:space="preserve">
+    <value>Distance Calculator</value>
+  </data>
   <data name="LabelDistanceLength" xml:space="preserve">
     <value>Distance / Length</value>
   </data>
@@ -258,6 +261,9 @@
   <data name="LabelRangeRingsNumberofRadials" xml:space="preserve">
     <value>Number of Radials</value>
   </data>
+  <data name="LabelRate" xml:space="preserve">
+    <value>Rate</value>
+  </data>
   <data name="LabelStartingPoint" xml:space="preserve">
     <value>Starting Point</value>
   </data>
@@ -272,6 +278,9 @@
   </data>
   <data name="LabelTabRange" xml:space="preserve">
     <value>Rings</value>
+  </data>
+  <data name="LabelTime" xml:space="preserve">
+    <value>Time</value>
   </data>
   <data name="TooltipMapPointTool" xml:space="preserve">
     <value>Map Point Tool</value>

@@ -697,7 +697,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// </summary>
         /// <param name="fromType">DistanceTypes</param>
         /// <param name="toType">DistanceTypes</param>
-        private void UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType)
+        internal void UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType)
         {
             try
             {

@@ -22,6 +22,7 @@ using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
+using ESRI.ArcGIS.esriSystem;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
@@ -34,10 +35,16 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             //properties
             CircleType = CircleFromTypes.Radius;
+            EnterKeyCommandForDistCalc = new RelayCommand(OnEnterKeyCommandDistCalc);
         }
 
         #region Properties
+        public RelayCommand EnterKeyCommandForDistCalc { get; set; }
+
         CircleFromTypes circleType = CircleFromTypes.Radius;
+        /// <summary>
+        /// Type of circle property
+        /// </summary>
         public CircleFromTypes CircleType
         {
             get { return circleType; }
@@ -53,6 +60,123 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 RaisePropertyChanged(() => DistanceString);
             }
         }
+
+        TimeUnits timeUnit = TimeUnits.Minutes;
+        /// <summary>
+        /// Type of time units
+        /// </summary>
+        public TimeUnits TimeUnit
+        {
+            get
+            {
+                return timeUnit;
+            }
+            set
+            {
+                if (timeUnit == value) 
+                {
+                    return;
+                }
+                var before = timeUnit;
+                timeUnit = value;
+                timeValue = ConvertTime(before, value);
+
+                RaisePropertyChanged(() => TimeString);
+            }
+        }
+
+        double timeValue = 0;
+        /// <summary>
+        /// Property for time display
+        /// </summary>
+        public string TimeString
+        {
+            get
+            {
+                return timeValue.ToString();
+            }
+            set
+            {
+                double parsedValue = 0;
+                if (double.TryParse(value, out parsedValue))
+                {
+                    if (parsedValue == timeValue)
+                    {
+                        return;
+                    }
+                    timeValue = parsedValue;
+
+                    if (rateValue != 0)
+                    {
+                        Distance = rateValue * timeValue;
+                        UpdateFeedback();
+                    }
+                }
+                else
+                {
+                    timeValue = 0;
+                    RaisePropertyChanged(() => TimeString);
+                }
+            }
+        }
+
+        double rateValue = 0.0;
+        /// <summary>
+        /// Property of rate display
+        /// </summary>
+        public string RateString
+        {
+            get
+            {
+                return rateValue.ToString("N");
+            }
+            set
+            {
+                double parsedValue = 0;
+                if (double.TryParse(value, out parsedValue))
+                {
+                    if (parsedValue == rateValue)
+                    {
+                        return;
+                    }
+                    rateValue = parsedValue;
+
+                    if (timeValue != 0)
+                    {
+                        Distance = rateValue * timeValue;
+                        UpdateFeedback();
+                    }
+                }
+                else
+                {
+                    rateValue = 0;
+                    RaisePropertyChanged(() => RateString);
+                }
+            }
+        }
+
+        DistanceTypes rateUnit = DistanceTypes.Meters;
+        public DistanceTypes RateUnit
+        {
+            get
+            {
+                return rateUnit;
+            }
+            set
+            {
+                if (rateUnit == value)
+                {
+                    return;
+                }
+                var before = rateUnit;
+                rateUnit = value;
+                UpdateDistanceFromTo(before, value);
+                rateValue = Distance;
+
+                RaisePropertyChanged(() => RateString);
+            }
+        }
+
         /// <summary>
         /// Distance is always the radius
         /// Update DistanceString for user
@@ -102,19 +226,39 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 return;
             }
-
             base.OnEnterKeyCommand(obj);
         }
         #endregion
 
-
         #region Private Functions
+        /// <summary>
+        /// Handler for the "Enter"key command
+        /// Calls CreateMapElement
+        /// </summary>
+        /// <param name="obj"></param>
+        private void OnEnterKeyCommandDistCalc(object obj)
+        {
+            if (Point1 == null || rateValue == 0 || timeValue == 0)
+            {
+                return;
+            }
+            CreateMapElement();
+        }
 
         internal override void CreateMapElement()
         {
             base.CreateMapElement();
             CreateCircle();
             Reset(false);
+        }
+
+        internal override void Reset(bool toolReset)
+        {
+            base.Reset(toolReset);
+            RateString = String.Empty;
+            TimeString = String.Empty;
+            rateValue = 0;
+            timeValue = 0;
         }
         /// <summary>
         /// 
@@ -177,6 +321,36 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     Point2 = line.ToPoint;
                 }
             }
+        }
+
+        private double ConvertTime(TimeUnits before, TimeUnits after)
+        {
+            double val = timeValue;
+            if (before == TimeUnits.Hours && after == TimeUnits.Minutes)
+            {
+                val = TimeSpan.FromHours(val).TotalMinutes;
+            }
+            else if (before == TimeUnits.Hours && after == TimeUnits.Seconds)
+            {
+                val = TimeSpan.FromHours(val).TotalSeconds;
+            }
+            else if (before == TimeUnits.Minutes && after == TimeUnits.Hours)
+            {
+                val = TimeSpan.FromMinutes(val).TotalHours;
+            }
+            else if (before == TimeUnits.Minutes && after == TimeUnits.Seconds)
+            {
+                val = TimeSpan.FromMinutes(val).TotalSeconds;
+            }
+            else if (before == TimeUnits.Seconds && after == TimeUnits.Minutes)
+            {
+                val = TimeSpan.FromSeconds(val).TotalMinutes;
+            }
+            else if (before == TimeUnits.Seconds && after == TimeUnits.Hours)
+            {
+                val = TimeSpan.FromSeconds(val).TotalHours;
+            }
+            return val;
         }
         #endregion
     }
