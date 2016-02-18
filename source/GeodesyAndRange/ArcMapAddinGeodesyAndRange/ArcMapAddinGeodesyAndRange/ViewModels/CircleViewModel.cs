@@ -177,6 +177,30 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
+        bool isDistanceCalcExpanded = false;
+        public bool IsDistanceCalcExpanded 
+        {
+            get { return isDistanceCalcExpanded; }
+            set
+            {
+                isDistanceCalcExpanded = value;
+                if (value == true)
+                {
+                    rateValue = 0;
+                    timeValue = 0;
+                    Distance = 0.0;
+                    RaisePropertyChanged(() => RateString);
+                    RaisePropertyChanged(() => TimeString);
+                    ResetFeedback();
+                }
+                else 
+                {
+                    Reset(false);
+                }
+
+                RaisePropertyChanged(() => IsDistanceCalcExpanded);
+            }
+        }
         /// <summary>
         /// Distance is always the radius
         /// Update DistanceString for user
@@ -228,6 +252,49 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             base.OnEnterKeyCommand(obj);
         }
+        #endregion
+
+        #region override events
+
+        internal override void OnNewMapPointEvent(object obj)
+        {
+            if (IsDistanceCalcExpanded)
+                HasPoint1 = false;
+
+            base.OnNewMapPointEvent(obj);
+        }
+
+        internal override void OnMouseMoveEvent(object obj)
+        {
+            if (!IsActiveTab)
+                return;
+
+            var point = obj as IPoint;
+
+            if (point == null)
+                return;
+
+            // dynamically update start point if not set yet
+            if (!HasPoint1)
+            {
+                Point1 = point;
+            }
+            else if (HasPoint1 && !HasPoint2 && !IsDistanceCalcExpanded)
+            {
+                Point2Formatted = string.Empty;
+                Point2 = point;
+                // get distance from feedback
+                var polyline = GetPolylineFromFeedback(Point1, point);
+                UpdateDistance(polyline);
+            }
+
+            // update feedback
+            if (HasPoint1 && !HasPoint2 && !IsDistanceCalcExpanded)
+            {
+                FeedbackMoveTo(point);
+            }
+        }
+
         #endregion
 
         #region Private Functions

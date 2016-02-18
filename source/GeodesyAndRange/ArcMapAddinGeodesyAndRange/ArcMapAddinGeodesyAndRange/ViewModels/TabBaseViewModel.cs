@@ -551,6 +551,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             ResetFeedback();
 
             Distance = 0.0;
+
+            ClearTempGraphics();
         }
         /// <summary>
         /// Resets Points 1 and 2
