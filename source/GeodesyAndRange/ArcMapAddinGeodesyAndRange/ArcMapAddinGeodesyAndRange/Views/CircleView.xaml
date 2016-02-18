@@ -22,6 +22,13 @@
                     <x:TypeExtension TypeName="local:CircleFromTypes" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
+            <ObjectDataProvider x:Key="timeData"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:TypeExtension TypeName="local:TimeUnits" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>            
         </ResourceDictionary>
     </UserControl.Resources>
     <UserControl.DataContext>
@@ -41,6 +48,7 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Label Content="{x:Static prop:Resources.LabelCreateCircleFrom}"                
                HorizontalAlignment="Stretch" 
@@ -53,31 +61,90 @@
         </ComboBox>
         <Label Content="{x:Static prop:Resources.LabelCenterPoint}"
                Grid.Row="2" Grid.ColumnSpan="3"/>
-        <TextBox Height="Auto"
-                 Text="{Binding Path=Point1Formatted, Mode=OneWay}"
-                 Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,1,0,0" />
+        <TextBox Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}"
+                 Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,24,0">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+            </TextBox.InputBindings>
+        </TextBox>
         <Button Command="{Binding ActivateToolCommand}"
-                Width="Auto" HorizontalAlignment="Left" 
+                Width="Auto" HorizontalAlignment="Right" 
                 Grid.Row="3" Grid.Column="2" 
-                ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="5,0,0,0">
-            <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+                ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="0,0,0,0">
+            <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" HorizontalAlignment="Right" />
         </Button>
         <Label Content="{x:Static prop:Resources.LabelRadiusDiameter}"
                Grid.Row="4" Grid.ColumnSpan="3"/>
-        <TextBox Height="Auto" 
-                 Margin="0,2"
-                 Text="{Binding Path=DistanceString, Mode=OneWay}"
-                 Grid.Row="5" Grid.Column="0"/>
+        <TextBox Margin="3,3,0,0"
+                 Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}"
+                 Grid.Row="5" Grid.Column="0">
+            <TextBox.InputBindings>
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+            </TextBox.InputBindings>
+            <TextBox.Style>
+                <Style TargetType="TextBox">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding IsDistanceCalcExpanded}" Value="False">
+                            <Setter Property="IsEnabled" Value="True" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding IsDistanceCalcExpanded}" Value="True">
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBox.Style>
+        </TextBox>
         <ComboBox x:Name="cmbLineDistanceType"
                   ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
                   SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
-                  Height="Auto" Margin="5,0,0,0"
+                  Height="Auto" Margin="3,3,0,0"
                   Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2">
         </ComboBox>
+        <Expander Header="{x:Static prop:Resources.LabelDistanceCalculator}" 
+                  IsExpanded="{Binding IsDistanceCalcExpanded, Mode=OneWayToSource}"
+                  Grid.Row="6" Grid.ColumnSpan="3" Margin="0,10,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Label Content="{x:Static prop:Resources.LabelTime}" Grid.Row="0" Grid.ColumnSpan="2"></Label>
+                <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,2,0"
+                         Text="{Binding Path=TimeString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <ComboBox Grid.Row="1" Grid.Column="1"
+                          ItemsSource="{Binding Source={StaticResource timeData}}" 
+                          SelectedItem="{Binding Path=TimeUnit, Mode=TwoWay}"></ComboBox>
+                <Label Content="{x:Static prop:Resources.LabelRate}" Grid.Row="2" Grid.ColumnSpan="2"></Label>
+                <TextBox Grid.Row="3" Grid.Column="0" Margin="0,0,2,0"
+                         Text="{Binding Path=RateString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <ComboBox x:Name="cmbRateType"
+                          Grid.Row="3" Grid.Column="1"
+                          ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
+                          SelectedItem="{Binding Path=RateUnit, Mode=TwoWay}" ></ComboBox>
+            </Grid>            
+        </Expander>
         <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
                 ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
                 Command="{Binding ClearGraphicsCommand}"
-                Width="100" Height="30" Margin="0,20,0,0"
-                Grid.Row="6" Grid.Column="2"/>
+                Margin="3,20,0,0"
+                Grid.Row="7" Grid.Column="2"/>
     </Grid>
 </UserControl>

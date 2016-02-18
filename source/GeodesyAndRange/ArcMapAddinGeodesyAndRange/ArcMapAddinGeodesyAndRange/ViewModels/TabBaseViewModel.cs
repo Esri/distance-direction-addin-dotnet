@@ -24,6 +24,7 @@ using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
+using System.Text.RegularExpressions;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
@@ -51,6 +52,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
 
+        // lists to store GUIDs of graphics, temp feedback and map graphics
+        private static List<string> TempGraphicsList = new List<string>();
+        private static List<string> MapGraphicsList = new List<string>();
+
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
         internal INewLineFeedback feedback = null;
@@ -67,6 +72,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
+                // do not add anything to the map from here
                 point1 = value;
                 RaisePropertyChanged(() => Point1);
                 RaisePropertyChanged(() => Point1Formatted);
@@ -103,6 +109,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 // return a formatted first point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point1Formatted))
                 {
+                    if (Point1 == null)
+                        return string.Empty;
+
                     // only format if the Point1 data was generated from a mouse click
                     return string.Format("{0:0.0#####} {1:0.0#####}", Point1.Y, Point1.X);
                 }
@@ -125,14 +134,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 var point = GetPointFromString(value);
                 if(point != null)
                 {
+                    // clear temp graphics
+                    ClearTempGraphics();
                     point1Formatted = value;
                     HasPoint1 = true;
                     Point1 = point;
+                    AddGraphicToMap(Point1, true);
                     // lets try feedback
                     var mxdoc = ArcMap.Application.Document as IMxDocument;
                     var av = mxdoc.FocusMap as IActiveView;
+                    point.Project(mxdoc.FocusMap.SpatialReference);
                     CreateFeedback(point, av);
                     feedback.Start(point);
+                    if(Point2 != null)
+                    {
+                        UpdateDistance(GetPolylineFromFeedback(Point1, Point2));
+                        FeedbackMoveTo(Point2);
+                    }
                 }
                 else 
                 {
@@ -152,11 +170,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// </summary>
         public string Point2Formatted
         {
-            get 
+            get
             {
                 // return a formatted second point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point2Formatted))
                 {
+                    if (Point2 == null)
+                        return string.Empty;
+
                     // only format if the Point2 data was generated from a mouse click
                     return string.Format("{0:0.0#####} {1:0.0#####}", Point2.Y, Point2.X);
                 }
@@ -179,8 +200,27 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 if (point != null)
                 {
                     point2Formatted = value;
-                    HasPoint2 = true;
+                    //HasPoint2 = true;
                     Point2 = point;
+                    var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    var av = mxdoc.FocusMap as IActiveView;
+                    Point2.Project(mxdoc.FocusMap.SpatialReference);
+
+                    //if (feedback != null)
+                    //{
+                    //    // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
+                    //    FeedbackMoveTo(point);
+                    //}
+                    if (HasPoint1)
+                    {
+                        // lets try feedback
+                        CreateFeedback(Point1, av);
+                        feedback.Start(Point1);
+                        UpdateDistance(GetPolylineFromFeedback(Point1, Point2));
+                        // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
+                        FeedbackMoveTo(point);
+                    }
+
                 }
                 else
                 {
@@ -205,6 +245,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             set
             {
+                Reset(true);
                 isActiveTab = value;
                 RaisePropertyChanged(() => IsActiveTab);
             }
@@ -267,6 +308,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     Distance = d;
                 }
+                else
+                {
+                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                }
             }
         }
 
@@ -274,6 +319,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// Property for the type of geodesy line
         /// </summary>
         public LineTypes LineType { get; set; }
+
+        /// <summary>
+        /// Property used to test if there is enough info to create a line map element
+        /// </summary>
+        public virtual bool CanCreateElement
+        {
+            get
+            {
+                return (Point1 != null && Point2 != null);
+            }
+        }
+
 
         #endregion Properties
 
@@ -288,22 +345,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <summary>
         /// Method is called when a user pressed the "Enter" key or when a second point is created for a line from mouse clicks
         /// Derived class must override this method in order to create map elements
+        /// Clears temp graphics by default
         /// </summary>
         internal virtual void CreateMapElement()
         {
-            throw new NotImplementedException();
+            ClearTempGraphics();
         }
 
         #region Private Event Functions
 
         /// <summary>
         /// Clears all the graphics from the maps graphic container
+        /// Inlucdes temp and map graphics
+        /// Only removes temp and map graphics that were created by this add-in
         /// </summary>
         /// <param name="obj"></param>
         private void OnClearGraphics(object obj)
         {
-            //HasPoint1 = HasPoint2 = false;
-
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             if (mxdoc == null)
                 return;
@@ -314,9 +372,65 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (gc == null)
                 return;
 
-            gc.DeleteAllElements();
+            RemoveGraphics(gc, TempGraphicsList);
+            RemoveGraphics(gc, MapGraphicsList);
+            
+            //gc.DeleteAllElements();
             av.Refresh();
         }
+
+        /// <summary>
+        /// Method to clear all temp graphics
+        /// </summary>
+        internal void ClearTempGraphics()
+        {
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            if (mxdoc == null)
+                return;
+            var av = mxdoc.FocusMap as IActiveView;
+            if (av == null)
+                return;
+            var gc = av as IGraphicsContainer;
+            if (gc == null)
+                return;
+
+            RemoveGraphics(gc, TempGraphicsList);
+
+            av.Refresh();
+        }
+        /// <summary>
+        /// Method used to remove graphics from the graphics container
+        /// Elements are tagged with a GUID on the IElementProperties.Name property
+        /// </summary>
+        /// <param name="gc">map graphics container</param>
+        /// <param name="list">list of GUIDs to remove</param>
+        private void RemoveGraphics(IGraphicsContainer gc, List<string> list)
+        {
+            if (gc == null || !list.Any())
+                return;
+
+            var elementList = new List<IElement>();
+            gc.Reset();
+            var element = gc.Next();
+            while (element != null)
+            {
+                var eleProps = element as IElementProperties;
+                if (list.Contains(eleProps.Name))
+                {
+                    elementList.Add(element);
+                }
+                element = gc.Next();
+            }
+
+            foreach (var ele in elementList)
+            {
+                gc.DeleteElement(ele);
+            }
+
+            list.Clear();
+            elementList.Clear();
+        }
+
         /// <summary>
         /// Activates the map tool to get map points from mouse clicks/movement
         /// </summary>
@@ -332,6 +446,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="obj"></param>
         internal virtual void OnEnterKeyCommand(object obj)
         {
+            if (!CanCreateElement)
+                return;
+
             CreateMapElement();
         }
         /// <summary>
@@ -352,10 +469,13 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             if (!HasPoint1)
             {
+                // clear temp graphics
+                ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
-                
+
+                AddGraphicToMap(Point1, true);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -381,6 +501,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Public Functions
         /// <summary>
+        /// Method used to deactivate tool
+        /// </summary>
+        public void DeactivateTool(string toolname)
+        {
+            if (ArcMap.Application != null
+                && ArcMap.Application.CurrentTool != null
+                && ArcMap.Application.CurrentTool.Name.Equals(toolname))
+            {
+                ArcMap.Application.CurrentTool = null;
+            }
+        }
+        /// <summary>
         /// Method to set the map tool as the active tool for the map
         /// </summary>
         /// <param name="application"></param>
@@ -398,6 +530,30 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #endregion
 
         #region Private Functions
+        /// <summary>
+        /// Method used to totally reset the tool
+        /// reset points, feedback
+        /// clear out textboxes
+        /// </summary>
+        internal virtual void Reset(bool toolReset)
+        {
+            if (toolReset)
+            {
+                DeactivateTool("Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+            }
+
+            ResetPoints();
+            Point1 = null;
+            Point2 = null;
+            Point1Formatted = string.Empty;
+            Point2Formatted = string.Empty;
+
+            ResetFeedback();
+
+            Distance = 0.0;
+
+            ClearTempGraphics();
+        }
         /// <summary>
         /// Resets Points 1 and 2
         /// </summary>
@@ -435,35 +591,69 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom)
+        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
+            IElement element = null;
+            ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
+            rgbColor.Red = 255;
+            ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
+            double width = 2.0;
 
             geom.Project(ArcMap.Document.FocusMap.SpatialReference);
 
-            var pc = geom as IPolycurve;
+            if(geom.GeometryType == esriGeometryType.esriGeometryPoint)
+            {
+                // Marker symbols
+                var simpleMarkerSymbol = new SimpleMarkerSymbol() as ISimpleMarkerSymbol;
+                simpleMarkerSymbol.Color = rgbColor;
+                simpleMarkerSymbol.Outline = true;
+                simpleMarkerSymbol.OutlineColor = rgbColor;
+                simpleMarkerSymbol.Size = 5;
+                simpleMarkerSymbol.Style = esriSimpleMarkerStyle.esriSMSCircle;
 
-            if (pc != null)
+                var markerElement = new MarkerElement() as IMarkerElement;
+                markerElement.Symbol = simpleMarkerSymbol;
+                element = markerElement as IElement;
+            }
+            else if(geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
                 // create graphic then add to map
                 var le = new LineElementClass() as ILineElement;
-                var element = le as IElement;
-                element.Geometry = geom;
-                ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
-                rgbColor.Red = 255;
+                element = le as IElement;
 
-                ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
                 var lineSymbol = new SimpleLineSymbolClass();
                 lineSymbol.Color = color;
-                lineSymbol.Width = 2;
-                var mxdoc = ArcMap.Application.Document as IMxDocument;
-                var av = mxdoc.FocusMap as IActiveView;
-                var gc = av as IGraphicsContainer;
-                gc.AddElement(element, 0);
-
-                av.Refresh();
+                lineSymbol.Width = width;
             }
+
+            if (element == null)
+                return;
+
+            element.Geometry = geom;
+
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxdoc.FocusMap as IActiveView;
+            var gc = av as IGraphicsContainer;
+
+            // store guid
+            var eprop = element as IElementProperties;
+            eprop.Name = Guid.NewGuid().ToString();
+            
+            if (IsTempGraphic)
+                TempGraphicsList.Add(eprop.Name);
+            else
+                MapGraphicsList.Add(eprop.Name);
+
+            gc.AddElement(element, 0);
+
+            //refresh map
+            av.Refresh();
+        }
+        internal void AddGraphicToMap(IGeometry geom)
+        {
+            AddGraphicToMap(geom, false);
         }
         internal ISpatialReferenceFactory3 srf3 = null;
         /// <summary>
@@ -473,8 +663,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal ILinearUnit GetLinearUnit()
         {
             int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
-            if(srf3 == null)
-                srf3 = new ESRI.ArcGIS.Geometry.SpatialReferenceEnvironment() as ISpatialReferenceFactory3;
+             if (srf3 == null)
+            {
+                Type srType = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
+                srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
+            }
 
             switch (LineDistanceType)
             {
@@ -506,7 +699,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// </summary>
         /// <param name="fromType">DistanceTypes</param>
         /// <param name="toType">DistanceTypes</param>
-        private void UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType)
+        internal void UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType)
         {
             try
             {
@@ -587,7 +780,19 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             return type;
         }
+        internal double GetGeodeticLengthFromPolyline(IPolyline polyline)
+        {
+            if (polyline == null)
+                return 0.0;
 
+            var polycurvegeo = polyline as IPolycurveGeodetic;
+
+            var geodeticType = GetEsriGeodeticType();
+            var linearUnit = GetLinearUnit();
+            var geodeticLength = polycurvegeo.get_LengthGeodetic(geodeticType, linearUnit);
+
+            return geodeticLength;
+        }
         /// <summary>
         /// Gets the distance/lenght of a polyline
         /// </summary>
@@ -599,13 +804,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (polyline == null)
                 return;
 
-            var polycurvegeo = geometry as IPolycurveGeodetic;
-
-            var geodeticType = GetEsriGeodeticType();
-            var linearUnit = GetLinearUnit();
-            var geodeticLength = polycurvegeo.get_LengthGeodetic(geodeticType, linearUnit);
-
-            Distance = geodeticLength;
+            Distance = GetGeodeticLengthFromPolyline(polyline);
         }
         /// <summary>
         /// Handler for the mouse move event
@@ -622,10 +821,44 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (point == null)
                 return;
 
+            // dynamically update start point if not set yet
+            if (!HasPoint1)
+            {
+                Point1 = point;
+            }
+            else if (HasPoint1 && !HasPoint2)
+            {
+                Point2Formatted = string.Empty;
+                Point2 = point;
+                // get distance from feedback
+                var polyline = GetPolylineFromFeedback(Point1, point);
+                UpdateDistance(polyline);
+            }
+
+            // update feedback
             if (HasPoint1 && !HasPoint2)
             {
-                feedback.MoveTo(point);
+                FeedbackMoveTo(point);
             }
+        }
+        /// <summary>
+        /// Gets a polyline from the feedback object
+        /// startPoint is where it will restart from
+        /// endPoint is where you want it to end for the return of the polyline
+        /// </summary>
+        /// <param name="startPoint">startPoint is where it will restart from</param>
+        /// <param name="endPoint">endPoint is where you want it to end for the return of the polyline</param>
+        /// <returns></returns>
+        internal IPolyline GetPolylineFromFeedback(IPoint startPoint, IPoint endPoint)
+        {
+            if (feedback == null)
+                return null;
+
+            feedback.AddPoint(endPoint);
+            var polyline = feedback.Stop();
+            // restart feedback
+            feedback.Start(startPoint);
+            return polyline;
         }
 
         /// <summary>
@@ -635,6 +868,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="av">The current active view</param>
         internal void CreateFeedback(IPoint point, IActiveView av)
         {
+            ResetFeedback();
             feedback = new NewLineFeedback();
             var geoFeedback = feedback as IGeodeticLineFeedback;
             geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
@@ -687,7 +921,54 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMNoOptions, coordinate); return point; } catch { }
             try { cn.PutCoordsFromGeoRef(coordinate); return point; } catch { }
 
+            // lets see if we have a PCS coordinate
+            // we'll assume the same units as the map units
+            // get spatial reference of map
+            if (ArcMap.Document == null || ArcMap.Document.FocusMap == null || ArcMap.Document.FocusMap.SpatialReference == null)
+                return null;
+
+            var map = ArcMap.Document.FocusMap;
+            var pcs = map.SpatialReference as IProjectedCoordinateSystem;
+
+            if (pcs == null)
+                return null;
+
+            point.SpatialReference = map.SpatialReference;
+            // get pcs coordinate from input
+            coordinate = coordinate.Trim();
+
+            Regex regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
+
+            var matchMercator = regexMercator.Match(coordinate);
+
+            if (matchMercator.Success && matchMercator.Length == coordinate.Length)
+            {
+                try
+                {
+                    var Lat = Double.Parse(matchMercator.Groups["latitude"].Value);
+                    var Lon = Double.Parse(matchMercator.Groups["longitude"].Value);
+                    point.PutCoords(Lon, Lat);
+                    return point;
+                }
+                catch
+                {
+                    return null;
+                }
+            }
+
             return null;
+        }
+        /// <summary>
+        /// Method to use when you need to move a feedback line to a point
+        /// This forces a new point to be used, sometimes this method projects the point to a different spatial reference
+        /// </summary>
+        /// <param name="point"></param>
+        internal void FeedbackMoveTo(IPoint point)
+        {
+            if (feedback == null || point == null)
+                return;
+
+            feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
         }
         #endregion Private Functions
 
