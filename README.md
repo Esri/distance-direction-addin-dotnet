@@ -69,54 +69,67 @@ The add-in provides the ability to create geodesic features such as lines, circl
 ## Workflows
 
 ### Create Lines Interactively 
-	* Choose the Lines tab on the Geodesy and Range Tool
-	* Choose the type of line that is needed to be created
-	* Start an interactive session by selecting the arrow icon 
-	* Enter a starting and ending point on the map by clicking on the map
-	* Repeat until all desired graphics have been included
+1. Choose the Lines tab on the Geodesy and Range Tool
+2. Choose the type of line that is needed to be created
+3. Start an interactive session by selecting the arrow icon 
+4. Enter a starting and ending point on the map by clicking on the map
+5. Repeat until all desired graphics have been included
 
 ### Create Lines from Known Coordinates
-	* Choose the type of line that is needed to be created
-	* Input the first coordinate of where your line is going to start
-	* Input the second coordinate of where your line is going to end
-	* Press "Enter" key and the graphic will be drawn on the map
-	* Repeat until all desired graphics have been included. 
+1. Choose the type of line that is needed to be created
+2. Input the first coordinate of where your line is going to start
+3. Input the second coordinate of where your line is going to end
+4. Press *Enter* key and the graphic will be drawn on the map
+5. Repeat until all desired graphics have been included. 
 
 ### Create a Line with a Range and Bearing
-	* Choose the type of line that you would like to create
-	* Choose Bearing and Distance from the second drop down menu
-	* Input the length of the line and choose the unit type
-	* Input the azimuth or angle of the line
-	* Press "Enter" key and the graphic will be drawn on the map
+1. Choose the type of line that you would like to create
+2. Choose Bearing and Distance from the second drop down menu
+3. Input the length of the line and choose the unit type
+4. Input the azimuth or angle of the line
+5. Press *Enter* key and the graphic will be drawn on the map
 
 ### Create a Circle Interactively 
-	* Choose the Circles tab on the Geodesy and Range Tool
-	* Start an interactive session by selecting the arrow icon 
-	* Enter a starting point and the distance of the circles radius by clicking on the map
-	* A graphic will then be displayed on the map showing the circle you created
-	* If desired you can clear all graphics with the clear graphics button
+1. Choose the Circles tab on the Geodesy and Range Tool
+2. Start an interactive session by selecting the arrow icon 
+3. Enter a starting point and the distance of the circles radius by clicking on the map
+
+> A graphic will then be displayed on the map showing the circle you created. If desired you can clear all graphics with the clear graphics button.
+
+### Create a Circle using the Distance Calculator
+1. Choose the Circles tab on the Geodesy and Range Tool
+2. Start an interactive session by selecting the arrow icon 
+3. Enter a starting point and the distance of the circles radius by clicking on the map
+4. Expand the *Distance Calculator* section
+5. Enter a time
+6. Enter a rate
+7. Press *Enter* key and the graphic will be drawn on the map
+
 ### Create Ellipses Interactively
-	* Choose the Ellipse tab on the Geodesy and Range Tool
-	* Start an interactive session by selecting the arrow icon next to the “Center Point” text box
-	* Choose the location where you want the ellipse to be started from 
-	* Drag the cursor to the location where the major axis will end
-	* Select the orientation angle of the major axis
-	* select the length of the minor axis
-	* Graphic(s) will then be displayed on the map showing the Ellipse you created based on the values of the parameters that were set
+1. Choose the Ellipse tab on the Geodesy and Range Tool
+2. Start an interactive session by selecting the arrow icon next to the “Center Point” text box
+3. Choose the location where you want the ellipse to be started from 
+4. Drag the cursor to the location where the major axis will end
+5. Select the orientation angle of the major axis
+6. select the length of the minor axis
+
+> Graphic(s) will then be displayed on the map showing the Ellipse you created based on the values of the parameters that were set.
+
 ### Create Range Rings Interactively 
-	* Choose the Range Rings tab on the Geodesy and Range Tool
-	* Start an interactive session by selecting the arrow icon next to the “Center Point” text box
-	* Choose the location of the Range Rings center by selecting the desired location on the map
-	* Fill in the associated parameters for “Number of Rings”, “Ring Interval”, “Distance Units”, and “Number of Radials”
-	* Press "Enter" key
-	* Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set
+1. Choose the Range Rings tab on the Geodesy and Range Tool
+2. Start an interactive session by selecting the arrow icon next to the “Center Point” text box
+3. Choose the location of the Range Rings center by selecting the desired location on the map
+4. Fill in the associated parameters for “Number of Rings”, “Ring Interval”, “Distance Units”, and “Number of Radials”
+5. Press *Enter* key
+
+> Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set.
 
 ### Create Range Rings Manually 
-	* Choose the Range Rings tab on the Geodesy and Range Tool
-	* Fill in the associated parameters for “Number of Rings”, “Ring Interval”, “Distance Units”, and “Number of Radials”
-	* Input the coordinates for the Range Rings center in the “Center Point” text box and select the Enter key on the keyboard
-	* Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set
-	* If desired you can clear all graphics with the clear graphics button
+1. Choose the Range Rings tab on the Geodesy and Range Tool
+2. Fill in the associated parameters for “Number of Rings”, “Ring Interval”, “Distance Units”, and “Number of Radials”
+3. Input the coordinates for the Range Rings center in the “Center Point” text box and select the Enter key on the keyboard
+
+>Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set. If desired you can clear all graphics with the clear graphics button.
 
 ## Resources
 
