@@ -118,7 +118,7 @@
                 </Grid.RowDefinitions>
                 <Label Content="{x:Static prop:Resources.LabelTime}" Grid.Row="0" Grid.ColumnSpan="2"></Label>
                 <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,2,0"
-                         Text="{Binding Path=TimeString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                         Text="{Binding Path=TravelTime, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
@@ -129,7 +129,7 @@
                           SelectedItem="{Binding Path=TimeUnit, Mode=TwoWay}"></ComboBox>
                 <Label Content="{x:Static prop:Resources.LabelRate}" Grid.Row="2" Grid.ColumnSpan="2"></Label>
                 <TextBox Grid.Row="3" Grid.Column="0" Margin="0,0,2,0"
-                         Text="{Binding Path=RateString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                         Text="{Binding Path=TravelRate, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
