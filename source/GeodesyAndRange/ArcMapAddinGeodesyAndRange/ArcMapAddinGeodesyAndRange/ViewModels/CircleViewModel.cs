@@ -38,7 +38,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         }
 
         #region Properties
-        //public RelayCommand EnterKeyCommandForDistCalc { get; set; }
 
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
@@ -293,19 +292,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #endregion
 
         #region Private Functions
-        /// <summary>
-        /// Handler for the "Enter"key command
-        /// Calls CreateMapElement
-        /// </summary>
-        /// <param name="obj"></param>
-        //private void OnEnterKeyCommandDistCalc(object obj)
-        //{
-        //    if (Point1 == null || rateValue == 0 || timeValue == 0)
-        //    {
-        //        return;
-        //    }
-        //    CreateMapElement();
-        //}
 
         internal override void CreateMapElement()
         {
