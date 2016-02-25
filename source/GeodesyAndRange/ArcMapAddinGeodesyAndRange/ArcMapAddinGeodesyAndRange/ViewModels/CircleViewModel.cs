@@ -247,11 +247,16 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal override void OnNewMapPointEvent(object obj)
         {
             if (IsDistanceCalcExpanded)
+            {
                 HasPoint1 = false;
+            }
 
             base.OnNewMapPointEvent(obj);
 
-            UpdateFeedback();
+            if (IsDistanceCalcExpanded)
+            {
+                UpdateDistance(travelRate * travelTime, RateUnit);
+            }
         }
 
         internal override void OnMouseMoveEvent(object obj)
@@ -360,7 +365,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         private void UpdateFeedback()
         {
-            if (Point1 != null)
+            if (Point1 != null && Distance > 0.0)
             {
                 if (feedback == null)
                 {
