@@ -14,6 +14,7 @@
 
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
+using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
 using System;
 using System.Collections.Generic;
@@ -120,7 +121,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                         continue;
 
                     construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-
+                    //var color = new RgbColorClass() { Red = 255 } as IColor;
                     AddGraphicToMap(construct as IGeometry);
 
                     azimuth += interval;
@@ -150,6 +151,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     polyLine.SpatialReference = Point1.SpatialReference;
                     var construct = polyLine as IConstructGeodetic;
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    //var color = new RgbColorClass() { Red = 255 } as IColor;
                     AddGraphicToMap(construct as IGeometry);
                 }
             }
@@ -178,6 +180,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             HasPoint1 = true;
 
             ClearTempGraphics();
+            //var color = new RgbColorClass() { Red = 255 } as IColor;
             AddGraphicToMap(Point1, true);
 
             // Reset formatted string

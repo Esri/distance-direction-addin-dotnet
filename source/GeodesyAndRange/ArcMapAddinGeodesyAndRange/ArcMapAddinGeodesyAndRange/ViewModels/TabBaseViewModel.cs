@@ -139,6 +139,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     point1Formatted = value;
                     HasPoint1 = true;
                     Point1 = point;
+                    //var color = new RgbColorClass() { Red = 255 } as IColor;
                     AddGraphicToMap(Point1, true);
                     // lets try feedback
                     var mxdoc = ArcMap.Application.Document as IMxDocument;
@@ -376,7 +377,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             RemoveGraphics(gc, MapGraphicsList);
             
             //gc.DeleteAllElements();
-            av.Refresh();
+            //av.Refresh();
+			av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
         }
 
         /// <summary>
@@ -396,7 +398,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             RemoveGraphics(gc, TempGraphicsList);
 
-            av.Refresh();
+            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
         }
         /// <summary>
         /// Method used to remove graphics from the graphics container
@@ -591,14 +593,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic)
+        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
             IElement element = null;
-            ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
-            rgbColor.Red = 255;
-            ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
+            //ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
+            //rgbColor.Red = 255;
+            //ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
             double width = 2.0;
 
             geom.Project(ArcMap.Document.FocusMap.SpatialReference);
@@ -607,11 +609,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 // Marker symbols
                 var simpleMarkerSymbol = new SimpleMarkerSymbol() as ISimpleMarkerSymbol;
-                simpleMarkerSymbol.Color = rgbColor;
+                simpleMarkerSymbol.Color = color;
                 simpleMarkerSymbol.Outline = true;
-                simpleMarkerSymbol.OutlineColor = rgbColor;
+                simpleMarkerSymbol.OutlineColor = color;
                 simpleMarkerSymbol.Size = 5;
-                simpleMarkerSymbol.Style = esriSimpleMarkerStyle.esriSMSCircle;
+                simpleMarkerSymbol.Style = markerStyle;
 
                 var markerElement = new MarkerElement() as IMarkerElement;
                 markerElement.Symbol = simpleMarkerSymbol;
@@ -626,6 +628,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 var lineSymbol = new SimpleLineSymbolClass();
                 lineSymbol.Color = color;
                 lineSymbol.Width = width;
+
+                le.Symbol = lineSymbol;
             }
 
             if (element == null)
@@ -649,11 +653,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             gc.AddElement(element, 0);
 
             //refresh map
-            av.Refresh();
+            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            //if (feedback != null)
+            //    feedback.Refresh((ArcMap.Document.FocusMap as IActiveView).ScreenDisplay.hDC);
         }
-        internal void AddGraphicToMap(IGeometry geom)
+        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false)
         {
-            AddGraphicToMap(geom, false);
+            var color = new RgbColorClass() { Red = 255 } as IColor;
+            AddGraphicToMap(geom, color, IsTempGraphic);
         }
         internal ISpatialReferenceFactory3 srf3 = null;
         /// <summary>

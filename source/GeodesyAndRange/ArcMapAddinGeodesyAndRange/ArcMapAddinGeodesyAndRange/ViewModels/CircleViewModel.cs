@@ -39,6 +39,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
 
+        private INewCircleFeedback2 circleFeedback = new NewCircleFeedbackClass();
+
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
         /// Type of circle property
@@ -245,6 +247,17 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         internal override void OnNewMapPointEvent(object obj)
         {
+            var point = obj as IPoint;
+            if (point == null)
+                return;
+
+            //circleFeedback.Display = (ArcMap.Document.FocusMap as IActiveView).ScreenDisplay;
+            
+            //if (!HasPoint1)
+            //    circleFeedback.Start(point);
+            //else
+            //    circleFeedback.MoveTo(point);
+
             if (IsDistanceCalcExpanded)
             {
                 HasPoint1 = false;
@@ -285,7 +298,17 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             // update feedback
             if (HasPoint1 && !HasPoint2 && !IsDistanceCalcExpanded)
             {
-                FeedbackMoveTo(point);
+                //FeedbackMoveTo(point);
+                //circleFeedback.MoveTo(point);
+
+                var construct = new Polyline() as IConstructGeodetic;
+                if (construct != null)
+                {
+                    ClearTempGraphics();
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                    var color = new RgbColorClass() as IColor;
+                    this.AddGraphicToMap(construct as IGeometry, color, true);
+                }
             }
         }
 
@@ -337,6 +360,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 if (construct != null)
                 {
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    //var color = new RgbColorClass() { Red = 255 } as IColor;
                     this.AddGraphicToMap(construct as IGeometry);
                     Point2 = null; 
                     HasPoint2 = false;

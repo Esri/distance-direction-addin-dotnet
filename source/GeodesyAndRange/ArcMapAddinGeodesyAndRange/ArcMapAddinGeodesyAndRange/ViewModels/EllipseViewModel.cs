@@ -309,7 +309,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 // update bearing
                 Azimuth = GetAzimuth(polyline);
                 // update feedback
-                FeedbackMoveTo(point); 
+                FeedbackMoveTo(point);
+
+                //test
+                ClearTempGraphics();
+                var ellipticArc = new Polyline() as IConstructGeodetic;
+                ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MajorAxisDistance, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                var line = ellipticArc as IPolyline;
+                if (line != null)
+                {
+                    AddGraphicToMap(line as IGeometry, true);
+                }
+
             }
             else if (HasPoint1 && HasPoint2 && !HasPoint3)
             {
@@ -332,7 +343,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                         feedback.Symbol = FeedbackSymbol;
                     }
                     FeedbackMoveTo(point);
-                }                
+                }
+                
+                //test
+                ClearTempGraphics();
+                var ellipticArc = new Polyline() as IConstructGeodetic;
+                ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                var line = ellipticArc as IPolyline;
+                if (line != null)
+                {
+                    AddGraphicToMap(line as IGeometry, true);
+                }
+
             }
         }
 

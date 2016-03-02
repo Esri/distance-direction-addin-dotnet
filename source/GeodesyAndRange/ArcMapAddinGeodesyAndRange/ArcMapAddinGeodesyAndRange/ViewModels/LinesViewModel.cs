@@ -184,6 +184,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 feedback.AddPoint(Point2);
                 var polyline = feedback.Stop();
                 ResetFeedback();
+                //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(polyline);
             }
         }
@@ -217,6 +218,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 UpdateDistance(construct as IGeometry);
                 UpdateAzimuth(construct as IGeometry);
 
+                //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(construct as IGeometry);
                 ResetPoints();
             }
