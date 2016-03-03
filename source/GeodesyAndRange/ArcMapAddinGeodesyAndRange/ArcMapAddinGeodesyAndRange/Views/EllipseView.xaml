@@ -42,7 +42,7 @@
     <UserControl.DataContext>
         <StaticResourceExtension ResourceKey="ellipseViewModel" />
     </UserControl.DataContext>
-    <Grid>
+    <Grid x:Name="mainControl">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*"/>
@@ -76,7 +76,7 @@
                  ToolTip="{x:Static prop:Resources.LabelCenterPoint}"
                  Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0,0,26,0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
         </TextBox>
         <Button Command="{Binding ActivateToolCommand}"
@@ -106,7 +106,7 @@
                          Text="{Binding Path=MinorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
                 <Label Content="{x:Static prop:Resources.LabelMajorAxis}" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
@@ -114,7 +114,7 @@
                          Text="{Binding Path=MajorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
                 <Label Content="{x:Static prop:Resources.LabelAxisUnits}" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
@@ -144,7 +144,7 @@
                          Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
                 <Label Content="{x:Static prop:Resources.LabelOrientationUnit}" Grid.Row="2" Grid.Column="0" 

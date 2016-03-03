@@ -169,24 +169,26 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         // when someone hits the enter key, create geodetic graphic
         internal override void OnEnterKeyCommand(object obj)
         {
-            if (!CanCreateElement)
-                return;
+            base.OnEnterKeyCommand(obj);
 
-            if(LineFromType == LineFromTypes.Points)
-            {
-                base.OnEnterKeyCommand(obj);
-            }
-            else
-            {
-                ClearTempGraphics();
-                // Bearing and Distance
-                UpdateFeedback();
-                feedback.AddPoint(Point2);
-                var polyline = feedback.Stop();
-                ResetFeedback();
-                //var color = new RgbColorClass() { Red = 255 } as IColor;
-                AddGraphicToMap(polyline);
-            }
+            //if (!CanCreateElement)
+            //    return;
+
+            //if(LineFromType == LineFromTypes.Points)
+            //{
+            //    base.OnEnterKeyCommand(obj);
+            //}
+            //else
+            //{
+            //    ClearTempGraphics();
+            //    // Bearing and Distance
+            //    UpdateFeedback();
+            //    feedback.AddPoint(Point2);
+            //    var polyline = feedback.Stop();
+            //    ResetFeedback();
+            //    //var color = new RgbColorClass() { Red = 255 } as IColor;
+            //    AddGraphicToMap(polyline);
+            //}
         }
 
         private void CreatePolyline()

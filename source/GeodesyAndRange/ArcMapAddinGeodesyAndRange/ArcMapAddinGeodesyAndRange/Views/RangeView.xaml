@@ -20,7 +20,7 @@
     <UserControl.DataContext>
         <StaticResourceExtension ResourceKey="rangeViewModel" />
     </UserControl.DataContext>
-    <Grid>
+    <Grid x:Name="mainControl">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
@@ -44,7 +44,7 @@
         <TextBox x:Name="Input_Coords" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0" Grid.Row="1">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
         </TextBox>
         <Button Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Grid.Row="1">
@@ -56,7 +56,7 @@
         <TextBox x:Name="Number_of_Rings_Text_Box" Grid.Row="3" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
         </TextBox>
         <Label x:Name="DistanceLabel" Content="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}"                
@@ -65,7 +65,7 @@
         <TextBox x:Name="Distance_Between_Rings_TextBox" Grid.Row="5" Text="{Binding DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
         	Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
         </TextBox>
         <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cmbLineDistanceType"
@@ -79,7 +79,7 @@
         <TextBox x:Name="NumberOfRadials_TextBox" Grid.Row="7" Text="{Binding Path=NumberOfRadials, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
         </TextBox>
         <Button Grid.Row="8" Grid.Column="1" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,20,0,0" />

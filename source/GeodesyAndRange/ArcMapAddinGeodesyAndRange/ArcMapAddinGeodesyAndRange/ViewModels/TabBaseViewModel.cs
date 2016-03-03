@@ -448,11 +448,28 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="obj"></param>
         internal virtual void OnEnterKeyCommand(object obj)
         {
+            var depends = obj as System.Windows.DependencyObject;
+
+            // check all children of dependency object for validation errors
+            if (depends != null && !IsValid(depends))
+                return;
+
             if (!CanCreateElement)
                 return;
 
             CreateMapElement();
         }
+
+        private bool IsValid(System.Windows.DependencyObject obj)
+        {
+            // The dependency object is valid if it has no errors and all
+            // of its children (that are dependency objects) are error-free.
+            return !Validation.GetHasError(obj) &&
+            System.Windows.LogicalTreeHelper.GetChildren(obj)
+            .OfType<System.Windows.DependencyObject>()
+            .All(IsValid);
+        }
+
         /// <summary>
         /// Handler for the new map point click event
         /// </summary>
