@@ -139,7 +139,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     point1Formatted = value;
                     HasPoint1 = true;
                     Point1 = point;
-                    AddGraphicToMap(Point1, true);
+                    var color = new RgbColorClass() { Green = 255 } as IColor;
+                    AddGraphicToMap(Point1, color, true);
                     // lets try feedback
                     var mxdoc = ArcMap.Application.Document as IMxDocument;
                     var av = mxdoc.FocusMap as IActiveView;
@@ -148,7 +149,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     feedback.Start(point);
                     if(Point2 != null)
                     {
-                        UpdateDistance(GetPolylineFromFeedback(Point1, Point2));
+                        UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
                         FeedbackMoveTo(Point2);
                     }
                 }
@@ -216,7 +217,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                         // lets try feedback
                         CreateFeedback(Point1, av);
                         feedback.Start(Point1);
-                        UpdateDistance(GetPolylineFromFeedback(Point1, Point2));
+                        UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
                         // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
                         FeedbackMoveTo(point);
                     }
@@ -376,7 +377,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             RemoveGraphics(gc, MapGraphicsList);
             
             //gc.DeleteAllElements();
-            av.Refresh();
+            //av.Refresh();
+			av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
         }
 
         /// <summary>
@@ -396,7 +398,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             RemoveGraphics(gc, TempGraphicsList);
 
-            av.Refresh();
+            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
         }
         /// <summary>
         /// Method used to remove graphics from the graphics container
@@ -475,7 +477,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                AddGraphicToMap(Point1, true);
+                var color = new RgbColorClass() { Green = 255 } as IColor;
+                AddGraphicToMap(Point1, color, true);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -530,6 +533,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #endregion
 
         #region Private Functions
+
         /// <summary>
         /// Method used to totally reset the tool
         /// reset points, feedback
@@ -591,14 +595,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic)
+        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
             IElement element = null;
-            ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
-            rgbColor.Red = 255;
-            ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
+            //ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
+            //rgbColor.Red = 255;
+            //ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
             double width = 2.0;
 
             geom.Project(ArcMap.Document.FocusMap.SpatialReference);
@@ -607,11 +611,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 // Marker symbols
                 var simpleMarkerSymbol = new SimpleMarkerSymbol() as ISimpleMarkerSymbol;
-                simpleMarkerSymbol.Color = rgbColor;
+                simpleMarkerSymbol.Color = color;
                 simpleMarkerSymbol.Outline = true;
-                simpleMarkerSymbol.OutlineColor = rgbColor;
+                simpleMarkerSymbol.OutlineColor = color;
                 simpleMarkerSymbol.Size = 5;
-                simpleMarkerSymbol.Style = esriSimpleMarkerStyle.esriSMSCircle;
+                simpleMarkerSymbol.Style = markerStyle;
 
                 var markerElement = new MarkerElement() as IMarkerElement;
                 markerElement.Symbol = simpleMarkerSymbol;
@@ -620,12 +624,18 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             else if(geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
                 // create graphic then add to map
-                var le = new LineElementClass() as ILineElement;
-                element = le as IElement;
-
                 var lineSymbol = new SimpleLineSymbolClass();
                 lineSymbol.Color = color;
                 lineSymbol.Width = width;
+                if (IsTempGraphic && rasterOpCode != esriRasterOpCode.esriROPNOP)
+                {
+                    lineSymbol.Width = 1;
+                    lineSymbol.ROP2 = rasterOpCode;
+                }
+
+                var le = new LineElementClass() as ILineElement;
+                element = le as IElement;
+                le.Symbol = lineSymbol;
             }
 
             if (element == null)
@@ -649,11 +659,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             gc.AddElement(element, 0);
 
             //refresh map
-            av.Refresh();
+            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
         }
-        internal void AddGraphicToMap(IGeometry geom)
+        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false)
         {
-            AddGraphicToMap(geom, false);
+            var color = new RgbColorClass() { Red = 255 } as IColor;
+            AddGraphicToMap(geom, color, IsTempGraphic);
         }
         internal ISpatialReferenceFactory3 srf3 = null;
         /// <summary>
@@ -831,7 +842,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 Point2Formatted = string.Empty;
                 Point2 = point;
                 // get distance from feedback
-                var polyline = GetPolylineFromFeedback(Point1, point);
+                var polyline = GetGeoPolylineFromPoints(Point1, point);
                 UpdateDistance(polyline);
             }
 
@@ -842,23 +853,22 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
         /// <summary>
-        /// Gets a polyline from the feedback object
+        /// Gets a geodetic polyline from two points
         /// startPoint is where it will restart from
         /// endPoint is where you want it to end for the return of the polyline
         /// </summary>
         /// <param name="startPoint">startPoint is where it will restart from</param>
         /// <param name="endPoint">endPoint is where you want it to end for the return of the polyline</param>
-        /// <returns></returns>
-        internal IPolyline GetPolylineFromFeedback(IPoint startPoint, IPoint endPoint)
+        /// <returns>IPolyline</returns>
+        internal IPolyline GetGeoPolylineFromPoints(IPoint startPoint, IPoint endPoint)
         {
-            if (feedback == null)
+            var construct = new Polyline() as IConstructGeodetic;
+            if (construct == null)
                 return null;
 
-            feedback.AddPoint(endPoint);
-            var polyline = feedback.Stop();
-            // restart feedback
-            feedback.Start(startPoint);
-            return polyline;
+            construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), startPoint, endPoint, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+
+            return construct as IPolyline;
         }
 
         /// <summary>

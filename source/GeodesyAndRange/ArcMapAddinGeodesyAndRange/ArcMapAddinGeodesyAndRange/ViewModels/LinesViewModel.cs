@@ -184,6 +184,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 feedback.AddPoint(Point2);
                 var polyline = feedback.Stop();
                 ResetFeedback();
+                //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(polyline);
             }
         }
@@ -217,6 +218,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 UpdateDistance(construct as IGeometry);
                 UpdateAzimuth(construct as IGeometry);
 
+                //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(construct as IGeometry);
                 ResetPoints();
             }
@@ -303,7 +305,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                AddGraphicToMap(Point1, true);
+                var color = new RgbColorClass() { Green = 255 } as IColor;
+                AddGraphicToMap(Point1, color, true);
                 return;
             }
 
@@ -336,7 +339,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (HasPoint1 && !HasPoint2)
             {
                 // update azimuth from feedback
-                var polyline = GetPolylineFromFeedback(Point1, point);
+                var polyline = GetGeoPolylineFromPoints(Point1, point);
                 UpdateAzimuth(polyline);
             }
 
