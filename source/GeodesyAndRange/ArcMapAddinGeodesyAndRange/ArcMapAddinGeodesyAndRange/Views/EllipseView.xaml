@@ -43,122 +43,126 @@
         <StaticResourceExtension ResourceKey="ellipseViewModel" />
     </UserControl.DataContext>
     <Grid x:Name="mainControl">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Label Content="{x:Static prop:Resources.LabelEllipseType}"                
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Label Content="{x:Static prop:Resources.LabelEllipseType}"                
                HorizontalAlignment="Left" 
                Grid.Row="0" Grid.Column="0"
                VerticalAlignment="Center"
                Margin="0,0,0,0"/>
-        <ComboBox x:Name="cmbEllipseType"    
+                <ComboBox x:Name="cmbEllipseType"    
                 ItemsSource="{Binding Source={StaticResource ellipseTypes}}" 
                 SelectedItem="{Binding Path=EllipseType, Mode=TwoWay}"   
                 Height="Auto"
                 Grid.Row="0" Grid.Column="1"/>
-        <Label Content="{x:Static prop:Resources.LabelCenterPoint}"                
+                <Label Content="{x:Static prop:Resources.LabelCenterPoint}"                
                HorizontalAlignment="Left" 
                Grid.Row="1" Grid.Column="0"
                VerticalAlignment="Bottom"
                Margin="0,0,0,0"/>
-        <TextBox Height="Auto"
+                <TextBox Height="Auto"
                  Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }"            
                  ToolTip="{x:Static prop:Resources.LabelCenterPoint}"
                  Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0,0,26,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-            </TextBox.InputBindings>
-        </TextBox>
-        <Button Command="{Binding ActivateToolCommand}"
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Command="{Binding ActivateToolCommand}"
                 Width="Auto" HorizontalAlignment="Right" 
                 ToolTip="{x:Static prop:Resources.TooltipMapPointTool}"
                 Grid.Row="2" Grid.Column="1" Margin="0,0,0,0">
-            <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
-        </Button>
-        <GroupBox Header="{x:Static prop:Resources.LabelAxisGroup}" HorizontalAlignment="Stretch" 
+                    <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+                </Button>
+                <GroupBox Header="{x:Static prop:Resources.LabelAxisGroup}" HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch" 
                   Grid.Row="3" Grid.ColumnSpan="2"
                   Margin="0,10,0,10">
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Label Content="{x:Static prop:Resources.LabelMinorAxis}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
-                <TextBox Height="23" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" 
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Label Content="{x:Static prop:Resources.LabelMinorAxis}" Grid.Row="0" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+                        <TextBox Height="23" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Stretch" 
                          Text="{Binding Path=MinorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-                    </TextBox.InputBindings>
-                </TextBox>
-                <Label Content="{x:Static prop:Resources.LabelMajorAxis}" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
-                <TextBox Height="23" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch"
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <Label Content="{x:Static prop:Resources.LabelMajorAxis}" Grid.Row="2" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+                        <TextBox Height="23" Grid.Row="3" Grid.Column="0" HorizontalAlignment="Stretch"
                          Text="{Binding Path=MajorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-                    </TextBox.InputBindings>
-                </TextBox>
-                <Label Content="{x:Static prop:Resources.LabelAxisUnits}" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
-                <ComboBox x:Name="cmbAxisUnits"
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <Label Content="{x:Static prop:Resources.LabelAxisUnits}" Grid.Row="4" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" />
+                        <ComboBox x:Name="cmbAxisUnits"
                           ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
                           SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}" 
                           Grid.Row="5" Grid.Column="0" HorizontalAlignment="Stretch" />
-            </Grid>            
-        </GroupBox>
-        <GroupBox Header="{x:Static prop:Resources.LabelOrientationGroup}" HorizontalAlignment="Stretch" 
+                    </Grid>
+                </GroupBox>
+                <GroupBox Header="{x:Static prop:Resources.LabelOrientationGroup}" HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch" 
                   Grid.Row="4" Grid.ColumnSpan="2"
                   Margin="0,10,0,10">
-            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <Label  Content="{x:Static prop:Resources.LabelOrientationAngle}" Grid.Row="0" Grid.Column="0" 
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Label  Content="{x:Static prop:Resources.LabelOrientationAngle}" Grid.Row="0" Grid.Column="0" 
                 Margin="0,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <TextBox Grid.Row="1" Grid.ColumnSpan="2" Height="23" 
+                        <TextBox Grid.Row="1" Grid.ColumnSpan="2" Height="23" 
                          Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-                    </TextBox.InputBindings>
-                </TextBox>
-                <Label Content="{x:Static prop:Resources.LabelOrientationUnit}" Grid.Row="2" Grid.Column="0" 
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <Label Content="{x:Static prop:Resources.LabelOrientationUnit}" Grid.Row="2" Grid.Column="0" 
                        Margin="0,10,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
-                <ComboBox x:Name="cmbOrientationAngleUnits"
+                        <ComboBox x:Name="cmbOrientationAngleUnits"
                           ItemsSource="{Binding Source={StaticResource azimuthData}}" 
                           SelectedItem="{Binding Path=AzimuthType, Mode=TwoWay}" 
                           Grid.Row="3" Grid.Column="0"  />
-            </Grid>
-        </GroupBox>
-        <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
+                    </Grid>
+                </GroupBox>
+                <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
                         ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
                         Command="{Binding ClearGraphicsCommand}"
                         Width="100" Height="30" Margin="0,20,0,0"
                         Grid.Row="5" Grid.Column="1" HorizontalAlignment="Right"/>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>
