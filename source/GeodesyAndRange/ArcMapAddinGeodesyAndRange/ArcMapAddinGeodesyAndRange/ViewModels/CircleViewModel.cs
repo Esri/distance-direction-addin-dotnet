@@ -39,8 +39,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Properties
 
-        private INewCircleFeedback2 circleFeedback = new NewCircleFeedbackClass();
-
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
         /// Type of circle property
@@ -106,7 +104,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 // we need to make sure we are in the same units as the Distance property before setting
                 UpdateDistance(travelRate * travelTime, RateUnit);
-                //UpdateFeedback();
 
                 RaisePropertyChanged(() => TravelTime);
             }
@@ -116,7 +113,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             Distance = distance;
             UpdateDistanceFromTo(fromDistanceType, LineDistanceType);
-            UpdateFeedback();
+            UpdateFeedbackWithGeoCircle();
         }
 
         double travelRate = 0.0;
@@ -185,6 +182,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     Reset(false);
                 }
 
+                ClearTempGraphics();
+                if(HasPoint1)
+                    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
         }
@@ -219,7 +220,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                     Distance = d;
 
-                    UpdateFeedback();
+                    UpdateFeedbackWithGeoCircle();
                 }
                 else
                 {
@@ -250,13 +251,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             var point = obj as IPoint;
             if (point == null)
                 return;
-
-            //circleFeedback.Display = (ArcMap.Document.FocusMap as IActiveView).ScreenDisplay;
-            
-            //if (!HasPoint1)
-            //    circleFeedback.Start(point);
-            //else
-            //    circleFeedback.MoveTo(point);
 
             if (IsDistanceCalcExpanded)
             {
@@ -289,26 +283,32 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             else if (HasPoint1 && !HasPoint2 && !IsDistanceCalcExpanded)
             {
                 Point2Formatted = string.Empty;
-                Point2 = point;
                 // get distance from feedback
-                var polyline = GetPolylineFromFeedback(Point1, point);
+                var polyline = GetGeoPolylineFromPoints(Point1, point);
                 UpdateDistance(polyline);
             }
 
             // update feedback
             if (HasPoint1 && !HasPoint2 && !IsDistanceCalcExpanded)
             {
-                //FeedbackMoveTo(point);
-                //circleFeedback.MoveTo(point);
+                UpdateFeedbackWithGeoCircle();
+            }
+        }
 
-                var construct = new Polyline() as IConstructGeodetic;
-                if (construct != null)
-                {
-                    ClearTempGraphics();
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-                    var color = new RgbColorClass() as IColor;
-                    this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
-                }
+        private void UpdateFeedbackWithGeoCircle()
+        {
+            if (Point1 == null || Distance <= 0.0)
+                return;
+
+            var construct = new Polyline() as IConstructGeodetic;
+            if (construct != null)
+            {
+                ClearTempGraphics();
+                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                Point2 = (construct as IPolyline).ToPoint;
+                var color = new RgbColorClass() as IColor;
+                this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
             }
         }
 
@@ -338,7 +338,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             TravelRate = 0;
         }
         /// <summary>
-        /// 
+        /// Create geodetic circle
         /// </summary>
         private void CreateCircle()
         {
@@ -350,7 +350,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             var polyLine = new Polyline() as IPolyline;
             polyLine.SpatialReference = Point1.SpatialReference;
             var ptCol = polyLine as IPointCollection;
-            ptCol.AddPoint(Point1); ptCol.AddPoint(Point2);
+            ptCol.AddPoint(Point1); 
+            ptCol.AddPoint(Point2);
 
             UpdateDistance(polyLine as IGeometry);
 
@@ -373,63 +374,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
-        private void UpdateFeedback()
-        {
-            if (Point1 != null && Distance > 0.0)
-            {
-                if (feedback == null)
-                {
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
-                    feedback.Start(Point1);
-                }
-
-                // now get second point from distance and bearing
-                var construct = new Polyline() as IConstructGeodetic;
-                if (construct == null)
-                    return;
-
-                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, 0.0, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-
-                var line = construct as IPolyline;
-
-                if (line.ToPoint != null)
-                {
-                    FeedbackMoveTo(line.ToPoint);
-                    Point2 = line.ToPoint;
-                }
-            }
-        }
-
-        //private double ConvertTime(TimeUnits before, TimeUnits after)
-        //{
-        //    double val = TravelTime;
-        //    if (before == TimeUnits.Hours && after == TimeUnits.Minutes)
-        //    {
-        //        val = TimeSpan.FromHours(val).TotalMinutes;
-        //    }
-        //    else if (before == TimeUnits.Hours && after == TimeUnits.Seconds)
-        //    {
-        //        val = TimeSpan.FromHours(val).TotalSeconds;
-        //    }
-        //    else if (before == TimeUnits.Minutes && after == TimeUnits.Hours)
-        //    {
-        //        val = TimeSpan.FromMinutes(val).TotalHours;
-        //    }
-        //    else if (before == TimeUnits.Minutes && after == TimeUnits.Seconds)
-        //    {
-        //        val = TimeSpan.FromMinutes(val).TotalSeconds;
-        //    }
-        //    else if (before == TimeUnits.Seconds && after == TimeUnits.Minutes)
-        //    {
-        //        val = TimeSpan.FromSeconds(val).TotalMinutes;
-        //    }
-        //    else if (before == TimeUnits.Seconds && after == TimeUnits.Hours)
-        //    {
-        //        val = TimeSpan.FromSeconds(val).TotalHours;
-        //    }
-        //    return val;
-        //}
         #endregion
     }
 }

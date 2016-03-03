@@ -180,8 +180,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             HasPoint1 = true;
 
             ClearTempGraphics();
-            //var color = new RgbColorClass() { Red = 255 } as IColor;
-            AddGraphicToMap(Point1, true);
+            var color = new RgbColorClass() { Green = 255 } as IColor;
+            AddGraphicToMap(Point1, color, true);
 
             // Reset formatted string
             Point1Formatted = string.Empty;

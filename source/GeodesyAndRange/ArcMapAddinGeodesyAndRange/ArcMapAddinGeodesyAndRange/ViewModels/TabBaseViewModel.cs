@@ -139,8 +139,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     point1Formatted = value;
                     HasPoint1 = true;
                     Point1 = point;
-                    //var color = new RgbColorClass() { Red = 255 } as IColor;
-                    AddGraphicToMap(Point1, true);
+                    var color = new RgbColorClass() { Green = 255 } as IColor;
+                    AddGraphicToMap(Point1, color, true);
                     // lets try feedback
                     var mxdoc = ArcMap.Application.Document as IMxDocument;
                     var av = mxdoc.FocusMap as IActiveView;
@@ -149,7 +149,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     feedback.Start(point);
                     if(Point2 != null)
                     {
-                        UpdateDistance(GetPolylineFromFeedback(Point1, Point2));
+                        UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
                         FeedbackMoveTo(Point2);
                     }
                 }
@@ -217,7 +217,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                         // lets try feedback
                         CreateFeedback(Point1, av);
                         feedback.Start(Point1);
-                        UpdateDistance(GetPolylineFromFeedback(Point1, Point2));
+                        UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
                         // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
                         FeedbackMoveTo(point);
                     }
@@ -477,7 +477,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                AddGraphicToMap(Point1, true);
+                var color = new RgbColorClass() { Green = 255 } as IColor;
+                AddGraphicToMap(Point1, color, true);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -841,7 +842,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 Point2Formatted = string.Empty;
                 Point2 = point;
                 // get distance from feedback
-                var polyline = GetPolylineFromFeedback(Point1, point);
+                var polyline = GetGeoPolylineFromPoints(Point1, point);
                 UpdateDistance(polyline);
             }
 
@@ -852,23 +853,22 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
         /// <summary>
-        /// Gets a polyline from the feedback object
+        /// Gets a geodetic polyline from two points
         /// startPoint is where it will restart from
         /// endPoint is where you want it to end for the return of the polyline
         /// </summary>
         /// <param name="startPoint">startPoint is where it will restart from</param>
         /// <param name="endPoint">endPoint is where you want it to end for the return of the polyline</param>
-        /// <returns></returns>
-        internal IPolyline GetPolylineFromFeedback(IPoint startPoint, IPoint endPoint)
+        /// <returns>IPolyline</returns>
+        internal IPolyline GetGeoPolylineFromPoints(IPoint startPoint, IPoint endPoint)
         {
-            if (feedback == null)
+            var construct = new Polyline() as IConstructGeodetic;
+            if (construct == null)
                 return null;
 
-            feedback.AddPoint(endPoint);
-            var polyline = feedback.Stop();
-            // restart feedback
-            feedback.Start(startPoint);
-            return polyline;
+            construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), startPoint, endPoint, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+
+            return construct as IPolyline;
         }
 
         /// <summary>

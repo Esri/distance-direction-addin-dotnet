@@ -282,7 +282,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             else if (HasPoint1 && HasPoint2 && !HasPoint3)
             {
-                var polyline = CreateGeodeticLine(Point1, point); //GetPolylineFromFeedback(Point1, point);
+                var polyline = CreateGeodeticLine(Point1, point); 
                 
                 // get minor distance from polyline
                 if (polyline != null)
