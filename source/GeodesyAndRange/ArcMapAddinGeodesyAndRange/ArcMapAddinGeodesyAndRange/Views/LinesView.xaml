@@ -41,7 +41,7 @@
     <UserControl.DataContext>
         <StaticResourceExtension ResourceKey="linesViewModel" />
     </UserControl.DataContext>
-    <Grid>
+    <Grid x:Name="mainControl">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto" />
@@ -75,7 +75,7 @@
         <TextBox Grid.Row="2" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
         </TextBox>
         <Button Grid.Row="2" Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="3,3,0,0">
@@ -86,7 +86,7 @@
         <TextBox Grid.Row="4" Text="{Binding Path=Point2Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Height="24" 
                  Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
             <TextBox.Style>
                 <Style TargetType="TextBox">
@@ -106,7 +106,7 @@
         <TextBox Grid.Row="6" Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
                  Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
             <TextBox.Style>
                 <Style TargetType="TextBox">
@@ -131,7 +131,7 @@
         <TextBox Grid.Row="8" Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
                  Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
             <TextBox.Style>
                 <Style TargetType="TextBox">

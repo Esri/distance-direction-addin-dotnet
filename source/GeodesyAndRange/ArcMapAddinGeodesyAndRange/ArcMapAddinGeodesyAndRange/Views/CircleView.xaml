@@ -34,7 +34,7 @@
     <UserControl.DataContext>
         <StaticResourceExtension ResourceKey="circleViewModel" />
     </UserControl.DataContext>
-    <Grid>
+    <Grid x:Name="mainControl">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="Auto"/>
@@ -65,7 +65,7 @@
                  Validation.ErrorTemplate="{StaticResource errorTemplate}"
                  Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,24,0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
         </TextBox>
         <Button Command="{Binding ActivateToolCommand}"
@@ -81,7 +81,7 @@
                  Validation.ErrorTemplate="{StaticResource errorTemplate}"
                  Grid.Row="5" Grid.Column="0">
             <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
             </TextBox.InputBindings>
             <TextBox.Style>
                 <Style TargetType="TextBox">
@@ -121,7 +121,7 @@
                          Text="{Binding Path=TravelTime, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
                 <ComboBox Grid.Row="1" Grid.Column="1"
@@ -132,7 +132,7 @@
                          Text="{Binding Path=TravelRate, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
                 <ComboBox x:Name="cmbRateType"
