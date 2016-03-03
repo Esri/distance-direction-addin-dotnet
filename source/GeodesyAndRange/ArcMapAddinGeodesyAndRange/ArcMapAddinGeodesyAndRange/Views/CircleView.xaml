@@ -35,116 +35,120 @@
         <StaticResourceExtension ResourceKey="circleViewModel" />
     </UserControl.DataContext>
     <Grid x:Name="mainControl">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Label Content="{x:Static prop:Resources.LabelCreateCircleFrom}"                
-               HorizontalAlignment="Stretch" 
-               Grid.ColumnSpan="3" Grid.Row="0" />
-        <ComboBox x:Name="cmbCircleFromType"
-                ItemsSource="{Binding Source={StaticResource circleFromData}}" 
-                SelectedItem="{Binding Path=CircleType, Mode=TwoWay}"                      
-                Height="Auto"
-                Grid.Row="1" Grid.ColumnSpan="3">
-        </ComboBox>
-        <Label Content="{x:Static prop:Resources.LabelCenterPoint}"
-               Grid.Row="2" Grid.ColumnSpan="3"/>
-        <TextBox Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
-                 Validation.ErrorTemplate="{StaticResource errorTemplate}"
-                 Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,24,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-            </TextBox.InputBindings>
-        </TextBox>
-        <Button Command="{Binding ActivateToolCommand}"
-                Width="Auto" HorizontalAlignment="Right" 
-                Grid.Row="3" Grid.Column="2" 
-                ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="0,0,0,0">
-            <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" HorizontalAlignment="Right" />
-        </Button>
-        <Label Content="{x:Static prop:Resources.LabelRadiusDiameter}"
-               Grid.Row="4" Grid.ColumnSpan="3"/>
-        <TextBox Margin="3,3,0,0"
-                 Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                 Validation.ErrorTemplate="{StaticResource errorTemplate}"
-                 Grid.Row="5" Grid.Column="0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-            </TextBox.InputBindings>
-            <TextBox.Style>
-                <Style TargetType="TextBox">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsDistanceCalcExpanded}" Value="False">
-                            <Setter Property="IsEnabled" Value="True" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsDistanceCalcExpanded}" Value="True">
-                            <Setter Property="IsEnabled" Value="False" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBox.Style>
-        </TextBox>
-        <ComboBox x:Name="cmbLineDistanceType"
-                  ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
-                  SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
-                  Height="Auto" Margin="3,3,0,0"
-                  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2">
-        </ComboBox>
-        <Expander Header="{x:Static prop:Resources.LabelDistanceCalculator}" 
-                  IsExpanded="{Binding IsDistanceCalcExpanded, Mode=OneWayToSource}"
-                  Grid.Row="6" Grid.ColumnSpan="3" Margin="0,10,0,0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Label Content="{x:Static prop:Resources.LabelTime}" Grid.Row="0" Grid.ColumnSpan="2"></Label>
-                <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,2,0"
+                <Label Content="{x:Static prop:Resources.LabelCreateCircleFrom}"                
+               HorizontalAlignment="Stretch" 
+               Grid.ColumnSpan="3" Grid.Row="0" />
+                <ComboBox x:Name="cmbCircleFromType"
+                ItemsSource="{Binding Source={StaticResource circleFromData}}" 
+                SelectedItem="{Binding Path=CircleType, Mode=TwoWay}"                      
+                Height="Auto"
+                Grid.Row="1" Grid.ColumnSpan="3">
+                </ComboBox>
+                <Label Content="{x:Static prop:Resources.LabelCenterPoint}"
+               Grid.Row="2" Grid.ColumnSpan="3"/>
+                <TextBox Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}"
+                 Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,24,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Command="{Binding ActivateToolCommand}"
+                Width="Auto" HorizontalAlignment="Right" 
+                Grid.Row="3" Grid.Column="2" 
+                ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="0,0,0,0">
+                    <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" HorizontalAlignment="Right" />
+                </Button>
+                <Label Content="{x:Static prop:Resources.LabelRadiusDiameter}"
+               Grid.Row="4" Grid.ColumnSpan="3"/>
+                <TextBox Margin="3,3,0,0"
+                 Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}"
+                 Grid.Row="5" Grid.Column="0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsDistanceCalcExpanded}" Value="False">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding IsDistanceCalcExpanded}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <ComboBox x:Name="cmbLineDistanceType"
+                  ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
+                  SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
+                  Height="Auto" Margin="3,3,0,0"
+                  Grid.Row="5" Grid.Column="1" Grid.ColumnSpan="2">
+                </ComboBox>
+                <Expander Header="{x:Static prop:Resources.LabelDistanceCalculator}" 
+                  IsExpanded="{Binding IsDistanceCalcExpanded, Mode=OneWayToSource}"
+                  Grid.Row="6" Grid.ColumnSpan="3" Margin="0,10,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <Label Content="{x:Static prop:Resources.LabelTime}" Grid.Row="0" Grid.ColumnSpan="2"></Label>
+                        <TextBox Grid.Row="1" Grid.Column="0" Margin="0,0,2,0"
                          Text="{Binding Path=TravelTime, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-                    </TextBox.InputBindings>
-                </TextBox>
-                <ComboBox Grid.Row="1" Grid.Column="1"
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <ComboBox Grid.Row="1" Grid.Column="1"
                           ItemsSource="{Binding Source={StaticResource timeData}}" 
                           SelectedItem="{Binding Path=TimeUnit, Mode=TwoWay}"></ComboBox>
-                <Label Content="{x:Static prop:Resources.LabelRate}" Grid.Row="2" Grid.ColumnSpan="2"></Label>
-                <TextBox Grid.Row="3" Grid.Column="0" Margin="0,0,2,0"
+                        <Label Content="{x:Static prop:Resources.LabelRate}" Grid.Row="2" Grid.ColumnSpan="2"></Label>
+                        <TextBox Grid.Row="3" Grid.Column="0" Margin="0,0,2,0"
                          Text="{Binding Path=TravelRate, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-                    </TextBox.InputBindings>
-                </TextBox>
-                <ComboBox x:Name="cmbRateType"
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <ComboBox x:Name="cmbRateType"
                           Grid.Row="3" Grid.Column="1"
                           ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
                           SelectedItem="{Binding Path=RateUnit, Mode=TwoWay}" ></ComboBox>
-            </Grid>            
-        </Expander>
-        <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
+                    </Grid>
+                </Expander>
+                <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
                 ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
                 Command="{Binding ClearGraphicsCommand}"
                 Margin="3,20,0,0"
                 Grid.Row="7" Grid.Column="2"/>
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>
