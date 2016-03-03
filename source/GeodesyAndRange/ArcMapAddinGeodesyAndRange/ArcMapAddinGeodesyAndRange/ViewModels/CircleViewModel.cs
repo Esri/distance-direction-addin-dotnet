@@ -307,7 +307,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     ClearTempGraphics();
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                     var color = new RgbColorClass() as IColor;
-                    this.AddGraphicToMap(construct as IGeometry, color, true);
+                    this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
                 }
             }
         }

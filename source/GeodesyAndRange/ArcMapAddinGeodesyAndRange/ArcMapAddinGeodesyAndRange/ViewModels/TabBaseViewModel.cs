@@ -532,6 +532,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #endregion
 
         #region Private Functions
+
         /// <summary>
         /// Method used to totally reset the tool
         /// reset points, feedback
@@ -593,7 +594,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle)
+        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
@@ -622,13 +623,17 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             else if(geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
                 // create graphic then add to map
-                var le = new LineElementClass() as ILineElement;
-                element = le as IElement;
-
                 var lineSymbol = new SimpleLineSymbolClass();
                 lineSymbol.Color = color;
                 lineSymbol.Width = width;
+                if (IsTempGraphic && rasterOpCode != esriRasterOpCode.esriROPNOP)
+                {
+                    lineSymbol.Width = 1;
+                    lineSymbol.ROP2 = rasterOpCode;
+                }
 
+                var le = new LineElementClass() as ILineElement;
+                element = le as IElement;
                 le.Symbol = lineSymbol;
             }
 
@@ -654,8 +659,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             //refresh map
             av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
-            //if (feedback != null)
-            //    feedback.Refresh((ArcMap.Document.FocusMap as IActiveView).ScreenDisplay.hDC);
         }
         internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false)
         {
