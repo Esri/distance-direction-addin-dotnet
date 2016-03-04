@@ -35,11 +35,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             //properties
             CircleType = CircleFromTypes.Radius;
-            EnterKeyCommandForDistCalc = new RelayCommand(OnEnterKeyCommandDistCalc);
         }
 
         #region Properties
-        public RelayCommand EnterKeyCommandForDistCalc { get; set; }
 
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
@@ -77,81 +75,67 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     return;
                 }
-                var before = timeUnit;
+                //var before = timeUnit;
                 timeUnit = value;
-                timeValue = ConvertTime(before, value);
+                //timeValue = ConvertTime(before, value);
 
-                RaisePropertyChanged(() => TimeString);
+                UpdateDistance(travelTime * travelRate, RateUnit);
+
+                RaisePropertyChanged(() => TimeUnit);
             }
         }
 
-        double timeValue = 0;
+        double travelTime = 0.0;
         /// <summary>
         /// Property for time display
         /// </summary>
-        public string TimeString
+        public double TravelTime
         {
             get
             {
-                return timeValue.ToString();
+                return travelTime;
             }
             set
             {
-                double parsedValue = 0;
-                if (double.TryParse(value, out parsedValue))
-                {
-                    if (parsedValue == timeValue)
-                    {
-                        return;
-                    }
-                    timeValue = parsedValue;
+                if (value < 0.0)
+                    throw new ArgumentException(Properties.Resources.AEMustBePositive);
 
-                    if (rateValue != 0)
-                    {
-                        Distance = rateValue * timeValue;
-                        UpdateFeedback();
-                    }
-                }
-                else
-                {
-                    timeValue = 0;
-                    RaisePropertyChanged(() => TimeString);
-                }
+                travelTime = value;
+
+                // we need to make sure we are in the same units as the Distance property before setting
+                UpdateDistance(travelRate * travelTime, RateUnit);
+
+                RaisePropertyChanged(() => TravelTime);
             }
         }
 
-        double rateValue = 0.0;
+        private void UpdateDistance(double distance, DistanceTypes fromDistanceType)
+        {
+            Distance = distance;
+            UpdateDistanceFromTo(fromDistanceType, LineDistanceType);
+            UpdateFeedbackWithGeoCircle();
+        }
+
+        double travelRate = 0.0;
         /// <summary>
         /// Property of rate display
         /// </summary>
-        public string RateString
+        public double TravelRate
         {
             get
             {
-                return rateValue.ToString("N");
+                return travelRate;
             }
             set
             {
-                double parsedValue = 0;
-                if (double.TryParse(value, out parsedValue))
-                {
-                    if (parsedValue == rateValue)
-                    {
-                        return;
-                    }
-                    rateValue = parsedValue;
+                if (value < 0.0)
+                    throw new ArgumentException(Properties.Resources.AEMustBePositive);
 
-                    if (timeValue != 0)
-                    {
-                        Distance = rateValue * timeValue;
-                        UpdateFeedback();
-                    }
-                }
-                else
-                {
-                    rateValue = 0;
-                    RaisePropertyChanged(() => RateString);
-                }
+                travelRate = value;
+
+                UpdateDistance(travelRate * travelTime, RateUnit);
+
+                RaisePropertyChanged(() => TravelRate);
             }
         }
 
@@ -168,12 +152,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     return;
                 }
-                var before = rateUnit;
+                //var before = rateUnit;
                 rateUnit = value;
-                UpdateDistanceFromTo(before, value);
-                rateValue = Distance;
+                //UpdateDistanceFromTo(before, value);
+                //rateValue = Distance;
 
-                RaisePropertyChanged(() => RateString);
+                UpdateDistance(travelTime * travelRate, RateUnit);
+
+                RaisePropertyChanged(() => RateUnit);
             }
         }
 
@@ -186,17 +172,19 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 isDistanceCalcExpanded = value;
                 if (value == true)
                 {
-                    rateValue = 0;
-                    timeValue = 0;
+                    TravelRate = 0;
+                    TravelTime = 0;
                     Distance = 0.0;
-                    RaisePropertyChanged(() => RateString);
-                    RaisePropertyChanged(() => TimeString);
                     ResetFeedback();
                 }
                 else 
                 {
                     Reset(false);
                 }
+
+                ClearTempGraphics();
+                if(HasPoint1)
+                    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
@@ -232,7 +220,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                     Distance = d;
 
-                    UpdateFeedback();
+                    UpdateFeedbackWithGeoCircle();
                 }
                 else
                 {
@@ -243,6 +231,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #endregion
 
         #region Commands
+
         // when someone hits the enter key, create geodetic graphic
         internal override void OnEnterKeyCommand(object obj)
         {
@@ -252,16 +241,28 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
             base.OnEnterKeyCommand(obj);
         }
+
         #endregion
 
         #region override events
 
         internal override void OnNewMapPointEvent(object obj)
         {
+            var point = obj as IPoint;
+            if (point == null)
+                return;
+
             if (IsDistanceCalcExpanded)
+            {
                 HasPoint1 = false;
+            }
 
             base.OnNewMapPointEvent(obj);
+
+            if (IsDistanceCalcExpanded)
+            {
+                UpdateDistance(travelRate * travelTime, RateUnit);
+            }
         }
 
         internal override void OnMouseMoveEvent(object obj)
@@ -282,35 +283,38 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             else if (HasPoint1 && !HasPoint2 && !IsDistanceCalcExpanded)
             {
                 Point2Formatted = string.Empty;
-                Point2 = point;
                 // get distance from feedback
-                var polyline = GetPolylineFromFeedback(Point1, point);
+                var polyline = GetGeoPolylineFromPoints(Point1, point);
                 UpdateDistance(polyline);
             }
 
             // update feedback
             if (HasPoint1 && !HasPoint2 && !IsDistanceCalcExpanded)
             {
-                FeedbackMoveTo(point);
+                UpdateFeedbackWithGeoCircle();
+            }
+        }
+
+        private void UpdateFeedbackWithGeoCircle()
+        {
+            if (Point1 == null || Distance <= 0.0)
+                return;
+
+            var construct = new Polyline() as IConstructGeodetic;
+            if (construct != null)
+            {
+                ClearTempGraphics();
+                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                Point2 = (construct as IPolyline).ToPoint;
+                var color = new RgbColorClass() as IColor;
+                this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
             }
         }
 
         #endregion
 
         #region Private Functions
-        /// <summary>
-        /// Handler for the "Enter"key command
-        /// Calls CreateMapElement
-        /// </summary>
-        /// <param name="obj"></param>
-        private void OnEnterKeyCommandDistCalc(object obj)
-        {
-            if (Point1 == null || rateValue == 0 || timeValue == 0)
-            {
-                return;
-            }
-            CreateMapElement();
-        }
 
         internal override void CreateMapElement()
         {
@@ -319,16 +323,22 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             Reset(false);
         }
 
+        public override bool CanCreateElement
+        {
+            get
+            {
+                return (HasPoint1 && Distance != 0.0);
+            }
+        }
+
         internal override void Reset(bool toolReset)
         {
             base.Reset(toolReset);
-            RateString = String.Empty;
-            TimeString = String.Empty;
-            rateValue = 0;
-            timeValue = 0;
+            TravelTime = 0;
+            TravelRate = 0;
         }
         /// <summary>
-        /// 
+        /// Create geodetic circle
         /// </summary>
         private void CreateCircle()
         {
@@ -340,7 +350,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             var polyLine = new Polyline() as IPolyline;
             polyLine.SpatialReference = Point1.SpatialReference;
             var ptCol = polyLine as IPointCollection;
-            ptCol.AddPoint(Point1); ptCol.AddPoint(Point2);
+            ptCol.AddPoint(Point1); 
+            ptCol.AddPoint(Point2);
 
             UpdateDistance(polyLine as IGeometry);
 
@@ -350,6 +361,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 if (construct != null)
                 {
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    //var color = new RgbColorClass() { Red = 255 } as IColor;
                     this.AddGraphicToMap(construct as IGeometry);
                     Point2 = null; 
                     HasPoint2 = false;
@@ -362,63 +374,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
-        private void UpdateFeedback()
-        {
-            if (Point1 != null)
-            {
-                if (feedback == null)
-                {
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
-                    feedback.Start(Point1);
-                }
-
-                // now get second point from distance and bearing
-                var construct = new Polyline() as IConstructGeodetic;
-                if (construct == null)
-                    return;
-
-                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, 0.0, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-
-                var line = construct as IPolyline;
-
-                if (line.ToPoint != null)
-                {
-                    FeedbackMoveTo(line.ToPoint);
-                    Point2 = line.ToPoint;
-                }
-            }
-        }
-
-        private double ConvertTime(TimeUnits before, TimeUnits after)
-        {
-            double val = timeValue;
-            if (before == TimeUnits.Hours && after == TimeUnits.Minutes)
-            {
-                val = TimeSpan.FromHours(val).TotalMinutes;
-            }
-            else if (before == TimeUnits.Hours && after == TimeUnits.Seconds)
-            {
-                val = TimeSpan.FromHours(val).TotalSeconds;
-            }
-            else if (before == TimeUnits.Minutes && after == TimeUnits.Hours)
-            {
-                val = TimeSpan.FromMinutes(val).TotalHours;
-            }
-            else if (before == TimeUnits.Minutes && after == TimeUnits.Seconds)
-            {
-                val = TimeSpan.FromMinutes(val).TotalSeconds;
-            }
-            else if (before == TimeUnits.Seconds && after == TimeUnits.Minutes)
-            {
-                val = TimeSpan.FromSeconds(val).TotalMinutes;
-            }
-            else if (before == TimeUnits.Seconds && after == TimeUnits.Hours)
-            {
-                val = TimeSpan.FromSeconds(val).TotalHours;
-            }
-            return val;
-        }
         #endregion
     }
 }

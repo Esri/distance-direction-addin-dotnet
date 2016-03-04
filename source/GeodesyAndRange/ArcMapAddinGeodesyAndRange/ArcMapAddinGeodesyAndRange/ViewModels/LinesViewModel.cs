@@ -169,23 +169,26 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         // when someone hits the enter key, create geodetic graphic
         internal override void OnEnterKeyCommand(object obj)
         {
-            if (!CanCreateElement)
-                return;
+            base.OnEnterKeyCommand(obj);
 
-            if(LineFromType == LineFromTypes.Points)
-            {
-                base.OnEnterKeyCommand(obj);
-            }
-            else
-            {
-                ClearTempGraphics();
-                // Bearing and Distance
-                UpdateFeedback();
-                feedback.AddPoint(Point2);
-                var polyline = feedback.Stop();
-                ResetFeedback();
-                AddGraphicToMap(polyline);
-            }
+            //if (!CanCreateElement)
+            //    return;
+
+            //if(LineFromType == LineFromTypes.Points)
+            //{
+            //    base.OnEnterKeyCommand(obj);
+            //}
+            //else
+            //{
+            //    ClearTempGraphics();
+            //    // Bearing and Distance
+            //    UpdateFeedback();
+            //    feedback.AddPoint(Point2);
+            //    var polyline = feedback.Stop();
+            //    ResetFeedback();
+            //    //var color = new RgbColorClass() { Red = 255 } as IColor;
+            //    AddGraphicToMap(polyline);
+            //}
         }
 
         private void CreatePolyline()
@@ -217,6 +220,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 UpdateDistance(construct as IGeometry);
                 UpdateAzimuth(construct as IGeometry);
 
+                //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(construct as IGeometry);
                 ResetPoints();
             }
@@ -303,7 +307,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                AddGraphicToMap(Point1, true);
+                var color = new RgbColorClass() { Green = 255 } as IColor;
+                AddGraphicToMap(Point1, color, true);
                 return;
             }
 
@@ -336,7 +341,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (HasPoint1 && !HasPoint2)
             {
                 // update azimuth from feedback
-                var polyline = GetPolylineFromFeedback(Point1, point);
+                var polyline = GetGeoPolylineFromPoints(Point1, point);
                 UpdateAzimuth(polyline);
             }
 
