@@ -91,7 +91,7 @@ Add-in provides the ability to easily and quickly create geodesy lines, circles,
 * Create a Circle Interactively 
 	* Choose the Circles tab on the Geodesy and Range Tool
 	* Start an interactive session by selecting the arrow icon 
-	* Enter a starting point and the distance of the circles radius by clicking on the map
+	* Click on map to enter a center point, as you move cursor away from center point, circle will display.  Click on map to finish circle.
 	* A graphic will then be displayed on the map showing the circle you created
 	* If desired you can clear all graphics with the clear graphics button
 
