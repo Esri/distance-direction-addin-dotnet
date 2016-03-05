@@ -41,102 +41,120 @@
     <UserControl.DataContext>
         <StaticResourceExtension ResourceKey="linesViewModel" />
     </UserControl.DataContext>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <ComboBox x:Name="cmbLineType"
+    <Grid x:Name="mainControl">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <ComboBox x:Name="cmbLineType"
             ItemsSource="{Binding Source={StaticResource lineData}}" 
             SelectedItem="{Binding Path=LineType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
-        </ComboBox>
-        <TextBlock Grid.Column="1" Text="{x:Static prop:Resources.LabelFrom}" HorizontalAlignment="Right" VerticalAlignment="Center" />
-        <ComboBox Grid.Column="2" x:Name="cmbLineFromType"
+                </ComboBox>
+                <TextBlock Grid.Column="1" Text="{x:Static prop:Resources.LabelFrom}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                <ComboBox Grid.Column="2" x:Name="cmbLineFromType"
                 ItemsSource="{Binding Source={StaticResource lineFromData}}" 
                 SelectedItem="{Binding Path=LineFromType, Mode=TwoWay}"                      
                 Height="Auto" Margin="3,3,0,0">
-        </ComboBox>
-        <TextBox Grid.Row="1" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                </ComboBox>
+                <TextBlock Text="{x:Static prop:Resources.LabelStartingPoint}" Grid.Row="1" Grid.Column="0" 
+                Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBox Grid.Row="2" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
-            </TextBox.InputBindings>
-        </TextBox>
-        <Button Grid.Row="1" Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="3,3,0,0">
-            <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
-        </Button>
-        <TextBox Grid.Row="2" Text="{Binding Path=Point2Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Height="24" 
-                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
-            </TextBox.InputBindings>
-            <TextBox.Style>
-                <Style TargetType="TextBox">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
-                            <Setter Property="IsEnabled" Value="True" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.BearingAndDistance}">
-                            <Setter Property="IsEnabled" Value="False" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBox.Style>
-        </TextBox>
-        <TextBox Grid.Row="3" Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
-            </TextBox.InputBindings>
-            <TextBox.Style>
-                <Style TargetType="TextBox">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
-                            <Setter Property="IsEnabled" Value="False" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.BearingAndDistance}">
-                            <Setter Property="IsEnabled" Value="True" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBox.Style>
-        </TextBox>
-        <ComboBox Grid.Row="3" Grid.Column="1" x:Name="cmbLineDistanceType"
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Grid.Row="2" Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Margin="3,3,0,0">
+                    <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+                </Button>
+                <TextBlock Text="{x:Static prop:Resources.LabelEndingPoint}" Grid.Row="3" Grid.Column="0" 
+                Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBox Grid.Row="4" Text="{Binding Path=Point2Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" Height="24" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.BearingAndDistance}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <TextBlock  Text="{x:Static prop:Resources.LabelDistanceLength}" Grid.Row="5" Grid.Column="0" 
+                Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBox Grid.Row="6" Text="{Binding Path=DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.BearingAndDistance}">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <ComboBox Grid.Row="6" Grid.Column="1" x:Name="cmbLineDistanceType"
             ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
             SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
-        </ComboBox>
-        <TextBox Grid.Row="4" Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged}" Margin="3,3,0,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
-            </TextBox.InputBindings>
-            <TextBox.Style>
-                <Style TargetType="TextBox">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
-                            <Setter Property="IsEnabled" Value="False" />
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.BearingAndDistance}">
-                            <Setter Property="IsEnabled" Value="True" />
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </TextBox.Style>
-        </TextBox>
-        <ComboBox Grid.Row="4" Grid.Column="1" x:Name="cmbLineAzimuthType"
+                </ComboBox>
+                <TextBlock Text="{x:Static prop:Resources.LabelAngle}" Grid.Row="7" Grid.Column="0" 
+                Margin="3,3,0,0" HorizontalAlignment="Left" VerticalAlignment="Center" />
+                <TextBox Grid.Row="8" Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                 Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.BearingAndDistance}">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
+                </TextBox>
+                <ComboBox Grid.Row="8" Grid.Column="1" x:Name="cmbLineAzimuthType"
             ItemsSource="{Binding Source={StaticResource lineAzimuthData}}" 
             SelectedItem="{Binding Path=LineAzimuthType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
-        </ComboBox>
-        <Button Grid.Row="5" Grid.Column="2" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,3,0,0" />
+                </ComboBox>
+                <Button Grid.Row="9" Grid.Column="2" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,20,0,0" />
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

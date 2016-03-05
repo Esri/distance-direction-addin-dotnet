@@ -20,69 +20,72 @@
     <UserControl.DataContext>
         <StaticResourceExtension ResourceKey="rangeViewModel" />
     </UserControl.DataContext>
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+    <Grid x:Name="mainControl">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
 
-        </Grid.RowDefinitions>
-        <Label x:Name="Center_Point_Label" Content="{x:Static prop:Resources.LabelRangeRingsCenterPoint}"                
+                </Grid.RowDefinitions>
+                <Label x:Name="Center_Point_Label" Content="{x:Static prop:Resources.LabelRangeRingsCenterPoint}"                
                HorizontalAlignment="Stretch" 
                Grid.ColumnSpan="3" Grid.Row="0" />
-        <TextBox x:Name="Input_Coords" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                <TextBox x:Name="Input_Coords" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0" Grid.Row="1">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
-            </TextBox.InputBindings>
-        </TextBox>
-        <Button Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Grid.Row="1">
-            <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
-        </Button>
-        <Label x:Name="NumberofRingsLabel" Content="{x:Static prop:Resources.LabelNumberOfRings}"                
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Grid.Row="1">
+                    <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+                </Button>
+                <Label x:Name="NumberofRingsLabel" Content="{x:Static prop:Resources.LabelNumberOfRings}"                
         	HorizontalAlignment="Stretch" 
         	Grid.ColumnSpan="3" Grid.Row="2" />
-        <TextBox x:Name="Number_of_Rings_Text_Box" Grid.Row="3" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                <TextBox x:Name="Number_of_Rings_Text_Box" Grid.Row="3" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
-            </TextBox.InputBindings>
-        </TextBox>
-        <Label x:Name="DistanceLabel" Content="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}"                
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Label x:Name="DistanceLabel" Content="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}"                
                HorizontalAlignment="Stretch" 
                Grid.ColumnSpan="3" Grid.Row="4" />
-        <TextBox x:Name="Distance_Between_Rings_TextBox" Grid.Row="5" Text="{Binding DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                <TextBox x:Name="Distance_Between_Rings_TextBox" Grid.Row="5" Text="{Binding DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
         	Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
-            </TextBox.InputBindings>
-        </TextBox>
-        <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cmbLineDistanceType"
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cmbLineDistanceType"
             ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
             SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
-        </ComboBox>
-        <Label x:Name="NumberofRadialsLabel" Content="{x:Static prop:Resources.LabelRangeRingsNumberofRadials}"                
+                </ComboBox>
+                <Label x:Name="NumberofRadialsLabel" Content="{x:Static prop:Resources.LabelRangeRingsNumberofRadials}"                
                HorizontalAlignment="Stretch" 
                Grid.ColumnSpan="3" Grid.Row="6" />
-        <TextBox x:Name="NumberOfRadials_TextBox" Grid.Row="7" Text="{Binding Path=NumberOfRadials, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                <TextBox x:Name="NumberOfRadials_TextBox" Grid.Row="7" Text="{Binding Path=NumberOfRadials, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
-            <TextBox.InputBindings>
-                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" />
-            </TextBox.InputBindings>
-        </TextBox>
-        <Button Grid.Row="8" Grid.Column="1" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,10,0,0" />
-
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <Button Grid.Row="8" Grid.Column="1" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,20,0,0" />
+            </Grid>
+        </ScrollViewer>
     </Grid>
 </UserControl>

@@ -120,6 +120,9 @@
   <data name="AEInvalidCoordinate" xml:space="preserve">
     <value>Invalid coordinate</value>
   </data>
+  <data name="AEInvalidInput" xml:space="preserve">
+    <value>Invalid input</value>
+  </data>
   <data name="AEMustBePositive" xml:space="preserve">
     <value>The number must be positive</value>
   </data>
@@ -177,6 +180,9 @@
   <data name="EnumSurveyFoot" xml:space="preserve">
     <value>US Survey Foot</value>
   </data>
+  <data name="LabelAngle" xml:space="preserve">
+    <value>Angle</value>
+  </data>
   <data name="LabelAxisGroup" xml:space="preserve">
     <value>Axis</value>
   </data>
@@ -201,6 +207,9 @@
   <data name="LabelDirectionAzimuth" xml:space="preserve">
     <value>Direction / Azimuth</value>
   </data>
+  <data name="LabelDistanceCalculator" xml:space="preserve">
+    <value>Distance Calculator</value>
+  </data>
   <data name="LabelDistanceLength" xml:space="preserve">
     <value>Distance / Length</value>
   </data>
@@ -217,13 +226,13 @@
     <value>Interval Between Rings</value>
   </data>
   <data name="LabelMajorAxis" xml:space="preserve">
-    <value>Major Axis</value>
+    <value>Major</value>
   </data>
   <data name="LabelMapPoint" xml:space="preserve">
     <value>Map Point</value>
   </data>
   <data name="LabelMinorAxis" xml:space="preserve">
-    <value>Minor Axis</value>
+    <value>Minor</value>
   </data>
   <data name="LabelNumberOfRadials" xml:space="preserve">
     <value>Number of Radials</value>
@@ -232,10 +241,13 @@
     <value>Number of Rings</value>
   </data>
   <data name="LabelOrientationAngle" xml:space="preserve">
-    <value>Orientation Angle</value>
+    <value>Angle</value>
+  </data>
+  <data name="LabelOrientationGroup" xml:space="preserve">
+    <value>Orientation</value>
   </data>
   <data name="LabelOrientationUnit" xml:space="preserve">
-    <value>Orientation Unit</value>
+    <value>Unit</value>
   </data>
   <data name="LabelRadiusDiameter" xml:space="preserve">
     <value>Radius / Diameter</value>
@@ -248,6 +260,9 @@
   </data>
   <data name="LabelRangeRingsNumberofRadials" xml:space="preserve">
     <value>Number of Radials</value>
+  </data>
+  <data name="LabelRate" xml:space="preserve">
+    <value>Rate</value>
   </data>
   <data name="LabelStartingPoint" xml:space="preserve">
     <value>Starting Point</value>
@@ -263,6 +278,9 @@
   </data>
   <data name="LabelTabRange" xml:space="preserve">
     <value>Rings</value>
+  </data>
+  <data name="LabelTime" xml:space="preserve">
+    <value>Time</value>
   </data>
   <data name="TooltipMapPointTool" xml:space="preserve">
     <value>Map Point Tool</value>

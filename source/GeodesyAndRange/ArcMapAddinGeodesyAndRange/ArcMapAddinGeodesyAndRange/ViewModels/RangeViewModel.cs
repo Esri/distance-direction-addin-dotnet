@@ -14,6 +14,7 @@
 
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
+using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
 using System;
 using System.Collections.Generic;
@@ -66,6 +67,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
         }
 
+        public override bool CanCreateElement
+        {
+            get
+            {
+                return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && Distance > 0.0);
+            }
+        }
+
         #endregion Properties
 
         /// <summary>
@@ -75,12 +84,16 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal override void CreateMapElement()
         {
             // do we have enough data?
-            if (Point1 == null && NumberOfRings <= 0 && NumberOfRadials < 0 && Distance <= 0.0)
+            if (!CanCreateElement)
                 return;
+
+            base.CreateMapElement();
 
             DrawRings();
 
             DrawRadials();
+
+            Reset(false);
         }
 
         /// <summary>
@@ -95,21 +108,19 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
 
             double azimuth = 0.0;
-            int count = NumberOfRadials * 2;
-            double interval = 360.0 / count;
+            double interval = 360.0 / NumberOfRadials;
             double radialLength = Distance * NumberOfRings;
 
             try
             {
                 // for each radial, draw from center point
-                for (int x = 0; x < count; x++)
+                for (int x = 0; x < NumberOfRadials; x++)
                 {
                     var construct = new Polyline() as IConstructGeodetic;
                     if (construct == null)
                         continue;
 
                     construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-
                     AddGraphicToMap(construct as IGeometry);
 
                     azimuth += interval;
@@ -164,23 +175,40 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
 
             Point1 = point;
+            HasPoint1 = true;
+
+            ClearTempGraphics();
+            var color = new RgbColorClass() { Green = 255 } as IColor;
+            AddGraphicToMap(Point1, color, true);
 
             // Reset formatted string
             Point1Formatted = string.Empty;
         }
 
         /// <summary>
-        /// Override the mouse move event to ignore it
+        /// Override the mouse move event to dynamically update the center point
         /// </summary>
         /// <param name="obj"></param>
         internal override void OnMouseMoveEvent(object obj)
         {
-            // DO NOTHING HERE
+            // only if we are the active tab
+            if (!IsActiveTab)
+                return;
+
+            var point = obj as IPoint;
+
+            if (point == null)
+                return;
+
+            if (!HasPoint1)
+            {
+                Point1 = point;
+            }
         }
 
-        internal override void Reset()
+        internal override void Reset(bool toolReset)
         {
-            base.Reset();
+            base.Reset(toolReset);
 
             NumberOfRadials = 0;
         }

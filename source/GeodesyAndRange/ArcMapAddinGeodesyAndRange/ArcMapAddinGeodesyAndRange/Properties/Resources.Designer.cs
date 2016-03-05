@@ -70,6 +70,15 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Invalid input.
+        /// </summary>
+        public static string AEInvalidInput {
+            get {
+                return ResourceManager.GetString("AEInvalidInput", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The number must be positive.
         /// </summary>
         public static string AEMustBePositive {
@@ -241,6 +250,15 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Angle.
+        /// </summary>
+        public static string LabelAngle {
+            get {
+                return ResourceManager.GetString("LabelAngle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Axis.
         /// </summary>
         public static string LabelAxisGroup {
@@ -248,29 +266,15 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
                 return ResourceManager.GetString("LabelAxisGroup", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Axis.
-        /// </summary>
-        public static string LabelEllipseType
-        {
-            get
-            {
-                return ResourceManager.GetString("LabelEllipseType", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized string similar to Axis Units.
-        /// </summary>
-        public static string LabelAxisUnits
-        {
-            get
-            {
-                return ResourceManager.GetString("LabelAxisGroup", resourceCulture);
-            }
-        }
         
+        /// <summary>
+        ///   Looks up a localized string similar to Units.
+        /// </summary>
+        public static string LabelAxisUnits {
+            get {
+                return ResourceManager.GetString("LabelAxisUnits", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Center Point.
@@ -327,11 +331,29 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Distance Calculator.
+        /// </summary>
+        public static string LabelDistanceCalculator {
+            get {
+                return ResourceManager.GetString("LabelDistanceCalculator", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Distance / Length.
         /// </summary>
         public static string LabelDistanceLength {
             get {
                 return ResourceManager.GetString("LabelDistanceLength", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ellipse Type.
+        /// </summary>
+        public static string LabelEllipseType {
+            get {
+                return ResourceManager.GetString("LabelEllipseType", resourceCulture);
             }
         }
         
@@ -363,7 +385,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Major Axis.
+        ///   Looks up a localized string similar to Major.
         /// </summary>
         public static string LabelMajorAxis {
             get {
@@ -381,7 +403,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Minor Axis.
+        ///   Looks up a localized string similar to Minor.
         /// </summary>
         public static string LabelMinorAxis {
             get {
@@ -408,21 +430,28 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Orientation Angle.
+        ///   Looks up a localized string similar to Angle.
         /// </summary>
         public static string LabelOrientationAngle {
             get {
                 return ResourceManager.GetString("LabelOrientationAngle", resourceCulture);
             }
         }
-
+        
         /// <summary>
-        ///   Looks up a localized string similar to Orientation Angle.
+        ///   Looks up a localized string similar to Orientation.
         /// </summary>
-        public static string LabelOrientationUnit
-        {
-            get
-            {
+        public static string LabelOrientationGroup {
+            get {
+                return ResourceManager.GetString("LabelOrientationGroup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unit.
+        /// </summary>
+        public static string LabelOrientationUnit {
+            get {
                 return ResourceManager.GetString("LabelOrientationUnit", resourceCulture);
             }
         }
@@ -464,6 +493,15 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Rate.
+        /// </summary>
+        public static string LabelRate {
+            get {
+                return ResourceManager.GetString("LabelRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Starting Point.
         /// </summary>
         public static string LabelStartingPoint {
@@ -500,11 +538,20 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Range.
+        ///   Looks up a localized string similar to Rings.
         /// </summary>
         public static string LabelTabRange {
             get {
                 return ResourceManager.GetString("LabelTabRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Time.
+        /// </summary>
+        public static string LabelTime {
+            get {
+                return ResourceManager.GetString("LabelTime", resourceCulture);
             }
         }
         

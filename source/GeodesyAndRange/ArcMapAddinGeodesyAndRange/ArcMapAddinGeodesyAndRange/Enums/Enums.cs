@@ -88,4 +88,16 @@ namespace ArcMapAddinGeodesyAndRange
         [LocalizableDescription(@"EnumFull", typeof(Resources))]
         Full = 2
     }
+
+    public enum TimeUnits : int
+    {
+        [LocalizableDescription(@"EnumHours", typeof(Resources))]
+        Hours = 1,
+
+        [LocalizableDescription(@"EnumMinutes", typeof(Resources))]
+        Minutes = 2,
+
+        [LocalizableDescription(@"EnumSeconds", typeof(Resources))]
+        Seconds = 3
+    }
 }
