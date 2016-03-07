@@ -93,8 +93,6 @@ The add-in provides the ability to create geodesic features such as lines, circl
 1. Choose the Circles tab on the Geodesy and Range Tool
 2. Start an interactive session by selecting the arrow icon 
 3. Click on map to enter a center point, as you move cursor away from center point, circle will display.  Click on map to finish 4. circle.
-5. A graphic will then be displayed on the map showing the circle you created
-
 
 > A graphic will then be displayed on the map showing the circle you created. If desired you can clear all graphics with the clear graphics button.
 
