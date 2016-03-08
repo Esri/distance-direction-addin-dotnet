@@ -105,7 +105,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             get
             {
-                return MinorAxisDistance.ToString("N");
+                return MinorAxisDistance.ToString("G");
             }
             set
             {
@@ -156,9 +156,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 if (EllipseType == EllipseTypes.Full)
                 {
-                    return (MajorAxisDistance * 2.0).ToString("N");
+                    return (MajorAxisDistance * 2.0).ToString("G");
                 }
-                return MajorAxisDistance.ToString("N");
+                return MajorAxisDistance.ToString("G");
             }
             set
             {
@@ -192,7 +192,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                 UpdateFeedbackWithEllipse();
 
-                AzimuthString = azimuth.ToString("N");
+                AzimuthString = azimuth.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }

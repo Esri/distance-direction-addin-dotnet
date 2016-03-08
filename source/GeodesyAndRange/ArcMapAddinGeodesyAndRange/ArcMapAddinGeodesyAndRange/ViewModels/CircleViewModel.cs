@@ -200,7 +200,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 if(CircleType == CircleFromTypes.Diameter)
                 {
-                    return (Distance * 2.0).ToString("N");
+                    return (Distance * 2.0).ToString("G");
                 }
 
                 return base.DistanceString;

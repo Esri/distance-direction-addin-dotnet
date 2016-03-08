@@ -92,7 +92,9 @@ The add-in provides the ability to create geodesic features such as lines, circl
 ### Create a Circle Interactively 
 1. Choose the **Circles** tab on the *Distance and Direction* Tool
 2. Start an interactive session by selecting the **Map Point Tool** (arrow icon) 
-3. Click on map to enter a centerpoint and then move the cursor out from center, a circle displays on map as you move the cursor.  Click map to complete the circle. 
+3. Click on map to enter a centerpoint and then move the cursor out from center, a circle displays on map as you move the cursor.  
+4. Click map to complete the circle. 
+
 
 > A graphic will then be displayed on the map showing the circle you created. If desired you can clear all graphics with the clear graphics button.
 

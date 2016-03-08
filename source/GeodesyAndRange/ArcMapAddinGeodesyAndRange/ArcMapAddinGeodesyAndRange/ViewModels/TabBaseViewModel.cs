@@ -280,7 +280,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     throw new ArgumentException(Properties.Resources.AEMustBePositive);
 
                 distance = value;
-                DistanceString = distance.ToString("N"); // use current culture number format
+                DistanceString = distance.ToString("G"); 
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
             }
@@ -293,7 +293,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             get
             {
-                return Distance.ToString("N"); // use current culture number format
+                return Distance.ToString("G");
             }
             set
             {
