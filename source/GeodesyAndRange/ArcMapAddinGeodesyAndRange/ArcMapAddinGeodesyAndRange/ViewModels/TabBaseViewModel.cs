@@ -40,6 +40,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             LineDistanceType = DistanceTypes.Meters;
 
             //commands
+            SaveAsCommand = new RelayCommand(OnSaveAs);
             ClearGraphicsCommand = new RelayCommand(OnClearGraphics);
             ActivateToolCommand = new RelayCommand(OnActivateTool);
             EnterKeyCommand = new RelayCommand(OnEnterKeyCommand);
@@ -379,6 +380,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             //gc.DeleteAllElements();
             //av.Refresh();
 			av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+        }
+
+        /// <summary>
+        /// Saves graphics to file gdb or shp file
+        /// </summary>
+        /// <param name="obj"></param>
+        private void OnSaveAs(object obj)
+        {
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            if (mxdoc == null)
+                return;
+            var av = mxdoc.FocusMap as IActiveView;
+            if (av == null)
+                return;
+            var gc = av as IGraphicsContainer;
+            if (gc == null)
+                return;
         }
 
         /// <summary>

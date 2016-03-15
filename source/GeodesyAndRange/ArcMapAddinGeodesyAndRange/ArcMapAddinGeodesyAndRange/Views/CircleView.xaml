@@ -28,7 +28,7 @@
                 <ObjectDataProvider.MethodParameters>
                     <x:TypeExtension TypeName="local:TimeUnits" />
                 </ObjectDataProvider.MethodParameters>
-            </ObjectDataProvider>            
+            </ObjectDataProvider>
         </ResourceDictionary>
     </UserControl.Resources>
     <UserControl.DataContext>
@@ -143,11 +143,18 @@
                           SelectedItem="{Binding Path=RateUnit, Mode=TwoWay}" ></ComboBox>
                     </Grid>
                 </Expander>
+                <Button Content="{x:Static prop:Resources.LabelSaveAs}" 
+                    ToolTip="{x:Static prop:Resources.LabelSaveAs}" 
+                    Command="{Binding ClearGraphicsCommand}"
+                    Height="Auto" Width="Auto" HorizontalAlignment="Right"
+                    Margin="3,20,0,0"
+                    Grid.Row="7" Grid.Column="2"/>
                 <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
-                ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
-                Command="{Binding ClearGraphicsCommand}"
-                Margin="3,20,0,0"
-                Grid.Row="7" Grid.Column="2"/>
+                	ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
+                	Command="{Binding SaveAsCommand}"
+                    Height="Auto" Width="Auto" HorizontalAlignment="Right"
+                	Margin="0,20,52,0"
+                	Grid.Row="7" Grid.ColumnSpan="3"/>
             </Grid>
         </ScrollViewer>
     </Grid>
