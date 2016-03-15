@@ -222,6 +222,9 @@
   <data name="LabelFrom" xml:space="preserve">
     <value>From:</value>
   </data>
+  <data name="LabelInteractive" xml:space="preserve">
+    <value>Interactive</value>
+  </data>
   <data name="LabelInterval" xml:space="preserve">
     <value>Interval Between Rings</value>
   </data>
