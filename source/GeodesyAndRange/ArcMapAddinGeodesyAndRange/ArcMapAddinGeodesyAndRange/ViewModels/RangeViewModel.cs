@@ -46,10 +46,6 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 {
                     maxDistance = 0.0;
                 }
-                else
-                {
-
-                }
             }
         }
 
@@ -80,6 +76,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 RaisePropertyChanged(() => IsToolActive);
             }
         }
+        // keep track of the max distance for drawing of radials in interactive mode
         double maxDistance = 0.0;
 
         int numberOfRings = 10;
