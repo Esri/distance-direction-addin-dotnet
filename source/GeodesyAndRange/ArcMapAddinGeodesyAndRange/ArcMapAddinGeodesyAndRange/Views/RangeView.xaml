@@ -1,55 +1,55 @@
 ﻿<UserControl x:Class="ArcMapAddinGeodesyAndRange.Views.GRRangeView"
-			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:local="clr-namespace:ArcMapAddinGeodesyAndRange"
-			 xmlns:sys="clr-namespace:System;assembly=mscorlib" 
-			 xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
-			 xmlns:prop="clr-namespace:ArcMapAddinGeodesyAndRange.Properties"
-			 mc:Ignorable="d" 
-			 d:DesignHeight="300" d:DesignWidth="300">
-	<UserControl.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="/ArcMapAddinGeodesyAndRange;component/MAResourceDictionary.xaml"/>
-			</ResourceDictionary.MergedDictionaries>
-			<viewModels:RangeViewModel x:Key="rangeViewModel" />
-		</ResourceDictionary>
-	</UserControl.Resources>
-	<UserControl.DataContext>
-		<StaticResourceExtension ResourceKey="rangeViewModel" />
-	</UserControl.DataContext>
-	<Grid x:Name="mainControl">
-		<ScrollViewer VerticalScrollBarVisibility="Auto">
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*" />
-					<ColumnDefinition Width="Auto" />
-					<ColumnDefinition Width="Auto" />
-				</Grid.ColumnDefinitions>
-				<Grid.RowDefinitions>
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ArcMapAddinGeodesyAndRange"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib" 
+             xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
+             xmlns:prop="clr-namespace:ArcMapAddinGeodesyAndRange.Properties"
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ArcMapAddinGeodesyAndRange;component/MAResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <viewModels:RangeViewModel x:Key="rangeViewModel" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <StaticResourceExtension ResourceKey="rangeViewModel" />
+    </UserControl.DataContext>
+    <Grid x:Name="mainControl">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
 					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-					<RowDefinition Height="Auto" />
-				</Grid.RowDefinitions>
+                </Grid.RowDefinitions>
                 <CheckBox x:Name="cbInteractive"
                     Grid.ColumnSpan="3" Content="Interative" IsChecked="{Binding IsInteractive}" Margin="3,3,0,0" />
 				<TextBlock x:Name="Center_Point_Label" Grid.Row="1" Text="{x:Static prop:Resources.LabelRangeRingsCenterPoint}"                
     			   Grid.ColumnSpan="3" Margin="3,3,0,0" />
 				<TextBox x:Name="Input_Coords" Grid.Row="2" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
 				 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
-					<TextBox.InputBindings>
-						<KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-					</TextBox.InputBindings>
-				</TextBox>
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                </TextBox>
                 <ToggleButton Grid.Column="1" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Grid.Row="2"
                         IsChecked="{Binding IsToolActive}">
                     <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
@@ -57,10 +57,10 @@
                 <TextBlock x:Name="NumberofRingsLabel" Text="{x:Static prop:Resources.LabelNumberOfRings}"                
         			Grid.ColumnSpan="3" Grid.Row="3" Margin="3,3,0,0" />
 				<TextBox x:Name="Number_of_Rings_Text_Box" Grid.Row="4" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-				 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
-					<TextBox.InputBindings>
-						<KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-					</TextBox.InputBindings>
+                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
                     <TextBox.Style>
                         <Style TargetType="TextBox">
                             <Setter Property="IsEnabled" Value="True" />
@@ -71,14 +71,14 @@
                             </Style.Triggers>
                         </Style>
                     </TextBox.Style>
-				</TextBox>
+                </TextBox>
 				<TextBlock x:Name="DistanceLabel" Text="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}"                
 			        Grid.ColumnSpan="3" Grid.Row="5" Margin="3,3,0,0" />
 				<TextBox x:Name="Distance_Between_Rings_TextBox" Grid.Row="6" Text="{Binding DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
-			        Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
-					<TextBox.InputBindings>
-						<KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-					</TextBox.InputBindings>
+        	Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
                     <TextBox.Style>
                         <Style TargetType="TextBox">
                             <Setter Property="IsEnabled" Value="True" />
@@ -91,9 +91,9 @@
                     </TextBox.Style>
                 </TextBox>
 				<ComboBox Grid.Row="6" Grid.Column="1" x:Name="cmbLineDistanceType"
-			ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
-			SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
-			Height="Auto" Margin="3,3,0,0">
+            ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
+            SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
+            Height="Auto" Margin="3,3,0,0">
                     <ComboBox.Style>
                         <Style TargetType="ComboBox">
                             <Setter Property="IsEnabled" Value="True" />
@@ -104,17 +104,30 @@
                             </Style.Triggers>
                         </Style>
                     </ComboBox.Style>
-				</ComboBox>
+                </ComboBox>
 				<TextBlock x:Name="NumberofRadialsLabel" Text="{x:Static prop:Resources.LabelRangeRingsNumberofRadials}"                
 			   Grid.ColumnSpan="3" Grid.Row="7" Margin="3,3,0,0" />
 				<TextBox x:Name="NumberOfRadials_TextBox" Grid.Row="8" Text="{Binding Path=NumberOfRadials, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
-				 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
-					<TextBox.InputBindings>
-						<KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-					</TextBox.InputBindings>
-				</TextBox>
-				<Button Grid.Row="9" Grid.Column="1" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Margin="3,20,0,0" />
-			</Grid>
-		</ScrollViewer>
-	</Grid>
+                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
+                    <TextBox.InputBindings>
+                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                    </TextBox.InputBindings>
+                </TextBox>
+                <StackPanel Margin="3,20,0,0" Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
+                    <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
+                	    ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
+                	    Command="{Binding SaveAsCommand}"
+                        Height="Auto" Width="Auto" 
+                	    Margin="3,3,0,0"
+                	/>
+                    <Button Content="{x:Static prop:Resources.LabelSaveAs}" 
+                        ToolTip="{x:Static prop:Resources.LabelSaveAs}" 
+                        Command="{Binding ClearGraphicsCommand}"
+                        Height="Auto" Width="Auto" 
+                        Margin="3,3,0,0"
+                    />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
 </UserControl>
