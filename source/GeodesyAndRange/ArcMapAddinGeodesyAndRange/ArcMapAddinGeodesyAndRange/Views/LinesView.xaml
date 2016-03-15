@@ -153,11 +153,11 @@
             SelectedItem="{Binding Path=LineAzimuthType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
                 </ComboBox>
-                <StackPanel Margin="3,3,0,0" Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
+                <StackPanel Margin="3,20,0,0" Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
                     <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
                 	    ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
                 	    Command="{Binding SaveAsCommand}"
-                        Height="Auto" Width="Auto" HorizontalAlignment="Right"
+                        Height="Auto" Width="Auto"
                 	    Margin="3,3,0,0"
                 	/>
                     <Button Content="{x:Static prop:Resources.LabelSaveAs}" 

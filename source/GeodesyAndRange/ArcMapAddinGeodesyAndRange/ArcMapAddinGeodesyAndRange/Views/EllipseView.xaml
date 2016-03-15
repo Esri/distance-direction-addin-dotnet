@@ -43,7 +43,7 @@
         <StaticResourceExtension ResourceKey="ellipseViewModel" />
     </UserControl.DataContext>
     <Grid x:Name="mainControl">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,2,0,-2">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -157,11 +157,11 @@
                           Grid.Row="3" Grid.Column="0"  />
                     </Grid>
                 </GroupBox>
-                <StackPanel Margin="3,3,0,0" Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
+                <StackPanel Margin="3,20,0,0" Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
                     <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
                 	    ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
                 	    Command="{Binding SaveAsCommand}"
-                        Height="Auto" Width="Auto" HorizontalAlignment="Right"
+                        Height="Auto" Width="Auto"
                 	    Margin="3,3,0,0"
                 	/>
                     <Button Content="{x:Static prop:Resources.LabelSaveAs}" 
