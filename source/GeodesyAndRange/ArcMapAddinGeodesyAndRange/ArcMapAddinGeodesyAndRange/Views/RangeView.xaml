@@ -38,53 +38,82 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
-
+					<RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <Label x:Name="Center_Point_Label" Content="{x:Static prop:Resources.LabelRangeRingsCenterPoint}"                
-               HorizontalAlignment="Stretch" 
-               Grid.ColumnSpan="3" Grid.Row="0" />
-                <TextBox x:Name="Input_Coords" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0" Grid.Row="1">
+                <CheckBox x:Name="cbInteractive"
+                    Grid.ColumnSpan="3" Content="{x:Static prop:Resources.LabelInteractive}" IsChecked="{Binding IsInteractive}" Margin="3,3,0,0" />
+				<TextBlock x:Name="Center_Point_Label" Grid.Row="1" Text="{x:Static prop:Resources.LabelRangeRingsCenterPoint}"                
+    			   Grid.ColumnSpan="3" Margin="3,3,0,0" />
+				<TextBox x:Name="Input_Coords" Grid.Row="2" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+				 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
-                <Button Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Grid.Row="1">
+                <ToggleButton Grid.Column="1" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Grid.Row="2"
+                        IsChecked="{Binding IsToolActive}">
                     <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
-                </Button>
-                <Label x:Name="NumberofRingsLabel" Content="{x:Static prop:Resources.LabelNumberOfRings}"                
-        	HorizontalAlignment="Stretch" 
-        	Grid.ColumnSpan="3" Grid.Row="2" />
-                <TextBox x:Name="Number_of_Rings_Text_Box" Grid.Row="3" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                </ToggleButton>
+                <TextBlock x:Name="NumberofRingsLabel" Text="{x:Static prop:Resources.LabelNumberOfRings}"                
+        			Grid.ColumnSpan="3" Grid.Row="3" Margin="3,3,0,0" />
+				<TextBox x:Name="Number_of_Rings_Text_Box" Grid.Row="4" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="IsEnabled" Value="True" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbInteractive, Path=IsChecked}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
                 </TextBox>
-                <Label x:Name="DistanceLabel" Content="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}"                
-               HorizontalAlignment="Stretch" 
-               Grid.ColumnSpan="3" Grid.Row="4" />
-                <TextBox x:Name="Distance_Between_Rings_TextBox" Grid.Row="5" Text="{Binding DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+				<TextBlock x:Name="DistanceLabel" Text="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}"                
+			        Grid.ColumnSpan="3" Grid.Row="5" Margin="3,3,0,0" />
+				<TextBox x:Name="Distance_Between_Rings_TextBox" Grid.Row="6" Text="{Binding DistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
         	Validation.ErrorTemplate="{StaticResource errorTemplate}" Margin="3,3,0,0">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
+                    <TextBox.Style>
+                        <Style TargetType="TextBox">
+                            <Setter Property="IsEnabled" Value="True" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbInteractive, Path=IsChecked}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBox.Style>
                 </TextBox>
-                <ComboBox Grid.Row="5" Grid.Column="1" x:Name="cmbLineDistanceType"
+				<ComboBox Grid.Row="6" Grid.Column="1" x:Name="cmbLineDistanceType"
             ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
             SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="IsEnabled" Value="True" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbInteractive, Path=IsChecked}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
                 </ComboBox>
-                <Label x:Name="NumberofRadialsLabel" Content="{x:Static prop:Resources.LabelRangeRingsNumberofRadials}"                
-               HorizontalAlignment="Stretch" 
-               Grid.ColumnSpan="3" Grid.Row="6" />
-                <TextBox x:Name="NumberOfRadials_TextBox" Grid.Row="7" Text="{Binding Path=NumberOfRadials, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+				<TextBlock x:Name="NumberofRadialsLabel" Text="{x:Static prop:Resources.LabelRangeRingsNumberofRadials}"                
+			   Grid.ColumnSpan="3" Grid.Row="7" Margin="3,3,0,0" />
+				<TextBox x:Name="NumberOfRadials_TextBox" Grid.Row="8" Text="{Binding Path=NumberOfRadials, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
                  Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
-                <StackPanel Margin="3,20,0,0" Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
+                <StackPanel Margin="3,20,0,0" Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
                     <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
                 	    ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
                 	    Command="{Binding SaveAsCommand}"

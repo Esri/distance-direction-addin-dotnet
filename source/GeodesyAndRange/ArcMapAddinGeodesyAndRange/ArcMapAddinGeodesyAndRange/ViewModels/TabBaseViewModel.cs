@@ -456,7 +456,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// Activates the map tool to get map points from mouse clicks/movement
         /// </summary>
         /// <param name="obj"></param>
-        private void OnActivateTool(object obj)
+        internal void OnActivateTool(object obj)
         {
             SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
         }
@@ -697,6 +697,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             //refresh map
             av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
         }
+        /// <summary>
+        /// Adds a graphic to the active view/map graphics container, default color is RED
+        /// </summary>
+        /// <param name="geom"></param>
+        /// <param name="IsTempGraphic"></param>
         internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false)
         {
             var color = new RgbColorClass() { Red = 255 } as IColor;
