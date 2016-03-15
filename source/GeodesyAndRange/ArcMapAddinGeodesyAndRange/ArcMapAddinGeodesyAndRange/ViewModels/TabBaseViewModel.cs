@@ -338,6 +338,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
         #region Commands
 
+        public RelayCommand SaveAsCommand { get; set; }
         public RelayCommand ClearGraphicsCommand { get; set; }
         public RelayCommand ActivateToolCommand { get; set; }
         public RelayCommand EnterKeyCommand { get; set; }
