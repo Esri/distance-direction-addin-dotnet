@@ -167,7 +167,7 @@
                     <Button Content="{x:Static prop:Resources.LabelSaveAs}" 
                         ToolTip="{x:Static prop:Resources.LabelSaveAs}" 
                         Command="{Binding ClearGraphicsCommand}"
-                        Height="Auto" Width="Auto" HorizontalAlignment="Right"
+                        Height="Auto" Width="Auto"
                         Margin="3,3,0,0"
                     />
                 </StackPanel>
