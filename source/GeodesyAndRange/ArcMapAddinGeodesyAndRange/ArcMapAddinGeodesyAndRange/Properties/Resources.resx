@@ -264,6 +264,9 @@
   <data name="LabelRate" xml:space="preserve">
     <value>Rate</value>
   </data>
+  <data name="LabelSaveAs" xml:space="preserve">
+    <value>Save As</value>
+  </data>
   <data name="LabelStartingPoint" xml:space="preserve">
     <value>Starting Point</value>
   </data>
