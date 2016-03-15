@@ -153,8 +153,20 @@
             SelectedItem="{Binding Path=LineAzimuthType, Mode=TwoWay}"                      
             Height="Auto" Margin="3,3,0,0">
                 </ComboBox>
-                <Button Grid.Row="9" Content="{x:Static prop:Resources.LabelClearGraphics}" ToolTip="{x:Static prop:Resources.LabelClearGraphics}" Command="{Binding ClearGraphicsCommand}" Height="Auto" Width="Auto" HorizontalAlignment="Right" Margin="0,20,52,0" Grid.ColumnSpan="3" />
-                <Button Grid.Row="9" Grid.Column="1" Content="{x:Static prop:Resources.LabelSaveAs}" ToolTip="{x:Static prop:Resources.LabelSaveAs}" Command="{Binding SaveAsCommand}" Height="Auto" Width="Auto" HorizontalAlignment="Right" Margin="75,20,0,0" Grid.ColumnSpan="2" />
+                <StackPanel Margin="3,3,0,0" Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
+                    <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
+                	    ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
+                	    Command="{Binding SaveAsCommand}"
+                        Height="Auto" Width="Auto" HorizontalAlignment="Right"
+                	    Margin="3,3,0,0"
+                	/>
+                    <Button Content="{x:Static prop:Resources.LabelSaveAs}" 
+                        ToolTip="{x:Static prop:Resources.LabelSaveAs}" 
+                        Command="{Binding ClearGraphicsCommand}"
+                        Height="Auto" Width="Auto" HorizontalAlignment="Right"
+                        Margin="3,3,0,0"
+                    />
+                </StackPanel>
             </Grid>
         </ScrollViewer>
     </Grid>
