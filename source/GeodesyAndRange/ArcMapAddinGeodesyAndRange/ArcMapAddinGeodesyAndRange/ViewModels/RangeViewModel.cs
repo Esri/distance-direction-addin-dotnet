@@ -28,10 +28,59 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
     {
         public RangeViewModel()
         {
-
         }
 
         #region Properties
+
+        private bool isInteractive = false;
+        public bool IsInteractive 
+        {
+            get
+            {
+                return isInteractive;
+            }
+            set
+            {
+                isInteractive = value;
+                if(value)
+                {
+                    maxDistance = 0.0;
+                }
+                else
+                {
+
+                }
+            }
+        }
+
+        public bool IsToolActive
+        {
+            get
+            {
+                if (ArcMap.Application.CurrentTool != null)
+                    return ArcMap.Application.CurrentTool.Name == "Esri_ArcMapAddinGeodesyAndRange_MapPointTool";
+
+                return false;
+            }
+
+            set
+            {
+                if (value)
+                    OnActivateTool(null);
+                else
+                    if (ArcMap.Application.CurrentTool != null)
+                    {
+                        ArcMap.Application.CurrentTool = null;
+                        if (CanCreateElement)
+                            CreateMapElement();
+
+                        maxDistance = 0.0;
+                    }
+
+                RaisePropertyChanged(() => IsToolActive);
+            }
+        }
+        double maxDistance = 0.0;
 
         int numberOfRings = 10;
         /// <summary>
@@ -71,7 +120,10 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             get
             {
-                return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && Distance > 0.0);
+                if (IsInteractive)
+                    return (Point1 != null && NumberOfRadials >=0);
+                else
+                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && Distance > 0.0);
             }
         }
 
@@ -87,9 +139,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (!CanCreateElement)
                 return;
 
-            base.CreateMapElement();
+            if (!IsInteractive)
+            {
+                base.CreateMapElement();
 
-            DrawRings();
+                DrawRings();
+            }
 
             DrawRadials();
 
@@ -110,6 +165,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             double azimuth = 0.0;
             double interval = 360.0 / NumberOfRadials;
             double radialLength = Distance * NumberOfRings;
+            if (IsInteractive)
+                radialLength = maxDistance;
 
             try
             {
@@ -174,19 +231,48 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (point == null)
                 return;
 
-            Point1 = point;
-            HasPoint1 = true;
+            if (!IsInteractive)
+            {
+                Point1 = point;
+                HasPoint1 = true;
 
-            ClearTempGraphics();
-            var color = new RgbColorClass() { Green = 255 } as IColor;
-            AddGraphicToMap(Point1, color, true);
+                ClearTempGraphics();
+                var color = new RgbColorClass() { Green = 255 } as IColor;
+                AddGraphicToMap(Point1, color, true);
 
-            // Reset formatted string
-            Point1Formatted = string.Empty;
+                // Reset formatted string
+                Point1Formatted = string.Empty;
+            }
+            else
+            {
+                // we are in interactive mode
+                if (!HasPoint1)
+                {
+                    Point1 = point;
+                    HasPoint1 = true;
+
+                    ClearTempGraphics();
+                    var color = new RgbColorClass() { Green = 255 } as IColor;
+                    AddGraphicToMap(Point1, color, true);
+
+                    // Reset formatted string
+                    Point1Formatted = string.Empty;
+                }
+                else
+                {
+                    // update Distance
+                    var polyline = GetGeoPolylineFromPoints(Point1, point);
+                    UpdateDistance(polyline);
+
+                    // draw a geo ring
+                    ConstructGeoCircle();
+                }
+            }
         }
 
         /// <summary>
         /// Override the mouse move event to dynamically update the center point
+        /// Also dynamically update the ring feedback
         /// </summary>
         /// <param name="obj"></param>
         internal override void OnMouseMoveEvent(object obj)
@@ -204,6 +290,14 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             {
                 Point1 = point;
             }
+            else if(HasPoint1 && IsInteractive)
+            {
+                var polyline = GetGeoPolylineFromPoints(Point1, point);
+                UpdateDistance(polyline);
+
+                // update ring feedback, distance
+                UpdateFeedbackWithGeoCircle();
+            }
         }
 
         internal override void Reset(bool toolReset)
@@ -212,5 +306,35 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             NumberOfRadials = 0;
         }
+
+        private void ConstructGeoCircle()
+        {
+            var construct = new Polyline() as IConstructGeodetic;
+            if (construct != null)
+            {
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                Point2 = (construct as IPolyline).ToPoint;
+                this.AddGraphicToMap(construct as IGeometry);
+                maxDistance = Math.Max(Distance, maxDistance);
+            }
+        }
+
+        private void UpdateFeedbackWithGeoCircle()
+        {
+            if (Point1 == null || Distance <= 0.0)
+                return;
+
+            var construct = new Polyline() as IConstructGeodetic;
+            if (construct != null)
+            {
+                ClearTempGraphics();
+                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                Point2 = (construct as IPolyline).ToPoint;
+                var color = new RgbColorClass() as IColor;
+                this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
+            }
+        }
+
     }
 }

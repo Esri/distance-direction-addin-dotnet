@@ -50,9 +50,10 @@
 						<KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
 					</TextBox.InputBindings>
 				</TextBox>
-                <Button Grid.Column="1" Command="{Binding ActivateToolCommand}" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Grid.Row="2">
+                <ToggleButton Grid.Column="1" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Grid.Row="2"
+                        IsChecked="{Binding IsToolActive}">
                     <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
-                </Button>
+                </ToggleButton>
                 <TextBlock x:Name="NumberofRingsLabel" Text="{x:Static prop:Resources.LabelNumberOfRings}"                
         			Grid.ColumnSpan="3" Grid.Row="3" Margin="3,3,0,0" />
 				<TextBox x:Name="Number_of_Rings_Text_Box" Grid.Row="4" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
@@ -93,6 +94,16 @@
 			ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
 			SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}"                      
 			Height="Auto" Margin="3,3,0,0">
+                    <ComboBox.Style>
+                        <Style TargetType="ComboBox">
+                            <Setter Property="IsEnabled" Value="True" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbInteractive, Path=IsChecked}" Value="True">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ComboBox.Style>
 				</ComboBox>
 				<TextBlock x:Name="NumberofRadialsLabel" Text="{x:Static prop:Resources.LabelRangeRingsNumberofRadials}"                
 			   Grid.ColumnSpan="3" Grid.Row="7" Margin="3,3,0,0" />
