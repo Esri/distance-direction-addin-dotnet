@@ -113,7 +113,7 @@
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
-                <StackPanel Margin="3,20,0,0" Grid.Row="8" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
+                <StackPanel Margin="3,20,0,0" Grid.Row="9" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
                     <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
                 	    ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
                 	    Command="{Binding SaveAsCommand}"
