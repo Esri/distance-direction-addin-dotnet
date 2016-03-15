@@ -41,7 +41,7 @@
 					<RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <CheckBox x:Name="cbInteractive"
-                    Grid.ColumnSpan="3" Content="Interactive" IsChecked="{Binding IsInteractive}" Margin="3,3,0,0" />
+                    Grid.ColumnSpan="3" Content="{x:Static prop:Resources.LabelInteractive}" IsChecked="{Binding IsInteractive}" Margin="3,3,0,0" />
 				<TextBlock x:Name="Center_Point_Label" Grid.Row="1" Text="{x:Static prop:Resources.LabelRangeRingsCenterPoint}"                
     			   Grid.ColumnSpan="3" Margin="3,3,0,0" />
 				<TextBox x:Name="Input_Coords" Grid.Row="2" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
