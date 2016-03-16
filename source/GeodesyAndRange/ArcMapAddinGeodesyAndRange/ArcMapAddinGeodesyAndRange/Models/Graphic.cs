@@ -23,64 +23,25 @@ namespace ArcMapAddinGeodesyAndRange.Models
         /// <summary>
         /// Property for the graphic type
         /// </summary>
-        public GraphicTypes GraphicType
-        {
-            get
-            {
-                return graphicType;
-            }
-            set
-            {
-                graphicType = value;
-            }
-        }
+        public GraphicTypes GraphicType {get;set;} 
 
         private string uniqueId = "";
         /// <summary>
         /// Property for the unique id of the graphic (guid)
         /// </summary>
-        public string UniqueId
-        {
-            get
-            {
-                return uniqueId;
-            }
-            set
-            {
-                uniqueId = value;
-            }
-        }
+        public string UniqueId {get;set;} 
 
         private IGeometry geometry = null;
         /// <summary>
         /// Property for the geometry of the graphic
         /// </summary>
-        public IGeometry Geometry
-        {
-            get
-            {
-                return geometry;
-            }
-            set
-            {
-                geometry = value;
-            }
-        }
+        public IGeometry Geometry {get;set;} 
 
         private bool isTemp = false;
         /// <summary>
         /// Property to determine if graphic is temporary or not
         /// </summary>
-        public bool IsTemp
-        {
-            get
-            {
-                return isTemp;
-            }
-            set
-            {
-                isTemp = value;
-            }
-        }
+        public bool IsTemp {get;set;} 
+        
     }
 }
