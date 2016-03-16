@@ -100,4 +100,19 @@ namespace ArcMapAddinGeodesyAndRange
         [LocalizableDescription(@"EnumSeconds", typeof(Resources))]
         Seconds = 3
     }
+
+    public enum GraphicTypes : int
+    {
+        [LocalizableDescription(@"EnumLine", typeof(Resources))]
+        Line = 1,
+
+        [LocalizableDescription(@"EnumCircle", typeof(Resources))]
+        Circle  = 2,
+
+        [LocalizableDescription(@"EnumEllipse", typeof(Resources))]
+        Ellipse = 3,
+
+        [LocalizableDescription(@"EnumRangeRing", typeof(Resources))]
+        RangeRing = 4
+    }
 }
