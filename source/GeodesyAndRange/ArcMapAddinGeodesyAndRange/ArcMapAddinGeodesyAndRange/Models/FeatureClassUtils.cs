@@ -140,13 +140,7 @@ namespace ArcMapAddinGeodesyAndRange.Models
                     // already asked them for confirmation to overwrite file
                     if (File.Exists(outputPath))
                     {
-                        IWorkspaceFactory workspaceFactory = new ShapefileWorkspaceFactory();
-                        IWorkspace workspace = workspaceFactory.OpenFromFile(folderName, 0);
-                        IFeatureWorkspace fWorkspace = (IFeatureWorkspace)workspace;
-                        IDataset ipDs = fWorkspace.OpenFeatureClass(fcName) as IDataset;
-                        ipDs.Delete();
-
-                        File.Delete(outputPath);
+                        DeleteShapeFile(outputPath);
                     }            
 
                     fc = ExportToShapefile(outputPath, graphicsList, ipSpatialRef);
@@ -157,6 +151,20 @@ namespace ArcMapAddinGeodesyAndRange.Models
             {
                 return fc;
             }
+        }
+
+        public void DeleteShapeFile(string shapeFilePath)
+        {
+            string fcName = System.IO.Path.GetFileName(shapeFilePath);
+            string folderName = System.IO.Path.GetDirectoryName(shapeFilePath);
+
+            IWorkspaceFactory workspaceFactory = new ShapefileWorkspaceFactory();
+            IWorkspace workspace = workspaceFactory.OpenFromFile(folderName, 0);
+            IFeatureWorkspace fWorkspace = (IFeatureWorkspace)workspace;
+            IDataset ipDs = fWorkspace.OpenFeatureClass(fcName) as IDataset;
+            ipDs.Delete();
+
+            File.Delete(shapeFilePath);
         }
 
         /// <summary>

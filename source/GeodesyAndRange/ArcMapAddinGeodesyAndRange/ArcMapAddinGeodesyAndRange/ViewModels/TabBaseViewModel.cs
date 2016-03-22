@@ -70,6 +70,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal bool HasPoint2 = false;
         internal INewLineFeedback feedback = null;
         internal FeatureClassUtils fcUtils = new FeatureClassUtils();
+        internal KMLUtils kmlUtils = new KMLUtils();
+        internal SaveFileDialog sfDlg = null;
 
         private IPoint point1 = null;
         /// <summary>
@@ -442,6 +444,25 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                         }
                     }
                 }
+                else
+                {
+                    path = PromptSaveFileDialog();
+                    if (path != null)
+                    {
+                        string kmlName = System.IO.Path.GetFileName(path);
+                        string folderName = System.IO.Path.GetDirectoryName(path);
+                        string tempShapeFile = folderName + "\\tmpShapefile.shp";
+                        IFeatureClass tempFc = fcUtils.CreateFCOutput(tempShapeFile, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
+
+                        if (tempFc != null)
+                        {
+                            kmlUtils.ConvertLayerToKML(tempShapeFile, ArcMap.Document.FocusMap);
+
+                            // delete the temporary shapefile
+                            fcUtils.DeleteShapeFile(tempShapeFile);
+                        } 
+                    }
+                }
 
                 if (fc != null)
                 {
@@ -455,6 +476,30 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     map.AddLayer((ILayer)outputFeatureLayer);
                 }
             }       
+        }
+
+        private string PromptSaveFileDialog()
+        {
+            if (sfDlg == null)
+            {
+                sfDlg = new SaveFileDialog();
+                sfDlg.AddExtension = true;
+                sfDlg.CheckPathExists = true;
+                sfDlg.DefaultExt = "kml";
+                sfDlg.Filter = "KML Files (*.kml,*.kmz)|*.kml;*.kmz";
+                string userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+                sfDlg.InitialDirectory = userPath;
+                sfDlg.OverwritePrompt = true;
+                sfDlg.Title = "Choose location to create KML file";
+                
+            }
+                
+            if (sfDlg.ShowDialog() == DialogResult.OK)
+            {
+                return sfDlg.FileName;
+            }
+
+            return null;
         }
 
         /// <summary>
