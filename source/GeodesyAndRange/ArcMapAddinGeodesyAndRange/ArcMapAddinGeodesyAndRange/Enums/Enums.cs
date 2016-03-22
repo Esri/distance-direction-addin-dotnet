@@ -108,4 +108,11 @@ namespace ArcMapAddinGeodesyAndRange
         Ellipse = 3,
         RangeRing = 4
     }
+
+    public enum SaveAsType : int
+    {
+        FileGDB = 1,
+        Shapefile = 2,
+        KML = 3
+    }
 }
