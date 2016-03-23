@@ -156,6 +156,9 @@
   <data name="EnumCTMGRS" xml:space="preserve">
     <value>MGRS</value>
   </data>
+  <data name="EnumCTNone" xml:space="preserve">
+    <value>Default Map Unit</value>
+  </data>
   <data name="EnumCTUSNG" xml:space="preserve">
     <value>USNG</value>
   </data>

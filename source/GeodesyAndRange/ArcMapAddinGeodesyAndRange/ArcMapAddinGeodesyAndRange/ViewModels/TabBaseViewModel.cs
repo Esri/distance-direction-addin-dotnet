@@ -713,12 +713,15 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <returns>String that is formatted based on addin config display coordinate type</returns>
         private string GetFormattedPoint(IPoint point)
         {
-            var result = string.Format("{0:0.0#####} {1:0.0#####}", point.Y, point.X);
+            var result = string.Format("{0:0.0} {1:0.0}", point.Y, point.X);
             var cn = point as IConversionNotation;
             if (cn != null)
             {
                 switch (AddInConfig.DisplayCoordinateType)
                 {
+                    case CoordinateTypes.DD:
+                        result = cn.GetDDFromCoords(6);
+                        break;
                     case CoordinateTypes.DDM:
                         result = cn.GetDDMFromCoords(4);
                         break;

@@ -178,6 +178,15 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Default Map Unit.
+        /// </summary>
+        public static string EnumCTNone {
+            get {
+                return ResourceManager.GetString("EnumCTNone", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to USNG.
         /// </summary>
         public static string EnumCTUSNG {

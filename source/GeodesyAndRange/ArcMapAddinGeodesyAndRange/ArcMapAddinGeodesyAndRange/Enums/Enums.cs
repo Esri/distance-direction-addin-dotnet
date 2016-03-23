@@ -137,7 +137,10 @@ namespace ArcMapAddinGeodesyAndRange
         USNG = 6,
 
         [LocalizableDescription(@"EnumCTUTM", typeof(Resources))]
-        UTM = 7
+        UTM = 7,
+
+        [LocalizableDescription(@"EnumCTNone", typeof(Resources))]
+        None = 8
 
     }
 }

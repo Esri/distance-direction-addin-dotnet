@@ -15,14 +15,19 @@
              helpers:DialogCloser.DialogResult="{Binding DialogResult}"
                           d:DesignHeight="300" d:DesignWidth="300">
     <Window.Resources>
-        <viewModels:EditPropertiesViewModel x:Key="editPropertiesVM" />
-        <ObjectDataProvider x:Key="coordinateTypes"
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ArcMapAddinGeodesyAndRange;component/MAResourceDictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <viewModels:EditPropertiesViewModel x:Key="editPropertiesVM" />
+            <ObjectDataProvider x:Key="coordinateTypes"
                             MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}">
-            <ObjectDataProvider.MethodParameters>
-                <x:TypeExtension TypeName="local:CoordinateTypes" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
+                <ObjectDataProvider.MethodParameters>
+                    <x:TypeExtension TypeName="local:CoordinateTypes" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </ResourceDictionary>
     </Window.Resources>
     <Window.DataContext>
         <StaticResourceExtension ResourceKey="editPropertiesVM" />
