@@ -144,6 +144,9 @@
     <Compile Include="Views\CircleView.xaml.cs">
       <DependentUpon>CircleView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\EditPropertiesView.xaml.cs">
+      <DependentUpon>EditPropertiesView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\EllipseView.xaml.cs">
       <DependentUpon>EllipseView.xaml</DependentUpon>
     </Compile>
@@ -191,6 +194,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\CircleView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\EditPropertiesView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

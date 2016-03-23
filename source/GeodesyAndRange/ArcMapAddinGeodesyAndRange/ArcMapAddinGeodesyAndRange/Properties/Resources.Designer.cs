@@ -394,6 +394,15 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Display Coordinate.
+        /// </summary>
+        public static string LabelDisplayCoordinate {
+            get {
+                return ResourceManager.GetString("LabelDisplayCoordinate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Distance Calculator.
         /// </summary>
         public static string LabelDistanceCalculator {
@@ -633,6 +642,15 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         public static string LabelTime {
             get {
                 return ResourceManager.GetString("LabelTime", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edit Properties.
+        /// </summary>
+        public static string TitleEditProperties {
+            get {
+                return ResourceManager.GetString("TitleEditProperties", resourceCulture);
             }
         }
         
