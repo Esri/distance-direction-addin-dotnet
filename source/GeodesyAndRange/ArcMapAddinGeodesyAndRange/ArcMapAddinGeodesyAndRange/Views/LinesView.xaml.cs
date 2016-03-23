@@ -26,6 +26,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ArcMapAddinGeodesyAndRange.ViewModels;
 
 namespace ArcMapAddinGeodesyAndRange.Views
 {
@@ -37,6 +38,17 @@ namespace ArcMapAddinGeodesyAndRange.Views
         public GRLinesView()
         {
             InitializeComponent();
+        }
+
+        private void UserControl_Loaded(object sender, RoutedEventArgs e)
+        {
+            // load the configuration file
+            TabBaseViewModel.AddInConfig.LoadConfiguration();            
+        }
+
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            TabBaseViewModel.AddInConfig.SaveConfiguration();
         }
     }
 }

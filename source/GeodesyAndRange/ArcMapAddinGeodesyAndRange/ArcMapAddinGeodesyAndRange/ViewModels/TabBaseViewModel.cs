@@ -74,6 +74,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal KMLUtils kmlUtils = new KMLUtils();
         internal SaveFileDialog sfDlg = null;
 
+        public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig();
+
         private IPoint point1 = null;
         /// <summary>
         /// Property for the first IPoint

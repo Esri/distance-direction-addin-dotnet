@@ -36,6 +36,8 @@ namespace ArcMapAddinGeodesyAndRange.Models
 
                 XmlSerializer x = new XmlSerializer(GetType());
                 XmlWriter writer = new XmlTextWriter(filename, Encoding.UTF8);
+
+                x.Serialize(writer, this);
             }
             catch(Exception ex)
             {
