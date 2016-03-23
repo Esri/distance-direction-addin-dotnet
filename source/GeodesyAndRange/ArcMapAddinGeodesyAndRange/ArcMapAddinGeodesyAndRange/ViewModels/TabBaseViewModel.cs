@@ -20,11 +20,21 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using ESRI.ArcGIS.esriSystem;
 using ArcMapAddinGeodesyAndRange.Helpers;
+using ArcMapAddinGeodesyAndRange.Models;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using System.Diagnostics;
+using ESRI.ArcGIS.Geodatabase;
+using ESRI.ArcGIS.CatalogUI;
+using ESRI.ArcGIS.Catalog;
+using ESRI.ArcGIS.DataSourcesGDB;
+using ESRI.ArcGIS.Geoprocessing;
+using ArcMapAddinGeodesyAndRange.Views;
+using System.IO;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
@@ -54,12 +64,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #region Properties
 
         // lists to store GUIDs of graphics, temp feedback and map graphics
-        private static List<string> TempGraphicsList = new List<string>();
-        private static List<string> MapGraphicsList = new List<string>();
+        private static List<Graphic> GraphicsList = new List<Graphic>();
 
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
         internal INewLineFeedback feedback = null;
+        internal FeatureClassUtils fcUtils = new FeatureClassUtils();
 
         private IPoint point1 = null;
         /// <summary>
@@ -342,6 +352,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         public RelayCommand ClearGraphicsCommand { get; set; }
         public RelayCommand ActivateToolCommand { get; set; }
         public RelayCommand EnterKeyCommand { get; set; }
+
+        
         
         #endregion
 
@@ -375,8 +387,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (gc == null)
                 return;
 
-            RemoveGraphics(gc, TempGraphicsList);
-            RemoveGraphics(gc, MapGraphicsList);
+            RemoveGraphics(gc, false);
             
             //gc.DeleteAllElements();
             //av.Refresh();
@@ -389,15 +400,61 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="obj"></param>
         private void OnSaveAs(object obj)
         {
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            if (mxdoc == null)
-                return;
-            var av = mxdoc.FocusMap as IActiveView;
-            if (av == null)
-                return;
-            var gc = av as IGraphicsContainer;
-            if (gc == null)
-                return;
+            var dlg = new SelectSaveAsFormatView();
+            var vm = dlg.DataContext as SelectSaveAsFormatViewModel;
+            
+            if (dlg.ShowDialog() == true)
+            {
+                IFeatureClass fc = null;
+
+                // Get the graphics list for the selected tab
+                List<Graphic> typeGraphicsList = new List<Graphic>();
+                if (this is LinesViewModel)
+                {
+                    typeGraphicsList = GraphicsList.FindAll(g => g.GraphicType == GraphicTypes.Line);
+                }
+                else if (this is CircleViewModel)
+                {
+                    typeGraphicsList = GraphicsList.FindAll(g => g.GraphicType == GraphicTypes.Circle);
+                }
+                else if (this is EllipseViewModel)
+                {
+                    typeGraphicsList = GraphicsList.FindAll(g => g.GraphicType == GraphicTypes.Ellipse);
+                }
+                else if (this is RangeViewModel)
+                {
+                    typeGraphicsList = GraphicsList.FindAll(g => g.GraphicType == GraphicTypes.RangeRing);
+                }
+
+                string path = null;
+                if (vm.FeatureShapeIsChecked)
+                {
+                    path = fcUtils.PromptUserWithGxDialog(ArcMap.Application.hWnd);
+                    if (path != null)
+                    {
+                        if (System.IO.Path.GetExtension(path).Equals(".shp"))
+                        {
+                            fc = fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
+                        }
+                        else
+                        {
+                            fc = fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
+                        }
+                    }
+                }
+
+                if (fc != null)
+                {
+                    IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
+                    outputFeatureLayer.FeatureClass = fc;
+
+                    IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
+                    geoLayer.Name = fc.AliasName;
+
+                    ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
+                    map.AddLayer((ILayer)outputFeatureLayer);
+                }
+            }       
         }
 
         /// <summary>
@@ -415,20 +472,23 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (gc == null)
                 return;
 
-            RemoveGraphics(gc, TempGraphicsList);
+            RemoveGraphics(gc, true);
 
             av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
         }
+       
         /// <summary>
         /// Method used to remove graphics from the graphics container
         /// Elements are tagged with a GUID on the IElementProperties.Name property
+        /// Removes graphics from all tabs, not just the tab that is currently active
         /// </summary>
-        /// <param name="gc">map graphics container</param>
-        /// <param name="list">list of GUIDs to remove</param>
-        private void RemoveGraphics(IGraphicsContainer gc, List<string> list)
+        private void RemoveGraphics(IGraphicsContainer gc, bool removeOnlyTemporary)
         {
-            if (gc == null || !list.Any())
+            if (gc == null || !GraphicsList.Any())
                 return;
+
+            // keep track of the graphics that we need to remove from the GraphicsList
+            List<Graphic> removedGraphics = new List<Graphic>();
 
             var elementList = new List<IElement>();
             gc.Reset();
@@ -436,10 +496,20 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             while (element != null)
             {
                 var eleProps = element as IElementProperties;
-                if (list.Contains(eleProps.Name))
+                foreach (Graphic graphic in GraphicsList)
                 {
-                    elementList.Add(element);
+                    if (graphic.UniqueId.Equals(eleProps.Name))
+                    {
+                        if (graphic.IsTemp == removeOnlyTemporary)
+                        {
+                            elementList.Add(element);
+                            removedGraphics.Add(graphic);
+                        }     
+                            
+                        break;
+                    }
                 }
+
                 element = gc.Next();
             }
 
@@ -448,7 +518,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 gc.DeleteElement(ele);
             }
 
-            list.Clear();
+            // clean up the GraphicsList and remove the necessary graphics from it
+            foreach (Graphic graphic in removedGraphics)
+            {
+                GraphicsList.Remove(graphic);
+            }
+
             elementList.Clear();
         }
 
@@ -669,7 +744,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                     lineSymbol.ROP2 = rasterOpCode;
                 }
 
-                var le = new LineElementClass() as ILineElement;
+                var le = new LineElementClass() as ILineElement;  
                 element = le as IElement;
                 le.Symbol = lineSymbol;
             }
@@ -677,7 +752,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             if (element == null)
                 return;
 
-            element.Geometry = geom;
+            IClone clone = geom as IClone;
+            element.Geometry = clone as IGeometry;       
 
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             var av = mxdoc.FocusMap as IActiveView;
@@ -686,11 +762,15 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             // store guid
             var eprop = element as IElementProperties;
             eprop.Name = Guid.NewGuid().ToString();
-            
-            if (IsTempGraphic)
-                TempGraphicsList.Add(eprop.Name);
-            else
-                MapGraphicsList.Add(eprop.Name);
+ 
+            if (this is LinesViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, IsTempGraphic));
+            else if (this is CircleViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, IsTempGraphic));
+            else if (this is EllipseViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, IsTempGraphic));
+            else if (this is RangeViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, IsTempGraphic));
 
             gc.AddElement(element, 0);
 

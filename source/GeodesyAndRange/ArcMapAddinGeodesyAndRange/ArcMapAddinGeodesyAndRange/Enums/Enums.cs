@@ -100,4 +100,19 @@ namespace ArcMapAddinGeodesyAndRange
         [LocalizableDescription(@"EnumSeconds", typeof(Resources))]
         Seconds = 3
     }
+
+    public enum GraphicTypes : int
+    {
+        Line = 1,
+        Circle  = 2,
+        Ellipse = 3,
+        RangeRing = 4
+    }
+
+    public enum SaveAsType : int
+    {
+        FileGDB = 1,
+        Shapefile = 2,
+        KML = 3
+    }
 }
