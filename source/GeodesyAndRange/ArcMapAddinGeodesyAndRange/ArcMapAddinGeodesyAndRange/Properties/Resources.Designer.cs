@@ -574,6 +574,15 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Edit Properties.
+        /// </summary>
+        public static string TooltipEditProperties {
+            get {
+                return ResourceManager.GetString("TooltipEditProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Map Point Tool.
         /// </summary>
         public static string TooltipMapPointTool {
