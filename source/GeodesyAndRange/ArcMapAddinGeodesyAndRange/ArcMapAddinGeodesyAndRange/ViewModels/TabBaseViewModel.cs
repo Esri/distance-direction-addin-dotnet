@@ -456,7 +456,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
                         if (tempFc != null)
                         {
-                            kmlUtils.ConvertLayerToKML(tempShapeFile, ArcMap.Document.FocusMap);
+                            kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap);
 
                             // delete the temporary shapefile
                             fcUtils.DeleteShapeFile(tempShapeFile);
@@ -485,12 +485,12 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 sfDlg = new SaveFileDialog();
                 sfDlg.AddExtension = true;
                 sfDlg.CheckPathExists = true;
-                sfDlg.DefaultExt = "kml";
-                sfDlg.Filter = "KML Files (*.kml,*.kmz)|*.kml;*.kmz";
+                sfDlg.DefaultExt = "kmz";
+                sfDlg.Filter = "KMZ File (*.kmz)|*.kmz";
                 string userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
                 sfDlg.InitialDirectory = userPath;
                 sfDlg.OverwritePrompt = true;
-                sfDlg.Title = "Choose location to create KML file";
+                sfDlg.Title = "Choose location to create KMZ file";
                 
             }
                 

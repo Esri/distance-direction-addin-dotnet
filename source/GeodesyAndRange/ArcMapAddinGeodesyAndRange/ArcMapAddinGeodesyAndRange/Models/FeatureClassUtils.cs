@@ -45,6 +45,7 @@ namespace ArcMapAddinGeodesyAndRange.Models
             }
             else
             {
+                m_ipSaveAsGxDialog.Name = "";
                 m_ipSaveAsGxDialog.FinalLocation.Refresh();
             }
 

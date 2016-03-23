@@ -19,28 +19,23 @@ namespace ArcMapAddinGeodesyAndRange.Models
     class KMLUtils
     {
         
-        public void CreateKML()
-        {
-            Console.WriteLine("Initializing Geoprocessor...");
-            
-
-
-        }
-
-        public void ConvertLayerToKML(string fcPath, ESRI.ArcGIS.Carto.IMap map)
+        public bool ConvertLayerToKML(string kmzOutputPath, string tmpShapefilePath, ESRI.ArcGIS.Carto.IMap map)
         {
             try
             {
+                string kmzName = System.IO.Path.GetFileName(kmzOutputPath);
+                string folderName = System.IO.Path.GetDirectoryName(kmzOutputPath);
+
                 IGeoProcessor2 gp = new GeoProcessorClass();
                 IVariantArray parameters = new VarArrayClass();
-                parameters.Add(fcPath);
+                parameters.Add(tmpShapefilePath);
                 parameters.Add("featureLayer");
                 gp.Execute("MakeFeatureLayer_management", parameters, null);
 
                 IVariantArray parameters1 = new VarArrayClass();
                 // assign  parameters        
                 parameters1.Add("featureLayer");
-                parameters1.Add(@"C:\Hagens\Projects\MilitaryAnalyst\data\test.kmz");
+                parameters1.Add(kmzOutputPath);
 
                 gp.Execute("LayerToKML_conversion", parameters1, null);
 
@@ -54,10 +49,12 @@ namespace ArcMapAddinGeodesyAndRange.Models
                         break;
                     }
                 }
+
+                return true;
             }
             catch(Exception ex)
             {
-
+                return false;
             }
         }
     }
