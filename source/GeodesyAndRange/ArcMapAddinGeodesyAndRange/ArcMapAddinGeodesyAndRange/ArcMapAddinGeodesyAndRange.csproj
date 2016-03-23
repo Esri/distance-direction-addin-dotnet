@@ -122,6 +122,7 @@
     <Compile Include="Helpers\NotificationObject.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
     <Compile Include="MapPointTool.cs" />
+    <Compile Include="Models\DistanceAndDirectionConfig.cs" />
     <Compile Include="Models\KMLUtils.cs" />
     <Compile Include="Models\FeatureClassUtils.cs" />
     <Compile Include="Models\Graphic.cs" />
