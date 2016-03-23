@@ -34,5 +34,13 @@
                 </Setter.Value>
             </Setter>
         </Style>
+    <Style x:Key="buttonProperties" TargetType="Button">
+        <Setter Property="Content">
+            <Setter.Value>
+                <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/GeoprocessingEnvironmentSettings32_d.png" Width="18" Height="18" />
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Command" Value="{Binding EditPropertiesDialogCommand}" />
+    </Style>
 
 </ResourceDictionary>
