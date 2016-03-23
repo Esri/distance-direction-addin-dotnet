@@ -121,6 +121,7 @@
     <Compile Include="Helpers\Mediator.cs" />
     <Compile Include="Helpers\NotificationObject.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
+    <Compile Include="Helpers\Wpf.cs" />
     <Compile Include="MapPointTool.cs" />
     <Compile Include="Models\DistanceAndDirectionConfig.cs" />
     <Compile Include="Models\KMLUtils.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="ValueConverters\EnumToFriendlyNameConverter.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\CircleViewModel.cs" />
+    <Compile Include="ViewModels\EditPropertiesViewModel.cs" />
     <Compile Include="ViewModels\EllipseViewModel.cs" />
     <Compile Include="ViewModels\LinesViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

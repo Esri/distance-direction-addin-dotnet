@@ -28,7 +28,6 @@ namespace ArcMapAddinGeodesyAndRange.Models
     {
         public DistanceAndDirectionConfig()
         {
-
         }
 
         private CoordinateTypes displayCoordinateType = CoordinateTypes.DD;

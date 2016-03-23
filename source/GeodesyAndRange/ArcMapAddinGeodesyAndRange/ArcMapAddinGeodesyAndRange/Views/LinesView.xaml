@@ -9,7 +9,6 @@
              xmlns:prop="clr-namespace:ArcMapAddinGeodesyAndRange.Properties"
              mc:Ignorable="d" 
              Loaded="UserControl_Loaded"
-             Unloaded="UserControl_Unloaded"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>

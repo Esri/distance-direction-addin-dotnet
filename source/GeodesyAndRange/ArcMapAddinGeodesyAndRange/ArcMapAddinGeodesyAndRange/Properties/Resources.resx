@@ -132,6 +132,12 @@
   <data name="AENumOfRings" xml:space="preserve">
     <value>The number of rings must be between {0} and {1}</value>
   </data>
+  <data name="ButtonCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ButtonOK" xml:space="preserve">
+    <value>OK</value>
+  </data>
   <data name="EnumBearingAndDistance" xml:space="preserve">
     <value>Distance and Bearing</value>
   </data>

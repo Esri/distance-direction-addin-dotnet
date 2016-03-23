@@ -608,7 +608,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="obj"></param>
         private void OnEditPropertiesDialogCommand(object obj)
         {
-            System.Windows.Forms.MessageBox.Show("Edit Properties");
+            var dlg = new EditPropertiesView();
+
+            dlg.ShowDialog();
         }
 
         private bool IsValid(System.Windows.DependencyObject obj)
