@@ -64,7 +64,7 @@
                Grid.Row="2" Grid.ColumnSpan="3" Margin="3,3,0,0" />
                 <TextBox Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
                  Validation.ErrorTemplate="{StaticResource errorTemplate}"
-                 Grid.Row="3" Grid.ColumnSpan="3" Margin="3,3,24,0">
+                 Grid.Row="3" Grid.ColumnSpan="3" Margin="3,3,0,0">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
                     </TextBox.InputBindings>
@@ -106,7 +106,7 @@
                 </ComboBox>
                 <Expander Header="{x:Static prop:Resources.LabelDistanceCalculator}" 
                   IsExpanded="{Binding IsDistanceCalcExpanded, Mode=OneWayToSource}"
-                  Grid.Row="7" Grid.ColumnSpan="3" Margin="0,10,0,0">
+                  Grid.Row="7" Grid.ColumnSpan="3" Margin="3,3,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
