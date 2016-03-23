@@ -295,7 +295,7 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Create Circle From.
+        ///   Looks up a localized string similar to From.
         /// </summary>
         public static string LabelCreateCircleFrom {
             get {
