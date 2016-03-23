@@ -196,7 +196,7 @@
     <value>Clear Graphics</value>
   </data>
   <data name="LabelCreateCircleFrom" xml:space="preserve">
-    <value>Create Circle From</value>
+    <value>From</value>
   </data>
   <data name="LabelCreateEllipseWith" xml:space="preserve">
     <value>Create Ellipse with</value>

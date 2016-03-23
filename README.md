@@ -119,19 +119,26 @@ The add-in provides the ability to create geodesic features such as lines, circl
 
 ### Create Range Rings Interactively 
 1. Choose the **Rings** tab on the *Distance and Direction* Tool
-2. Start an interactive session by selecting **Map Point Tool** (arrow icon) next to the **Center Point** text box
+2. Check **Interactive**
+3. Select the **Map Point Tool** (arrow icon) next to the **Center Point** text box
+4. *First* click on the map sets the center point (green dot)
+5. Subsequent clicks draw rings from the center point
+6. Select the **Map Point Tool** a second time to stop adding rings
+	* To start a second set of range rings, repeat steps 3 through 6.
+7. Uncheck **Interactive** to return to manual entry
+
+
+### Create Range Rings Manually 
+1. Choose the **Rings** tab on the *Distance and Direction* Tool
+2. Select the **Map Point Tool** (arrow icon) next to the **Center Point** text box
+	* Optionally copy and paste, or type coordinates in the **Center Point** text box
 3. Choose the location of the Range Rings center by selecting the desired location on the map
 4. Fill in the associated parameters for **Number of Rings**, **Ring Interval**, **Distance Units**, and **Number of Radials**
 5. Press *Enter* key
 
-> Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set.
+>Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set. If desired you can clear all graphics with the **Clear Graphics** button.
 
-### Create Range Rings Manually 
-1. Choose the **Rings** tab on the *Distance and Direction* Tool
-2. Fill in the associated parameters for **Number of Rings**, **Ring Interval**, **Distance Units**, and **Number of Radials**
-3. Input the coordinates for the Range Rings center in the **Center Point** text box and select the *Enter* key on the keyboard
 
->Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set. If desired you can clear all graphics with the clear graphics button.
 
 ## Resources
 
