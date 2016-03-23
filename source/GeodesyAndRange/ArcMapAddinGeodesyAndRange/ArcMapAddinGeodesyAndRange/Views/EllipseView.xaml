@@ -72,21 +72,31 @@
                Grid.Row="1" Grid.Column="0"
                VerticalAlignment="Bottom"
                Margin="0,0,0,0"/>
-                <TextBox Height="Auto"
+                <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Height="Auto"
                  Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                  Validation.ErrorTemplate="{StaticResource errorTemplate }"            
                  ToolTip="{x:Static prop:Resources.LabelCenterPoint}"
-                 Grid.Row="2" Grid.ColumnSpan="2" HorizontalAlignment="Stretch" Margin="0,0,26,0">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-                    </TextBox.InputBindings>
-                </TextBox>
-                <Button Command="{Binding ActivateToolCommand}"
+                 Margin="3,3,0,0">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Button Style="{StaticResource buttonProperties}" 
+                            Grid.Column="1"
+                            Margin="3,3,0,0" />
+                    <Button Command="{Binding ActivateToolCommand}"
                 Width="Auto" HorizontalAlignment="Right" 
                 ToolTip="{x:Static prop:Resources.TooltipMapPointTool}"
-                Grid.Row="2" Grid.Column="1" Margin="0,0,0,0">
-                    <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
-                </Button>
+                Grid.Column="2" Margin="3,3,0,0">
+                        <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+                    </Button>
+                </Grid>
                 <GroupBox Header="{x:Static prop:Resources.LabelAxisGroup}" HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch" 
                   Grid.Row="3" Grid.ColumnSpan="2"
