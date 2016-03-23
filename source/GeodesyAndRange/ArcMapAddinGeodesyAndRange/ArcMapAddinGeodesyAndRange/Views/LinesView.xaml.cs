@@ -48,6 +48,7 @@ namespace ArcMapAddinGeodesyAndRange.Views
 
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
+            // save the configuration file
             TabBaseViewModel.AddInConfig.SaveConfiguration();
         }
     }
