@@ -39,17 +39,5 @@ namespace ArcMapAddinGeodesyAndRange.Views
         {
             InitializeComponent();
         }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            // load the configuration file
-            TabBaseViewModel.AddInConfig.LoadConfiguration();            
-        }
-
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
-        {
-            // save the configuration file
-            TabBaseViewModel.AddInConfig.SaveConfiguration();
-        }
     }
 }

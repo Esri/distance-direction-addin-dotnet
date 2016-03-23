@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
     xmlns:prop="clr-namespace:ArcMapAddinGeodesyAndRange.Properties"
+    Loaded="UserControl_Loaded"
     Height="300" Width="300">
     <UserControl.Resources>
         <viewModels:MainViewModel x:Key="viewModelMain" />

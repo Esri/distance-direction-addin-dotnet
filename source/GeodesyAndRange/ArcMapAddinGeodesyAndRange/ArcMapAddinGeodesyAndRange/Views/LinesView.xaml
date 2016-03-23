@@ -8,7 +8,6 @@
              xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
              xmlns:prop="clr-namespace:ArcMapAddinGeodesyAndRange.Properties"
              mc:Ignorable="d" 
-             Loaded="UserControl_Loaded"
              d:DesignHeight="300" d:DesignWidth="300">
     <UserControl.Resources>
         <ResourceDictionary>
