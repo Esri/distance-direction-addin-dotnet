@@ -54,6 +54,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             ClearGraphicsCommand = new RelayCommand(OnClearGraphics);
             ActivateToolCommand = new RelayCommand(OnActivateTool);
             EnterKeyCommand = new RelayCommand(OnEnterKeyCommand);
+            EditPropertiesDialogCommand = new RelayCommand(OnEditPropertiesDialogCommand);
 
             // Mediator
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
@@ -354,7 +355,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         public RelayCommand ClearGraphicsCommand { get; set; }
         public RelayCommand ActivateToolCommand { get; set; }
         public RelayCommand EnterKeyCommand { get; set; }
-
+        public RelayCommand EditPropertiesDialogCommand { get; set; }
         
         
         #endregion
@@ -597,6 +598,15 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
 
             CreateMapElement();
+        }
+
+        /// <summary>
+        /// Handler for opening the edit properties dialog
+        /// </summary>
+        /// <param name="obj"></param>
+        private void OnEditPropertiesDialogCommand(object obj)
+        {
+            System.Windows.Forms.MessageBox.Show("Edit Properties");
         }
 
         private bool IsValid(System.Windows.DependencyObject obj)
