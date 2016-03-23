@@ -30,7 +30,7 @@ namespace ArcMapAddinGeodesyAndRange.Models
         {
         }
 
-        private CoordinateTypes displayCoordinateType = CoordinateTypes.DD;
+        private CoordinateTypes displayCoordinateType = CoordinateTypes.None;
         public CoordinateTypes DisplayCoordinateType
         {
             get { return displayCoordinateType; }
