@@ -115,6 +115,69 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DD.
+        /// </summary>
+        public static string EnumCTDD {
+            get {
+                return ResourceManager.GetString("EnumCTDD", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DDM.
+        /// </summary>
+        public static string EnumCTDDM {
+            get {
+                return ResourceManager.GetString("EnumCTDDM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to DMS.
+        /// </summary>
+        public static string EnumCTDMS {
+            get {
+                return ResourceManager.GetString("EnumCTDMS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to GARS.
+        /// </summary>
+        public static string EnumCTGARS {
+            get {
+                return ResourceManager.GetString("EnumCTGARS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to MGRS.
+        /// </summary>
+        public static string EnumCTMGRS {
+            get {
+                return ResourceManager.GetString("EnumCTMGRS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to USNG.
+        /// </summary>
+        public static string EnumCTUSNG {
+            get {
+                return ResourceManager.GetString("EnumCTUSNG", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to UTM.
+        /// </summary>
+        public static string EnumCTUTM {
+            get {
+                return ResourceManager.GetString("EnumCTUTM", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Degrees.
         /// </summary>
         public static string EnumDegrees {

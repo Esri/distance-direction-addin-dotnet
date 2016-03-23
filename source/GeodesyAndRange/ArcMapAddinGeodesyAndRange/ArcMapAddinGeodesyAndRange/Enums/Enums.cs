@@ -115,4 +115,29 @@ namespace ArcMapAddinGeodesyAndRange
         Shapefile = 2,
         KML = 3
     }
+
+    public enum CoordinateTypes : int
+    {
+        [LocalizableDescription(@"EnumCTDD", typeof(Resources))]
+        DD = 1,
+
+        [LocalizableDescription(@"EnumCTDDM", typeof(Resources))]
+        DDM = 2,
+
+        [LocalizableDescription(@"EnumCTDMS", typeof(Resources))]
+        DMS = 3,
+        
+        [LocalizableDescription(@"EnumCTGARS", typeof(Resources))]
+        GARS = 4,
+
+        [LocalizableDescription(@"EnumCTMGRS", typeof(Resources))]
+        MGRS = 5,
+
+        [LocalizableDescription(@"EnumCTUSNG", typeof(Resources))]
+        USNG = 6,
+
+        [LocalizableDescription(@"EnumCTUTM", typeof(Resources))]
+        UTM = 7
+
+    }
 }

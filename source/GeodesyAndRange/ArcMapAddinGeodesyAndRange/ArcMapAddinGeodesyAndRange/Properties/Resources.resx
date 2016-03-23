@@ -135,6 +135,27 @@
   <data name="EnumBearingAndDistance" xml:space="preserve">
     <value>Distance and Bearing</value>
   </data>
+  <data name="EnumCTDD" xml:space="preserve">
+    <value>DD</value>
+  </data>
+  <data name="EnumCTDDM" xml:space="preserve">
+    <value>DDM</value>
+  </data>
+  <data name="EnumCTDMS" xml:space="preserve">
+    <value>DMS</value>
+  </data>
+  <data name="EnumCTGARS" xml:space="preserve">
+    <value>GARS</value>
+  </data>
+  <data name="EnumCTMGRS" xml:space="preserve">
+    <value>MGRS</value>
+  </data>
+  <data name="EnumCTUSNG" xml:space="preserve">
+    <value>USNG</value>
+  </data>
+  <data name="EnumCTUTM" xml:space="preserve">
+    <value>UTM</value>
+  </data>
   <data name="EnumDegrees" xml:space="preserve">
     <value>Degrees</value>
   </data>
