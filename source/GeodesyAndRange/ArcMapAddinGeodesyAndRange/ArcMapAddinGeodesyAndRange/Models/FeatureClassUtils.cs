@@ -27,6 +27,7 @@ using ESRI.ArcGIS.DataSourcesGDB;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.DataSourcesFile;
 using ESRI.ArcGIS.Carto;
+using ESRI.ArcGIS.ADF;
 
 namespace ArcMapAddinGeodesyAndRange.Models
 {
@@ -175,13 +176,24 @@ namespace ArcMapAddinGeodesyAndRange.Models
             string fcName = System.IO.Path.GetFileName(shapeFilePath);
             string folderName = System.IO.Path.GetDirectoryName(shapeFilePath);
 
-            IWorkspaceFactory workspaceFactory = new ShapefileWorkspaceFactory();
-            IWorkspace workspace = workspaceFactory.OpenFromFile(folderName, 0);
-            IFeatureWorkspace fWorkspace = (IFeatureWorkspace)workspace;
-            IDataset ipDs = fWorkspace.OpenFeatureClass(fcName) as IDataset;
-            ipDs.Delete();
+            using (ComReleaser oComReleaser = new ComReleaser())
+            {
+                IWorkspaceFactory workspaceFactory = new ShapefileWorkspaceFactory();
+                IWorkspace workspace = workspaceFactory.OpenFromFile(folderName, 0);
+                IFeatureWorkspace fWorkspace = (IFeatureWorkspace)workspace;
+                IDataset ipDs = fWorkspace.OpenFeatureClass(fcName) as IDataset;
+                ipDs.Delete();
 
-            File.Delete(shapeFilePath);
+                File.Delete(shapeFilePath);
+
+                System.Runtime.InteropServices.Marshal.FinalReleaseComObject(workspace);
+                workspace = null;
+                fWorkspace = null;
+                ipDs = null;
+            }
+ 
+            GC.Collect();
+            
         }
 
         /// <summary>
@@ -198,62 +210,70 @@ namespace ArcMapAddinGeodesyAndRange.Models
             string nameOfShapeFile = fileNamePath.Substring(index + 1);
             string shapeFieldName = "Shape";
             IFeatureClass featClass = null;
-            try
+
+            using (ComReleaser oComReleaser = new ComReleaser())
             {
-                IWorkspaceFactory workspaceFactory = null;
-                workspaceFactory = new ShapefileWorkspaceFactoryClass();
-                IWorkspace workspace = workspaceFactory.OpenFromFile(folder, 0);
-                IFeatureWorkspace featureWorkspace = workspace as IFeatureWorkspace;
-                IFields fields = null;
-                IFieldsEdit fieldsEdit = null;
-                fields = new Fields();
-                fieldsEdit = (IFieldsEdit)fields;
-                IField field = null;
-                IFieldEdit fieldEdit = null;
-                field = new FieldClass();///###########
-                fieldEdit = (IFieldEdit)field;
-                fieldEdit.Name_2 = "Shape";
-                fieldEdit.Type_2 = (esriFieldType.esriFieldTypeGeometry);
-                IGeometryDef geomDef = null;
-                IGeometryDefEdit geomDefEdit = null;
-                geomDef = new GeometryDefClass();///#########
-                geomDefEdit = (IGeometryDefEdit)geomDef;
-
-                //This is for line shapefiles
-                geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;            
-                geomDefEdit.SpatialReference_2 = ipSpatialRef;
-
-                fieldEdit.GeometryDef_2 = geomDef;
-                fieldsEdit.AddField(field);
-                
-                ////Add another miscellaneous text field
-                //field = new FieldClass();
-                //fieldEdit = (IFieldEdit)field;
-                //fieldEdit.Length_2 = 30;
-                //fieldEdit.Name_2 = "TextField";
-                //fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-                //fieldsEdit.AddField(field);
-                
-                featClass = featureWorkspace.CreateFeatureClass(nameOfShapeFile, fields, null, null, esriFeatureType.esriFTSimple, shapeFieldName, "");
-                
-                foreach (Graphic graphic in graphicsList)
+                try
                 {
-                    IFeature feature = featClass.CreateFeature();
+                    IWorkspaceFactory workspaceFactory = null;
+                    workspaceFactory = new ShapefileWorkspaceFactoryClass();
+                    IWorkspace workspace = workspaceFactory.OpenFromFile(folder, 0);
+                    IFeatureWorkspace featureWorkspace = workspace as IFeatureWorkspace;
+                    IFields fields = null;
+                    IFieldsEdit fieldsEdit = null;
+                    fields = new Fields();
+                    fieldsEdit = (IFieldsEdit)fields;
+                    IField field = null;
+                    IFieldEdit fieldEdit = null;
+                    field = new FieldClass();///###########
+                    fieldEdit = (IFieldEdit)field;
+                    fieldEdit.Name_2 = "Shape";
+                    fieldEdit.Type_2 = (esriFieldType.esriFieldTypeGeometry);
+                    IGeometryDef geomDef = null;
+                    IGeometryDefEdit geomDefEdit = null;
+                    geomDef = new GeometryDefClass();///#########
+                    geomDefEdit = (IGeometryDefEdit)geomDef;
 
-                    feature.Shape = graphic.Geometry;
-                    feature.Store();
+                    //This is for line shapefiles
+                    geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+                    geomDefEdit.SpatialReference_2 = ipSpatialRef;
+
+                    fieldEdit.GeometryDef_2 = geomDef;
+                    fieldsEdit.AddField(field);
+
+                    ////Add another miscellaneous text field
+                    //field = new FieldClass();
+                    //fieldEdit = (IFieldEdit)field;
+                    //fieldEdit.Length_2 = 30;
+                    //fieldEdit.Name_2 = "TextField";
+                    //fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                    //fieldsEdit.AddField(field);
+
+                    featClass = featureWorkspace.CreateFeatureClass(nameOfShapeFile, fields, null, null, esriFeatureType.esriFTSimple, shapeFieldName, "");
+
+                    foreach (Graphic graphic in graphicsList)
+                    {
+                        IFeature feature = featClass.CreateFeature();
+
+                        feature.Shape = graphic.Geometry;
+                        feature.Store();
+                    }
+
+                    IFeatureLayer featurelayer = null;
+                    featurelayer = new FeatureLayerClass();
+                    featurelayer.FeatureClass = featClass;
+                    featurelayer.Name = featClass.AliasName;
+
+                    System.Runtime.InteropServices.Marshal.FinalReleaseComObject(workspace);
+                    workspace = null;
+                    GC.Collect();
+
+                    return featClass;
                 }
-
-                IFeatureLayer featurelayer = null;
-                featurelayer = new FeatureLayerClass();
-                featurelayer.FeatureClass = featClass;
-                featurelayer.Name = featClass.AliasName;
-
-                return featClass;
-            }
-            catch (Exception ex)
-            {
-                return featClass;
+                catch (Exception ex)
+                {
+                    return featClass;
+                }
             }
         }
 
