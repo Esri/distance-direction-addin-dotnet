@@ -158,14 +158,34 @@
                 	    ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
                 	    Command="{Binding ClearGraphicsCommand}"
                         Height="Auto" Width="Auto"
-                	    Margin="3,3,0,0"
-                	/>
+                	    Margin="3,3,0,0">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="IsEnabled" Value="False" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasMapGraphics}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                     <Button Content="{x:Static prop:Resources.LabelSaveAs}" 
                         ToolTip="{x:Static prop:Resources.LabelSaveAs}" 
                         Command="{Binding SaveAsCommand}"
                         Height="Auto" Width="Auto"
-                        Margin="3,3,0,0"
-                    />
+                        Margin="3,3,0,0">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="IsEnabled" Value="False" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasMapGraphics}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
                 </StackPanel>
             </Grid>
         </ScrollViewer>
