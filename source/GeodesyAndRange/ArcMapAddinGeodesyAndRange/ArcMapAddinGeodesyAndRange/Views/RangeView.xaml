@@ -44,16 +44,29 @@
                     Grid.ColumnSpan="3" Content="{x:Static prop:Resources.LabelInteractive}" IsChecked="{Binding IsInteractive}" Margin="3,3,0,0" />
 				<TextBlock x:Name="Center_Point_Label" Grid.Row="1" Text="{x:Static prop:Resources.LabelRangeRingsCenterPoint}"                
     			   Grid.ColumnSpan="3" Margin="3,3,0,0" />
-				<TextBox x:Name="Input_Coords" Grid.Row="2" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
+                <Grid Grid.Row="2" Grid.ColumnSpan="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <TextBox x:Name="Input_Coords" Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
 				 Validation.ErrorTemplate="{StaticResource errorTemplate }" Margin="3,3,0,0">
-                    <TextBox.InputBindings>
-                        <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-                    </TextBox.InputBindings>
-                </TextBox>
-                <ToggleButton Grid.Column="1" HorizontalAlignment="Center" ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" Grid.Row="2"
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Button Style="{StaticResource buttonProperties}" 
+                            Grid.Column="1"
+                            Margin="3,3,0,0" />
+                    <ToggleButton ToolTip="{x:Static prop:Resources.TooltipMapPointTool}" 
+                              Grid.Column="2"
+                              Margin="3,3,0,0"
                         IsChecked="{Binding IsToolActive}">
-                    <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
-                </ToggleButton>
+                        <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+                    </ToggleButton>
+                </Grid>
                 <TextBlock x:Name="NumberofRingsLabel" Text="{x:Static prop:Resources.LabelNumberOfRings}"                
         			Grid.ColumnSpan="3" Grid.Row="3" Margin="3,3,0,0" />
 				<TextBox x:Name="Number_of_Rings_Text_Box" Grid.Row="4" Text="{Binding Path=NumberOfRings, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
