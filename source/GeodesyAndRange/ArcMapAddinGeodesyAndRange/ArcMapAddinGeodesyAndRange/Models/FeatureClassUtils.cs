@@ -88,7 +88,7 @@ namespace ArcMapAddinGeodesyAndRange.Models
                         return path;
                     }
 
-                    while (DoesFeatureClassExist(ipDataset.Workspace.PathName, ipDataset.BrowseName))
+                    while (DoesFeatureClassExist(ipDataset.Workspace.PathName, m_ipSaveAsGxDialog.Name))
                     {
                         if (System.Windows.Forms.MessageBox.Show("You've selected a feature class that already exists. Do you wish to replace it?", "Overwrite Feature Class", System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
                         {
