@@ -179,7 +179,7 @@
                             <Style TargetType="Button">
                                 <Setter Property="IsEnabled" Value="False" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding HasMapGraphics}" Value="True">
+                                    <DataTrigger Binding="{Binding HasMapGraphics, UpdateSourceTrigger=PropertyChanged}" Value="True">
                                         <Setter Property="IsEnabled" Value="True" />
                                     </DataTrigger>
                                 </Style.Triggers>

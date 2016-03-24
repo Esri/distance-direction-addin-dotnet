@@ -78,7 +78,24 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             get
             {
-                return GraphicsList.Any();
+                if (this is LinesViewModel)
+                {
+                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList().Any();
+                }
+                else if (this is CircleViewModel)
+                {
+                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.Circle).ToList().Any();
+                }
+                else if (this is EllipseViewModel)
+                {
+                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.Ellipse).ToList().Any();
+                }
+                else if (this is RangeViewModel)
+                {
+                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList().Any();
+                }
+
+                return false;
             }
         }
 
@@ -529,6 +546,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             RemoveGraphics(gc, true);
 
             av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            RaisePropertyChanged(() => HasMapGraphics);
         }
        
         /// <summary>
@@ -579,6 +597,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
 
             elementList.Clear();
+            RaisePropertyChanged(() => HasMapGraphics);
         }
 
         /// <summary>
