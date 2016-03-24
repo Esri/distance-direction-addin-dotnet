@@ -1,38 +1,39 @@
 ﻿<UserControl x:Class="ArcMapAddinGeodesyAndRange.Views.GREllipseView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:local="clr-namespace:ArcMapAddinGeodesyAndRange"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib" 
-             xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prop="clr-namespace:ArcMapAddinGeodesyAndRange.Properties"
-             mc:Ignorable="d" 
-             d:DesignHeight="460" d:DesignWidth="300">
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
+             d:DesignHeight="460"
+             d:DesignWidth="300"
+             mc:Ignorable="d">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/ArcMapAddinGeodesyAndRange;component/MAResourceDictionary.xaml"/>
+                <ResourceDictionary Source="/ArcMapAddinGeodesyAndRange;component/MAResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <viewModels:EllipseViewModel x:Key="ellipseViewModel" />
             <local:EnumToFriendlyNameConverter x:Key="enumItemsConverter" />
             <ObjectDataProvider x:Key="ellipseTypes"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}">
+                                MethodName="GetValues"
+                                ObjectType="{x:Type sys:Enum}">
                 <ObjectDataProvider.MethodParameters>
                     <x:TypeExtension TypeName="local:EllipseTypes" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
             <ObjectDataProvider x:Key="lineDistanceData"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}">
+                                MethodName="GetValues"
+                                ObjectType="{x:Type sys:Enum}">
                 <ObjectDataProvider.MethodParameters>
                     <x:TypeExtension TypeName="local:DistanceTypes" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
             <ObjectDataProvider x:Key="azimuthData"
-                            MethodName="GetValues"
-                            ObjectType="{x:Type sys:Enum}">
+                                MethodName="GetValues"
+                                ObjectType="{x:Type sys:Enum}">
                 <ObjectDataProvider.MethodParameters>
                     <x:TypeExtension TypeName="local:AzimuthTypes" />
                 </ObjectDataProvider.MethodParameters>
@@ -43,12 +44,11 @@
         <StaticResourceExtension ResourceKey="ellipseViewModel" />
     </UserControl.DataContext>
     <Grid x:Name="mainControl">
-        <ScrollViewer VerticalScrollBarVisibility="Auto"
-                      Padding="0,0,3,0">
+        <ScrollViewer Padding="0,0,3,0" VerticalScrollBarVisibility="Auto">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -59,23 +59,24 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <TextBlock Text="{x:Static prop:Resources.LabelEllipseType}"                
-               VerticalAlignment="Center"
-                           Grid.ColumnSpan="3"
-               Margin="3,3,0,0"/>
-                <ComboBox x:Name="cmbEllipseType"    
-                ItemsSource="{Binding Source={StaticResource ellipseTypes}}" 
-                SelectedItem="{Binding Path=EllipseType, Mode=TwoWay}"   
-                Height="Auto"
-                Grid.Row="1" 
+                <TextBlock Grid.ColumnSpan="3"
+                           Margin="3,3,0,0"
+                           VerticalAlignment="Center"
+                           Text="{x:Static prop:Resources.LabelEllipseType}" />
+                <ComboBox x:Name="cmbEllipseType"
+                          Grid.Row="1"
                           Grid.ColumnSpan="3"
-                          Margin="3,3,0,0"/>
-                <TextBlock Text="{x:Static prop:Resources.LabelCenterPoint}"                
-               HorizontalAlignment="Left" 
-               Grid.Row="2" 
+                          Height="Auto"
+                          Margin="3,3,0,0"
+                          ItemsSource="{Binding Source={StaticResource ellipseTypes}}"
+                          SelectedItem="{Binding Path=EllipseType,
+                                                 Mode=TwoWay}" />
+                <TextBlock Grid.Row="2"
                            Grid.ColumnSpan="3"
-               VerticalAlignment="Bottom"
-               Margin="3,3,0,0"/>
+                           Margin="3,3,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Bottom"
+                           Text="{x:Static prop:Resources.LabelCenterPoint}" />
                 <Grid Grid.Row="3" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -83,85 +84,113 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <TextBox Height="Auto"
-                 Text="{Binding Path=Point1Formatted, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                 Validation.ErrorTemplate="{StaticResource errorTemplate }"            
-                 ToolTip="{x:Static prop:Resources.LabelCenterPoint}"
-                 Margin="3,3,0,0">
+                             Margin="3,3,0,0"
+                             Text="{Binding Path=Point1Formatted,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            ValidatesOnExceptions=True}"
+                             ToolTip="{x:Static prop:Resources.LabelCenterPoint}"
+                             Validation.ErrorTemplate="{StaticResource errorTemplate}">
                         <TextBox.InputBindings>
-                            <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                            <KeyBinding Key="Enter"
+                                        Command="{Binding EnterKeyCommand}"
+                                        CommandParameter="{Binding ElementName=mainControl,
+                                                                   Path=.}" />
                         </TextBox.InputBindings>
                     </TextBox>
-                    <Button Style="{StaticResource buttonProperties}" 
-                            Grid.Column="1"
-                            Margin="3,3,0,0" />
-                    <Button Command="{Binding ActivateToolCommand}"
-                Width="Auto" HorizontalAlignment="Right" 
-                ToolTip="{x:Static prop:Resources.TooltipMapPointTool}"
-                Grid.Column="2" Margin="3,3,0,0">
-                        <Image Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" Width="18" Height="18" />
+                    <Button Grid.Column="1"
+                            Margin="3,3,0,0"
+                            Style="{StaticResource buttonProperties}" />
+                    <Button Grid.Column="2"
+                            Width="Auto"
+                            Margin="3,3,0,0"
+                            HorizontalAlignment="Right"
+                            Command="{Binding ActivateToolCommand}"
+                            ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
+                        <Image Width="18"
+                               Height="18"
+                               Source="/ArcMapAddinGeodesyAndRange;component/Images/Add_Point32_d.png" />
                     </Button>
                 </Grid>
-                <GroupBox Header="{x:Static prop:Resources.LabelAxisGroup}" HorizontalAlignment="Stretch" 
-                  VerticalAlignment="Stretch" 
-                  Grid.Row="4" Grid.ColumnSpan="2"
-                  Margin="3,3,0,0">
+                <GroupBox Grid.Row="4"
+                          Grid.ColumnSpan="2"
+                          Margin="3,3,0,0"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Header="{x:Static prop:Resources.LabelAxisGroup}">
                     <StackPanel>
-                        <TextBlock Text="{x:Static prop:Resources.LabelMinorAxis}" 
-                                   Margin="3,3,0,0" />
-                        <TextBox 
-                                 Margin="3,3,0,0"
-                         Text="{Binding Path=MinorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
-                            <TextBox.InputBindings>
-                                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
-                            </TextBox.InputBindings>
-                        </TextBox>
-                        <TextBlock Text="{x:Static prop:Resources.LabelMajorAxis}" 
-                                   Margin="3,3,0,0" />
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelMinorAxis}" />
                         <TextBox Margin="3,3,0,0"
-                         Text="{Binding Path=MajorAxisDistanceString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                                 Text="{Binding Path=MinorAxisDistanceString,
+                                                UpdateSourceTrigger=PropertyChanged,
+                                                ValidatesOnExceptions=True}"
+                                 Validation.ErrorTemplate="{StaticResource errorTemplate}">
                             <TextBox.InputBindings>
-                                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                                <KeyBinding Key="Enter"
+                                            Command="{Binding EnterKeyCommand}"
+                                            CommandParameter="{Binding ElementName=mainControl,
+                                                                       Path=.}" />
                             </TextBox.InputBindings>
                         </TextBox>
-                        <TextBlock Text="{x:Static prop:Resources.LabelAxisUnits}" Margin="3,3,0,0" />
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelMajorAxis}" />
+                        <TextBox Margin="3,3,0,0"
+                                 Text="{Binding Path=MajorAxisDistanceString,
+                                                UpdateSourceTrigger=PropertyChanged,
+                                                ValidatesOnExceptions=True}"
+                                 Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter"
+                                            Command="{Binding EnterKeyCommand}"
+                                            CommandParameter="{Binding ElementName=mainControl,
+                                                                       Path=.}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelAxisUnits}" />
                         <ComboBox x:Name="cmbAxisUnits"
-                          ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
-                          SelectedItem="{Binding Path=LineDistanceType, Mode=TwoWay}" 
-                                  Margin="3,3,0,0"/>
+                                  Margin="3,3,0,0"
+                                  ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
+                                  SelectedItem="{Binding Path=LineDistanceType,
+                                                         Mode=TwoWay}" />
                     </StackPanel>
                 </GroupBox>
-                <GroupBox Header="{x:Static prop:Resources.LabelOrientationGroup}" HorizontalAlignment="Stretch" 
-                  VerticalAlignment="Stretch" 
-                  Grid.Row="5" Grid.ColumnSpan="2"
-                  Margin="3,3,0,0">
+                <GroupBox Grid.Row="5"
+                          Grid.ColumnSpan="2"
+                          Margin="3,3,0,0"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Header="{x:Static prop:Resources.LabelOrientationGroup}">
                     <StackPanel>
-                        <TextBlock  Text="{x:Static prop:Resources.LabelOrientationAngle}"
-                Margin="3,3,0,0"  />
-                        <TextBox 
-                                 Margin="3,3,0,0"
-                         Text="{Binding Path=AzimuthString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
-                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelOrientationAngle}" />
+                        <TextBox Margin="3,3,0,0"
+                                 Text="{Binding Path=AzimuthString,
+                                                UpdateSourceTrigger=PropertyChanged,
+                                                ValidatesOnExceptions=True}"
+                                 Validation.ErrorTemplate="{StaticResource errorTemplate}">
                             <TextBox.InputBindings>
-                                <KeyBinding Key="Enter" Command="{Binding EnterKeyCommand}" CommandParameter="{Binding ElementName=mainControl, Path=.}" />
+                                <KeyBinding Key="Enter"
+                                            Command="{Binding EnterKeyCommand}"
+                                            CommandParameter="{Binding ElementName=mainControl,
+                                                                       Path=.}" />
                             </TextBox.InputBindings>
                         </TextBox>
-                        <TextBlock Text="{x:Static prop:Resources.LabelOrientationUnit}" 
-                       Margin="3,3,0,0" />
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelOrientationUnit}" />
                         <ComboBox x:Name="cmbOrientationAngleUnits"
-                          ItemsSource="{Binding Source={StaticResource azimuthData}}" 
-                          SelectedItem="{Binding Path=AzimuthType, Mode=TwoWay}" 
-                          
-                                  Margin="3,3,0,0"/>
+                                  Margin="3,3,0,0"
+                                  ItemsSource="{Binding Source={StaticResource azimuthData}}"
+                                  SelectedItem="{Binding Path=AzimuthType,
+                                                         Mode=TwoWay}" />
                     </StackPanel>
                 </GroupBox>
-                <StackPanel Margin="3,3,0,0" Grid.Row="6" Orientation="Horizontal" HorizontalAlignment="Right" Grid.ColumnSpan="3">
-                    <Button Content="{x:Static prop:Resources.LabelClearGraphics}" 
-                	    ToolTip="{x:Static prop:Resources.LabelClearGraphics}" 
-                	    Command="{Binding ClearGraphicsCommand}"
-                        Height="Auto" Width="Auto"
-                	    Margin="3,3,0,0">
+                <StackPanel Grid.Row="6"
+                            Grid.ColumnSpan="3"
+                            Margin="3,3,0,0"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                    <Button Width="Auto"
+                            Height="Auto"
+                            Margin="3,3,0,0"
+                            Command="{Binding ClearGraphicsCommand}"
+                            Content="{x:Static prop:Resources.LabelClearGraphics}"
+                            ToolTip="{x:Static prop:Resources.LabelClearGraphics}">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="IsEnabled" Value="False" />
@@ -173,12 +202,13 @@
                             </Style>
                         </Button.Style>
                     </Button>
-                	
-                    <Button Content="{x:Static prop:Resources.LabelSaveAs}" 
-                        ToolTip="{x:Static prop:Resources.LabelSaveAs}" 
-                        Command="{Binding SaveAsCommand}"
-                        Height="Auto" Width="Auto"
-                        Margin="3,3,0,0">
+
+                    <Button Width="Auto"
+                            Height="Auto"
+                            Margin="3,3,0,0"
+                            Command="{Binding SaveAsCommand}"
+                            Content="{x:Static prop:Resources.LabelSaveAs}"
+                            ToolTip="{x:Static prop:Resources.LabelSaveAs}">
                         <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="IsEnabled" Value="False" />

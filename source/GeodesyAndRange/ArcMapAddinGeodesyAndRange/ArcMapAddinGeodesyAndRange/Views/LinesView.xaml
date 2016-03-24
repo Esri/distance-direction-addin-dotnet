@@ -43,8 +43,7 @@
         <StaticResourceExtension ResourceKey="linesViewModel" />
     </UserControl.DataContext>
     <Grid x:Name="mainControl">
-         VerticalScrollBarVisibility="Auto"
-                      Padding="0,0,3,0">
+        <ScrollViewer Padding="0,0,3,0" VerticalScrollBarVisibility="Auto">
             <StackPanel>
 
                 <ComboBox x:Name="cmbLineType"
@@ -222,6 +221,6 @@
                     </Button>
                 </StackPanel>
             </StackPanel>
-        </>
+        </ScrollViewer>
     </Grid>
 </UserControl>
