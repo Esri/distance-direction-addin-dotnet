@@ -23,32 +23,12 @@
     </UserControl.DataContext>
     <Grid x:Name="mainControl">
         <ScrollViewer Padding="0,0,3,0" VerticalScrollBarVisibility="Auto">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+            <StackPanel>
                 <CheckBox x:Name="cbInteractive"
-                          Grid.ColumnSpan="3"
                           Margin="3,3,0,0"
                           Content="{x:Static prop:Resources.LabelInteractive}"
                           IsChecked="{Binding IsInteractive}" />
                 <TextBlock x:Name="Center_Point_Label"
-                           Grid.Row="1"
-                           Grid.ColumnSpan="3"
                            Margin="3,3,0,0"
                            Text="{x:Static prop:Resources.LabelRangeRingsCenterPoint}" />
                 <Grid Grid.Row="2" Grid.ColumnSpan="3">
@@ -84,12 +64,9 @@
                     </ToggleButton>
                 </Grid>
                 <TextBlock x:Name="NumberofRingsLabel"
-                           Grid.Row="3"
-                           Grid.ColumnSpan="3"
                            Margin="3,3,0,0"
                            Text="{x:Static prop:Resources.LabelNumberOfRings}" />
                 <TextBox x:Name="Number_of_Rings_Text_Box"
-                         Grid.Row="4"
                          Margin="3,3,0,0"
                          Text="{Binding Path=NumberOfRings,
                                         UpdateSourceTrigger=PropertyChanged,
@@ -113,12 +90,9 @@
                     </TextBox.Style>
                 </TextBox>
                 <TextBlock x:Name="DistanceLabel"
-                           Grid.Row="5"
-                           Grid.ColumnSpan="3"
                            Margin="3,3,0,0"
                            Text="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}" />
                 <TextBox x:Name="Distance_Between_Rings_TextBox"
-                         Grid.Row="6"
                          Margin="3,3,0,0"
                          Text="{Binding DistanceString,
                                         UpdateSourceTrigger=PropertyChanged,
@@ -142,8 +116,6 @@
                     </TextBox.Style>
                 </TextBox>
                 <ComboBox x:Name="cmbLineDistanceType"
-                          Grid.Row="6"
-                          Grid.Column="1"
                           Height="Auto"
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
@@ -161,12 +133,9 @@
                     </ComboBox.Style>
                 </ComboBox>
                 <TextBlock x:Name="NumberofRadialsLabel"
-                           Grid.Row="7"
-                           Grid.ColumnSpan="3"
                            Margin="3,3,0,0"
                            Text="{x:Static prop:Resources.LabelRangeRingsNumberofRadials}" />
                 <TextBox x:Name="NumberOfRadials_TextBox"
-                         Grid.Row="8"
                          Margin="3,3,0,0"
                          Text="{Binding Path=NumberOfRadials,
                                         UpdateSourceTrigger=PropertyChanged,
@@ -179,9 +148,7 @@
                                                                Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
-                <StackPanel Grid.Row="9"
-                            Grid.ColumnSpan="3"
-                            Margin="3,20,0,0"
+                <StackPanel Margin="3,3,0,0"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">
                     <Button Width="Auto"
@@ -219,7 +186,7 @@
                         </Button.Style>
                     </Button>
                 </StackPanel>
-            </Grid>
+            </StackPanel>
         </ScrollViewer>
     </Grid>
 </UserControl>
