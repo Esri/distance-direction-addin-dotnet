@@ -75,6 +75,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal KMLUtils kmlUtils = new KMLUtils();
         internal SaveFileDialog sfDlg = null;
 
+        public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig(); 
+
         public bool HasMapGraphics
         {
             get
