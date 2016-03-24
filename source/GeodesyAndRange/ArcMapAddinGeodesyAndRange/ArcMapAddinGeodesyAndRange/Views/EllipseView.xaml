@@ -43,7 +43,8 @@
         <StaticResourceExtension ResourceKey="ellipseViewModel" />
     </UserControl.DataContext>
     <Grid x:Name="mainControl">
-        <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ScrollViewer VerticalScrollBarVisibility="Auto"
+                      Padding="0,0,3,0">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />

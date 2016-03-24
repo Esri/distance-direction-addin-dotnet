@@ -35,7 +35,8 @@
         <StaticResourceExtension ResourceKey="circleViewModel" />
     </UserControl.DataContext>
     <Grid x:Name="mainControl">
-        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,3,0">
+        <ScrollViewer VerticalScrollBarVisibility="Auto" 
+                      Padding="0,0,3,0">
             <StackPanel>
                 <TextBlock Text="{x:Static prop:Resources.LabelCreateCircleFrom}" Margin="3,3,0,0"/>
                 <ComboBox x:Name="cmbCircleFromType"
