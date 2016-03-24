@@ -132,8 +132,38 @@
   <data name="AENumOfRings" xml:space="preserve">
     <value>The number of rings must be between {0} and {1}</value>
   </data>
+  <data name="ButtonCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ButtonOK" xml:space="preserve">
+    <value>OK</value>
+  </data>
   <data name="EnumBearingAndDistance" xml:space="preserve">
     <value>Distance and Bearing</value>
+  </data>
+  <data name="EnumCTDD" xml:space="preserve">
+    <value>DD</value>
+  </data>
+  <data name="EnumCTDDM" xml:space="preserve">
+    <value>DDM</value>
+  </data>
+  <data name="EnumCTDMS" xml:space="preserve">
+    <value>DMS</value>
+  </data>
+  <data name="EnumCTGARS" xml:space="preserve">
+    <value>GARS</value>
+  </data>
+  <data name="EnumCTMGRS" xml:space="preserve">
+    <value>MGRS</value>
+  </data>
+  <data name="EnumCTNone" xml:space="preserve">
+    <value>Default Map Unit</value>
+  </data>
+  <data name="EnumCTUSNG" xml:space="preserve">
+    <value>USNG</value>
+  </data>
+  <data name="EnumCTUTM" xml:space="preserve">
+    <value>UTM</value>
   </data>
   <data name="EnumDegrees" xml:space="preserve">
     <value>Degrees</value>
@@ -206,6 +236,9 @@
   </data>
   <data name="LabelDirectionAzimuth" xml:space="preserve">
     <value>Direction / Azimuth</value>
+  </data>
+  <data name="LabelDisplayCoordinate" xml:space="preserve">
+    <value>Display Coordinate</value>
   </data>
   <data name="LabelDistanceCalculator" xml:space="preserve">
     <value>Distance Calculator</value>
@@ -287,6 +320,12 @@
   </data>
   <data name="LabelTime" xml:space="preserve">
     <value>Time</value>
+  </data>
+  <data name="TitleEditProperties" xml:space="preserve">
+    <value>Edit Properties</value>
+  </data>
+  <data name="TooltipEditProperties" xml:space="preserve">
+    <value>Edit Properties</value>
   </data>
   <data name="TooltipMapPointTool" xml:space="preserve">
     <value>Map Point Tool</value>
