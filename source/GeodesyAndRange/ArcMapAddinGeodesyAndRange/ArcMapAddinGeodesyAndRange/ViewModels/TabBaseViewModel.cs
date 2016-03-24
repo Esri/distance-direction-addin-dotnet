@@ -35,6 +35,7 @@ using ESRI.ArcGIS.DataSourcesGDB;
 using ESRI.ArcGIS.Geoprocessing;
 using ArcMapAddinGeodesyAndRange.Views;
 using System.IO;
+using System.Collections.ObjectModel;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
@@ -65,7 +66,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         #region Properties
 
         // lists to store GUIDs of graphics, temp feedback and map graphics
-        private static List<Graphic> GraphicsList = new List<Graphic>();
+        private static ObservableCollection<Graphic> GraphicsList = new ObservableCollection<Graphic>();
 
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
@@ -74,7 +75,30 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         internal KMLUtils kmlUtils = new KMLUtils();
         internal SaveFileDialog sfDlg = null;
 
-        public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig();
+        public bool HasMapGraphics
+        {
+            get
+            {
+                if (this is LinesViewModel)
+                {
+                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList().Any();
+                }
+                else if (this is CircleViewModel)
+                {
+                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.Circle).ToList().Any();
+                }
+                else if (this is EllipseViewModel)
+                {
+                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.Ellipse).ToList().Any();
+                }
+                else if (this is RangeViewModel)
+                {
+                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList().Any();
+                }
+
+                return false;
+            }
+        }
 
         private IPoint point1 = null;
         /// <summary>
@@ -360,7 +384,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         public RelayCommand ActivateToolCommand { get; set; }
         public RelayCommand EnterKeyCommand { get; set; }
         public RelayCommand EditPropertiesDialogCommand { get; set; }
-        
+
         
         #endregion
 
@@ -399,6 +423,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             //gc.DeleteAllElements();
             //av.Refresh();
 			av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+
+            RaisePropertyChanged(() => HasMapGraphics);
         }
 
         /// <summary>
@@ -418,19 +444,19 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 List<Graphic> typeGraphicsList = new List<Graphic>();
                 if (this is LinesViewModel)
                 {
-                    typeGraphicsList = GraphicsList.FindAll(g => g.GraphicType == GraphicTypes.Line);
+                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList();
                 }
                 else if (this is CircleViewModel)
                 {
-                    typeGraphicsList = GraphicsList.FindAll(g => g.GraphicType == GraphicTypes.Circle);
+                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Circle).ToList();
                 }
                 else if (this is EllipseViewModel)
                 {
-                    typeGraphicsList = GraphicsList.FindAll(g => g.GraphicType == GraphicTypes.Ellipse);
+                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Ellipse).ToList();
                 }
                 else if (this is RangeViewModel)
                 {
-                    typeGraphicsList = GraphicsList.FindAll(g => g.GraphicType == GraphicTypes.RangeRing);
+                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList();
                 }
 
                 string path = null;
@@ -525,6 +551,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             RemoveGraphics(gc, true);
 
             av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            RaisePropertyChanged(() => HasMapGraphics);
         }
        
         /// <summary>
@@ -575,6 +602,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             }
 
             elementList.Clear();
+            RaisePropertyChanged(() => HasMapGraphics);
         }
 
         /// <summary>
@@ -877,6 +905,9 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
 
             //refresh map
             av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+
+            if (!IsTempGraphic)
+                RaisePropertyChanged(() => HasMapGraphics);
         }
         /// <summary>
         /// Adds a graphic to the active view/map graphics container, default color is RED

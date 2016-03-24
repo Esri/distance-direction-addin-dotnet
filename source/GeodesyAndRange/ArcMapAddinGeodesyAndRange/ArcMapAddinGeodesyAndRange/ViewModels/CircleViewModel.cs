@@ -228,6 +228,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 }
             }
         }
+
         #endregion
 
         #region Commands

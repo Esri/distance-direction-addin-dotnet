@@ -37,12 +37,12 @@ namespace ArcMapAddinGeodesyAndRange.Models
                 IGeoProcessor2 gp = new GeoProcessorClass();
                 IVariantArray parameters = new VarArrayClass();
                 parameters.Add(tmpShapefilePath);
-                parameters.Add("featureLayer");
+                parameters.Add(kmzName);
                 gp.Execute("MakeFeatureLayer_management", parameters, null);
 
                 IVariantArray parameters1 = new VarArrayClass();
                 // assign  parameters        
-                parameters1.Add("featureLayer");
+                parameters1.Add(kmzName);
                 parameters1.Add(kmzOutputPath);
 
                 gp.Execute("LayerToKML_conversion", parameters1, null);
