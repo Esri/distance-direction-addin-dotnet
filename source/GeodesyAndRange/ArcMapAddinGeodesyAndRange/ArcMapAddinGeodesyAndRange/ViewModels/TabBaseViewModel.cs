@@ -61,6 +61,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
             Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+            Mediator.Register(Constants.DISPLAY_COORDINATE_TYPE_CHANGED, OnDisplayCoordinateTypeChanged);
         }
 
         #region Properties
@@ -831,6 +832,16 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 return;
 
             IsActiveTab = (obj == this);
+        }
+
+        /// <summary>
+        /// Method used to handle coordinate type changed event
+        /// </summary>
+        /// <param name="obj"></param>
+        private void OnDisplayCoordinateTypeChanged(object obj)
+        {
+            RaisePropertyChanged(() => Point1Formatted);
+            RaisePropertyChanged(() => Point2Formatted);
         }
 
         /// <summary>
