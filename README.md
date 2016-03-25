@@ -1,13 +1,14 @@
 # distance-direction-addin-dotnet
 
-The add-in provides the ability to create geodesic features such as lines, circles, ellipses and range rings.
+The add-in provides the ability to create geodesic features such as lines, circles, ellipses and range rings.  Features can be exported to a file geodatabase, shapefile, or KML.
 
 ![Image of Geodesy and Range Addin](GeodesyAndRange.png) 
 
 ## Features
 
 * Creates geodesy lines, circles, ellipses and range rings.
-* Inputs can be entered manually or via a known coordinate 
+* Inputs can be entered manually or via a known coordinate.
+* Features can be exported to a file geodatabase, shapefile, or KML.
 * Addin for ArcMap 10.3.1
 
 ## Sections
@@ -74,13 +75,15 @@ The add-in provides the ability to create geodesic features such as lines, circl
 3. Start an interactive session by selecting the **Map Point Tool** (arrow icon) 
 4. Enter a starting and ending point on the map by clicking on the map
 5. Repeat until all desired graphics have been included
+6. Optional - Select the Save As button to export the Line features to a file geodatabase, shapefile, or KML
 
 ### Create Lines from Known Coordinates
 1. Choose the type of line that is needed to be created
 2. Input the **Starting Point** where your line is going to start
 3. Input the **Ending Point** of where your line is going to end
 4. Press *Enter* key and the graphic will be drawn on the map
-5. Repeat until all desired graphics have been included. 
+5. Repeat until all desired graphics have been included
+6. Optional - Select the Save As button to export the Line features to a file geodatabase, shapefile, or KML
 
 ### Create a Line with a Range and Bearing
 1. Choose the type of line that you would like to create
@@ -88,15 +91,14 @@ The add-in provides the ability to create geodesic features such as lines, circl
 3. Input the **Distance/Length** of the line and choose the unit type
 4. Input the azimuth or **Angle** of the line
 5. Press *Enter* key and the graphic will be drawn on the map
+6. Optional - Select the Save As button to export the Line features to a file geodatabase, shapefile, or KML
 
 ### Create a Circle Interactively 
 1. Choose the **Circles** tab on the *Distance and Direction* Tool
 2. Start an interactive session by selecting the **Map Point Tool** (arrow icon) 
 3. Click on map to enter a centerpoint and then move the cursor out from center, a circle displays on map as you move the cursor.  
 4. Click map to complete the circle. 
-
-
-> A graphic will then be displayed on the map showing the circle you created. If desired you can clear all graphics with the clear graphics button.
+5. Optional - Select the Save As button to export the Circle features to a file geodatabase, shapefile, or KML
 
 ### Create a Circle using the Distance Calculator
 1. Choose the **Circles** tab on the *Distance and Direction* Tool
@@ -106,6 +108,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 5. Enter a **Time**
 6. Enter a **Rate**
 7. Press *Enter* key and the graphic will be drawn on the map
+8. Optional - Select the Save As button to export the Circle features to a file geodatabase, shapefile, or KML
 
 ### Create Ellipses Interactively
 1. Choose the **Ellipse** tab on the *Distance and Direction* Tool
@@ -113,9 +116,9 @@ The add-in provides the ability to create geodesic features such as lines, circl
 3. Choose the location where you want the ellipse to be started from 
 4. Drag the cursor to the location where the major axis will end
 5. Select the orientation angle of the major axis
-6. select the length of the minor axis
-
-> Graphic(s) will then be displayed on the map showing the Ellipse you created based on the values of the parameters that were set.
+6. Select the length of the minor axis
+7. Repeat until all desired graphics have been included
+8. Optional - Select the Save As button to export the Ellipse features to a file geodatabase, shapefile, or KML
 
 ### Create Range Rings Interactively 
 1. Choose the **Rings** tab on the *Distance and Direction* Tool
@@ -125,8 +128,8 @@ The add-in provides the ability to create geodesic features such as lines, circl
 5. Subsequent clicks draw rings from the center point
 6. Select the **Map Point Tool** a second time to stop adding rings
 	* To start a second set of range rings, repeat steps 3 through 6.
-7. Uncheck **Interactive** to return to manual entry
-
+7. Optional - Select the Save As button to export the Range Ring features to a file geodatabase, shapefile, or KML
+8. Uncheck **Interactive** to return to manual entry
 
 ### Create Range Rings Manually 
 1. Choose the **Rings** tab on the *Distance and Direction* Tool
@@ -134,11 +137,9 @@ The add-in provides the ability to create geodesic features such as lines, circl
 	* Optionally copy and paste, or type coordinates in the **Center Point** text box
 3. Choose the location of the Range Rings center by selecting the desired location on the map
 4. Fill in the associated parameters for **Number of Rings**, **Ring Interval**, **Distance Units**, and **Number of Radials**
-5. Press *Enter* key
-
->Graphic(s) will then be displayed on the map showing the Range Rings you created based on the values of the parameters that were set. If desired you can clear all graphics with the **Clear Graphics** button.
-
-
+5. Press *Enter* key and the graphic will be drawn on the map
+6. Repeat until all desired graphics have been included
+7. Optional - Select the Save As button to export the Range Ring features to a file geodatabase, shapefile, or KML
 
 ## Resources
 
