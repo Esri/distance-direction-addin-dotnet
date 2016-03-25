@@ -111,21 +111,12 @@
                           Header="{x:Static prop:Resources.LabelDistanceCalculator}"
                           IsExpanded="{Binding IsDistanceCalcExpanded,
                                                Mode=OneWayToSource}">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="Auto" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <TextBlock Grid.ColumnSpan="2"
+                    <StackPanel>
+
+                        <TextBlock 
                                    Margin="3,3,0,0"
                                    Text="{x:Static prop:Resources.LabelTime}" />
-                        <TextBox Grid.Row="1"
+                        <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelTime,
                                                 UpdateSourceTrigger=PropertyChanged,
@@ -138,17 +129,15 @@
                                                                        Path=.}" />
                             </TextBox.InputBindings>
                         </TextBox>
-                        <ComboBox Grid.Row="1"
-                                  Grid.Column="1"
+                        <ComboBox 
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource timeData}}"
                                   SelectedItem="{Binding Path=TimeUnit,
                                                          Mode=TwoWay}" />
-                        <TextBlock Grid.Row="2"
-                                   Grid.ColumnSpan="2"
+                        <TextBlock 
                                    Margin="3,3,0,0"
                                    Text="{x:Static prop:Resources.LabelRate}" />
-                        <TextBox Grid.Row="3"
+                        <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelRate,
                                                 UpdateSourceTrigger=PropertyChanged,
@@ -162,13 +151,11 @@
                             </TextBox.InputBindings>
                         </TextBox>
                         <ComboBox x:Name="cmbRateType"
-                                  Grid.Row="3"
-                                  Grid.Column="1"
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
                                   SelectedItem="{Binding Path=RateUnit,
                                                          Mode=TwoWay}" />
-                    </Grid>
+                    </StackPanel>
                 </Expander>
                 <StackPanel Margin="3,3,0,0"
                             HorizontalAlignment="Right"
