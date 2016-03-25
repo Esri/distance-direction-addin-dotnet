@@ -565,6 +565,15 @@ namespace ArcMapAddinGeodesyAndRange.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Radius.
+        /// </summary>
+        public static string LabelRadius {
+            get {
+                return ResourceManager.GetString("LabelRadius", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Radius / Diameter.
         /// </summary>
         public static string LabelRadiusDiameter {

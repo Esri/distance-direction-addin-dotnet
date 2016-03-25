@@ -285,6 +285,9 @@
   <data name="LabelOrientationUnit" xml:space="preserve">
     <value>Unit</value>
   </data>
+  <data name="LabelRadius" xml:space="preserve">
+    <value>Radius</value>
+  </data>
   <data name="LabelRadiusDiameter" xml:space="preserve">
     <value>Radius / Diameter</value>
   </data>
