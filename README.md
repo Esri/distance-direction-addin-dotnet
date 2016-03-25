@@ -2,7 +2,7 @@
 
 The add-in provides the ability to create geodesic features such as lines, circles, ellipses and range rings.
 
-![Image of Geodesy and Range Addin](GeodesyAndRange.PNG) 
+![Image of Geodesy and Range Addin](GeodesyAndRange.png) 
 
 ## Features
 
