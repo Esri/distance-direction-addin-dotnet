@@ -306,7 +306,8 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="obj"></param>
         private void OnMouseDoubleClick(object obj)
         {
-            IsToolActive = false;
+            if(IsInteractive && IsToolActive)
+                IsToolActive = false;
         }
 
         internal override void Reset(bool toolReset)
