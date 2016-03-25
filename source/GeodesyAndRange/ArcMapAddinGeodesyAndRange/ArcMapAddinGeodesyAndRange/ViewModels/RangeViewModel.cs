@@ -12,15 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ESRI.ArcGIS.ArcMapUI;
-using ESRI.ArcGIS.Carto;
-using ESRI.ArcGIS.Display;
-using ESRI.ArcGIS.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
+using ESRI.ArcGIS.Display;
+using ESRI.ArcGIS.Geometry;
+using ArcMapAddinGeodesyAndRange.Helpers;
 
 namespace ArcMapAddinGeodesyAndRange.ViewModels
 {
@@ -28,6 +29,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
     {
         public RangeViewModel()
         {
+            Mediator.Register(Constants.MOUSE_DOUBLE_CLICK, OnMouseDoubleClick);
         }
 
         #region Properties
@@ -295,6 +297,16 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 // update ring feedback, distance
                 UpdateFeedbackWithGeoCircle();
             }
+        }
+
+        /// <summary>
+        /// Method to handle map point tool double click
+        /// End interactive drawing of range rings
+        /// </summary>
+        /// <param name="obj"></param>
+        private void OnMouseDoubleClick(object obj)
+        {
+            IsToolActive = false;
         }
 
         internal override void Reset(bool toolReset)
