@@ -1,11 +1,11 @@
 ﻿<UserControl x:Class="ArcMapAddinGeodesyAndRange.Views.GRRangeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ArcMapAddinGeodesyAndRange"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prop="clr-namespace:ArcMapAddinGeodesyAndRange.Properties"
-             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib" 
              xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
              d:DesignHeight="300"
              d:DesignWidth="300"
@@ -52,7 +52,7 @@
                         </TextBox.InputBindings>
                     </TextBox>
                     <Button Grid.Column="1"
-                            Margin="3,3,0,0"
+                              Margin="3,3,0,0"
                             Style="{StaticResource buttonProperties}" />
                     <ToggleButton Grid.Column="2"
                                   Margin="3,3,0,0"
@@ -90,8 +90,18 @@
                     </TextBox.Style>
                 </TextBox>
                 <TextBlock x:Name="DistanceLabel"
-                           Margin="3,3,0,0"
-                           Text="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}" />
+                           Margin="3,3,0,0">
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Text" Value="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ElementName=cbInteractive, Path=IsChecked}" Value="True">
+                                    <Setter Property="Text" Value="{x:Static prop:Resources.LabelRadius}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
                 <TextBox x:Name="Distance_Between_Rings_TextBox"
                          Margin="3,3,0,0"
                          Text="{Binding DistanceString,
@@ -118,7 +128,7 @@
                 <ComboBox x:Name="cmbLineDistanceType"
                           Height="Auto"
                           Margin="3,3,0,0"
-                          ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
+            ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
                           SelectedItem="{Binding Path=LineDistanceType,
                                                  Mode=TwoWay}">
                     <ComboBox.Style>
@@ -154,7 +164,7 @@
                     <Button Width="Auto"
                             Height="Auto"
                             Margin="3,3,0,0"
-                            Command="{Binding ClearGraphicsCommand}"
+                	    Command="{Binding ClearGraphicsCommand}"
                             Content="{x:Static prop:Resources.LabelClearGraphics}"
                             ToolTip="{x:Static prop:Resources.LabelClearGraphics}">
                         <Button.Style>
@@ -171,7 +181,7 @@
                     <Button Width="Auto"
                             Height="Auto"
                             Margin="3,3,0,0"
-                            Command="{Binding SaveAsCommand}"
+                        Command="{Binding SaveAsCommand}"
                             Content="{x:Static prop:Resources.LabelSaveAs}"
                             ToolTip="{x:Static prop:Resources.LabelSaveAs}">
                         <Button.Style>

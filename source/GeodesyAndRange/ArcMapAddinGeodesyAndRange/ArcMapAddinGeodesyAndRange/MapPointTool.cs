@@ -59,6 +59,11 @@ namespace ArcMapAddinGeodesyAndRange
             Mediator.NotifyColleagues(Constants.MOUSE_MOVE_POINT, point);
         }
 
+        protected override void OnDoubleClick()
+        {
+            Mediator.NotifyColleagues(Constants.MOUSE_DOUBLE_CLICK, null);
+        }
+
     }
 
 }
