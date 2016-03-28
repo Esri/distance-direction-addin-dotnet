@@ -521,12 +521,11 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
                 sfDlg.CheckPathExists = true;
                 sfDlg.DefaultExt = "kmz";
                 sfDlg.Filter = "KMZ File (*.kmz)|*.kmz";
-                string userPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-                sfDlg.InitialDirectory = userPath;
                 sfDlg.OverwritePrompt = true;
                 sfDlg.Title = "Choose location to create KMZ file";
                 
             }
+            sfDlg.FileName = "";
                 
             if (sfDlg.ShowDialog() == DialogResult.OK)
             {
