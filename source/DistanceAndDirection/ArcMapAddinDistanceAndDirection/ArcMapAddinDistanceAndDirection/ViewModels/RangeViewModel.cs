@@ -12,15 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// System
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ESRI.ArcGIS.ArcMapUI;
-using ESRI.ArcGIS.Carto;
+
+// Esri
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
+
 using ArcMapAddinDistanceAndDirection.Helpers;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels

@@ -12,30 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// System
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
+using System.Collections.ObjectModel;
+
+// Esri
 using ESRI.ArcGIS.esriSystem;
-using ArcMapAddinDistanceAndDirection.Helpers;
-using ArcMapAddinDistanceAndDirection.Models;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using System.Diagnostics;
 using ESRI.ArcGIS.Geodatabase;
-using ESRI.ArcGIS.CatalogUI;
-using ESRI.ArcGIS.Catalog;
-using ESRI.ArcGIS.DataSourcesGDB;
-using ESRI.ArcGIS.Geoprocessing;
+
 using ArcMapAddinDistanceAndDirection.Views;
-using System.IO;
-using System.Collections.ObjectModel;
+using ArcMapAddinDistanceAndDirection.Helpers;
+using ArcMapAddinDistanceAndDirection.Models;
+
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {

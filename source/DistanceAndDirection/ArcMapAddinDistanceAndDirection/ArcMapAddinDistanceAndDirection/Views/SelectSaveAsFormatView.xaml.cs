@@ -15,6 +15,7 @@
   ******************************************************************************/
 
 using System.Windows;
+
 using ArcMapAddinDistanceAndDirection.ViewModels;
 
 namespace ArcMapAddinDistanceAndDirection.Views

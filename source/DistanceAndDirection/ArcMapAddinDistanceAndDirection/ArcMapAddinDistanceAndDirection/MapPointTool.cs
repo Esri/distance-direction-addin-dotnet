@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// System
 using System;
-using System.Collections.Generic;
-using System.Text;
-using System.IO;
+
+// Esri
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
-using ESRI.ArcGIS.Desktop.AddIns;
+
 using ArcMapAddinDistanceAndDirection.Helpers;
 
 namespace ArcMapAddinDistanceAndDirection

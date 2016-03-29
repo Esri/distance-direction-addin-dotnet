@@ -12,15 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// System
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using ArcMapAddinDistanceAndDirection.Helpers;
 using System.Xml.Serialization;
 using System.Xml;
 using System.IO;
+
+using ArcMapAddinDistanceAndDirection.Helpers;
 
 namespace ArcMapAddinDistanceAndDirection.Models
 {
