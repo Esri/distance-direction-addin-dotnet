@@ -1,0 +1,227 @@
+﻿<UserControl x:Class="ArcMapAddinDistanceAndDirection.Views.GREllipseView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:ArcMapAddinDistanceAndDirection"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:prop="clr-namespace:ArcMapAddinDistanceAndDirection.Properties"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:viewModels="clr-namespace:ArcMapAddinDistanceAndDirection.ViewModels"
+             d:DesignHeight="460"
+             d:DesignWidth="300"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ArcMapAddinDistanceAndDirection;component/MAResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            <viewModels:EllipseViewModel x:Key="ellipseViewModel" />
+            <local:EnumToFriendlyNameConverter x:Key="enumItemsConverter" />
+            <ObjectDataProvider x:Key="ellipseTypes"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:TypeExtension TypeName="local:EllipseTypes" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ObjectDataProvider x:Key="lineDistanceData"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:TypeExtension TypeName="local:DistanceTypes" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+            <ObjectDataProvider x:Key="azimuthData"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:TypeExtension TypeName="local:AzimuthTypes" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <StaticResourceExtension ResourceKey="ellipseViewModel" />
+    </UserControl.DataContext>
+    <Grid x:Name="mainControl">
+        <ScrollViewer Padding="0,0,3,0" VerticalScrollBarVisibility="Auto">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <TextBlock Grid.ColumnSpan="3"
+                           Margin="3,3,0,0"
+                           VerticalAlignment="Center"
+                           Text="{x:Static prop:Resources.LabelEllipseType}" />
+                <ComboBox x:Name="cmbEllipseType"
+                          Grid.Row="1"
+                          Grid.ColumnSpan="3"
+                          Height="Auto"
+                          Margin="3,3,0,0"
+                          ItemsSource="{Binding Source={StaticResource ellipseTypes}}"
+                          SelectedItem="{Binding Path=EllipseType,
+                                                 Mode=TwoWay}" />
+                <TextBlock Grid.Row="2"
+                           Grid.ColumnSpan="3"
+                           Margin="3,3,0,0"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Bottom"
+                           Text="{x:Static prop:Resources.LabelCenterPoint}" />
+                <Grid Grid.Row="3" Grid.ColumnSpan="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Height="Auto"
+                             Margin="3,3,0,0"
+                             Text="{Binding Path=Point1Formatted,
+                                            UpdateSourceTrigger=PropertyChanged,
+                                            ValidatesOnExceptions=True}"
+                             ToolTip="{x:Static prop:Resources.LabelCenterPoint}"
+                             Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                        <TextBox.InputBindings>
+                            <KeyBinding Key="Enter"
+                                        Command="{Binding EnterKeyCommand}"
+                                        CommandParameter="{Binding ElementName=mainControl,
+                                                                   Path=.}" />
+                        </TextBox.InputBindings>
+                    </TextBox>
+                    <Button Grid.Column="1"
+                            Margin="3,3,0,0"
+                            Style="{StaticResource buttonProperties}" />
+                    <Button Grid.Column="2"
+                            Width="Auto"
+                            Margin="3,3,0,0"
+                            HorizontalAlignment="Right"
+                            Command="{Binding ActivateToolCommand}"
+                            ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
+                        <Image Width="18"
+                               Height="18"
+                               Source="/ArcMapAddinDistanceAndDirection;component/Images/Add_Point32_d.png" />
+                    </Button>
+                </Grid>
+                <GroupBox Grid.Row="4"
+                          Grid.ColumnSpan="2"
+                          Margin="3,3,0,0"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Header="{x:Static prop:Resources.LabelAxisGroup}">
+                    <StackPanel>
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelMinorAxis}" />
+                        <TextBox Margin="3,3,0,0"
+                                 Text="{Binding Path=MinorAxisDistanceString,
+                                                UpdateSourceTrigger=PropertyChanged,
+                                                ValidatesOnExceptions=True}"
+                                 Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter"
+                                            Command="{Binding EnterKeyCommand}"
+                                            CommandParameter="{Binding ElementName=mainControl,
+                                                                       Path=.}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelMajorAxis}" />
+                        <TextBox Margin="3,3,0,0"
+                                 Text="{Binding Path=MajorAxisDistanceString,
+                                                UpdateSourceTrigger=PropertyChanged,
+                                                ValidatesOnExceptions=True}"
+                                 Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter"
+                                            Command="{Binding EnterKeyCommand}"
+                                            CommandParameter="{Binding ElementName=mainControl,
+                                                                       Path=.}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelAxisUnits}" />
+                        <ComboBox x:Name="cmbAxisUnits"
+                                  Margin="3,3,0,0"
+                                  ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
+                                  SelectedItem="{Binding Path=LineDistanceType,
+                                                         Mode=TwoWay}" />
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Row="5"
+                          Grid.ColumnSpan="2"
+                          Margin="3,3,0,0"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Header="{x:Static prop:Resources.LabelOrientationGroup}">
+                    <StackPanel>
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelOrientationAngle}" />
+                        <TextBox Margin="3,3,0,0"
+                                 Text="{Binding Path=AzimuthString,
+                                                UpdateSourceTrigger=PropertyChanged,
+                                                ValidatesOnExceptions=True}"
+                                 Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter"
+                                            Command="{Binding EnterKeyCommand}"
+                                            CommandParameter="{Binding ElementName=mainControl,
+                                                                       Path=.}" />
+                            </TextBox.InputBindings>
+                        </TextBox>
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelOrientationUnit}" />
+                        <ComboBox x:Name="cmbOrientationAngleUnits"
+                                  Margin="3,3,0,0"
+                                  ItemsSource="{Binding Source={StaticResource azimuthData}}"
+                                  SelectedItem="{Binding Path=AzimuthType,
+                                                         Mode=TwoWay}" />
+                    </StackPanel>
+                </GroupBox>
+                <StackPanel Grid.Row="6"
+                            Grid.ColumnSpan="3"
+                            Margin="3,3,0,0"
+                            HorizontalAlignment="Right"
+                            Orientation="Horizontal">
+                    <Button Width="Auto"
+                            Height="Auto"
+                            Margin="3,3,0,0"
+                            Command="{Binding ClearGraphicsCommand}"
+                            Content="{x:Static prop:Resources.LabelClearGraphics}"
+                            ToolTip="{x:Static prop:Resources.LabelClearGraphics}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="IsEnabled" Value="False" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasMapGraphics}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Width="Auto"
+                            Height="Auto"
+                            Margin="3,3,0,0"
+                            Command="{Binding SaveAsCommand}"
+                            Content="{x:Static prop:Resources.LabelSaveAs}"
+                            ToolTip="{x:Static prop:Resources.LabelSaveAs}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="IsEnabled" Value="False" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding HasMapGraphics}" Value="True">
+                                        <Setter Property="IsEnabled" Value="True" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
