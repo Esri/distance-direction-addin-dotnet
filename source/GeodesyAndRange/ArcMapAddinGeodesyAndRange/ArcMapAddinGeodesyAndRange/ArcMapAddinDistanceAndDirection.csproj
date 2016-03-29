@@ -123,7 +123,7 @@
       <DependentUpon>Config.esriaddinx</DependentUpon>
     </Compile>
     <Compile Include="Enums\Enums.cs" />
-    <Compile Include="GeodesyAndRangeButton.cs" />
+    <Compile Include="DistanceAndDirectionButton.cs" />
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\Mediator.cs" />
     <Compile Include="Helpers\NotificationObject.cs" />
@@ -187,14 +187,14 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="DockableWindowGeodesyAndRange.xaml">
+    <Page Include="DockableWindowDistanceAndDirection.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Compile Include="DockableWindowGeodesyAndRange.xaml.cs">
-      <DependentUpon>DockableWindowGeodesyAndRange.xaml</DependentUpon>
+    <Compile Include="DockableWindowDistanceAndDirection.xaml.cs">
+      <DependentUpon>DockableWindowDistanceAndDirection.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <AddInContent Include="Images\DockableWindowGeodesyAndRange.png" />
