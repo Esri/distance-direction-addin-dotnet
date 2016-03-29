@@ -18,7 +18,7 @@ using System.Reflection;
 using System.Globalization;
 using System.ComponentModel;
 
-namespace ArcMapAddinGeodesyAndRange
+namespace ArcMapAddinDistanceAndDirection
 {
     /// <summary>
     /// Attribute for localization.

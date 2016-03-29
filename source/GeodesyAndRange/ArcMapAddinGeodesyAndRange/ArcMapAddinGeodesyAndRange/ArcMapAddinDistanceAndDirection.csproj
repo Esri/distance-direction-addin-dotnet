@@ -8,8 +8,8 @@
     <ProjectGuid>{C37767BB-18E6-4743-A5EC-1D7F2B38F487}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ArcMapAddinGeodesyAndRange</RootNamespace>
-    <AssemblyName>ArcMapAddinGeodesyAndRange</AssemblyName>
+    <RootNamespace>ArcMapAddinDistanceAndDirection</RootNamespace>
+    <AssemblyName>ArcMapAddinDistanceAndDirection</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>

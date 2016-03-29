@@ -18,7 +18,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 
-namespace ArcMapAddinGeodesyAndRange
+namespace ArcMapAddinDistanceAndDirection
 {
     /// <summary>
     /// This class simply takes an enum and uses some reflection to obtain

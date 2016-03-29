@@ -22,7 +22,7 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geoprocessing;
 
-namespace ArcMapAddinGeodesyAndRange.Models
+namespace ArcMapAddinDistanceAndDirection.Models
 {
     class KMLUtils
     {

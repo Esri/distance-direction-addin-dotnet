@@ -17,13 +17,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ArcMapAddinGeodesyAndRange.Helpers;
+using ArcMapAddinDistanceAndDirection.Helpers;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
 
-namespace ArcMapAddinGeodesyAndRange.ViewModels
+namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
     public class LinesViewModel : TabBaseViewModel
     {

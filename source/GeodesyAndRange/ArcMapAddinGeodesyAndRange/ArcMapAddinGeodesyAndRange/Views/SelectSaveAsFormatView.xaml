@@ -1,9 +1,9 @@
-﻿<Window x:Class="ArcMapAddinGeodesyAndRange.Views.SelectSaveAsFormatView"
+﻿<Window x:Class="ArcMapAddinDistanceAndDirection.Views.SelectSaveAsFormatView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:viewModels="clr-namespace:ArcMapAddinGeodesyAndRange.ViewModels"
+             xmlns:viewModels="clr-namespace:ArcMapAddinDistanceAndDirection.ViewModels"
              mc:Ignorable="d" Width="242" Height="102" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Title="Select Output" WindowStartupLocation="CenterScreen" Topmost="True">
     <Window.Resources>
         <viewModels:SelectSaveAsFormatViewModel x:Key="viewModelEdit" />

@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 using ESRI.ArcGIS.esriSystem;
 using System.Windows;
 
-namespace ArcMapAddinGeodesyAndRange.Helpers
+namespace ArcMapAddinDistanceAndDirection.Helpers
 {
     public static class DialogCloser
     {

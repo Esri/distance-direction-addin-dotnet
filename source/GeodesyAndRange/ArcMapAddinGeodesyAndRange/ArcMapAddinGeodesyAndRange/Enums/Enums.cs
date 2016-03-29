@@ -17,9 +17,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using ArcMapAddinGeodesyAndRange.Properties;
+using ArcMapAddinDistanceAndDirection.Properties;
 
-namespace ArcMapAddinGeodesyAndRange
+namespace ArcMapAddinDistanceAndDirection
 {
     // Here we create all of our globalized enumerations
 

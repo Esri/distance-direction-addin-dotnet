@@ -27,7 +27,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ArcMapAddinGeodesyAndRange.Views
+namespace ArcMapAddinDistanceAndDirection.Views
 {
     /// <summary>
     /// Interaction logic for RangeView.xaml

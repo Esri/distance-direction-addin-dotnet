@@ -16,7 +16,7 @@
 
 using ESRI.ArcGIS.Geometry;
 
-namespace ArcMapAddinGeodesyAndRange.Models
+namespace ArcMapAddinDistanceAndDirection.Models
 {
     public class Graphic
     {

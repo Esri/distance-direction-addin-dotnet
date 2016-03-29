@@ -14,7 +14,7 @@
 using System;
 using System.Windows.Input;
 
-namespace ArcMapAddinGeodesyAndRange.Helpers
+namespace ArcMapAddinDistanceAndDirection.Helpers
 {
     public class RelayCommand : ICommand
     {

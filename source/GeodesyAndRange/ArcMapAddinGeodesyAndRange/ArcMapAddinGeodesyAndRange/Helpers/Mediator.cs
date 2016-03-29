@@ -15,7 +15,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace ArcMapAddinGeodesyAndRange.Helpers
+namespace ArcMapAddinDistanceAndDirection.Helpers
 {
     static public class Mediator
     {

@@ -15,7 +15,7 @@
   *   limitations under the License. 
   ******************************************************************************/
 
-namespace ArcMapAddinGeodesyAndRange.ViewModels
+namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
     class SelectSaveAsFormatViewModel : BaseViewModel
     {

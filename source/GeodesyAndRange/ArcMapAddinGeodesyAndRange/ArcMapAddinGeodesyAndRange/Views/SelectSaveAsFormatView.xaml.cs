@@ -15,9 +15,9 @@
   ******************************************************************************/
 
 using System.Windows;
-using ArcMapAddinGeodesyAndRange.ViewModels;
+using ArcMapAddinDistanceAndDirection.ViewModels;
 
-namespace ArcMapAddinGeodesyAndRange.Views
+namespace ArcMapAddinDistanceAndDirection.Views
 {
     /// <summary>
     /// Interaction logic for SelectSaveAsFormatView.xaml change

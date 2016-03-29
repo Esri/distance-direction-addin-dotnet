@@ -19,9 +19,9 @@ using System.IO;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Desktop.AddIns;
-using ArcMapAddinGeodesyAndRange.Helpers;
+using ArcMapAddinDistanceAndDirection.Helpers;
 
-namespace ArcMapAddinGeodesyAndRange
+namespace ArcMapAddinDistanceAndDirection
 {
     public class MapPointTool : ESRI.ArcGIS.Desktop.AddIns.Tool
     {

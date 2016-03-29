@@ -18,10 +18,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using ArcMapAddinGeodesyAndRange.Views;
-using ArcMapAddinGeodesyAndRange.Helpers;
+using ArcMapAddinDistanceAndDirection.Views;
+using ArcMapAddinDistanceAndDirection.Helpers;
 
-namespace ArcMapAddinGeodesyAndRange.ViewModels
+namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
     public class MainViewModel : BaseViewModel
     {

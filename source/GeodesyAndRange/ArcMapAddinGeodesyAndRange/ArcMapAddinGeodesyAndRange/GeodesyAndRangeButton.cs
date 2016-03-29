@@ -19,11 +19,11 @@ using System.IO;
 using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Framework;
 
-namespace ArcMapAddinGeodesyAndRange
+namespace ArcMapAddinDistanceAndDirection
 {
-    public class GeodesyAndRangeButton : ESRI.ArcGIS.Desktop.AddIns.Button
+    public class DistanceAndDirectionButton : ESRI.ArcGIS.Desktop.AddIns.Button
     {
-        public GeodesyAndRangeButton()
+        public DistanceAndDirectionButton()
         {
         }
 
@@ -32,7 +32,7 @@ namespace ArcMapAddinGeodesyAndRange
             ArcMap.Application.CurrentTool = null;
 
             UID dockWinID = new UIDClass();
-            dockWinID.Value = ThisAddIn.IDs.DockableWindowGeodesyAndRange;
+            dockWinID.Value = ThisAddIn.IDs.DockableWindowDistanceAndDirection;
 
             IDockableWindow dockWindow = ArcMap.DockableWindowManager.GetDockableWindow(dockWinID);
             dockWindow.Show(true);

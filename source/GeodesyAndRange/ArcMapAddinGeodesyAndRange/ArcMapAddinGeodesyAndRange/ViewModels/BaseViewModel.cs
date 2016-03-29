@@ -14,9 +14,9 @@
   *   limitations under the License. 
   ******************************************************************************/
 
-using ArcMapAddinGeodesyAndRange.Helpers;
+using ArcMapAddinDistanceAndDirection.Helpers;
 
-namespace ArcMapAddinGeodesyAndRange.ViewModels
+namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
     public class BaseViewModel : NotificationObject
     {

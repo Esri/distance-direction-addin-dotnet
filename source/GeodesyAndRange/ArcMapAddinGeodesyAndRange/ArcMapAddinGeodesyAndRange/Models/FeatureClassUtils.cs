@@ -29,7 +29,7 @@ using ESRI.ArcGIS.DataSourcesFile;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.ADF;
 
-namespace ArcMapAddinGeodesyAndRange.Models
+namespace ArcMapAddinDistanceAndDirection.Models
 {
     class FeatureClassUtils
     {

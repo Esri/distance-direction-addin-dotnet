@@ -26,15 +26,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ArcMapAddinGeodesyAndRange
+namespace ArcMapAddinDistanceAndDirection
 {
     /// <summary>
     /// Designer class of the dockable window add-in. It contains WPF user interfaces that
     /// make up the dockable window.
     /// </summary>
-    public partial class DockableWindowGeodesyAndRange : UserControl
+    public partial class DockableWindowDistanceAndDirection : UserControl
     {
-        public DockableWindowGeodesyAndRange()
+        public DockableWindowDistanceAndDirection()
         {
             InitializeComponent();
         }
@@ -54,7 +54,7 @@ namespace ArcMapAddinGeodesyAndRange
             protected override IntPtr OnCreateChild()
             {
                 m_windowUI = new System.Windows.Forms.Integration.ElementHost();
-                m_windowUI.Child = new DockableWindowGeodesyAndRange();
+                m_windowUI.Child = new DockableWindowDistanceAndDirection();
                 return m_windowUI.Handle;
             }
 
@@ -71,7 +71,7 @@ namespace ArcMapAddinGeodesyAndRange
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // load the configuration file
-            ArcMapAddinGeodesyAndRange.ViewModels.TabBaseViewModel.AddInConfig.LoadConfiguration();  
+            ArcMapAddinDistanceAndDirection.ViewModels.TabBaseViewModel.AddInConfig.LoadConfiguration();  
         }
     }
 }

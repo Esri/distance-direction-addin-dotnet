@@ -18,9 +18,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ESRI.ArcGIS.esriSystem;
-using ArcMapAddinGeodesyAndRange.Helpers;
+using ArcMapAddinDistanceAndDirection.Helpers;
 
-namespace ArcMapAddinGeodesyAndRange.ViewModels
+namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
     public class EditPropertiesViewModel : BaseViewModel
     {

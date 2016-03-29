@@ -15,7 +15,7 @@ using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace ArcMapAddinGeodesyAndRange.Helpers
+namespace ArcMapAddinDistanceAndDirection.Helpers
 {
     public class NotificationObject : INotifyPropertyChanged
     {

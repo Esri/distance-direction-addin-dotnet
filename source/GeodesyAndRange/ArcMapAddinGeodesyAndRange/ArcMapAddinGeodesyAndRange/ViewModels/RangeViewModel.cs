@@ -21,9 +21,9 @@ using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
-using ArcMapAddinGeodesyAndRange.Helpers;
+using ArcMapAddinDistanceAndDirection.Helpers;
 
-namespace ArcMapAddinGeodesyAndRange.ViewModels
+namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
     public class RangeViewModel : TabBaseViewModel
     {
@@ -56,7 +56,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
             get
             {
                 if (ArcMap.Application.CurrentTool != null)
-                    return ArcMap.Application.CurrentTool.Name == "Esri_ArcMapAddinGeodesyAndRange_MapPointTool";
+                    return ArcMap.Application.CurrentTool.Name == "Esri_ArcMapAddinDistanceAndDirection_MapPointTool";
 
                 return false;
             }

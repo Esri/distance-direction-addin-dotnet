@@ -19,8 +19,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using ESRI.ArcGIS.esriSystem;
-using ArcMapAddinGeodesyAndRange.Helpers;
-using ArcMapAddinGeodesyAndRange.Models;
+using ArcMapAddinDistanceAndDirection.Helpers;
+using ArcMapAddinDistanceAndDirection.Models;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
@@ -33,11 +33,11 @@ using ESRI.ArcGIS.CatalogUI;
 using ESRI.ArcGIS.Catalog;
 using ESRI.ArcGIS.DataSourcesGDB;
 using ESRI.ArcGIS.Geoprocessing;
-using ArcMapAddinGeodesyAndRange.Views;
+using ArcMapAddinDistanceAndDirection.Views;
 using System.IO;
 using System.Collections.ObjectModel;
 
-namespace ArcMapAddinGeodesyAndRange.ViewModels
+namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
     /// <summary>
     /// Base class for all the common properties, commands and events for tab items
@@ -613,7 +613,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         /// <param name="obj"></param>
         internal void OnActivateTool(object obj)
         {
-            SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+            SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinDistanceAndDirection_MapPointTool");
         }
         /// <summary>
         /// Handler for the "Enter"key command
@@ -785,7 +785,7 @@ namespace ArcMapAddinGeodesyAndRange.ViewModels
         {
             if (toolReset)
             {
-                DeactivateTool("Esri_ArcMapAddinGeodesyAndRange_MapPointTool");
+                DeactivateTool("Esri_ArcMapAddinDistanceAndDirection_MapPointTool");
             }
 
             ResetPoints();

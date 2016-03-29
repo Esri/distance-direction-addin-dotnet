@@ -27,9 +27,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using ESRI.ArcGIS.esriSystem;
-using ArcMapAddinGeodesyAndRange.ViewModels;
+using ArcMapAddinDistanceAndDirection.ViewModels;
 
-namespace ArcMapAddinGeodesyAndRange.Views
+namespace ArcMapAddinDistanceAndDirection.Views
 {
     /// <summary>
     /// Interaction logic for EditPropertiesView.xaml
