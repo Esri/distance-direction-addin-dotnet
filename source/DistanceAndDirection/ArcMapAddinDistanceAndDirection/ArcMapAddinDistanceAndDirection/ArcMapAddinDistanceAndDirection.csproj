@@ -176,7 +176,7 @@
     </AddInContent>
   </ItemGroup>
   <ItemGroup>
-    <AddInContent Include="Images\ArcMapAddinGeodesyAndRange.png" />
+    <AddInContent Include="Images\ArcMapAddinDistanceAndDirection.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
@@ -197,7 +197,7 @@
       <DependentUpon>DockableWindowDistanceAndDirection.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <AddInContent Include="Images\DockableWindowGeodesyAndRange.png" />
+    <AddInContent Include="Images\DockableWindowDistanceAndDirection.png" />
     <Page Include="MAResourceDictionary.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -259,7 +259,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <AddInContent Include="Images\GeodesyAndRangeButton.png" />
+    <AddInContent Include="Images\DistanceAndDirectionButton.png" />
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Images\MapPointTool.png" />
