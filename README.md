@@ -2,7 +2,7 @@
 
 The add-in provides the ability to create geodesic features such as lines, circles, ellipses and range rings.  Features can be exported to a file geodatabase, shapefile, or KML.
 
-![Image of Geodesy and Range Addin](GeodesyAndRange.PNG) 
+![Image of Distance and Direction Addin](DistanceAndDirection.PNG) 
 
 ## Features
 
@@ -48,8 +48,8 @@ The add-in provides the ability to create geodesic features such as lines, circl
 		* Open and build solution file
 	* To use MSBuild to build the solution
 		* Open a Visual Studio Command Prompt: Start Menu | Visual Studio 2013 | Visual Studio Tools | Developer Command Prompt for VS2013
-		* ``` cd geodesy-and-range-addin-dotnet\source\GeodesyAndRange\ArcMapAddinGeodesyAndRange ```
-		* ``` msbuild ArcMapAddinGeodesyAndRange.sln /property:Configuration=Release ```
+		* ``` cd distance-and-direction-addin-dotnet\source\DistanceAndDirection\ArcMapAddinDistanceAndDirection ```
+		* ``` msbuild ArcMapAddinDistanceAndDirection.sln /property:Configuration=Release ```
 	* Note : Assembly references are based on a default install of the SDK, you may have to update the references if you chose an alternate install option
 
 ## Desktop Users
@@ -63,7 +63,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 				* Select **Add-In Controls**
 				* Drag/Drop **Show Distance and Direction** command onto a toolbar
 				* Close customize mode
-				* Open tool by clicking the **Show Geodesy and Range** command you just added
+				* Open tool by clicking the **Show Distance and Direction** command you just added
 				* Dockable *Distance and Direction* tool appears
 				* If you add this to a toolbar that you contstantly use the add-in will stay. To remove the add-in delete your [Normal.MXT](https://geonet.esri.com/thread/78692) file
 				
@@ -150,7 +150,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 
 ## Issues
 
-Find a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/ArcGIS/geodesy-and-range-addin-dotnet/issues).
+Find a bug or want to request a new feature?  Please let us know by submitting an [issue](https://github.com/ArcGIS/distance-and-direction-addin-dotnet/issues).
 
 ## Contributing
 
