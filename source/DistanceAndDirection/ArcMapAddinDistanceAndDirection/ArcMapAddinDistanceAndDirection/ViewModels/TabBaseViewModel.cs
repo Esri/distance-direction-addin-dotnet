@@ -836,6 +836,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj"></param>
         private void OnDisplayCoordinateTypeChanged(object obj)
         {
+            //TODO use propertyObserver
             RaisePropertyChanged(() => Point1Formatted);
             RaisePropertyChanged(() => Point2Formatted);
         }
@@ -849,9 +850,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
             IElement element = null;
-            //ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
-            //rgbColor.Red = 255;
-            //ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
             double width = 2.0;
 
             geom.Project(ArcMap.Document.FocusMap.SpatialReference);

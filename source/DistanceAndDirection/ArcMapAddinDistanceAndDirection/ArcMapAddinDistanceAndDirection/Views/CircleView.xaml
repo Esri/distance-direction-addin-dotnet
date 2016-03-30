@@ -6,7 +6,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prop="clr-namespace:ArcMapAddinDistanceAndDirection.Properties"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:viewModels="clr-namespace:ArcMapAddinDistanceAndDirection.ViewModels"
              d:DesignHeight="400"
              d:DesignWidth="300"
              mc:Ignorable="d">
@@ -15,7 +14,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/ArcMapAddinDistanceAndDirection;component/MAResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <viewModels:CircleViewModel x:Key="circleViewModel" />
             <ObjectDataProvider x:Key="circleFromData"
                                 MethodName="GetValues"
                                 ObjectType="{x:Type sys:Enum}">
@@ -32,9 +30,6 @@
             </ObjectDataProvider>
         </ResourceDictionary>
     </UserControl.Resources>
-    <UserControl.DataContext>
-        <StaticResourceExtension ResourceKey="circleViewModel" />
-    </UserControl.DataContext>
     <Grid x:Name="mainControl">
         <ScrollViewer Padding="0,0,3,0" VerticalScrollBarVisibility="Auto">
             <StackPanel>

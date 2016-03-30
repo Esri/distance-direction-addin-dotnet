@@ -26,9 +26,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             // set some views
             _linesView = new GRLinesView();
+            _linesView.DataContext = new LinesViewModel();
+
             _circleView = new GRCircleView();
+            _circleView.DataContext = new CircleViewModel();
+            
             _ellipseView = new GREllipseView();
+            _ellipseView.DataContext = new EllipseViewModel();
+            
             _rangeView = new GRRangeView();
+            _rangeView.DataContext = new RangeViewModel();
         }
 
         #region Properties

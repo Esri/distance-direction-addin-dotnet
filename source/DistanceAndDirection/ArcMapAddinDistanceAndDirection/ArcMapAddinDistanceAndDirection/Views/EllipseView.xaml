@@ -6,7 +6,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:prop="clr-namespace:ArcMapAddinDistanceAndDirection.Properties"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-             xmlns:viewModels="clr-namespace:ArcMapAddinDistanceAndDirection.ViewModels"
              d:DesignHeight="460"
              d:DesignWidth="300"
              mc:Ignorable="d">
@@ -15,7 +14,6 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/ArcMapAddinDistanceAndDirection;component/MAResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
-            <viewModels:EllipseViewModel x:Key="ellipseViewModel" />
             <local:EnumToFriendlyNameConverter x:Key="enumItemsConverter" />
             <ObjectDataProvider x:Key="ellipseTypes"
                                 MethodName="GetValues"
@@ -40,9 +38,6 @@
             </ObjectDataProvider>
         </ResourceDictionary>
     </UserControl.Resources>
-    <UserControl.DataContext>
-        <StaticResourceExtension ResourceKey="ellipseViewModel" />
-    </UserControl.DataContext>
     <Grid x:Name="mainControl">
         <ScrollViewer Padding="0,0,3,0" VerticalScrollBarVisibility="Auto">
             <Grid>
