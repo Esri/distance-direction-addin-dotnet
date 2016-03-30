@@ -81,19 +81,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (this is LinesViewModel)
                 {
-                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList().Any();
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Line);
                 }
                 else if (this is CircleViewModel)
                 {
-                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.Circle).ToList().Any();
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Circle);
                 }
                 else if (this is EllipseViewModel)
                 {
-                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.Ellipse).ToList().Any();
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Ellipse);
                 }
                 else if (this is RangeViewModel)
                 {
-                    return GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList().Any();
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.RangeRing);
                 }
 
                 return false;
