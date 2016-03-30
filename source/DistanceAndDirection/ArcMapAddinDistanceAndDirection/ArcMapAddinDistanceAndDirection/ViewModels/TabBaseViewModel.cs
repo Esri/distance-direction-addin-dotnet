@@ -32,6 +32,7 @@ using ESRI.ArcGIS.Geodatabase;
 using ArcMapAddinDistanceAndDirection.Views;
 using ArcMapAddinDistanceAndDirection.Helpers;
 using ArcMapAddinDistanceAndDirection.Models;
+using DistanceAndDirectionLibrary;
 
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels

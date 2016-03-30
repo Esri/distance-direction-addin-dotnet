@@ -14,14 +14,14 @@
 
 using System.Windows.Controls;
 
-namespace ArcMapAddinDistanceAndDirection.Views
+namespace DistanceAndDirectionLibrary.Views
 {
     /// <summary>
-    /// Interaction logic for LinesView.xaml
+    /// Interaction logic for EllipseView.xaml
     /// </summary>
-    public partial class GRLinesView : UserControl
+    public partial class GREllipseView : UserControl
     {
-        public GRLinesView()
+        public GREllipseView()
         {
             InitializeComponent();
         }

@@ -14,6 +14,7 @@
   *   limitations under the License. 
   ******************************************************************************/
 
+using DistanceAndDirectionLibrary;
 // Esri
 using ESRI.ArcGIS.Geometry;
 

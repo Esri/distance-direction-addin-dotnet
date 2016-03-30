@@ -20,6 +20,7 @@ using System.Xml;
 using System.IO;
 
 using ArcMapAddinDistanceAndDirection.Helpers;
+using DistanceAndDirectionLibrary;
 
 namespace ArcMapAddinDistanceAndDirection.Models
 {

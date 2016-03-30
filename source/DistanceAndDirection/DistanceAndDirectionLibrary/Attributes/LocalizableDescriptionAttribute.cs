@@ -18,7 +18,7 @@ using System.Reflection;
 using System.Globalization;
 using System.ComponentModel;
 
-namespace ArcMapAddinDistanceAndDirection
+namespace DistanceAndDirectionLibrary
 {
     /// <summary>
     /// Attribute for localization.

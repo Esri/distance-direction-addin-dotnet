@@ -117,12 +117,10 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Config.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Config.esriaddinx</DependentUpon>
     </Compile>
-    <Compile Include="Enums\Enums.cs" />
     <Compile Include="DistanceAndDirectionButton.cs" />
     <Compile Include="Helpers\Constants.cs" />
     <Compile Include="Helpers\Mediator.cs" />
@@ -140,7 +138,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ValueConverters\EnumToFriendlyNameConverter.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\CircleViewModel.cs" />
     <Compile Include="ViewModels\EditPropertiesViewModel.cs" />
@@ -150,20 +147,8 @@
     <Compile Include="ViewModels\RangeViewModel.cs" />
     <Compile Include="ViewModels\SelectSaveAsFormatViewModel.cs" />
     <Compile Include="ViewModels\TabBaseViewModel.cs" />
-    <Compile Include="Views\CircleView.xaml.cs">
-      <DependentUpon>CircleView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\EditPropertiesView.xaml.cs">
       <DependentUpon>EditPropertiesView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\EllipseView.xaml.cs">
-      <DependentUpon>EllipseView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\LinesView.xaml.cs">
-      <DependentUpon>LinesView.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\RangeView.xaml.cs">
-      <DependentUpon>RangeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\SelectSaveAsFormatView.xaml.cs">
       <DependentUpon>SelectSaveAsFormatView.xaml</DependentUpon>
@@ -198,27 +183,7 @@
       <SubType>Code</SubType>
     </Compile>
     <AddInContent Include="Images\DockableWindowDistanceAndDirection.png" />
-    <Page Include="MAResourceDictionary.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\CircleView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\EditPropertiesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\EllipseView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\LinesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\RangeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -250,9 +215,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\GeoprocessingEnvironmentSettings32_d.png" />
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -265,10 +227,15 @@
     <AddInContent Include="Images\MapPointTool.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\Add_Point32_d.png" />
+    <Folder Include="Attributes\" />
+    <Folder Include="Enums\" />
+    <Folder Include="ValueConverters\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\GenericErrorStop32_d.png" />
+    <ProjectReference Include="..\..\DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj">
+      <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
+      <Name>DistanceAndDirectionLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>

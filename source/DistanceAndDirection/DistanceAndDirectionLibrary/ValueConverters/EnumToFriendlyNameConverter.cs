@@ -18,7 +18,7 @@ using System.Windows.Data;
 using System.Globalization;
 using System.Reflection;
 
-namespace ArcMapAddinDistanceAndDirection
+namespace DistanceAndDirectionLibrary
 {
     /// <summary>
     /// This class simply takes an enum and uses some reflection to obtain

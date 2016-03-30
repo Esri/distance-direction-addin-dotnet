@@ -14,14 +14,14 @@
 
 using System.Windows.Controls;
 
-namespace ArcMapAddinDistanceAndDirection.Views
+namespace DistanceAndDirectionLibrary.Views
 {
     /// <summary>
-    /// Interaction logic for RangeView.xaml
+    /// Interaction logic for LinesView.xaml
     /// </summary>
-    public partial class GRRangeView : UserControl
+    public partial class GRLinesView : UserControl
     {
-        public GRRangeView()
+        public GRLinesView()
         {
             InitializeComponent();
         }

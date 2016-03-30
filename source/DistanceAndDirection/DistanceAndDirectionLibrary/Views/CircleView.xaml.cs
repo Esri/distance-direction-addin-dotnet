@@ -14,7 +14,7 @@
 
 using System.Windows.Controls;
 
-namespace ArcMapAddinDistanceAndDirection.Views
+namespace DistanceAndDirectionLibrary.Views
 {
     /// <summary>
     /// Interaction logic for CircleView.xaml

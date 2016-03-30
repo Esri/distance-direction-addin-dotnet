@@ -1,13 +1,13 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib" 
-                    xmlns:local="clr-namespace:ArcMapAddinDistanceAndDirection"
-                    xmlns:prop="clr-namespace:ArcMapAddinDistanceAndDirection.Properties">
+                    xmlns:local="clr-namespace:DistanceAndDirectionLibrary"
+                    xmlns:prop="clr-namespace:DistanceAndDirectionLibrary.Properties">
     <local:EnumToFriendlyNameConverter x:Key="enumItemsConverter" />
     <ControlTemplate x:Key="errorTemplate">
         <Grid ClipToBounds="False">
             <Image HorizontalAlignment="Right" VerticalAlignment="Center"
-                                   Source="/ArcMapAddinDistanceAndDirection;component/Images/GenericErrorStop32_d.png" 
+                                   Source="/DistanceAndDirectionLibrary;component/Images/GenericErrorStop32_d.png" 
                                    Width="16" Height="16" Margin="0,0,3,0"
                                    ToolTip="{Binding [0].ErrorContent}" />
             <Border BorderBrush="Red" BorderThickness="1" Margin="-1">
@@ -38,7 +38,7 @@
     <Style x:Key="buttonProperties" TargetType="Button">
         <Setter Property="Content">
             <Setter.Value>
-                <Image Source="/ArcMapAddinDistanceAndDirection;component/Images/GeoprocessingEnvironmentSettings32_d.png" Width="18" Height="18" />
+                <Image Source="/DistanceAndDirectionLibrary;component/Images/GeoprocessingEnvironmentSettings32_d.png" Width="18" Height="18" />
             </Setter.Value>
         </Setter>
         <Setter Property="Command" Value="{Binding EditPropertiesDialogCommand}" />

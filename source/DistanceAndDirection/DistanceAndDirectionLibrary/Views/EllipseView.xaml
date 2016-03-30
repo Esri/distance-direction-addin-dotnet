@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="ArcMapAddinDistanceAndDirection.Views.GREllipseView"
+﻿<UserControl x:Class="DistanceAndDirectionLibrary.Views.GREllipseView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:ArcMapAddinDistanceAndDirection"
+             xmlns:local="clr-namespace:DistanceAndDirectionLibrary"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:prop="clr-namespace:ArcMapAddinDistanceAndDirection.Properties"
+             xmlns:prop="clr-namespace:DistanceAndDirectionLibrary.Properties"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="460"
              d:DesignWidth="300"
@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/ArcMapAddinDistanceAndDirection;component/MAResourceDictionary.xaml" />
+                <ResourceDictionary Source="/DistanceAndDirectionLibrary;component/MAResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <local:EnumToFriendlyNameConverter x:Key="enumItemsConverter" />
             <ObjectDataProvider x:Key="ellipseTypes"
@@ -103,7 +103,7 @@
                             ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
                         <Image Width="18"
                                Height="18"
-                               Source="/ArcMapAddinDistanceAndDirection;component/Images/Add_Point32_d.png" />
+                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point32_d.png" />
                     </Button>
                 </Grid>
                 <GroupBox Grid.Row="4"

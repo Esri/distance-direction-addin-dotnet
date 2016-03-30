@@ -18,6 +18,7 @@ using System;
 // Esri
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
+using DistanceAndDirectionLibrary;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {

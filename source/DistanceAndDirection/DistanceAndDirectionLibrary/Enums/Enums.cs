@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ArcMapAddinDistanceAndDirection.Properties;
+using DistanceAndDirectionLibrary.Properties;
 
-namespace ArcMapAddinDistanceAndDirection
+namespace DistanceAndDirectionLibrary
 {
     // Here we create all of our globalized enumerations
 
