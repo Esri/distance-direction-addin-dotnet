@@ -16,7 +16,7 @@
 
 using DistanceAndDirectionLibrary.Helpers;
 
-namespace ArcMapAddinDistanceAndDirection.ViewModels
+namespace DistanceAndDirectionLibrary.ViewModels
 {
     public class BaseViewModel : NotificationObject
     {

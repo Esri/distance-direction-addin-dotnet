@@ -14,6 +14,7 @@
 
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
+using DistanceAndDirectionLibrary.ViewModels;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {

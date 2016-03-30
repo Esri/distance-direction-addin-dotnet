@@ -15,6 +15,8 @@
   *   limitations under the License. 
   ******************************************************************************/
 
+using DistanceAndDirectionLibrary.ViewModels;
+
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
     class SelectSaveAsFormatViewModel : BaseViewModel

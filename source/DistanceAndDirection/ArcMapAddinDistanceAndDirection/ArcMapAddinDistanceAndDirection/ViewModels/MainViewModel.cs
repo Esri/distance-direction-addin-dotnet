@@ -18,6 +18,7 @@ using System.Windows.Controls;
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.Views;
 using DistanceAndDirectionLibrary;
+using DistanceAndDirectionLibrary.ViewModels;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {

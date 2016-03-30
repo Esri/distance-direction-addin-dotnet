@@ -133,7 +133,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\CircleViewModel.cs" />
     <Compile Include="ViewModels\EditPropertiesViewModel.cs" />
     <Compile Include="ViewModels\EllipseViewModel.cs" />

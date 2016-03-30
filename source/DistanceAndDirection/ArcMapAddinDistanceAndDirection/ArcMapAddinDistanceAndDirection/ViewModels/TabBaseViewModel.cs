@@ -29,10 +29,11 @@ using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geodatabase;
 
-using ArcMapAddinDistanceAndDirection.Views;
-using DistanceAndDirectionLibrary.Helpers;
-using ArcMapAddinDistanceAndDirection.Models;
 using DistanceAndDirectionLibrary;
+using DistanceAndDirectionLibrary.Helpers;
+using DistanceAndDirectionLibrary.ViewModels;
+using ArcMapAddinDistanceAndDirection.Views;
+using ArcMapAddinDistanceAndDirection.Models;
 
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
