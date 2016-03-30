@@ -90,7 +90,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 if (value < 1 || value > 180)
-                    throw new ArgumentException(string.Format(Properties.Resources.AENumOfRings, 1, 180));
+                    throw new ArgumentException(string.Format(DistanceAndDirectionLibrary.Properties.Resources.AENumOfRings, 1, 180));
 
                 numberOfRings = value;
                 RaisePropertyChanged(() => NumberOfRings);
@@ -107,7 +107,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 if (value < 0 || value > 180)
-                    throw new ArgumentException(string.Format(Properties.Resources.AENumOfRadials, 0, 180));
+                    throw new ArgumentException(string.Format(DistanceAndDirectionLibrary.Properties.Resources.AENumOfRadials, 0, 180));
 
                 numberOfRadials = value;
                 RaisePropertyChanged(() => NumberOfRadials);

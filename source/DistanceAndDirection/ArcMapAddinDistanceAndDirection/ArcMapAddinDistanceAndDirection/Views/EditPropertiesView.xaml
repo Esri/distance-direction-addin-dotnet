@@ -6,20 +6,19 @@
              xmlns:local="clr-namespace:ArcMapAddinDistanceAndDirection"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModels="clr-namespace:ArcMapAddinDistanceAndDirection.ViewModels"
-             xmlns:prop="clr-namespace:ArcMapAddinDistanceAndDirection.Properties"
              xmlns:helpers="clr-namespace:DistanceAndDirectionLibrary.Helpers;assembly=DistanceAndDirectionLibrary"
              xmlns:libdd="clr-namespace:DistanceAndDirectionLibrary;assembly=DistanceAndDirectionLibrary"
              xmlns:libprop="clr-namespace:DistanceAndDirectionLibrary.Properties;assembly=DistanceAndDirectionLibrary"
              mc:Ignorable="d" 
              WindowStartupLocation="CenterScreen"
-             Title="{x:Static prop:Resources.TitleEditProperties}"
+             Title="{x:Static libprop:Resources.TitleEditProperties}"
              SizeToContent="WidthAndHeight"
              helpers:DialogCloser.DialogResult="{Binding DialogResult}"
                           d:DesignHeight="300" d:DesignWidth="300">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/ArcMapAddinDistanceAndDirection;component/MAResourceDictionary.xaml"/>
+                <ResourceDictionary Source="/DistanceAndDirectionLibrary;component/MAResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <viewModels:EditPropertiesViewModel x:Key="editPropertiesVM" />
             <ObjectDataProvider x:Key="coordinateTypes"

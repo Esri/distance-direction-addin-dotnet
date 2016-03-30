@@ -113,7 +113,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => Azimuth);
 
                 if (!azimuth.HasValue)
-                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
                 // update feedback
                 UpdateFeedback();
@@ -144,7 +144,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     else
                     {
                         Azimuth = null;
-                        throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                     }
                 }
             }

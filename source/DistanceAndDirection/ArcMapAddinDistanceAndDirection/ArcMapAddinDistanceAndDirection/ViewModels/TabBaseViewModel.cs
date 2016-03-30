@@ -201,7 +201,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     // invalid coordinate, reset and throw exception
                     Point1 = null;
                     HasPoint1 = false;
-                    throw new ArgumentException(Properties.Resources.AEInvalidCoordinate);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidCoordinate);
                 }
             }
         }
@@ -272,7 +272,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     // invalid coordinate, reset and throw exception
                     Point2 = null;
                     HasPoint2 = false;
-                    throw new ArgumentException(Properties.Resources.AEInvalidCoordinate);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidCoordinate);
                 }
             }
         }
@@ -321,7 +321,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 if ( value < 0.0 )
-                    throw new ArgumentException(Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
                 distance = value;
                 DistanceString = distance.ToString("G"); 
@@ -355,7 +355,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
         }

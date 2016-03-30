@@ -123,7 +123,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -172,7 +172,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -215,7 +215,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
         }

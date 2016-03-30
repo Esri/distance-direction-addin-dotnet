@@ -94,7 +94,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 if (value < 0.0)
-                    throw new ArgumentException(Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
                 travelTime = value;
 
@@ -125,7 +125,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 if (value < 0.0)
-                    throw new ArgumentException(Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
                 travelRate = value;
 
@@ -220,7 +220,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
         }
