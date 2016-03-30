@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcMapAddinDistanceAndDirec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProAppDistanceAndDirectionModule", "ProAppDistanceAndDirectionModule\ProAppDistanceAndDirectionModule\ProAppDistanceAndDirectionModule.csproj", "{AB2934C1-011A-49FE-BD1C-9368CCE0358E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistanceAndDirectionLibrary", "DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj", "{23854FB8-98F1-443B-82FB-21718D39EF94}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{AB2934C1-011A-49FE-BD1C-9368CCE0358E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB2934C1-011A-49FE-BD1C-9368CCE0358E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB2934C1-011A-49FE-BD1C-9368CCE0358E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{23854FB8-98F1-443B-82FB-21718D39EF94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{23854FB8-98F1-443B-82FB-21718D39EF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{23854FB8-98F1-443B-82FB-21718D39EF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{23854FB8-98F1-443B-82FB-21718D39EF94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
