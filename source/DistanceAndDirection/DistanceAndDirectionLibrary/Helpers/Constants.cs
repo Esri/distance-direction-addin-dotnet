@@ -15,7 +15,7 @@
   ******************************************************************************/
 
 
-namespace ArcMapAddinDistanceAndDirection
+namespace DistanceAndDirectionLibrary
 {
     public class Constants
     {

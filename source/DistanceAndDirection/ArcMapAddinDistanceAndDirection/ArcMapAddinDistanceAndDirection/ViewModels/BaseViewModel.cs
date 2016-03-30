@@ -14,7 +14,7 @@
   *   limitations under the License. 
   ******************************************************************************/
 
-using ArcMapAddinDistanceAndDirection.Helpers;
+using DistanceAndDirectionLibrary.Helpers;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {

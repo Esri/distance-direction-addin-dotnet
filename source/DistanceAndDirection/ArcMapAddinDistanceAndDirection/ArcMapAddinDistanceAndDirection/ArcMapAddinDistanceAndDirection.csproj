@@ -122,11 +122,6 @@
       <DependentUpon>Config.esriaddinx</DependentUpon>
     </Compile>
     <Compile Include="DistanceAndDirectionButton.cs" />
-    <Compile Include="Helpers\Constants.cs" />
-    <Compile Include="Helpers\Mediator.cs" />
-    <Compile Include="Helpers\NotificationObject.cs" />
-    <Compile Include="Helpers\RelayCommand.cs" />
-    <Compile Include="Helpers\Wpf.cs" />
     <Compile Include="MapPointTool.cs" />
     <Compile Include="Models\DistanceAndDirectionConfig.cs" />
     <Compile Include="Models\KMLUtils.cs" />
@@ -229,6 +224,7 @@
   <ItemGroup>
     <Folder Include="Attributes\" />
     <Folder Include="Enums\" />
+    <Folder Include="Helpers\" />
     <Folder Include="ValueConverters\" />
   </ItemGroup>
   <ItemGroup>

@@ -7,7 +7,9 @@
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:viewModels="clr-namespace:ArcMapAddinDistanceAndDirection.ViewModels"
              xmlns:prop="clr-namespace:ArcMapAddinDistanceAndDirection.Properties"
-             xmlns:helpers="clr-namespace:ArcMapAddinDistanceAndDirection.Helpers"
+             xmlns:helpers="clr-namespace:DistanceAndDirectionLibrary.Helpers;assembly=DistanceAndDirectionLibrary"
+             xmlns:libdd="clr-namespace:DistanceAndDirectionLibrary;assembly=DistanceAndDirectionLibrary"
+             xmlns:libprop="clr-namespace:DistanceAndDirectionLibrary.Properties;assembly=DistanceAndDirectionLibrary"
              mc:Ignorable="d" 
              WindowStartupLocation="CenterScreen"
              Title="{x:Static prop:Resources.TitleEditProperties}"
@@ -24,7 +26,7 @@
                             MethodName="GetValues"
                             ObjectType="{x:Type sys:Enum}">
                 <ObjectDataProvider.MethodParameters>
-                    <x:TypeExtension TypeName="local:CoordinateTypes" />
+                    <x:TypeExtension TypeName="libdd:CoordinateTypes" />
                 </ObjectDataProvider.MethodParameters>
             </ObjectDataProvider>
         </ResourceDictionary>
@@ -33,7 +35,7 @@
         <StaticResourceExtension ResourceKey="editPropertiesVM" />
     </Window.DataContext>
     <StackPanel>
-        <TextBlock Text="{x:Static prop:Resources.LabelDisplayCoordinate}" 
+        <TextBlock Text="{x:Static libprop:Resources.LabelDisplayCoordinate}" 
                    Margin="3,3,0,0" />
         <ComboBox 
             ItemsSource="{Binding Source={StaticResource coordinateTypes}}"
@@ -41,11 +43,11 @@
             Height="Auto" 
             Margin="3,3,0,0" />
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Content="{x:Static prop:Resources.ButtonOK}" 
+            <Button Content="{x:Static libprop:Resources.ButtonOK}" 
                     Command="{Binding OKButtonPressedCommand}" 
                     IsCancel="False"
                     Width="75" Margin="3,8,3,5" />
-            <Button Content="{x:Static prop:Resources.ButtonCancel}" 
+            <Button Content="{x:Static libprop:Resources.ButtonCancel}" 
                     IsCancel="True" 
                     Width=" 75" Margin="3,8,3,5" />
         </StackPanel>

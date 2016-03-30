@@ -30,7 +30,7 @@ using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geodatabase;
 
 using ArcMapAddinDistanceAndDirection.Views;
-using ArcMapAddinDistanceAndDirection.Helpers;
+using DistanceAndDirectionLibrary.Helpers;
 using ArcMapAddinDistanceAndDirection.Models;
 using DistanceAndDirectionLibrary;
 

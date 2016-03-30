@@ -19,7 +19,8 @@ using System;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 
-using ArcMapAddinDistanceAndDirection.Helpers;
+using DistanceAndDirectionLibrary.Helpers;
+using DistanceAndDirectionLibrary;
 
 namespace ArcMapAddinDistanceAndDirection
 {

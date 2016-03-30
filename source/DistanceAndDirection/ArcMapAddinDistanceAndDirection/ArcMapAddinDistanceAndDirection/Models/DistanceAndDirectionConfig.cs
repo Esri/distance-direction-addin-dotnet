@@ -19,7 +19,7 @@ using System.Xml.Serialization;
 using System.Xml;
 using System.IO;
 
-using ArcMapAddinDistanceAndDirection.Helpers;
+using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
 
 namespace ArcMapAddinDistanceAndDirection.Models

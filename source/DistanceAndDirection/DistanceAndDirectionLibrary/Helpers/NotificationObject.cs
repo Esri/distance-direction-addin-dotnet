@@ -15,7 +15,7 @@ using System;
 using System.ComponentModel;
 using System.Linq.Expressions;
 
-namespace ArcMapAddinDistanceAndDirection.Helpers
+namespace DistanceAndDirectionLibrary.Helpers
 {
     public class NotificationObject : INotifyPropertyChanged
     {
