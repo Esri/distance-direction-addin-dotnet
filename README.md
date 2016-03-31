@@ -56,7 +56,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 * Running the add-in
 	* To run from a stand-alone deployment
 		* ArcMap
-			* Install the add-in from the application folder by double clicking the **.esriAddIn** file.
+			* Install the add-in from the application folder by double clicking the **ArcMapAddinDistanceAndDirection.esriAddIn** file.
 			* Add the add-in command to a toolbar via menu option 
 				* **Customize** -> **Customize mode**
 				* Select **Commands** Tab
