@@ -92,7 +92,6 @@
     <Compile Include="DistanceAndDirectionModule.cs" />
     <Compile Include="PropertiesButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ViewModels\ProMainViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="DistanceAndDirectionDockpane.xaml">
@@ -117,6 +116,9 @@
       <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
       <Name>DistanceAndDirectionLibrary</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask AssemblyFile="C:\Program Files\ArcGIS\Pro\bin\proapp-sdk-MSBuild.dll" TaskName="proapp_sdk_MSBuild.PackageAddIn" />
