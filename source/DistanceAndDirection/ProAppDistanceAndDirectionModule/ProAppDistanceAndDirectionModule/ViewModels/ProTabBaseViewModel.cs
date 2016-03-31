@@ -39,6 +39,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         symbol = new CIMSymbolReference() { Symbol = s };
                     });
             }
+            else if(geom.GeometryType == GeometryType.Polygon)
+            {
+                await QueuedTask.Run(() =>
+                {
+                    var color = CIMColor.CreateRGBColor(255, 0, 0, 25);
+                    var outline = SymbolFactory.ConstructStroke(ColorFactory.Black, 1.0, SimpleLineStyle.Solid);
+                    var s = SymbolFactory.ConstructPolygonSymbol(color, SimpleFillStyle.Solid, outline);
+                    symbol = new CIMSymbolReference() { Symbol = s };
+                });
+            }
 
             MapView.Active.AddOverlay(geom, symbol);
         }
