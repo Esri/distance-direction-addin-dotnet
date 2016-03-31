@@ -16,7 +16,7 @@ namespace ProAppDistanceAndDirectionModule
             LinesView.DataContext = new ProLinesViewModel();
 
             CircleView = new GRCircleView();
-            //CircleView.DataContext = new CircleViewModel();
+            CircleView.DataContext = new ProCircleViewModel();
 
             EllipseView = new GREllipseView();
             //EllipseView.DataContext = new EllipseViewModel();
