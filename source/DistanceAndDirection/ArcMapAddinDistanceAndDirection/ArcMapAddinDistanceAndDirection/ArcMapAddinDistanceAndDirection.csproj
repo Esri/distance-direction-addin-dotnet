@@ -123,7 +123,6 @@
     </Compile>
     <Compile Include="DistanceAndDirectionButton.cs" />
     <Compile Include="MapPointTool.cs" />
-    <Compile Include="Models\DistanceAndDirectionConfig.cs" />
     <Compile Include="Models\KMLUtils.cs" />
     <Compile Include="Models\FeatureClassUtils.cs" />
     <Compile Include="Models\Graphic.cs" />
@@ -141,9 +140,6 @@
     <Compile Include="ViewModels\RangeViewModel.cs" />
     <Compile Include="ViewModels\SelectSaveAsFormatViewModel.cs" />
     <Compile Include="ViewModels\TabBaseViewModel.cs" />
-    <Compile Include="Views\EditPropertiesView.xaml.cs">
-      <DependentUpon>EditPropertiesView.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\SelectSaveAsFormatView.xaml.cs">
       <DependentUpon>SelectSaveAsFormatView.xaml</DependentUpon>
     </Compile>
@@ -177,10 +173,6 @@
       <SubType>Code</SubType>
     </Compile>
     <AddInContent Include="Images\DockableWindowDistanceAndDirection.png" />
-    <Page Include="Views\EditPropertiesView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\SelectSaveAsFormatView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

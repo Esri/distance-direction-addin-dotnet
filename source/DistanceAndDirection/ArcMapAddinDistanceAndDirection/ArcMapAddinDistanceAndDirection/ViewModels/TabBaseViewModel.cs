@@ -34,6 +34,8 @@ using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.ViewModels;
 using ArcMapAddinDistanceAndDirection.Views;
 using ArcMapAddinDistanceAndDirection.Models;
+using DistanceAndDirectionLibrary.Models;
+using DistanceAndDirectionLibrary.Views;
 
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
@@ -649,6 +651,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         private void OnEditPropertiesDialogCommand(object obj)
         {
             var dlg = new EditPropertiesView();
+            dlg.DataContext = new EditPropertiesViewModel();
 
             dlg.ShowDialog();
         }

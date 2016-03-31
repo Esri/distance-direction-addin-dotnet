@@ -22,7 +22,7 @@ using System.IO;
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
 
-namespace ArcMapAddinDistanceAndDirection.Models
+namespace DistanceAndDirectionLibrary.Models
 {
     public class DistanceAndDirectionConfig : NotificationObject
     {

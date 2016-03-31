@@ -14,7 +14,7 @@
 
 using System.Windows;
 
-namespace ArcMapAddinDistanceAndDirection.Views
+namespace DistanceAndDirectionLibrary.Views
 {
     /// <summary>
     /// Interaction logic for EditPropertiesView.xaml
