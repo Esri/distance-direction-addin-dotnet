@@ -41,19 +41,6 @@ namespace ProAppDistanceAndDirectionModule
             pane.Activate();
         }
 
-        /// <summary>
-        /// Text shown near the top of the DockPane.
-        /// </summary>
-        //private string _heading = "My DockPane";
-        //public string Heading
-        //{
-        //    get { return _heading; }
-        //    set
-        //    {
-        //        SetProperty(ref _heading, value, () => Heading);
-        //    }
-        //}
-
         #region Properties
 
         object selectedTab = null;
