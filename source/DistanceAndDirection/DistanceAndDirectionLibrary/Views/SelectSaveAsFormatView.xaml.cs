@@ -16,40 +16,21 @@
 
 using System.Windows;
 
-using ArcMapAddinDistanceAndDirection.ViewModels;
 
-namespace ArcMapAddinDistanceAndDirection.Views
+namespace DistanceAndDirectionLibrary.Views
 {
     /// <summary>
-    /// Interaction logic for SelectSaveAsFormatView.xaml change
+    /// Interaction logic for SelectSaveAsFormatView.xaml 
     /// </summary>
-    public partial class SelectSaveAsFormatView : Window
+    public partial class GRSelectSaveAsFormatView : Window
     {
-        public SelectSaveAsFormatView()
+        public GRSelectSaveAsFormatView()
         {
             InitializeComponent();
-
-            var vm = this.DataContext as SelectSaveAsFormatViewModel;
-
-            if (vm == null)
-                return;
-
-            var win = Window.GetWindow(this);
-
-            if (win != null)
-            {
-                var temp = new System.Windows.Interop.WindowInteropHelper(win);
-
-            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var vm = this.DataContext as SelectSaveAsFormatViewModel;
-
-            if (vm == null)
-                return;
-            
+        {       
             DialogResult = true;
         }
     }

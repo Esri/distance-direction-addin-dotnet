@@ -60,6 +60,7 @@ namespace ProAppDistanceAndDirectionModule
         public GRCircleView CircleView { get; set; }
         public GREllipseView EllipseView { get; set; }
         public GRRangeView RangeView { get; set; }
+        public GRSelectSaveAsFormatView SelectSaveAsFormatView { get; set; }
 
         #endregion
 

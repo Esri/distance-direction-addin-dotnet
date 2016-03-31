@@ -32,7 +32,6 @@ using ESRI.ArcGIS.Geodatabase;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.ViewModels;
-using ArcMapAddinDistanceAndDirection.Views;
 using ArcMapAddinDistanceAndDirection.Models;
 using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary.Views;
@@ -446,7 +445,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj"></param>
         private void OnSaveAs(object obj)
         {
-            var dlg = new SelectSaveAsFormatView();
+            var dlg = new GRSelectSaveAsFormatView();
+            dlg.DataContext = new SelectSaveAsFormatViewModel();
             var vm = dlg.DataContext as SelectSaveAsFormatViewModel;
             
             if (dlg.ShowDialog() == true)

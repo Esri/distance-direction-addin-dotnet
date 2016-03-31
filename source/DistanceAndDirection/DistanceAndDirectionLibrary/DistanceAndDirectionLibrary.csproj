@@ -79,6 +79,9 @@
       <SubType>Code</SubType>
       <DependentUpon>RangeView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\SelectSaveAsFormatView.xaml.cs">
+      <DependentUpon>SelectSaveAsFormatView.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -110,6 +113,10 @@
     <Page Include="Views\RangeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SelectSaveAsFormatView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>
