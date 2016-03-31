@@ -212,12 +212,7 @@
   <ItemGroup>
     <AddInContent Include="Images\MapPointTool.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Attributes\" />
-    <Folder Include="Enums\" />
-    <Folder Include="Helpers\" />
-    <Folder Include="ValueConverters\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj">
       <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
