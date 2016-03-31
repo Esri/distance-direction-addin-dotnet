@@ -12,36 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// System
-using System.Windows.Controls;
-
-using DistanceAndDirectionLibrary.Helpers;
-using DistanceAndDirectionLibrary.Views;
-using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.ViewModels;
+using DistanceAndDirectionLibrary.Views;
 
-namespace ArcMapAddinDistanceAndDirection.ViewModels
+namespace ProAppDistanceAndDirectionModule.ViewModels
 {
-    public class MainViewModel : BaseViewModel
+    public class ProMainViewModel : BaseViewModel
     {
-        public MainViewModel()
+        public ProMainViewModel()
         {
             // set some views and datacontext
             LinesView = new GRLinesView();
-            LinesView.DataContext = new LinesViewModel();
+            //LinesView.DataContext = new LinesViewModel();
 
             CircleView = new GRCircleView();
-            CircleView.DataContext = new CircleViewModel();
-            
+            //CircleView.DataContext = new CircleViewModel();
+
             EllipseView = new GREllipseView();
-            EllipseView.DataContext = new EllipseViewModel();
-            
+            //EllipseView.DataContext = new EllipseViewModel();
+
             RangeView = new GRRangeView();
-            RangeView.DataContext = new RangeViewModel();
+            //RangeView.DataContext = new RangeViewModel();
         }
 
         #region Properties
-
+        
         object selectedTab = null;
         public object SelectedTab
         {
@@ -52,8 +47,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     return;
 
                 selectedTab = value;
-                var tabItem = selectedTab as TabItem;
-                Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
+                //var tabItem = selectedTab as TabItem;
+                //Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
             }
         }
 
