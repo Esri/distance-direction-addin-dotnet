@@ -138,7 +138,7 @@
     <Compile Include="ViewModels\LinesViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\RangeViewModel.cs" />
-    <Compile Include="ViewModels\SelectSaveAsFormatViewModel.cs" />
+    <Compile Include="ViewModels\SaveAsFormatViewModel.cs" />
     <Compile Include="ViewModels\TabBaseViewModel.cs" />
   </ItemGroup>
   <ItemGroup>

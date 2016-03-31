@@ -445,9 +445,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj"></param>
         private void OnSaveAs(object obj)
         {
-            var dlg = new GRSelectSaveAsFormatView();
-            dlg.DataContext = new SelectSaveAsFormatViewModel();
-            var vm = dlg.DataContext as SelectSaveAsFormatViewModel;
+            var dlg = new GRSaveAsFormatView();
+            dlg.DataContext = new SaveAsFormatViewModel();
+            var vm = dlg.DataContext as SaveAsFormatViewModel;
             
             if (dlg.ShowDialog() == true)
             {

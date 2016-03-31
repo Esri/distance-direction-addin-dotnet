@@ -97,6 +97,7 @@
     <Compile Include="ViewModels\ProLinesViewModel.cs" />
     <Compile Include="ViewModels\ProRangeViewModel.cs" />
     <Compile Include="ViewModels\ProTabBaseViewModel.cs" />
+    <Compile Include="ViewModels\ProSaveAsFormatViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="DistanceAndDirectionDockpane.xaml">

@@ -79,8 +79,8 @@
       <SubType>Code</SubType>
       <DependentUpon>RangeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\SelectSaveAsFormatView.xaml.cs">
-      <DependentUpon>SelectSaveAsFormatView.xaml</DependentUpon>
+    <Compile Include="Views\SaveAsFormatView.xaml.cs">
+      <DependentUpon>SaveAsFormatView.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -114,7 +114,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\SelectSaveAsFormatView.xaml">
+    <Page Include="Views\SaveAsFormatView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -15,11 +15,9 @@
   *   limitations under the License. 
   ******************************************************************************/
 
-using DistanceAndDirectionLibrary.ViewModels;
-
-namespace ArcMapAddinDistanceAndDirection.ViewModels
+namespace ProAppDistanceAndDirectionModule.ViewModels
 {
-    class SelectSaveAsFormatViewModel : BaseViewModel
+    class ProSaveAsFormatViewModel : ProTabBaseViewModel
     {
 
         private bool featureShapeIsChecked = true;

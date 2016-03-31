@@ -20,11 +20,11 @@ using System.Windows;
 namespace DistanceAndDirectionLibrary.Views
 {
     /// <summary>
-    /// Interaction logic for SelectSaveAsFormatView.xaml 
+    /// Interaction logic for SaveAsFormatView.xaml 
     /// </summary>
-    public partial class GRSelectSaveAsFormatView : Window
+    public partial class GRSaveAsFormatView : Window
     {
-        public GRSelectSaveAsFormatView()
+        public GRSaveAsFormatView()
         {
             InitializeComponent();
         }
