@@ -29,9 +29,13 @@ using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geodatabase;
 
+using DistanceAndDirectionLibrary;
+using DistanceAndDirectionLibrary.Helpers;
+using DistanceAndDirectionLibrary.ViewModels;
 using ArcMapAddinDistanceAndDirection.Views;
-using ArcMapAddinDistanceAndDirection.Helpers;
 using ArcMapAddinDistanceAndDirection.Models;
+using DistanceAndDirectionLibrary.Models;
+using DistanceAndDirectionLibrary.Views;
 
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
@@ -58,8 +62,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
             Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
-            Mediator.Register(Constants.DISPLAY_COORDINATE_TYPE_CHANGED, OnDisplayCoordinateTypeChanged);
+
+            configObserver = new PropertyObserver<DistanceAndDirectionConfig>(TabBaseViewModel.AddInConfig)
+            .RegisterHandler(n => n.DisplayCoordinateType, n =>
+            {
+                RaisePropertyChanged(() => Point1Formatted);
+                RaisePropertyChanged(() => Point2Formatted);
+            });
+
         }
+
+        PropertyObserver<DistanceAndDirectionConfig> configObserver;
 
         #region Properties
 
@@ -199,7 +212,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     // invalid coordinate, reset and throw exception
                     Point1 = null;
                     HasPoint1 = false;
-                    throw new ArgumentException(Properties.Resources.AEInvalidCoordinate);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidCoordinate);
                 }
             }
         }
@@ -270,7 +283,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     // invalid coordinate, reset and throw exception
                     Point2 = null;
                     HasPoint2 = false;
-                    throw new ArgumentException(Properties.Resources.AEInvalidCoordinate);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidCoordinate);
                 }
             }
         }
@@ -319,7 +332,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 if ( value < 0.0 )
-                    throw new ArgumentException(Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
                 distance = value;
                 DistanceString = distance.ToString("G"); 
@@ -353,7 +366,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -638,6 +651,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         private void OnEditPropertiesDialogCommand(object obj)
         {
             var dlg = new EditPropertiesView();
+            dlg.DataContext = new EditPropertiesViewModel();
 
             dlg.ShowDialog();
         }
@@ -831,16 +845,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         }
 
         /// <summary>
-        /// Method used to handle coordinate type changed event
-        /// </summary>
-        /// <param name="obj"></param>
-        private void OnDisplayCoordinateTypeChanged(object obj)
-        {
-            RaisePropertyChanged(() => Point1Formatted);
-            RaisePropertyChanged(() => Point2Formatted);
-        }
-
-        /// <summary>
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
@@ -849,9 +853,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
             IElement element = null;
-            //ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
-            //rgbColor.Red = 255;
-            //ESRI.ArcGIS.Display.IColor color = rgbColor; // Implicit cast.
             double width = 2.0;
 
             geom.Project(ArcMap.Document.FocusMap.SpatialReference);

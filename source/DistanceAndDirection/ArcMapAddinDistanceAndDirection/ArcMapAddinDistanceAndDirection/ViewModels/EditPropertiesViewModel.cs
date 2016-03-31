@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ArcMapAddinDistanceAndDirection.Helpers;
+using DistanceAndDirectionLibrary.Helpers;
+using DistanceAndDirectionLibrary;
+using DistanceAndDirectionLibrary.ViewModels;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {

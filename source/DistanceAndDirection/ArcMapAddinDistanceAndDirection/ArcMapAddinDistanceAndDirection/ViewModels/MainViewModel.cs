@@ -15,8 +15,10 @@
 // System
 using System.Windows.Controls;
 
-using ArcMapAddinDistanceAndDirection.Views;
-using ArcMapAddinDistanceAndDirection.Helpers;
+using DistanceAndDirectionLibrary.Helpers;
+using DistanceAndDirectionLibrary.Views;
+using DistanceAndDirectionLibrary;
+using DistanceAndDirectionLibrary.ViewModels;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -24,11 +26,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
     {
         public MainViewModel()
         {
-            // set some views
-            _linesView = new GRLinesView();
-            _circleView = new GRCircleView();
-            _ellipseView = new GREllipseView();
-            _rangeView = new GRRangeView();
+            // set some views and datacontext
+            LinesView = new GRLinesView();
+            LinesView.DataContext = new LinesViewModel();
+
+            CircleView = new GRCircleView();
+            CircleView.DataContext = new CircleViewModel();
+            
+            EllipseView = new GREllipseView();
+            EllipseView.DataContext = new EllipseViewModel();
+            
+            RangeView = new GRRangeView();
+            RangeView.DataContext = new RangeViewModel();
         }
 
         #region Properties
@@ -48,46 +57,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        #endregion
-
         #region Views
 
-        private GRLinesView _linesView;
-        public GRLinesView LinesView
-        {
-            get { return _linesView; }
-            set
-            {
-                _linesView = value;
-            }
-        }
-        private GRCircleView _circleView;
-        public GRCircleView CircleView
-        {
-            get { return _circleView; }
-            set
-            {
-                _circleView = value;
-            }
-        }
-        private GREllipseView _ellipseView;
-        public GREllipseView EllipseView
-        {
-            get { return _ellipseView; }
-            set
-            {
-                _ellipseView = value;
-            }
-        }
-        private GRRangeView _rangeView;
-        public GRRangeView RangeView
-        {
-            get { return _rangeView; }
-            set
-            {
-                _rangeView = value;
-            }
-        }
+        public GRLinesView LinesView { get; set; }
+        public GRCircleView CircleView { get; set; }
+        public GREllipseView EllipseView { get; set; }
+        public GRRangeView RangeView { get; set; }
+
+        #endregion
 
         #endregion
     }

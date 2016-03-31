@@ -1,0 +1,46 @@
+﻿<ArcGIS defaultAssembly="ProAppDistanceAndDirectionModule.dll" defaultNamespace="ProAppDistanceAndDirectionModule" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
+  <AddInInfo id="{32a3d6f6-fabb-4a17-bf18-8b1ebf42bfaf}" version="1.0" desktopVersion="1.2.5023">
+    <Name>ProAppDistanceAndDirectionModule</Name>
+    <Description>ProAppDistanceAndDirectionModule description</Description>
+    <Image>Images\AddinDesktop32.png</Image>
+    <Author>jose5467</Author>
+    <Company>Microsoft</Company>
+    <Date>3/30/2016 10:44:50 AM, 2016</Date>
+    <Subject>Framework</Subject>
+    <!-- Note subject can be one or more of these topics:
+                    Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
+  </AddInInfo>
+  <modules>
+    <insertModule id="ProAppDistanceAndDirectionModule_Module" className="DistanceAndDirectionModule" autoLoad="false" caption="DistanceAndDirectionModule">
+      <!-- uncomment to have the control hosted on a separate tab-->
+      <tabs>
+        <!--<tab id="ProAppDistanceAndDirectionModule_Tab1" caption="New Tab">
+          <group refID="ProAppDistanceAndDirectionModule_Group1"/>
+        </tab>-->
+      </tabs>
+      <groups>
+        <!-- comment this out if you have no controls on the Addin tab to avoid
+              an empty group-->
+        <group id="ProAppDistanceAndDirectionModule_Group1" caption="Distance and Direction" appearsOnAddInTab="true">
+          <!-- host controls within groups -->
+          <button refID="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" size="large" />
+          <button refID="ProAppDistanceAndDirectionModule_PropertiesButton" size="large" />
+        </group>
+      </groups>
+      <controls>
+        <!-- add your controls here -->
+        <button id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" caption="Show" className="DistanceAndDirectionDockpane_ShowButton" loadOnClick="true" smallImage="Images\GenericButtonPurple16.png" largeImage="Images\GenericButtonPurple32.png">
+          <tooltip heading="Show Dockpane">Show Distance and Direction Dockpane<disabledText /></tooltip>
+        </button>
+        <button id="ProAppDistanceAndDirectionModule_PropertiesButton" caption="Properties" className="PropertiesButton" loadOnClick="true" smallImage="Images\GenericButtonBlue16.png" largeImage="Images\GenericButtonBlue32.png">
+          <tooltip heading="Distance and Direction Properties">Edit Properties<disabledText /></tooltip>
+        </button>
+      </controls>
+      <dockPanes>
+        <dockPane id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane" caption="DistanceAndDirectionDockpane " className="DistanceAndDirectionDockpaneViewModel" dock="group" dockWith="esri_core_contentsDockPane">
+          <content className="DistanceAndDirectionDockpaneView" />
+        </dockPane>
+      </dockPanes>
+    </insertModule>
+  </modules>
+</ArcGIS>

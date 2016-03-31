@@ -20,6 +20,7 @@ using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
+using DistanceAndDirectionLibrary;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -112,7 +113,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => Azimuth);
 
                 if (!azimuth.HasValue)
-                    throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
                 // update feedback
                 UpdateFeedback();
@@ -143,7 +144,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     else
                     {
                         Azimuth = null;
-                        throw new ArgumentException(Properties.Resources.AEInvalidInput);
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                     }
                 }
             }
