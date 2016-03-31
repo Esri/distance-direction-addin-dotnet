@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ArcGIS.Desktop.Framework;
+﻿using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using DistanceAndDirectionLibrary.Views;
+using ProAppDistanceAndDirectionModule.ViewModels;
 
 namespace ProAppDistanceAndDirectionModule
 {
@@ -17,7 +13,7 @@ namespace ProAppDistanceAndDirectionModule
         {
             // set some views and datacontext
             LinesView = new GRLinesView();
-            //LinesView.DataContext = new LinesViewModel();
+            LinesView.DataContext = new ProLinesViewModel();
 
             CircleView = new GRCircleView();
             //CircleView.DataContext = new CircleViewModel();
