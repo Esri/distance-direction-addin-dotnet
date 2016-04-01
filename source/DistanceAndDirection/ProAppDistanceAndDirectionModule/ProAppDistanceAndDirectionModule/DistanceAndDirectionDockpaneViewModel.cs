@@ -1,5 +1,6 @@
 ﻿using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
+using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary.Views;
 using ProAppDistanceAndDirectionModule.ViewModels;
 
@@ -23,6 +24,9 @@ namespace ProAppDistanceAndDirectionModule
 
             RangeView = new GRRangeView();
             RangeView.DataContext = new ProRangeViewModel();
+
+            // load the configuration file
+            DistanceAndDirectionConfig.AddInConfig.LoadConfiguration();  
         }
 
         /// <summary>

@@ -94,7 +94,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SketchTool.cs" />
     <Compile Include="ViewModels\ProCircleViewModel.cs" />
-    <Compile Include="ViewModels\ProEditPropertiesViewModel.cs" />
     <Compile Include="ViewModels\ProEllipseViewModel.cs" />
     <Compile Include="ViewModels\ProLinesViewModel.cs" />
     <Compile Include="ViewModels\ProRangeViewModel.cs" />

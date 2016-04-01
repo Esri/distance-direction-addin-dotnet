@@ -15,6 +15,7 @@
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.ViewModels;
+using DistanceAndDirectionLibrary.Models;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -22,7 +23,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
     {
         public EditPropertiesViewModel()
         {
-            SelectedCoordinateType = TabBaseViewModel.AddInConfig.DisplayCoordinateType;
+            SelectedCoordinateType = DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType;
             OKButtonPressedCommand = new RelayCommand(OnOkButtonPressedCommand);
         }
 
@@ -47,9 +48,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj"></param>
         private void OnOkButtonPressedCommand(object obj)
         {
-            TabBaseViewModel.AddInConfig.DisplayCoordinateType = SelectedCoordinateType;
+            DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType = SelectedCoordinateType;
 
-            TabBaseViewModel.AddInConfig.SaveConfiguration();
+            DistanceAndDirectionConfig.AddInConfig.SaveConfiguration();
 
             // close dialog
             DialogResult = true;

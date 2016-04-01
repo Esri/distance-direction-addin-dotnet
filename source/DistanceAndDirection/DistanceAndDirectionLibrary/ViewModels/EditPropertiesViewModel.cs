@@ -12,25 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using DistanceAndDirectionLibrary.ViewModels;
-using ArcGIS.Desktop.Framework;
-using DistanceAndDirectionLibrary;
+using DistanceAndDirectionLibrary.Helpers;
+using DistanceAndDirectionLibrary.Models;
 
-namespace ProAppDistanceAndDirectionModule.ViewModels
+namespace DistanceAndDirectionLibrary.ViewModels
 {
-    public class ProEditPropertiesViewModel : BaseViewModel
+    public class EditPropertiesViewModel : BaseViewModel
     {
-        public ProEditPropertiesViewModel()
+        public EditPropertiesViewModel()
         {
-            //TODO update
-            //SelectedCoordinateType = TabBaseViewModel.AddInConfig.DisplayCoordinateType;
-            SelectedCoordinateType = CoordinateTypes.DD;
-            OKButtonPressedCommand = new RelayCommand(() => OnOkButtonPressedCommand(), () => true);
+            SelectedCoordinateType = DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType;
+            OKButtonPressedCommand = new RelayCommand(OnOkButtonPressedCommand);
         }
 
         public RelayCommand OKButtonPressedCommand { get; set; }
@@ -38,7 +30,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         public CoordinateTypes SelectedCoordinateType { get; set; }
 
         private bool? dialogResult = null;
-        public bool? DialogResult
+        public bool? DialogResult 
         {
             get { return dialogResult; }
             set
@@ -52,12 +44,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Handler for when someone closes the dialog with the OK button
         /// </summary>
         /// <param name="obj"></param>
-        private void OnOkButtonPressedCommand()
+        private void OnOkButtonPressedCommand(object obj)
         {
-            //TODO update
-            //TabBaseViewModel.AddInConfig.DisplayCoordinateType = SelectedCoordinateType;
+            DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType = SelectedCoordinateType;
 
-            //TabBaseViewModel.AddInConfig.SaveConfiguration();
+            DistanceAndDirectionConfig.AddInConfig.SaveConfiguration();
 
             // close dialog
             DialogResult = true;

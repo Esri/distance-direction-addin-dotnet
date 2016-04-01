@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using DistanceAndDirectionLibrary.Models;
 // System
 using System;
 using System.Windows;
@@ -62,7 +63,7 @@ namespace ArcMapAddinDistanceAndDirection
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
             // load the configuration file
-            ArcMapAddinDistanceAndDirection.ViewModels.TabBaseViewModel.AddInConfig.LoadConfiguration();  
+            DistanceAndDirectionConfig.AddInConfig.LoadConfiguration();  
         }
     }
 }

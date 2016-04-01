@@ -47,7 +47,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private void OnEditPropertiesDialog()
         {
             var dlg = new EditPropertiesView();
-            dlg.DataContext = new ProEditPropertiesViewModel();
+            dlg.DataContext = new EditPropertiesViewModel();
 
             dlg.ShowDialog();
         }
