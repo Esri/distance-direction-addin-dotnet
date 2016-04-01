@@ -59,11 +59,5 @@ namespace ArcMapAddinDistanceAndDirection
             }
 
         }
-
-        private void UserControl_Loaded(object sender, RoutedEventArgs e)
-        {
-            // load the configuration file
-            DistanceAndDirectionConfig.AddInConfig.LoadConfiguration();  
-        }
     }
 }

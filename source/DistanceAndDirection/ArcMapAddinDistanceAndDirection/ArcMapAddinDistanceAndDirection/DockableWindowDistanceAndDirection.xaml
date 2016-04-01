@@ -3,7 +3,6 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:viewModels="clr-namespace:ArcMapAddinDistanceAndDirection.ViewModels"
     xmlns:prop="clr-namespace:DistanceAndDirectionLibrary.Properties;assembly=DistanceAndDirectionLibrary"
-    Loaded="UserControl_Loaded"
     Height="300" Width="300">
     <UserControl.Resources>
         <viewModels:MainViewModel x:Key="viewModelMain" />
