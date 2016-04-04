@@ -1,8 +1,11 @@
 ﻿using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
+using DistanceAndDirectionLibrary;
+using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary.Views;
 using ProAppDistanceAndDirectionModule.ViewModels;
+using System.Windows.Controls;
 
 namespace ProAppDistanceAndDirectionModule
 {
@@ -53,8 +56,8 @@ namespace ProAppDistanceAndDirectionModule
                     return;
 
                 selectedTab = value;
-                //var tabItem = selectedTab as TabItem;
-                //Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
+                var tabItem = selectedTab as TabItem;
+                Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
             }
         }
 
@@ -74,7 +77,7 @@ namespace ProAppDistanceAndDirectionModule
     /// <summary>
     /// Button implementation to show the DockPane.
     /// </summary>
-    internal class DistanceAndDirectionDockpane_ShowButton : Button
+    internal class DistanceAndDirectionDockpane_ShowButton : ArcGIS.Desktop.Framework.Contracts.Button
     {
         protected override void OnClick()
         {
