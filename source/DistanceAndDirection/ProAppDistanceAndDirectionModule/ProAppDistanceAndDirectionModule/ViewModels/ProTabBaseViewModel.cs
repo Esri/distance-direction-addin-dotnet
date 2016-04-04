@@ -27,6 +27,8 @@ using DistanceAndDirectionLibrary.ViewModels;
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary;
+using ProAppDistanceAndDirectionModule.Models;
+using System.Windows.Controls;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -42,7 +44,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             SaveAsCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnSaveAs());
             ClearGraphicsCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnClearGraphics());
             //ActivateToolCommand = new RelayCommand(OnActivateTool);
-            EnterKeyCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnEnterKeyCommand());
+            EnterKeyCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnEnterKeyCommand);
             EditPropertiesDialogCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnEditPropertiesDialog());
 
             // Mediator
@@ -57,7 +59,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 RaisePropertyChanged(() => Point2Formatted);
             });
 
+            //await QueuedTask.Run(() =>
+            //    {
+            //        var color = CIMColor.CreateRGBColor(0, 255, 0);
+            //    });
+
         }
+
+        private CIMColor cimColorGreen = null;
 
         PropertyObserver<DistanceAndDirectionConfig> configObserver;
 
@@ -66,7 +75,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         public ArcGIS.Desktop.Framework.RelayCommand SaveAsCommand { get; set; }
         public ArcGIS.Desktop.Framework.RelayCommand ClearGraphicsCommand { get; set; }
         public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
-        public ArcGIS.Desktop.Framework.RelayCommand EnterKeyCommand { get; set; }
+        //update
+        public DistanceAndDirectionLibrary.Helpers.RelayCommand EnterKeyCommand { get; set; }
         public ArcGIS.Desktop.Framework.RelayCommand EditPropertiesDialogCommand { get; set; }
 
         /// <summary>
@@ -97,20 +107,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             set
             {
-                //Reset(true);
+                Reset(true);
                 isActiveTab = value;
                 RaisePropertyChanged(() => IsActiveTab);
             }
         }
+        private List<IDisposable> overlayObjects = new List<IDisposable>();
+        private static System.IDisposable _overlayObject = null;
         // lists to store GUIDs of graphics, temp feedback and map graphics
-        private static IList<Graphic> GraphicsList = new IList<Graphic>();
+        private static List<Graphic> GraphicsList = new List<Graphic>();
 
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
-        internal INewLineFeedback feedback = null;
-        internal FeatureClassUtils fcUtils = new FeatureClassUtils();
-        internal KMLUtils kmlUtils = new KMLUtils();
-        internal SaveFileDialog sfDlg = null;
+        //internal INewLineFeedback feedback = null;
+        //internal FeatureClassUtils fcUtils = new FeatureClassUtils();
+        //internal KMLUtils kmlUtils = new KMLUtils();
+        //internal SaveFileDialog sfDlg = null;
 
         //public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig(); 
 
@@ -118,19 +130,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                if (this is LinesViewModel)
+                if (this is ProLinesViewModel)
                 {
                     return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Line);
                 }
-                else if (this is CircleViewModel)
+                else if (this is ProCircleViewModel)
                 {
                     return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Circle);
                 }
-                else if (this is EllipseViewModel)
+                else if (this is ProEllipseViewModel)
                 {
                     return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Ellipse);
                 }
-                else if (this is RangeViewModel)
+                else if (this is ProRangeViewModel)
                 {
                     return GraphicsList.Any(g => g.GraphicType == GraphicTypes.RangeRing);
                 }
@@ -139,11 +151,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        private IPoint point1 = null;
+        private MapPoint point1 = null;
         /// <summary>
         /// Property for the first IPoint
         /// </summary>
-        public virtual IPoint Point1
+        public virtual MapPoint Point1
         {
             get
             {
@@ -158,12 +170,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        private IPoint point2 = null;
+        private MapPoint point2 = null;
         /// <summary>
         /// Property for the second IPoint
         /// Not all tools need a second point
         /// </summary>
-        public virtual IPoint Point2
+        public virtual MapPoint Point2
         {
             get
             {
@@ -211,7 +223,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
                 }
                 // try to convert string to an IPoint
-                var point = GetPointFromString(value);
+                var point = GetMapPointFromString(value);
                 if (point != null)
                 {
                     // clear temp graphics
@@ -219,18 +231,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     point1Formatted = value;
                     HasPoint1 = true;
                     Point1 = point;
-                    var color = new RgbColorClass() { Green = 255 } as IColor;
-                    AddGraphicToMap(Point1, color, true);
+                    //var color = new RgbColorClass() { Green = 255 } as IColor;
+                    
+                    var color = QueuedTask.Run(() =>
+                    {
+                        return CIMColor.CreateRGBColor(255, 0, 0, 25);
+                    });
+
+                    //AddGraphicToMap(Point1, color, true);
+                    AddGraphicToMap(Point1, true, 10.0);
+
                     // lets try feedback
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    var av = mxdoc.FocusMap as IActiveView;
-                    point.Project(mxdoc.FocusMap.SpatialReference);
-                    CreateFeedback(point, av);
-                    feedback.Start(point);
+                    //TODO update feedback, so far nothing in PRO
+                    //var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    //var av = mxdoc.FocusMap as IActiveView;
+                    //point.Project(mxdoc.FocusMap.SpatialReference);
+                    //CreateFeedback(point, av);
+                    //feedback.Start(point);
                     if (Point2 != null)
                     {
-                        UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
-                        FeedbackMoveTo(Point2);
+                        // TODO update, for now we calculate meters
+                        Distance = GeometryEngine.GeodesicDistance(Point1, Point2);
+                        //UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
+                        //FeedbackMoveTo(Point2);
                     }
                 }
                 else
@@ -278,15 +301,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
                 }
                 // try to convert string to an IPoint
-                var point = GetPointFromString(value);
+                var point = GetMapPointFromString(value);
                 if (point != null)
                 {
                     point2Formatted = value;
                     //HasPoint2 = true;
                     Point2 = point;
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    var av = mxdoc.FocusMap as IActiveView;
-                    Point2.Project(mxdoc.FocusMap.SpatialReference);
+                    //TODO update spatial reference, etc
+                    //var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    //var av = mxdoc.FocusMap as IActiveView;
+                    //Point2.Project(mxdoc.FocusMap.SpatialReference);
 
                     //if (feedback != null)
                     //{
@@ -296,11 +320,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                     {
                         // lets try feedback
-                        CreateFeedback(Point1, av);
-                        feedback.Start(Point1);
-                        UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
+                        //CreateFeedback(Point1, av);
+                        //feedback.Start(Point1);
+                        //UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
+                        Distance = GeometryEngine.GeodesicDistance(Point1, Point2);
                         // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
-                        FeedbackMoveTo(point);
+                        //FeedbackMoveTo(point);
                     }
 
                 }
@@ -430,21 +455,30 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 });
             }
 
-            MapView.Active.AddOverlay(geom, symbol);
+            await QueuedTask.Run(() =>
+                {
+                    //TODO update adding graphics to map
+                    var disposable = MapView.Active.AddOverlay(geom, symbol);
+                    overlayObjects.Add(disposable);
+
+                    var gt = GetGraphicType();
+                    
+                    GraphicsList.Add(new Graphic(gt, disposable, geom, IsTempGraphic));
+                });
         }
 
-        /// <summary>
-        /// Handler for the tab item selected event
-        /// Helps keep track of which tab item/viewmodel is active
-        /// </summary>
-        /// <param name="obj">bool if selected or not</param>
-        private void OnTabItemSelected(object obj)
+        private GraphicTypes GetGraphicType()
         {
-            if (obj == null)
-                return;
-
-            IsActiveTab = (obj == this);
+            if (this is ProLinesViewModel)
+                return GraphicTypes.Line;
+            else if (this is ProCircleViewModel)
+                return GraphicTypes.Circle;
+            else if (this is ProEllipseViewModel)
+                return GraphicTypes.Ellipse;
+            else
+                return GraphicTypes.RangeRing;
         }
+
         /// <summary>
         /// Method is called when a user pressed the "Enter" key or when a second point is created for a line from mouse clicks
         /// Derived class must override this method in order to create map elements
@@ -463,23 +497,27 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Only removes temp and map graphics that were created by this add-in
         /// </summary>
         /// <param name="obj"></param>
-        private void OnClearGraphics(object obj)
+        private void OnClearGraphics()
         {
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            if (mxdoc == null)
-                return;
-            var av = mxdoc.FocusMap as IActiveView;
-            if (av == null)
-                return;
-            var gc = av as IGraphicsContainer;
-            if (gc == null)
+            //var mxdoc = ArcMap.Application.Document as IMxDocument;
+            //if (mxdoc == null)
+            //    return;
+            //var av = mxdoc.FocusMap as IActiveView;
+            //if (av == null)
+            //    return;
+            //var gc = av as IGraphicsContainer;
+            //if (gc == null)
+            //    return;
+
+            if (MapView.Active == null)
                 return;
 
-            RemoveGraphics(gc, false);
+            //RemoveGraphics(gc, false);
 
             //gc.DeleteAllElements();
             //av.Refresh();
-            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            //TODO refresh map
+            //av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
 
             RaisePropertyChanged(() => HasMapGraphics);
         }
@@ -488,103 +526,103 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Saves graphics to file gdb or shp file
         /// </summary>
         /// <param name="obj"></param>
-        private void OnSaveAs(object obj)
+        private void OnSaveAs()
         {
-            var dlg = new SelectSaveAsFormatView();
-            var vm = dlg.DataContext as SelectSaveAsFormatViewModel;
+            //var dlg = new SelectSaveAsFormatView();
+            //var vm = dlg.DataContext as SelectSaveAsFormatViewModel;
 
-            if (dlg.ShowDialog() == true)
-            {
-                IFeatureClass fc = null;
+            //if (dlg.ShowDialog() == true)
+            //{
+            //    IFeatureClass fc = null;
 
-                // Get the graphics list for the selected tab
-                List<Graphic> typeGraphicsList = new List<Graphic>();
-                if (this is LinesViewModel)
-                {
-                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList();
-                }
-                else if (this is CircleViewModel)
-                {
-                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Circle).ToList();
-                }
-                else if (this is EllipseViewModel)
-                {
-                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Ellipse).ToList();
-                }
-                else if (this is RangeViewModel)
-                {
-                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList();
-                }
+            //    // Get the graphics list for the selected tab
+            //    List<Graphic> typeGraphicsList = new List<Graphic>();
+            //    if (this is ProLinesViewModel)
+            //    {
+            //        typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList();
+            //    }
+            //    else if (this is ProCircleViewModel)
+            //    {
+            //        typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Circle).ToList();
+            //    }
+            //    else if (this is ProEllipseViewModel)
+            //    {
+            //        typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Ellipse).ToList();
+            //    }
+            //    else if (this is ProRangeViewModel)
+            //    {
+            //        typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList();
+            //    }
 
-                string path = null;
-                if (vm.FeatureShapeIsChecked)
-                {
-                    path = fcUtils.PromptUserWithGxDialog(ArcMap.Application.hWnd);
-                    if (path != null)
-                    {
-                        if (System.IO.Path.GetExtension(path).Equals(".shp"))
-                        {
-                            fc = fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
-                        }
-                        else
-                        {
-                            fc = fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
-                        }
-                    }
-                }
-                else
-                {
-                    path = PromptSaveFileDialog();
-                    if (path != null)
-                    {
-                        string kmlName = System.IO.Path.GetFileName(path);
-                        string folderName = System.IO.Path.GetDirectoryName(path);
-                        string tempShapeFile = folderName + "\\tmpShapefile.shp";
-                        IFeatureClass tempFc = fcUtils.CreateFCOutput(tempShapeFile, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
+            //    string path = null;
+            //    if (vm.FeatureShapeIsChecked)
+            //    {
+            //        path = fcUtils.PromptUserWithGxDialog(ArcMap.Application.hWnd);
+            //        if (path != null)
+            //        {
+            //            if (System.IO.Path.GetExtension(path).Equals(".shp"))
+            //            {
+            //                fc = fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
+            //            }
+            //            else
+            //            {
+            //                fc = fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
+            //            }
+            //        }
+            //    }
+            //    else
+            //    {
+            //        path = PromptSaveFileDialog();
+            //        if (path != null)
+            //        {
+            //            string kmlName = System.IO.Path.GetFileName(path);
+            //            string folderName = System.IO.Path.GetDirectoryName(path);
+            //            string tempShapeFile = folderName + "\\tmpShapefile.shp";
+            //            IFeatureClass tempFc = fcUtils.CreateFCOutput(tempShapeFile, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
 
-                        if (tempFc != null)
-                        {
-                            kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap);
+            //            if (tempFc != null)
+            //            {
+            //                kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap);
 
-                            // delete the temporary shapefile
-                            fcUtils.DeleteShapeFile(tempShapeFile);
-                        }
-                    }
-                }
+            //                // delete the temporary shapefile
+            //                fcUtils.DeleteShapeFile(tempShapeFile);
+            //            }
+            //        }
+            //    }
 
-                if (fc != null)
-                {
-                    IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
-                    outputFeatureLayer.FeatureClass = fc;
+            //    if (fc != null)
+            //    {
+            //        IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
+            //        outputFeatureLayer.FeatureClass = fc;
 
-                    IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
-                    geoLayer.Name = fc.AliasName;
+            //        IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
+            //        geoLayer.Name = fc.AliasName;
 
-                    ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
-                    map.AddLayer((ILayer)outputFeatureLayer);
-                }
-            }
+            //        ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
+            //        map.AddLayer((ILayer)outputFeatureLayer);
+            //    }
+            //}
         }
 
         private string PromptSaveFileDialog()
         {
-            if (sfDlg == null)
-            {
-                sfDlg = new SaveFileDialog();
-                sfDlg.AddExtension = true;
-                sfDlg.CheckPathExists = true;
-                sfDlg.DefaultExt = "kmz";
-                sfDlg.Filter = "KMZ File (*.kmz)|*.kmz";
-                sfDlg.OverwritePrompt = true;
-                sfDlg.Title = "Choose location to create KMZ file";
+            //if (sfDlg == null)
+            //{
+            //    sfDlg = new SaveFileDialog();
+            //    sfDlg.AddExtension = true;
+            //    sfDlg.CheckPathExists = true;
+            //    sfDlg.DefaultExt = "kmz";
+            //    sfDlg.Filter = "KMZ File (*.kmz)|*.kmz";
+            //    sfDlg.OverwritePrompt = true;
+            //    sfDlg.Title = "Choose location to create KMZ file";
 
-            }
-            sfDlg.FileName = "";
+            //}
+            //sfDlg.FileName = "";
 
-            if (sfDlg.ShowDialog() == DialogResult.OK)
-            {
-                return sfDlg.FileName;
-            }
+            //if (sfDlg.ShowDialog() == DialogResult.OK)
+            //{
+            //    return sfDlg.FileName;
+            //}
 
             return null;
         }
@@ -594,19 +632,30 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         internal void ClearTempGraphics()
         {
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            if (mxdoc == null)
-                return;
-            var av = mxdoc.FocusMap as IActiveView;
-            if (av == null)
-                return;
-            var gc = av as IGraphicsContainer;
-            if (gc == null)
-                return;
+            //TODO update clear temp graphics
+            //var mxdoc = ArcMap.Application.Document as IMxDocument;
+            //if (mxdoc == null)
+            //    return;
+            //var av = mxdoc.FocusMap as IActiveView;
+            //if (av == null)
+            //    return;
+            //var gc = av as IGraphicsContainer;
+            //if (gc == null)
+            //    return;
 
-            RemoveGraphics(gc, true);
+            //RemoveGraphics(gc, true);
 
-            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            //av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+
+            var list = GraphicsList.Where(g => g.IsTemp == true).ToList();
+
+            foreach (var item in list)
+            {
+                item.Disposable.Dispose();
+                GraphicsList.Remove(item);
+            }
+
+
             RaisePropertyChanged(() => HasMapGraphics);
         }
 
@@ -615,60 +664,60 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Elements are tagged with a GUID on the IElementProperties.Name property
         /// Removes graphics from all tabs, not just the tab that is currently active
         /// </summary>
-        private void RemoveGraphics(IGraphicsContainer gc, bool removeOnlyTemporary)
-        {
-            if (gc == null || !GraphicsList.Any())
-                return;
+        //private void RemoveGraphics(IGraphicsContainer gc, bool removeOnlyTemporary)
+        //{
+        //    if (gc == null || !GraphicsList.Any())
+        //        return;
 
-            // keep track of the graphics that we need to remove from the GraphicsList
-            List<Graphic> removedGraphics = new List<Graphic>();
+        //    // keep track of the graphics that we need to remove from the GraphicsList
+        //    List<Graphic> removedGraphics = new List<Graphic>();
 
-            var elementList = new List<IElement>();
-            gc.Reset();
-            var element = gc.Next();
-            while (element != null)
-            {
-                var eleProps = element as IElementProperties;
-                foreach (Graphic graphic in GraphicsList)
-                {
-                    if (graphic.UniqueId.Equals(eleProps.Name))
-                    {
-                        if (graphic.IsTemp == removeOnlyTemporary)
-                        {
-                            elementList.Add(element);
-                            removedGraphics.Add(graphic);
-                        }
+        //    var elementList = new List<IElement>();
+        //    gc.Reset();
+        //    var element = gc.Next();
+        //    while (element != null)
+        //    {
+        //        var eleProps = element as IElementProperties;
+        //        foreach (Graphic graphic in GraphicsList)
+        //        {
+        //            if (graphic.UniqueId.Equals(eleProps.Name))
+        //            {
+        //                if (graphic.IsTemp == removeOnlyTemporary)
+        //                {
+        //                    elementList.Add(element);
+        //                    removedGraphics.Add(graphic);
+        //                }
 
-                        break;
-                    }
-                }
+        //                break;
+        //            }
+        //        }
 
-                element = gc.Next();
-            }
+        //        element = gc.Next();
+        //    }
 
-            foreach (var ele in elementList)
-            {
-                gc.DeleteElement(ele);
-            }
+        //    foreach (var ele in elementList)
+        //    {
+        //        gc.DeleteElement(ele);
+        //    }
 
-            // clean up the GraphicsList and remove the necessary graphics from it
-            foreach (Graphic graphic in removedGraphics)
-            {
-                GraphicsList.Remove(graphic);
-            }
+        //    // clean up the GraphicsList and remove the necessary graphics from it
+        //    foreach (Graphic graphic in removedGraphics)
+        //    {
+        //        GraphicsList.Remove(graphic);
+        //    }
 
-            elementList.Clear();
-            RaisePropertyChanged(() => HasMapGraphics);
-        }
+        //    elementList.Clear();
+        //    RaisePropertyChanged(() => HasMapGraphics);
+        //}
 
         /// <summary>
         /// Activates the map tool to get map points from mouse clicks/movement
         /// </summary>
         /// <param name="obj"></param>
-        internal void OnActivateTool(object obj)
-        {
-            SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinDistanceAndDirection_MapPointTool");
-        }
+        //internal void OnActivateTool(object obj)
+        //{
+        //    //SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinDistanceAndDirection_MapPointTool");
+        //}
         /// <summary>
         /// Handler for the "Enter"key command
         /// Calls CreateMapElement
@@ -719,9 +768,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!IsActiveTab)
                 return;
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            var av = mxdoc.FocusMap as IActiveView;
-            var point = obj as IPoint;
+            //var mxdoc = ArcMap.Application.Document as IMxDocument;
+            //var av = mxdoc.FocusMap as IActiveView;
+            var point = obj as MapPoint;
 
             if (point == null)
                 return;
@@ -734,12 +783,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                var color = new RgbColorClass() { Green = 255 } as IColor;
-                AddGraphicToMap(Point1, color, true);
+                //var color = new RgbColorClass() { Green = 255 } as IColor;
+                //AddGraphicToMap(Point1, color, true);
+                AddGraphicToMap(Point1, true, 10.0);
 
                 // lets try feedback
-                CreateFeedback(point, av);
-                feedback.Start(point);
+                //CreateFeedback(point, av);
+                //feedback.Start(point);
             }
             else if (!HasPoint2)
             {
@@ -813,46 +863,43 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             
             try
             {
-                if (cn != null)
+                switch (DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType)
                 {
-                    switch (DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType)
-                    {
-                        case CoordinateTypes.DD:
-                            tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.DD);
-                            tgparam.NumDigits = 6;
-                            result = point.ToGeoCoordinateString(tgparam);
-                            break;
-                        case CoordinateTypes.DDM:
-                            tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.DDM);
-                            tgparam.NumDigits = 4;
-                            result = point.ToGeoCoordinateString(tgparam);
-                            break;
-                        case CoordinateTypes.DMS:
-                            tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.DMS);
-                            tgparam.NumDigits = 2;
-                            result = point.ToGeoCoordinateString(tgparam);
-                            break;
-                        case CoordinateTypes.GARS:
-                            tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.GARS);
-                            result = point.ToGeoCoordinateString(tgparam);
-                            break;
-                        case CoordinateTypes.MGRS:
-                            tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.MGRS);
-                            result = point.ToGeoCoordinateString(tgparam);
-                            break;
-                        case CoordinateTypes.USNG:
-                            tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.USNG);
-                            tgparam.NumDigits = 5;
-                            result = point.ToGeoCoordinateString(tgparam);
-                            break;
-                        case CoordinateTypes.UTM:
-                            tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.UTM);
-                            tgparam.GeoCoordMode = ToGeoCoordinateMode.UtmNorthSouth;
-                            result = point.ToGeoCoordinateString(tgparam);
-                            break;
-                        default:
-                            break;
-                    }
+                    case CoordinateTypes.DD:
+                        tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.DD);
+                        tgparam.NumDigits = 6;
+                        result = point.ToGeoCoordinateString(tgparam);
+                        break;
+                    case CoordinateTypes.DDM:
+                        tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.DDM);
+                        tgparam.NumDigits = 4;
+                        result = point.ToGeoCoordinateString(tgparam);
+                        break;
+                    case CoordinateTypes.DMS:
+                        tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.DMS);
+                        tgparam.NumDigits = 2;
+                        result = point.ToGeoCoordinateString(tgparam);
+                        break;
+                    case CoordinateTypes.GARS:
+                        tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.GARS);
+                        result = point.ToGeoCoordinateString(tgparam);
+                        break;
+                    case CoordinateTypes.MGRS:
+                        tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.MGRS);
+                        result = point.ToGeoCoordinateString(tgparam);
+                        break;
+                    case CoordinateTypes.USNG:
+                        tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.USNG);
+                        tgparam.NumDigits = 5;
+                        result = point.ToGeoCoordinateString(tgparam);
+                        break;
+                    case CoordinateTypes.UTM:
+                        tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.UTM);
+                        tgparam.GeoCoordMode = ToGeoCoordinateMode.UtmNorthSouth;
+                        result = point.ToGeoCoordinateString(tgparam);
+                        break;
+                    default:
+                        break;
                 }
             }
             catch(Exception ex)
@@ -870,6 +917,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (toolReset)
             {
+                //TODO update
                 DeactivateTool("Esri_ArcMapAddinDistanceAndDirection_MapPointTool");
             }
 
@@ -898,11 +946,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         internal void ResetFeedback()
         {
-            if (feedback == null)
-                return;
+            //if (feedback == null)
+            //    return;
 
-            feedback.Stop();
-            feedback = null;
+            //feedback.Stop();
+            //feedback = null;
         }
 
         /// <summary>
@@ -922,125 +970,125 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP)
-        {
-            if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
-                return;
-            IElement element = null;
-            double width = 2.0;
+        //internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP)
+        //{
+        //    if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
+        //        return;
+        //    IElement element = null;
+        //    double width = 2.0;
 
-            geom.Project(ArcMap.Document.FocusMap.SpatialReference);
+        //    geom.Project(ArcMap.Document.FocusMap.SpatialReference);
 
-            if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
-            {
-                // Marker symbols
-                var simpleMarkerSymbol = new SimpleMarkerSymbol() as ISimpleMarkerSymbol;
-                simpleMarkerSymbol.Color = color;
-                simpleMarkerSymbol.Outline = true;
-                simpleMarkerSymbol.OutlineColor = color;
-                simpleMarkerSymbol.Size = 5;
-                simpleMarkerSymbol.Style = markerStyle;
+        //    if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
+        //    {
+        //        // Marker symbols
+        //        var simpleMarkerSymbol = new SimpleMarkerSymbol() as ISimpleMarkerSymbol;
+        //        simpleMarkerSymbol.Color = color;
+        //        simpleMarkerSymbol.Outline = true;
+        //        simpleMarkerSymbol.OutlineColor = color;
+        //        simpleMarkerSymbol.Size = 5;
+        //        simpleMarkerSymbol.Style = markerStyle;
 
-                var markerElement = new MarkerElement() as IMarkerElement;
-                markerElement.Symbol = simpleMarkerSymbol;
-                element = markerElement as IElement;
-            }
-            else if (geom.GeometryType == esriGeometryType.esriGeometryPolyline)
-            {
-                // create graphic then add to map
-                var lineSymbol = new SimpleLineSymbolClass();
-                lineSymbol.Color = color;
-                lineSymbol.Width = width;
-                if (IsTempGraphic && rasterOpCode != esriRasterOpCode.esriROPNOP)
-                {
-                    lineSymbol.Width = 1;
-                    lineSymbol.ROP2 = rasterOpCode;
-                }
+        //        var markerElement = new MarkerElement() as IMarkerElement;
+        //        markerElement.Symbol = simpleMarkerSymbol;
+        //        element = markerElement as IElement;
+        //    }
+        //    else if (geom.GeometryType == esriGeometryType.esriGeometryPolyline)
+        //    {
+        //        // create graphic then add to map
+        //        var lineSymbol = new SimpleLineSymbolClass();
+        //        lineSymbol.Color = color;
+        //        lineSymbol.Width = width;
+        //        if (IsTempGraphic && rasterOpCode != esriRasterOpCode.esriROPNOP)
+        //        {
+        //            lineSymbol.Width = 1;
+        //            lineSymbol.ROP2 = rasterOpCode;
+        //        }
 
-                var le = new LineElementClass() as ILineElement;
-                element = le as IElement;
-                le.Symbol = lineSymbol;
-            }
+        //        var le = new LineElementClass() as ILineElement;
+        //        element = le as IElement;
+        //        le.Symbol = lineSymbol;
+        //    }
 
-            if (element == null)
-                return;
+        //    if (element == null)
+        //        return;
 
-            IClone clone = geom as IClone;
-            element.Geometry = clone as IGeometry;
+        //    IClone clone = geom as IClone;
+        //    element.Geometry = clone as IGeometry;
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            var av = mxdoc.FocusMap as IActiveView;
-            var gc = av as IGraphicsContainer;
+        //    var mxdoc = ArcMap.Application.Document as IMxDocument;
+        //    var av = mxdoc.FocusMap as IActiveView;
+        //    var gc = av as IGraphicsContainer;
 
-            // store guid
-            var eprop = element as IElementProperties;
-            eprop.Name = Guid.NewGuid().ToString();
+        //    // store guid
+        //    var eprop = element as IElementProperties;
+        //    eprop.Name = Guid.NewGuid().ToString();
 
-            if (this is LinesViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, IsTempGraphic));
-            else if (this is CircleViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, IsTempGraphic));
-            else if (this is EllipseViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, IsTempGraphic));
-            else if (this is RangeViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, IsTempGraphic));
+        //    if (this is LinesViewModel)
+        //        GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, IsTempGraphic));
+        //    else if (this is CircleViewModel)
+        //        GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, IsTempGraphic));
+        //    else if (this is EllipseViewModel)
+        //        GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, IsTempGraphic));
+        //    else if (this is RangeViewModel)
+        //        GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, IsTempGraphic));
 
-            gc.AddElement(element, 0);
+        //    gc.AddElement(element, 0);
 
-            //refresh map
-            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+        //    //refresh map
+        //    av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
 
-            if (!IsTempGraphic)
-                RaisePropertyChanged(() => HasMapGraphics);
-        }
+        //    if (!IsTempGraphic)
+        //        RaisePropertyChanged(() => HasMapGraphics);
+        //}
         /// <summary>
         /// Adds a graphic to the active view/map graphics container, default color is RED
         /// </summary>
         /// <param name="geom"></param>
         /// <param name="IsTempGraphic"></param>
-        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false)
-        {
-            var color = new RgbColorClass() { Red = 255 } as IColor;
-            AddGraphicToMap(geom, color, IsTempGraphic);
-        }
-        internal ISpatialReferenceFactory3 srf3 = null;
+        //internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false)
+        //{
+        //    var color = new RgbColorClass() { Red = 255 } as IColor;
+        //    AddGraphicToMap(geom, color, IsTempGraphic);
+        //}
+        //internal ISpatialReferenceFactory3 srf3 = null;
         /// <summary>
         /// Gets the linear unit from the esri constants for linear units
         /// </summary>
         /// <returns>ILinearUnit</returns>
-        internal ILinearUnit GetLinearUnit()
-        {
-            int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
-            if (srf3 == null)
-            {
-                Type srType = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
-                srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
-            }
+        //internal ILinearUnit GetLinearUnit()
+        //{
+        //    int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
+        //    if (srf3 == null)
+        //    {
+        //        Type srType = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
+        //        srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
+        //    }
 
-            switch (LineDistanceType)
-            {
-                case DistanceTypes.Feet:
-                    unitType = (int)esriSRUnitType.esriSRUnit_Foot;
-                    break;
-                case DistanceTypes.Kilometers:
-                    unitType = (int)esriSRUnitType.esriSRUnit_Kilometer;
-                    break;
-                case DistanceTypes.Meters:
-                    unitType = (int)esriSRUnitType.esriSRUnit_Meter;
-                    break;
-                case DistanceTypes.NauticalMile:
-                    unitType = (int)esriSRUnitType.esriSRUnit_NauticalMile;
-                    break;
-                case DistanceTypes.SurveyFoot:
-                    unitType = (int)esriSRUnitType.esriSRUnit_SurveyFoot;
-                    break;
-                default:
-                    unitType = (int)esriSRUnitType.esriSRUnit_Meter;
-                    break;
-            }
+        //    switch (LineDistanceType)
+        //    {
+        //        case DistanceTypes.Feet:
+        //            unitType = (int)esriSRUnitType.esriSRUnit_Foot;
+        //            break;
+        //        case DistanceTypes.Kilometers:
+        //            unitType = (int)esriSRUnitType.esriSRUnit_Kilometer;
+        //            break;
+        //        case DistanceTypes.Meters:
+        //            unitType = (int)esriSRUnitType.esriSRUnit_Meter;
+        //            break;
+        //        case DistanceTypes.NauticalMile:
+        //            unitType = (int)esriSRUnitType.esriSRUnit_NauticalMile;
+        //            break;
+        //        case DistanceTypes.SurveyFoot:
+        //            unitType = (int)esriSRUnitType.esriSRUnit_SurveyFoot;
+        //            break;
+        //        default:
+        //            unitType = (int)esriSRUnitType.esriSRUnit_Meter;
+        //            break;
+        //    }
 
-            return srf3.CreateUnit(unitType) as ILinearUnit;
-        }
+        //    return srf3.CreateUnit(unitType) as ILinearUnit;
+        //}
 
         /// <summary>
         /// Ugly method to convert to/from different types of distance units
@@ -1106,54 +1154,54 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Get the currently selected geodetic type
         /// </summary>
         /// <returns>esriGeodeticType</returns>
-        internal esriGeodeticType GetEsriGeodeticType()
-        {
-            esriGeodeticType type = esriGeodeticType.esriGeodeticTypeGeodesic;
+        //internal esriGeodeticType GetEsriGeodeticType()
+        //{
+        //    esriGeodeticType type = esriGeodeticType.esriGeodeticTypeGeodesic;
 
-            switch (LineType)
-            {
-                case LineTypes.Geodesic:
-                    type = esriGeodeticType.esriGeodeticTypeGeodesic;
-                    break;
-                case LineTypes.GreatElliptic:
-                    type = esriGeodeticType.esriGeodeticTypeGreatElliptic;
-                    break;
-                case LineTypes.Loxodrome:
-                    type = esriGeodeticType.esriGeodeticTypeLoxodrome;
-                    break;
-                default:
-                    type = esriGeodeticType.esriGeodeticTypeGeodesic;
-                    break;
-            }
+        //    switch (LineType)
+        //    {
+        //        case LineTypes.Geodesic:
+        //            type = esriGeodeticType.esriGeodeticTypeGeodesic;
+        //            break;
+        //        case LineTypes.GreatElliptic:
+        //            type = esriGeodeticType.esriGeodeticTypeGreatElliptic;
+        //            break;
+        //        case LineTypes.Loxodrome:
+        //            type = esriGeodeticType.esriGeodeticTypeLoxodrome;
+        //            break;
+        //        default:
+        //            type = esriGeodeticType.esriGeodeticTypeGeodesic;
+        //            break;
+        //    }
 
-            return type;
-        }
-        internal double GetGeodeticLengthFromPolyline(IPolyline polyline)
-        {
-            if (polyline == null)
-                return 0.0;
+        //    return type;
+        //}
+        //internal double GetGeodeticLengthFromPolyline(IPolyline polyline)
+        //{
+        //    if (polyline == null)
+        //        return 0.0;
 
-            var polycurvegeo = polyline as IPolycurveGeodetic;
+        //    var polycurvegeo = polyline as IPolycurveGeodetic;
 
-            var geodeticType = GetEsriGeodeticType();
-            var linearUnit = GetLinearUnit();
-            var geodeticLength = polycurvegeo.get_LengthGeodetic(geodeticType, linearUnit);
+        //    var geodeticType = GetEsriGeodeticType();
+        //    var linearUnit = GetLinearUnit();
+        //    var geodeticLength = polycurvegeo.get_LengthGeodetic(geodeticType, linearUnit);
 
-            return geodeticLength;
-        }
+        //    return geodeticLength;
+        //}
         /// <summary>
         /// Gets the distance/lenght of a polyline
         /// </summary>
         /// <param name="geometry">IGeometry</param>
-        internal void UpdateDistance(IGeometry geometry)
-        {
-            var polyline = geometry as IPolyline;
+        //internal void UpdateDistance(IGeometry geometry)
+        //{
+        //    var polyline = geometry as IPolyline;
 
-            if (polyline == null)
-                return;
+        //    if (polyline == null)
+        //        return;
 
-            Distance = GetGeodeticLengthFromPolyline(polyline);
-        }
+        //    Distance = GetGeodeticLengthFromPolyline(polyline);
+        //}
         /// <summary>
         /// Handler for the mouse move event
         /// When the mouse moves accross the map, IPoints are returned to aid in updating feedback to user
@@ -1164,7 +1212,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!IsActiveTab)
                 return;
 
-            var point = obj as IPoint;
+            var point = obj as MapPoint;
 
             if (point == null)
                 return;
@@ -1179,14 +1227,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Point2Formatted = string.Empty;
                 Point2 = point;
                 // get distance from feedback
-                var polyline = GetGeoPolylineFromPoints(Point1, point);
-                UpdateDistance(polyline);
+                //var polyline = GetGeoPolylineFromPoints(Point1, point);
+                //UpdateDistance(polyline);
+                //TODO update distance
+                Distance = GeometryEngine.GeodesicDistance(Point1, point);
             }
 
             // update feedback
             if (HasPoint1 && !HasPoint2)
             {
-                FeedbackMoveTo(point);
+                //FeedbackMoveTo(point);
             }
         }
         /// <summary>
@@ -1197,33 +1247,33 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <param name="startPoint">startPoint is where it will restart from</param>
         /// <param name="endPoint">endPoint is where you want it to end for the return of the polyline</param>
         /// <returns>IPolyline</returns>
-        internal IPolyline GetGeoPolylineFromPoints(IPoint startPoint, IPoint endPoint)
-        {
-            var construct = new Polyline() as IConstructGeodetic;
-            if (construct == null)
-                return null;
+        //internal IPolyline GetGeoPolylineFromPoints(IPoint startPoint, IPoint endPoint)
+        //{
+        //    var construct = new Polyline() as IConstructGeodetic;
+        //    if (construct == null)
+        //        return null;
 
-            construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), startPoint, endPoint, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+        //    construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), startPoint, endPoint, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
 
-            return construct as IPolyline;
-        }
+        //    return construct as IPolyline;
+        //}
 
         /// <summary>
         /// Creates a new geodetic line feedback to visualize the line to the user
         /// </summary>
         /// <param name="point">IPoint, start point</param>
         /// <param name="av">The current active view</param>
-        internal void CreateFeedback(IPoint point, IActiveView av)
-        {
-            ResetFeedback();
-            feedback = new NewLineFeedback();
-            var geoFeedback = feedback as IGeodeticLineFeedback;
-            geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
-            geoFeedback.UseGeodeticConstruction = true;
-            geoFeedback.SpatialReference = point.SpatialReference;
-            var displayFB = feedback as IDisplayFeedback;
-            displayFB.Display = av.ScreenDisplay;
-        }
+        //internal void CreateFeedback(IPoint point, IActiveView av)
+        //{
+        //    ResetFeedback();
+        //    feedback = new NewLineFeedback();
+        //    var geoFeedback = feedback as IGeodeticLineFeedback;
+        //    geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
+        //    geoFeedback.UseGeodeticConstruction = true;
+        //    geoFeedback.SpatialReference = point.SpatialReference;
+        //    var displayFB = feedback as IDisplayFeedback;
+        //    displayFB.Display = av.ScreenDisplay;
+        //}
         /// <summary>
         /// Method used to convert a string to a known coordinate
         /// Assumes WGS84 for now
@@ -1231,109 +1281,70 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         /// <param name="coordinate">the coordinate as a string</param>
         /// <returns>IPoint if successful, null if not</returns>
-        internal IPoint GetPointFromString(string coordinate)
+        internal MapPoint GetMapPointFromString(string coordinate)
         {
-            Type t = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
-            System.Object obj = Activator.CreateInstance(t);
-            ISpatialReferenceFactory srFact = obj as ISpatialReferenceFactory;
+            MapPoint point = null;
 
-            // Use the enumeration to create an instance of the predefined object.
+            //var listOfTypes = new List<GeoCoordinateType>(new GeoCoordinateType[] {
+            //    GeoCoordinateType.DD,
+            //    GeoCoordinateType.DDM,
+            //    GeoCoordinateType.DMS,
+            //    GeoCoordinateType.GARS,
+            //    GeoCoordinateType.GeoRef,
+            //    GeoCoordinateType.MGRS,
+            //    GeoCoordinateType.USNG,
+            //    GeoCoordinateType.UTM
+            //});
 
-            IGeographicCoordinateSystem geographicCS =
-                srFact.CreateGeographicCoordinateSystem((int)
-                esriSRGeoCSType.esriSRGeoCS_WGS1984);
+            var listOfTypes = Enum.GetValues(typeof(GeoCoordinateType)).Cast<GeoCoordinateType>();
 
-            var point = new Point() as IPoint;
-            point.SpatialReference = geographicCS;
-            var cn = point as IConversionNotation;
-
-            if (cn == null)
-                return null;
-
-            try { cn.PutCoordsFromDD(coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromDDM(coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromDMS(coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeCENTER, coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeLL, coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_Automatic); return point; }
-            catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewStyle); return point; }
-            catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewWith180InZone01); return point; }
-            catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldStyle); return point; }
-            catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldWith180InZone01); return point; }
-            catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_USNG); return point; }
-            catch { }
-            try { cn.PutCoordsFromUSNG(coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces, coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces | esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMNoOptions, coordinate); return point; }
-            catch { }
-            try { cn.PutCoordsFromGeoRef(coordinate); return point; }
-            catch { }
-
-            // lets see if we have a PCS coordinate
-            // we'll assume the same units as the map units
-            // get spatial reference of map
-            if (ArcMap.Document == null || ArcMap.Document.FocusMap == null || ArcMap.Document.FocusMap.SpatialReference == null)
-                return null;
-
-            var map = ArcMap.Document.FocusMap;
-            var pcs = map.SpatialReference as IProjectedCoordinateSystem;
-
-            if (pcs == null)
-                return null;
-
-            point.SpatialReference = map.SpatialReference;
-            // get pcs coordinate from input
-            coordinate = coordinate.Trim();
-
-            Regex regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
-
-            var matchMercator = regexMercator.Match(coordinate);
-
-            if (matchMercator.Success && matchMercator.Length == coordinate.Length)
+            foreach(var type in listOfTypes)
             {
                 try
                 {
-                    var Lat = Double.Parse(matchMercator.Groups["latitude"].Value);
-                    var Lon = Double.Parse(matchMercator.Groups["longitude"].Value);
-                    point.PutCoords(Lon, Lat);
-                    return point;
+                    point = QueuedTask.Run(() =>
+                    {
+                        ArcGIS.Core.Geometry.SpatialReference sptlRef = SpatialReferenceBuilder.CreateSpatialReference(4326);
+                        return MapPointBuilder.FromGeoCoordinateString(coordinate, sptlRef, type, FromGeoCoordinateMode.Default);
+                    }).Result;
                 }
-                catch
+                catch (Exception ex)
                 {
-                    return null;
+                    // do nothing
                 }
+
+                if (point != null)
+                    return point;
+
             }
 
-            return null;
+            try
+            {
+                point = QueuedTask.Run(() =>
+                    {
+                        ArcGIS.Core.Geometry.SpatialReference sptlRef = SpatialReferenceBuilder.CreateSpatialReference(4326);
+                        return MapPointBuilder.FromGeoCoordinateString(coordinate, sptlRef, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
+                    }).Result;
+            }
+            catch(Exception ex)
+            {
+                // do nothing
+            }
+
+            return point;
         }
         /// <summary>
         /// Method to use when you need to move a feedback line to a point
         /// This forces a new point to be used, sometimes this method projects the point to a different spatial reference
         /// </summary>
         /// <param name="point"></param>
-        internal void FeedbackMoveTo(IPoint point)
-        {
-            if (feedback == null || point == null)
-                return;
+        //internal void FeedbackMoveTo(IPoint point)
+        //{
+        //    if (feedback == null || point == null)
+        //        return;
 
-            feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
-        }
+        //    feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
+        //}
         #endregion Private Functions
 
     }
