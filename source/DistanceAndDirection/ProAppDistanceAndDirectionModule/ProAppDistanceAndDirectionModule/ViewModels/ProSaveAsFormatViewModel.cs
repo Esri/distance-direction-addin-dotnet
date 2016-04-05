@@ -20,18 +20,33 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
     class ProSaveAsFormatViewModel : ProTabBaseViewModel
     {
 
-        private bool featureShapeIsChecked = true;
-        public bool FeatureShapeIsChecked
+        private bool featureIsChecked = true;
+        public bool FeatureIsChecked
         {
             get
             {
-                return featureShapeIsChecked;
+                return featureIsChecked;
             }
 
             set
             {
-                featureShapeIsChecked = value;
-                RaisePropertyChanged(() => FeatureShapeIsChecked);
+                featureIsChecked = value;
+                RaisePropertyChanged(() => FeatureIsChecked);
+            }
+        }
+
+        private bool shapeIsChecked = false;
+        public bool ShapeIsChecked
+        {
+            get
+            {
+                return shapeIsChecked;
+            }
+
+            set
+            {
+                shapeIsChecked = value;
+                RaisePropertyChanged(() => ShapeIsChecked);
             }
         }
 
