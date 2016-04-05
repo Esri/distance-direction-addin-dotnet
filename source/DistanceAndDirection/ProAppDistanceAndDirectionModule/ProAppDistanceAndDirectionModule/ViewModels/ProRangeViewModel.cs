@@ -262,7 +262,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 //var color = new RgbColorClass() { Green = 255 } as IColor;
                 //AddGraphicToMap(Point1, color, true);
-                AddGraphicToMap(Point1, ColorFactory.Green, true);
+                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
 
                 // Reset formatted string
                 Point1Formatted = string.Empty;
@@ -278,7 +278,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     ClearTempGraphics();
                     //var color = new RgbColorClass() { Green = 255 } as IColor;
                     //AddGraphicToMap(Point1, color, true);
-                    AddGraphicToMap(Point1, ColorFactory.Green, true);
+                    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
 
                     // Reset formatted string
                     Point1Formatted = string.Empty;
@@ -400,7 +400,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.OutGeometryType = GeometryType.Polyline;
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;
-            param.VertexCount = 99;
+            param.VertexCount = 33;
 
             //var sr = QueuedTask.Run(() =>
             //{
@@ -409,7 +409,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.GeodesicEllipse(param, sr);
             ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.Green, true);
+            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
             AddGraphicToMap(geom, ColorFactory.Grey, true);
         }
     }
