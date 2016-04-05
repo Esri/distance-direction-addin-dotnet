@@ -27,6 +27,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
     {
         public ProCircleViewModel() 
         {
+            sr = QueuedTask.Run(() =>
+            {
+                return SpatialReferenceBuilder.CreateSpatialReference(4326);
+            }).Result;
+
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
             {
                 FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
@@ -39,12 +44,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             CircleType = CircleFromTypes.Radius;
         }
 
+        private SpatialReference sr = null;
+
         //private void OnSketchComplete(object obj)
         //{
         //    AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);
         //}
 
-        public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
+        public new ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
 
         #region Properties
 
@@ -296,6 +303,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // get distance from feedback
                 //var polyline = GetGeoPolylineFromPoints(Point1, point);
                 //UpdateDistance(polyline);
+                //TODO update distance based on Linear unit, etc
                 Distance = GeometryEngine.GeodesicDistance(Point1, point);
             }
 
@@ -310,10 +318,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (Point1 == null || Distance <= 0.0)
                 return;
-            
-            ClearTempGraphics();
-
-            AddGraphicToMap(Point1, ColorFactory.Green, true);
 
             var param = new GeometryEngine.GeodesicEllipseParameter();
 
@@ -323,15 +327,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.OutGeometryType = GeometryType.Polygon;
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;
-            param.VertexCount = 33;
+            param.VertexCount = 21;
 
-            var sr = QueuedTask.Run(() =>
-            {
-                return SpatialReferenceBuilder.CreateSpatialReference(4326);
-            }).Result;
+            //var sr = QueuedTask.Run(() =>
+            //{
+            //    return SpatialReferenceBuilder.CreateSpatialReference(4326);
+            //}).Result;
 
             var geom = GeometryEngine.GeodesicEllipse(param, sr);
 
+            ClearTempGraphics();
+            AddGraphicToMap(Point1, ColorFactory.Green, true);
             AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 }, true);
         }
 
@@ -380,10 +386,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.SemiAxis2Length = Distance;
             param.VertexCount = 99;
 
-            var sr = QueuedTask.Run(() =>
-            {
-                return SpatialReferenceBuilder.CreateSpatialReference(4326);
-            }).Result;
+            //var sr = QueuedTask.Run(() =>
+            //{
+            //    return SpatialReferenceBuilder.CreateSpatialReference(4326);
+            //}).Result;
 
             var geom = GeometryEngine.GeodesicEllipse(param, sr);
 
