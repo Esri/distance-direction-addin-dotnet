@@ -60,6 +60,7 @@
     </Compile>
     <Compile Include="ValueConverters\EnumToFriendlyNameConverter.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
+    <Compile Include="ViewModels\EditPropertiesViewModel.cs" />
     <Compile Include="Views\CircleView.xaml.cs">
       <SubType>Code</SubType>
       <DependentUpon>CircleView.xaml</DependentUpon>
