@@ -310,18 +310,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (Point1 == null || Distance <= 0.0)
                 return;
+            
+            ClearTempGraphics();
 
-            //TODO update geocircle feedback
-            //var construct = new Polyline() as IConstructGeodetic;
-            //if (construct != null)
-            //{
-            //    ClearTempGraphics();
-            //    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
-            //    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-            //    Point2 = (construct as IPolyline).ToPoint;
-            //    var color = new RgbColorClass() as IColor;
-            //    this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
-            //}
+            AddGraphicToMap(Point1, ColorFactory.Green, true);
+
+            var param = new GeometryEngine.GeodesicEllipseParameter();
+
+            param.Center = new Coordinate(Point1);
+            param.AxisDirection = 0.0;
+            param.LinearUnit = LinearUnit.Meters;
+            param.OutGeometryType = GeometryType.Polygon;
+            param.SemiAxis1Length = Distance;
+            param.SemiAxis2Length = Distance;
+            param.VertexCount = 33;
+
+            var sr = QueuedTask.Run(() =>
+            {
+                return SpatialReferenceBuilder.CreateSpatialReference(4326);
+            }).Result;
+
+            var geom = GeometryEngine.GeodesicEllipse(param, sr);
+
+            AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 }, true);
         }
 
         #endregion
