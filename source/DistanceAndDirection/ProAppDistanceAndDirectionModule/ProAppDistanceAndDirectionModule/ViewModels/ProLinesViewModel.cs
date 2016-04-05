@@ -172,7 +172,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);
         }
 
-        public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
+        public new ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
 
         internal override void CreateMapElement()
         {

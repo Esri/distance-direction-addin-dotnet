@@ -27,7 +27,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.AngledEllipse);
             });
 
-            Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
+            //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
         }
 
         private void OnSketchComplete(object obj)
@@ -35,6 +35,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);
         }
 
-        public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
+        public new ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
     }
 }
