@@ -1,6 +1,7 @@
 ﻿using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
@@ -154,6 +155,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        // sketch doesn't support geodesic lines
+        // not using this for now
         private void OnSketchComplete(object obj)
         {
             AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);
@@ -187,9 +190,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                //var color = new RgbColorClass() { Green = 255 } as IColor;
-                //AddGraphicToMap(Point1, color, true);
-                AddGraphicToMap(Point1, true, 10.0);
+                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
                 return;
             }
 
@@ -211,8 +212,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (HasPoint1 && !HasPoint2)
             {
-                // update azimuth from feedback
-                //var polyline = GetGeoPolylineFromPoints(Point1, point);
+                // update azimuth from segment
                 var segment = QueuedTask.Run(() =>
                 {
                     return LineBuilder.CreateLineSegment(Point1, point);

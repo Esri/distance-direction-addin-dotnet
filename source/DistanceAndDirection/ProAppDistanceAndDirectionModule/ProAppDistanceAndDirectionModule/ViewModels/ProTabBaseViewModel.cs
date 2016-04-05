@@ -66,8 +66,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         }
 
-        private CIMColor cimColorGreen = null;
-
         PropertyObserver<DistanceAndDirectionConfig> configObserver;
 
         #region Commands
@@ -123,8 +121,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         //internal FeatureClassUtils fcUtils = new FeatureClassUtils();
         //internal KMLUtils kmlUtils = new KMLUtils();
         //internal SaveFileDialog sfDlg = null;
-
-        //public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig(); 
 
         public bool HasMapGraphics
         {
@@ -236,23 +232,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     var color = QueuedTask.Run(() =>
                     {
                         return CIMColor.CreateRGBColor(255, 0, 0, 25);
-                    });
+                    }).Result;
 
-                    //AddGraphicToMap(Point1, color, true);
-                    AddGraphicToMap(Point1, true, 10.0);
+                    AddGraphicToMap(Point1, color, true, 5.0);
 
                     // lets try feedback
-                    //TODO update feedback, so far nothing in PRO
-                    //var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    //var av = mxdoc.FocusMap as IActiveView;
-                    //point.Project(mxdoc.FocusMap.SpatialReference);
+                    //TODO update feedback, so far nothing in PRO?
+                    // TODO set spatial reference?
                     //CreateFeedback(point, av);
                     //feedback.Start(point);
                     if (Point2 != null)
                     {
                         // TODO update, for now we calculate meters
                         Distance = GeometryEngine.GeodesicDistance(Point1, Point2);
-                        //UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
                         //FeedbackMoveTo(Point2);
                     }
                 }
@@ -300,7 +292,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     RaisePropertyChanged(() => Point2Formatted);
                     return;
                 }
-                // try to convert string to an IPoint
+                // try to convert string to a MapPoint
                 var point = GetMapPointFromString(value);
                 if (point != null)
                 {
@@ -308,9 +300,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     //HasPoint2 = true;
                     Point2 = point;
                     //TODO update spatial reference, etc
-                    //var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    //var av = mxdoc.FocusMap as IActiveView;
-                    //Point2.Project(mxdoc.FocusMap.SpatialReference);
 
                     //if (feedback != null)
                     //{
@@ -322,9 +311,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         // lets try feedback
                         //CreateFeedback(Point1, av);
                         //feedback.Start(Point1);
-                        //UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
                         Distance = GeometryEngine.GeodesicDistance(Point1, Point2);
-                        // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
                         //FeedbackMoveTo(point);
                     }
 
@@ -420,8 +407,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         }
 
         #endregion
-
         internal async void AddGraphicToMap(Geometry geom, bool IsTempGraphic = false, double size = 1.0)
+        {
+            // default color Red
+            AddGraphicToMap(geom, ColorFactory.Red, IsTempGraphic, size);
+        }
+        internal async void AddGraphicToMap(Geometry geom, CIMColor color, bool IsTempGraphic = false, double size = 1.0)
         {
             if (geom == null || MapView.Active == null)
                 return;
@@ -432,7 +423,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 await QueuedTask.Run(() =>
                     {
-                        var s = SymbolFactory.ConstructPointSymbol(ColorFactory.Red, size, SimpleMarkerStyle.Circle);
+                        var s = SymbolFactory.ConstructPointSymbol(color, size, SimpleMarkerStyle.Circle);
                         symbol = new CIMSymbolReference() { Symbol = s };
                     });
             }
@@ -440,7 +431,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 await QueuedTask.Run(() =>
                     {
-                        var s = SymbolFactory.ConstructLineSymbol(ColorFactory.Red, size);
+                        var s = SymbolFactory.ConstructLineSymbol(color, size);
                         symbol = new CIMSymbolReference() { Symbol = s };
                     });
             }
@@ -448,7 +439,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 await QueuedTask.Run(() =>
                 {
-                    var color = CIMColor.CreateRGBColor(255, 0, 0, 25);
                     var outline = SymbolFactory.ConstructStroke(ColorFactory.Black, 1.0, SimpleLineStyle.Solid);
                     var s = SymbolFactory.ConstructPolygonSymbol(color, SimpleFillStyle.Solid, outline);
                     symbol = new CIMSymbolReference() { Symbol = s };
@@ -499,25 +489,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <param name="obj"></param>
         private void OnClearGraphics()
         {
-            //var mxdoc = ArcMap.Application.Document as IMxDocument;
-            //if (mxdoc == null)
-            //    return;
-            //var av = mxdoc.FocusMap as IActiveView;
-            //if (av == null)
-            //    return;
-            //var gc = av as IGraphicsContainer;
-            //if (gc == null)
-            //    return;
-
             if (MapView.Active == null)
                 return;
 
-            //RemoveGraphics(gc, false);
+            foreach (var item in GraphicsList)
+            {
+                item.Disposable.Dispose();
+            }
 
-            //gc.DeleteAllElements();
-            //av.Refresh();
-            //TODO refresh map
-            //av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            GraphicsList.Clear();
 
             RaisePropertyChanged(() => HasMapGraphics);
         }
@@ -632,21 +612,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         internal void ClearTempGraphics()
         {
-            //TODO update clear temp graphics
-            //var mxdoc = ArcMap.Application.Document as IMxDocument;
-            //if (mxdoc == null)
-            //    return;
-            //var av = mxdoc.FocusMap as IActiveView;
-            //if (av == null)
-            //    return;
-            //var gc = av as IGraphicsContainer;
-            //if (gc == null)
-            //    return;
-
-            //RemoveGraphics(gc, true);
-
-            //av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
-
             var list = GraphicsList.Where(g => g.IsTemp == true).ToList();
 
             foreach (var item in list)
@@ -655,10 +620,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 GraphicsList.Remove(item);
             }
 
-
             RaisePropertyChanged(() => HasMapGraphics);
         }
 
+        //TODO may need to update remove graphics
         /// <summary>
         /// Method used to remove graphics from the graphics container
         /// Elements are tagged with a GUID on the IElementProperties.Name property
@@ -711,14 +676,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         //}
 
         /// <summary>
-        /// Activates the map tool to get map points from mouse clicks/movement
-        /// </summary>
-        /// <param name="obj"></param>
-        //internal void OnActivateTool(object obj)
-        //{
-        //    //SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinDistanceAndDirection_MapPointTool");
-        //}
-        /// <summary>
         /// Handler for the "Enter"key command
         /// Calls CreateMapElement
         /// </summary>
@@ -741,13 +698,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Handler for opening the edit properties dialog
         /// </summary>
         /// <param name="obj"></param>
-        private void OnEditPropertiesDialogCommand(object obj)
-        {
-            var dlg = new EditPropertiesView();
-            dlg.DataContext = new EditPropertiesViewModel();
+        //private void OnEditPropertiesDialogCommand(object obj)
+        //{
+        //    var dlg = new EditPropertiesView();
+        //    dlg.DataContext = new EditPropertiesViewModel();
 
-            dlg.ShowDialog();
-        }
+        //    dlg.ShowDialog();
+        //}
 
         private bool IsValid(System.Windows.DependencyObject obj)
         {
@@ -768,8 +725,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!IsActiveTab)
                 return;
 
-            //var mxdoc = ArcMap.Application.Document as IMxDocument;
-            //var av = mxdoc.FocusMap as IActiveView;
             var point = obj as MapPoint;
 
             if (point == null)
@@ -783,9 +738,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                //var color = new RgbColorClass() { Green = 255 } as IColor;
-                //AddGraphicToMap(Point1, color, true);
-                AddGraphicToMap(Point1, true, 10.0);
+                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
 
                 // lets try feedback
                 //CreateFeedback(point, av);
@@ -815,30 +768,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public void DeactivateTool(string toolname)
         {
-            //TODO update
-            //if (ArcMap.Application != null
-            //    && ArcMap.Application.CurrentTool != null
-            //    && ArcMap.Application.CurrentTool.Name.Equals(toolname))
-            //{
-            //    ArcMap.Application.CurrentTool = null;
-            //}
+            if (FrameworkApplication.CurrentTool != null &&
+                FrameworkApplication.CurrentTool.Equals(toolname))
+            {
+                FrameworkApplication.SetCurrentToolAsync(String.Empty);
+            }
         }
-        //TODO update settoolActiveintoolbar
-        /// <summary>
-        /// Method to set the map tool as the active tool for the map
-        /// </summary>
-        /// <param name="application"></param>
-        /// <param name="toolName"></param>
-        //public void SetToolActiveInToolBar(ESRI.ArcGIS.Framework.IApplication application, System.String toolName)
-        //{
-        //    ESRI.ArcGIS.Framework.ICommandBars commandBars = application.Document.CommandBars;
-        //    ESRI.ArcGIS.esriSystem.UID commandID = new ESRI.ArcGIS.esriSystem.UIDClass();
-        //    commandID.Value = toolName;
-        //    ESRI.ArcGIS.Framework.ICommandItem commandItem = commandBars.Find(commandID, false, false);
-
-        //    if (commandItem != null)
-        //        application.CurrentTool = commandItem;
-        //}
         #endregion
 
         #region Private Functions
@@ -917,8 +852,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (toolReset)
             {
-                //TODO update
-                DeactivateTool("Esri_ArcMapAddinDistanceAndDirection_MapPointTool");
+                DeactivateTool("ProAppDistanceAndDirectionModule_SketchTool");
             }
 
             ResetPoints();
@@ -946,6 +880,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         internal void ResetFeedback()
         {
+            //TODO Reset Feedback
             //if (feedback == null)
             //    return;
 
@@ -1176,32 +1111,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         //    return type;
         //}
-        //internal double GetGeodeticLengthFromPolyline(IPolyline polyline)
-        //{
-        //    if (polyline == null)
-        //        return 0.0;
-
-        //    var polycurvegeo = polyline as IPolycurveGeodetic;
-
-        //    var geodeticType = GetEsriGeodeticType();
-        //    var linearUnit = GetLinearUnit();
-        //    var geodeticLength = polycurvegeo.get_LengthGeodetic(geodeticType, linearUnit);
-
-        //    return geodeticLength;
-        //}
-        /// <summary>
-        /// Gets the distance/lenght of a polyline
-        /// </summary>
-        /// <param name="geometry">IGeometry</param>
-        //internal void UpdateDistance(IGeometry geometry)
-        //{
-        //    var polyline = geometry as IPolyline;
-
-        //    if (polyline == null)
-        //        return;
-
-        //    Distance = GetGeodeticLengthFromPolyline(polyline);
-        //}
         /// <summary>
         /// Handler for the mouse move event
         /// When the mouse moves accross the map, IPoints are returned to aid in updating feedback to user
@@ -1233,6 +1142,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             // update feedback
             if (HasPoint1 && !HasPoint2)
             {
+                //TODO Update feedback on mouse move event
                 //FeedbackMoveTo(point);
             }
         }
@@ -1312,16 +1222,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 if (point != null)
                     return point;
-
             }
 
             try
             {
                 point = QueuedTask.Run(() =>
-                    {
-                        ArcGIS.Core.Geometry.SpatialReference sptlRef = SpatialReferenceBuilder.CreateSpatialReference(4326);
-                        return MapPointBuilder.FromGeoCoordinateString(coordinate, sptlRef, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
-                    }).Result;
+                {
+                    ArcGIS.Core.Geometry.SpatialReference sptlRef = SpatialReferenceBuilder.CreateSpatialReference(4326);
+                    return MapPointBuilder.FromGeoCoordinateString(coordinate, sptlRef, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
+                }).Result;
             }
             catch(Exception ex)
             {
