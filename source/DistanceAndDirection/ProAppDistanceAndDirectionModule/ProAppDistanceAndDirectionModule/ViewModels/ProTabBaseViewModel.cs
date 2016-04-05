@@ -1226,10 +1226,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 Point2Formatted = string.Empty;
                 Point2 = point;
-                // get distance from feedback
-                //var polyline = GetGeoPolylineFromPoints(Point1, point);
-                //UpdateDistance(polyline);
-                //TODO update distance
+                // get distance
                 Distance = GeometryEngine.GeodesicDistance(Point1, point);
             }
 

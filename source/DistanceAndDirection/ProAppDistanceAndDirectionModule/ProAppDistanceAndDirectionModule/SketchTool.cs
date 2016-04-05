@@ -49,15 +49,15 @@ namespace ProAppDistanceAndDirectionModule
             base.OnToolMouseDown(e);
         }
 
-        protected override void OnToolMouseMove(MapViewMouseEventArgs e)
+        protected override async void OnToolMouseMove(MapViewMouseEventArgs e)
         {
             try
             {
-                QueuedTask.Run(() =>
+                var mp = await QueuedTask.Run(() =>
                 {
-                    var mp = MapView.Active.ClientToMap(e.ClientPoint);
-                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
+                    return MapView.Active.ClientToMap(e.ClientPoint);
                 });
+                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
             }
             catch(Exception ex)
             {

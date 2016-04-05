@@ -15,6 +15,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
     {
         public ProLinesViewModel()
         {
+            IsActiveTab = true;
+
             LineFromType = LineFromTypes.Points;
             LineAzimuthType = AzimuthTypes.Degrees;
 
@@ -213,7 +215,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 //var polyline = GetGeoPolylineFromPoints(Point1, point);
                 var segment = QueuedTask.Run(() =>
                 {
-                    return LineBuilder.CreateLineSegment(Point1, Point2);
+                    return LineBuilder.CreateLineSegment(Point1, point);
                 }).Result;
 
                 UpdateAzimuth(segment.Angle);
