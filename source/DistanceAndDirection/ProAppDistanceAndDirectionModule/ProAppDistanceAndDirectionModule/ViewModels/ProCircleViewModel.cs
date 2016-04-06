@@ -325,7 +325,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                return (HasPoint1 && Distance != 0.0);
+                return (HasPoint1 && Distance > 0.0);
             }
         }
 

@@ -237,35 +237,24 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #endregion
 
-        #region Commands
-
-        // when someone hits the enter key, create geodetic graphic
-        internal override void OnEnterKeyCommand(object obj)
-        {
-            if (MajorAxisDistance == 0.0 || Point1 == null || 
-                MinorAxisDistance == 0.0 || Azimuth == 0.0)
-            {
-                return;
-            }
-            if (Point3 == null)
-            {
-                //Point3 = UpdateFeedback(Point1, MinorAxisDistance);
-            }
-            base.OnEnterKeyCommand(obj);
-        }
-
-        #endregion Commands
-
         #region Overriden Functions
 
         internal override void CreateMapElement()
         {
-            if (Point1 == null || Point2 == null || Point3 == null)
+            if (!CanCreateElement)
             {
                 return;
             }
             DrawEllipse();
             Reset(false);
+        }
+
+        public override bool CanCreateElement
+        {
+            get
+            {
+                return (HasPoint1 && MajorAxisDistance > 0.0 && MinorAxisDistance > 0.0);
+            }
         }
 
         internal override void OnMouseMoveEvent(object obj)
