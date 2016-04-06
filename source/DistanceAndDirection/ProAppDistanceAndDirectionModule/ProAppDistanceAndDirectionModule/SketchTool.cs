@@ -36,6 +36,8 @@ namespace ProAppDistanceAndDirectionModule
             Mediator.Register("SET_SKETCH_TOOL_TYPE", (sgType) => SketchType = (SketchGeometryType)sgType);
 
             //lets limit how many times we call this
+            // take the latest event args every so often
+            // this will keep us from drawing too many feedback geometries
             mouseSubject.Sample(TimeSpan.FromMilliseconds(25)).Subscribe(x =>
                 {
                     var mp = QueuedTask.Run(() =>
@@ -59,6 +61,9 @@ namespace ProAppDistanceAndDirectionModule
 
         protected override void OnToolMouseDown(MapViewMouseButtonEventArgs e)
         {
+            if (e.ChangedButton != System.Windows.Input.MouseButton.Left)
+                return;
+
             try
             {
                 QueuedTask.Run(() =>
