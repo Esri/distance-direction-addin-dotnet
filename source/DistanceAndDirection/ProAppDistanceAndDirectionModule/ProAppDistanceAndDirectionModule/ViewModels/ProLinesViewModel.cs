@@ -229,6 +229,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 UpdateAzimuth(segment.Angle);
+
+                UpdateFeedbackWithGeoLine(segment);
             }
 
             base.OnMouseMoveEvent(obj);
@@ -309,6 +311,21 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 Console.WriteLine(ex);
             }
+        }
+
+        private void UpdateFeedbackWithGeoLine(LineSegment segment)
+        {
+            if (Point1 == null || segment == null)
+                return;
+
+            var polyline = QueuedTask.Run(() =>
+            {
+                return PolylineBuilder.CreatePolyline(segment);
+            }).Result;
+
+            ClearTempGraphics();
+            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+            AddGraphicToMap(polyline, ColorFactory.Grey, true);
         }
     }
 }

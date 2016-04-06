@@ -359,10 +359,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.SemiAxis2Length = minorAxis;
             param.VertexCount = 33;
 
-            //var sr = QueuedTask.Run(() =>
-            //{
-            //    return SpatialReferenceBuilder.CreateSpatialReference(4326);
-            //}).Result;
+            sr = QueuedTask.Run(() =>
+            {
+                return SpatialReferenceBuilder.CreateSpatialReference(4326);
+            }).Result;
 
             var geom = GeometryEngine.GeodesicEllipse(param, sr);
 

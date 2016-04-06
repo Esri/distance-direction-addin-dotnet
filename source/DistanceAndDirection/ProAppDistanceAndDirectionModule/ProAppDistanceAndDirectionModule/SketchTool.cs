@@ -14,10 +14,12 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Reactive.Linq;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary.Helpers;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using System.Reactive.Subjects;
 
 namespace ProAppDistanceAndDirectionModule
 {
@@ -32,7 +34,19 @@ namespace ProAppDistanceAndDirectionModule
             SketchType = SketchGeometryType.Point;
             SketchOutputMode = SketchOutputMode.Map;
             Mediator.Register("SET_SKETCH_TOOL_TYPE", (sgType) => SketchType = (SketchGeometryType)sgType);
+
+            //lets limit how many times we call this
+            mouseSubject.Sample(TimeSpan.FromMilliseconds(25)).Subscribe(x =>
+                {
+                    var mp = QueuedTask.Run(() =>
+                    {
+                        return MapView.Active.ClientToMap(x.ClientPoint);
+                    }).Result;
+                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
+                });
+
         }
+        Subject<MapViewMouseEventArgs> mouseSubject = new Subject<MapViewMouseEventArgs>();
 
         protected override Task<bool> OnSketchCompleteAsync(Geometry geometry)
         {
@@ -64,11 +78,12 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
-                var mp = await QueuedTask.Run(() =>
-                {
-                    return MapView.Active.ClientToMap(e.ClientPoint);
-                });
-                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
+                mouseSubject.OnNext(e);
+                //var mp = await QueuedTask.Run(() =>
+                //{
+                //    return MapView.Active.ClientToMap(e.ClientPoint);
+                //});
+                //Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
             }
             catch(Exception ex)
             {
