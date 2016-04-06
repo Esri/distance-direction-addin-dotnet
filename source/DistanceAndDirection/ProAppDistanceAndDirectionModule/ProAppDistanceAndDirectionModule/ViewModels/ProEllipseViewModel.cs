@@ -29,7 +29,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
             {
-                FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
+                await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
                 Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.AngledEllipse);
             });
 
@@ -49,7 +49,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public EllipseTypes EllipseType { get; set; }
         public MapPoint CenterPoint { get; set; }
-        //public ISymbol FeedbackSymbol { get; set; }
 
         AzimuthTypes azimuthType = AzimuthTypes.Degrees;
         public AzimuthTypes AzimuthType
@@ -191,7 +190,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         double azimuth = 0.0;
         public double Azimuth
         {
-            get { return azimuth; }
+            get 
+            {
+                //return azimuth * 0.0174533; 
+                //return ((azimuth - 90) / 180.0) * Math.PI;
+                return azimuth;
+            }
             set
             {
                 azimuth = value;
@@ -274,17 +278,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (point == null)
                 return;
 
-            //dynamic updates
             if (!HasPoint1)
             {
                 Point1 = point;
             }
             else if (HasPoint1 && !HasPoint2)
             {
-                // update major
-                //var polyline = CreateGeodeticLine(Point1, point);
                 // get major distance from polyline
-                MajorAxisDistance = GeometryEngine.GeodesicDistance(Point1, point);//GetGeodeticLengthFromPolyline(polyline);
+                MajorAxisDistance = GeometryEngine.GeodesicDistance(Point1, point);
                 // update bearing
                 var segment = QueuedTask.Run(() =>
                 {
@@ -292,27 +293,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 UpdateAzimuth(segment.Angle);
-                // update feedback
-                //UpdateFeedbackWithEllipse(false);
             }
             else if (HasPoint1 && HasPoint2 && !HasPoint3)
             {
-                //var polyline = CreateGeodeticLine(Point1, point); 
-                
-                //// get minor distance from polyline
-                //if (polyline != null)
-                //{
-                //    MinorAxisDistance = GetGeodeticLengthFromPolyline(polyline);
-                //}
-
                 MinorAxisDistance = GeometryEngine.GeodesicDistance(Point1, point);
-
-                // update feedback              
-                if (MajorAxisDistance > MinorAxisDistance)
-                {
-                    //UpdateFeedbackWithEllipse();
-                }
-
             }
         }
 
@@ -327,22 +311,28 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (minorAxis > MajorAxisDistance)
                 minorAxis = MajorAxisDistance;
+            try
+            {
+                var param = new GeometryEngine.GeodesicEllipseParameter();
 
-            var param = new GeometryEngine.GeodesicEllipseParameter();
+                param.Center = new Coordinate(Point1);
+                param.AxisDirection = GetAzimuthAsRadians(); 
+                param.LinearUnit = LinearUnit.Meters;
+                param.OutGeometryType = GeometryType.Polyline;
+                param.SemiAxis1Length = MajorAxisDistance;
+                param.SemiAxis2Length = minorAxis;
+                param.VertexCount = VertexCount;
 
-            param.Center = new Coordinate(Point1);
-            param.AxisDirection = Azimuth;
-            param.LinearUnit = LinearUnit.Meters;
-            param.OutGeometryType = GeometryType.Polyline;
-            param.SemiAxis1Length = MajorAxisDistance;
-            param.SemiAxis2Length = minorAxis;
-            param.VertexCount = VertexCount;
+                var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-            var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
-
-            ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-            AddGraphicToMap(geom, ColorFactory.Grey, true);
+                ClearTempGraphics();
+                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(geom, ColorFactory.Grey, true);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         internal override void ResetPoints()
@@ -372,11 +362,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 Point2 = point;
                 HasPoint2 = true;
-                //if (feedback != null)
-                //{
-                //    feedback.Stop();
-                //    feedback.Start(Point1);
-                //}
             }
             else if (!HasPoint3)
             {
@@ -409,38 +394,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Private Functions
 
-        private MapPoint UpdateFeedback(MapPoint centerPoint, double axisTypeDistance)
-        {
-            if (centerPoint != null && axisTypeDistance > 0.0)
-            {
-                //if (feedback == null)
-                //{
-                //    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                //    CreateFeedback(centerPoint, mxdoc.FocusMap as IActiveView);
-                //    feedback.Start(centerPoint);
-                //}
-
-                // now get second point from distance and bearing
-                //var construct = new Polyline() as IConstructGeodetic;
-                //if (construct == null)
-                //{
-                //    return null;
-                //}                    
-
-                //construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), centerPoint, GetLinearUnit(), axisTypeDistance, 
-                //    GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-
-                //var line = construct as IPolyline;
-
-                //if (line.ToPoint != null)
-                //{
-                //    //FeedbackMoveTo(line.ToPoint);
-                //    return line.ToPoint;
-                //}
-            }
-            return null;
-        }
-
         private void UpdateAzimuthFromTo(AzimuthTypes fromType, AzimuthTypes toType)
         {
             try
@@ -472,74 +425,20 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateAzimuth(double radians)
         {
-            Azimuth = GetAngleDegrees(radians);
-        }
-
-        //private double GetAzimuth(IGeometry geometry)
-        //{
-        //    var curve = geometry as ICurve;
-
-        //    if (curve == null)
-        //        return 0.0;
-
-        //    var line = new Line() as ILine;
-
-        //    curve.QueryTangent(esriSegmentExtension.esriNoExtension, 0.5, true, 10, line);
-
-        //    if (line == null)
-        //        return 0.0;
-
-        //    return GetAngleDegrees(line.Angle);
-        //}
-
-        private double GetAngleDegrees(double angle)
-        {
-            double bearing = (180.0 * angle) / Math.PI;
-            if (bearing < 90.0)
-                bearing = 90 - bearing;
-            else
-                bearing = 360.0 - (bearing - 90);
+            var degrees = radians * (180.0 / Math.PI);
 
             if (AzimuthType == AzimuthTypes.Degrees)
-            {
-                return bearing;
-            }
-
-            if (AzimuthType == AzimuthTypes.Mils)
-            {
-                return bearing * 17.777777778;
-            }
-
-            return 0.0;
+                Azimuth = degrees;
+            else if (AzimuthType == AzimuthTypes.Mils)
+                Azimuth = degrees * 17.777777778;
         }
 
-        //private IPolyline CreateGeodeticLine(MapPoint fromPoint, MapPoint toPoint, double distance = 0.0)
-        //{
-        //    var construct = new Polyline() as IConstructGeodetic;
-        //    if (construct == null)
-        //    {
-        //        return null;
-        //    }
-        //    try
-        //    {
-        //        if (distance == 0)
-        //        {
-        //            construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), fromPoint, toPoint, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-        //        }
-        //        else
-        //        {
-        //            var minorPolyline = new Polyline() as IPolyline;
-        //            minorPolyline.SpatialReference = Point1.SpatialReference;
-        //            minorPolyline.FromPoint = Point1;
-        //            minorPolyline.ToPoint = Point3;
-        //            construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), fromPoint, GetLinearUnit(), distance, GetAzimuth(minorPolyline as IGeometry),
-        //                esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-        //        }
-        //    }
-        //    catch { }
+        private double GetAzimuthAsRadians()
+        {
+            double result = GetAzimuthAsDegrees();
 
-        //    return construct as IPolyline;
-        //}        
+            return result * (Math.PI / 180.0);
+        }
 
         private void DrawEllipse()
         {
@@ -548,7 +447,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var param = new GeometryEngine.GeodesicEllipseParameter();
 
                 param.Center = new Coordinate(Point1);
-                param.AxisDirection = Azimuth;
+                param.AxisDirection = GetAzimuthAsRadians();
                 param.LinearUnit = LinearUnit.Meters;
                 param.OutGeometryType = GeometryType.Polygon;
                 param.SemiAxis1Length = MajorAxisDistance;
