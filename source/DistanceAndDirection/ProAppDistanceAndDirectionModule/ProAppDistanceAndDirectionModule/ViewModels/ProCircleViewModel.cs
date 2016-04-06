@@ -340,7 +340,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private void CreateCircle(bool isFeedback)
         {
-            if (Point1 == null && Point2 == null)
+            if (Point1 == null || Distance <= 0.0)
             {
                 return;
             }
