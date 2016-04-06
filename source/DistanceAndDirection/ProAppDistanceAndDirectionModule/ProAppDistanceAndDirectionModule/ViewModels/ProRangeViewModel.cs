@@ -26,15 +26,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
     {
         public ProRangeViewModel()
         {
-            sr = QueuedTask.Run(() =>
-            {
-                return SpatialReferenceBuilder.CreateSpatialReference(4326);
-            }).Result;
-
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, OnMouseDoubleClick);
         }
-
-        private SpatialReference sr = null;
 
         #region Properties
 
@@ -222,12 +215,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     param.SemiAxis2Length = radius;
                     param.VertexCount = 99;
 
-                    //var sr = QueuedTask.Run(() =>
-                    //{
-                    //    return SpatialReferenceBuilder.CreateSpatialReference(4326);
-                    //}).Result;
-
-                    var geom = GeometryEngine.GeodesicEllipse(param, sr);
+                    var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                     AddGraphicToMap(geom);
 
@@ -366,12 +354,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.SemiAxis2Length = Distance;
             param.VertexCount = 99;
 
-            //var sr = QueuedTask.Run(() =>
-            //{
-            //    return SpatialReferenceBuilder.CreateSpatialReference(4326);
-            //}).Result;
-
-            var geom = GeometryEngine.GeodesicEllipse(param, sr);
+            var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
             AddGraphicToMap(geom);
         }
@@ -402,12 +385,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.SemiAxis2Length = Distance;
             param.VertexCount = 33;
 
-            //var sr = QueuedTask.Run(() =>
-            //{
-            //    return SpatialReferenceBuilder.CreateSpatialReference(4326);
-            //}).Result;
-
-            var geom = GeometryEngine.GeodesicEllipse(param, sr);
+            var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
             ClearTempGraphics();
             AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
             AddGraphicToMap(geom, ColorFactory.Grey, true);

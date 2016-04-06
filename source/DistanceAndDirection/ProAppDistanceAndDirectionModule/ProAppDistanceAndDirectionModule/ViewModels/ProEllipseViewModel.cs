@@ -36,15 +36,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
 
             EllipseType = EllipseTypes.Semi;
-
-            sr = QueuedTask.Run(() =>
-            {
-                return SpatialReferenceBuilder.CreateSpatialReference(4326);
-            }).Result;
-
         }
-
-        private SpatialReference sr = null;
 
         private void OnSketchComplete(object obj)
         {
@@ -359,12 +351,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.SemiAxis2Length = minorAxis;
             param.VertexCount = 33;
 
-            sr = QueuedTask.Run(() =>
-            {
-                return SpatialReferenceBuilder.CreateSpatialReference(4326);
-            }).Result;
-
-            var geom = GeometryEngine.GeodesicEllipse(param, sr);
+            var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
             ClearTempGraphics();
             AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
@@ -588,12 +575,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 param.SemiAxis2Length = MinorAxisDistance;
                 param.VertexCount = 99;
 
-                //var sr = QueuedTask.Run(() =>
-                //{
-                //    return SpatialReferenceBuilder.CreateSpatialReference(4326);
-                //}).Result;
-
-                var geom = GeometryEngine.GeodesicEllipse(param, sr);
+                var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 });
             }

@@ -1211,8 +1211,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     point = QueuedTask.Run(() =>
                     {
-                        ArcGIS.Core.Geometry.SpatialReference sptlRef = SpatialReferenceBuilder.CreateSpatialReference(4326);
-                        return MapPointBuilder.FromGeoCoordinateString(coordinate, sptlRef, type, FromGeoCoordinateMode.Default);
+                        return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, type, FromGeoCoordinateMode.Default);
                     }).Result;
                 }
                 catch (Exception ex)
@@ -1228,8 +1227,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 point = QueuedTask.Run(() =>
                 {
-                    ArcGIS.Core.Geometry.SpatialReference sptlRef = SpatialReferenceBuilder.CreateSpatialReference(4326);
-                    return MapPointBuilder.FromGeoCoordinateString(coordinate, sptlRef, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
+                    return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
                 }).Result;
             }
             catch(Exception ex)
