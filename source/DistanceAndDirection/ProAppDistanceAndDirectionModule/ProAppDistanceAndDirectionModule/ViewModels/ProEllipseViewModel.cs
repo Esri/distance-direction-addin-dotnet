@@ -321,12 +321,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!HasPoint1)
                 return;
             
-            //ClearTempGraphics();
-
-            //AddGraphicToMap(Point1, ColorFactory.Green, true);
-
-            //var ellipticArc = new Polyline() as IConstructGeodetic;
-
             var minorAxis = MinorAxisDistance;
             if (!HasMinorAxis || minorAxis == 0.0)
                 minorAxis = MajorAxisDistance;
@@ -334,13 +328,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (minorAxis > MajorAxisDistance)
                 minorAxis = MajorAxisDistance;
 
-            //ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, minorAxis, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-            //var line = ellipticArc as IPolyline;
-            //if (line != null)
-            //{
-            //    var color = new RgbColor() as IColor;
-            //    AddGraphicToMap(line as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
-            //}
             var param = new GeometryEngine.GeodesicEllipseParameter();
 
             param.Center = new Coordinate(Point1);
@@ -558,13 +545,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             try
             {
-                //var ellipticArc = new Polyline() as IConstructGeodetic;
-                //ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
-                //var line = ellipticArc as IPolyline;
-                //if (line != null)
-                //{
-                //    AddGraphicToMap(line as IGeometry);
-                //}
                 var param = new GeometryEngine.GeodesicEllipseParameter();
 
                 param.Center = new Coordinate(Point1);

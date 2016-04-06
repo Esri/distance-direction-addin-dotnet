@@ -312,21 +312,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (Point1 == null || Distance <= 0.0)
                 return;
 
-            var param = new GeometryEngine.GeodesicEllipseParameter();
-
-            param.Center = new Coordinate(Point1);
-            param.AxisDirection = 0.0;
-            param.LinearUnit = LinearUnit.Meters;
-            param.OutGeometryType = GeometryType.Polyline;
-            param.SemiAxis1Length = Distance;
-            param.SemiAxis2Length = Distance;
-            param.VertexCount = VertexCount;
-
-            var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
-
-            ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-            AddGraphicToMap(geom, ColorFactory.Grey, true);
+            CreateCircle(true);
         }
 
         #endregion
@@ -336,7 +322,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal override void CreateMapElement()
         {
             base.CreateMapElement();
-            CreateCircle();
+            CreateCircle(false);
             Reset(false);
         }
 
@@ -357,7 +343,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Create geodetic circle
         /// </summary>
-        private void CreateCircle()
+        private void CreateCircle(bool isFeedback)
         {
             if (Point1 == null && Point2 == null)
             {
@@ -370,13 +356,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.AxisDirection = 0.0;
             param.LinearUnit = LinearUnit.Meters;
             param.OutGeometryType = GeometryType.Polygon;
+            if (isFeedback)
+                param.OutGeometryType = GeometryType.Polyline;
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;
             param.VertexCount = VertexCount;
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-            AddGraphicToMap(geom, new CIMRGBColor() { R=255,B=0,G=0,Alpha=25});
+            CIMColor color =  new CIMRGBColor() { R=255,B=0,G=0,Alpha=25};
+            if(isFeedback)
+            {
+                color = ColorFactory.Grey;
+                ClearTempGraphics();
+                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+            }
+            AddGraphicToMap(geom, color, IsTempGraphic: isFeedback);
         }
 
         #endregion
