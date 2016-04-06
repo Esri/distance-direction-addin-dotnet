@@ -254,7 +254,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }).Result;
 
                 // update distance
-                Distance = GeometryEngine.GeodesicDistance(Point1, Point2);
+                Distance = GeometryEngine.GeodesicLength(polyline);
 
                 // update azimuth
                 UpdateAzimuth(angleInRadians);

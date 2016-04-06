@@ -209,7 +209,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     param.Center = new Coordinate(Point1);
                     param.AxisDirection = 0.0;
-                    param.LinearUnit = LinearUnit.Meters;
+                    param.LinearUnit = GetLinearUnit(LineDistanceType);
                     param.OutGeometryType = GeometryType.Polyline;
                     param.SemiAxis1Length = radius;
                     param.SemiAxis2Length = radius;
@@ -274,10 +274,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                 {
                     // update Distance
-                    //var polyline = GetGeoPolylineFromPoints(Point1, point);
-                    //UpdateDistance(polyline);
-                    //TODO update distance based on linear unit selection
-                    Distance = GeometryEngine.GeodesicDistance(Point1, point);
+                    Distance = GetGeodesicDistance(Point1, point);
 
                     // draw a geo ring
                     ConstructGeoCircle();
@@ -307,9 +304,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             else if (HasPoint1 && IsInteractive)
             {
-                //var polyline = GetGeoPolylineFromPoints(Point1, point);
-                //UpdateDistance(polyline);
-                Distance = GeometryEngine.GeodesicDistance(Point1, point);
+                Distance = GetGeodesicDistance(Point1, point);
 
                 // update ring feedback, distance
                 UpdateFeedbackWithGeoCircle();
@@ -348,7 +343,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             param.Center = new Coordinate(Point1);
             param.AxisDirection = 0.0;
-            param.LinearUnit = LinearUnit.Meters;
+            param.LinearUnit = GetLinearUnit(LineDistanceType);
             param.OutGeometryType = GeometryType.Polyline;
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;
@@ -379,7 +374,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             param.Center = new Coordinate(Point1);
             param.AxisDirection = 0.0;
-            param.LinearUnit = LinearUnit.Meters;
+            param.LinearUnit = GetLinearUnit(LineDistanceType);
             param.OutGeometryType = GeometryType.Polyline;
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;

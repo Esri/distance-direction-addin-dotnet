@@ -241,7 +241,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (Point2 != null)
                     {
                         // TODO update, for now we calculate meters
-                        Distance = GeometryEngine.GeodesicDistance(Point1, Point2);
+                        SetGeodesicDistance(Point1, Point2);
                         //FeedbackMoveTo(Point2);
                     }
                 }
@@ -308,7 +308,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         // lets try feedback
                         //CreateFeedback(Point1, av);
                         //feedback.Start(Point1);
-                        Distance = GeometryEngine.GeodesicDistance(Point1, Point2);
+                        SetGeodesicDistance(Point1, Point2);
                         //FeedbackMoveTo(point);
                     }
 
@@ -334,7 +334,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 var before = lineDistanceType;
                 lineDistanceType = value;
-                UpdateDistanceFromTo(before, value);
+                //UpdateDistanceFromTo(before, value);
+                Distance = UpdateDistanceFromTo(before, value, Distance);
             }
         }
 
@@ -1027,11 +1028,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         /// <param name="fromType">DistanceTypes</param>
         /// <param name="toType">DistanceTypes</param>
-        internal void UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType)
+        internal double UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
         {
             try
             {
-                double length = Distance;
+                double length = input;
 
                 if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Kilometers)
                     length /= 1000.0;
@@ -1074,12 +1075,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.SurveyFoot)
                     length *= 6076.1033333576;
 
-                Distance = length;
+                return length;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }
+            return input;
         }
 
         /// <summary>
@@ -1133,7 +1135,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Point2Formatted = string.Empty;
                 Point2 = point;
                 // get distance
-                Distance = GeometryEngine.GeodesicDistance(Point1, point);
+                SetGeodesicDistance(Point1, point);
             }
 
             // update feedback
@@ -1142,6 +1144,42 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 //TODO Update feedback on mouse move event
                 //FeedbackMoveTo(point);
             }
+        }
+
+        internal double GetGeodesicDistance(MapPoint p1, MapPoint p2)
+        {
+            var meters = GeometryEngine.GeodesicDistance(p1, p2);
+            // convert to current linear unit
+            return UpdateDistanceFromTo(DistanceTypes.Meters, LineDistanceType, meters);
+        }
+
+        private void SetGeodesicDistance(MapPoint p1, MapPoint p2)
+        {
+            // convert to current linear unit
+            Distance = GetGeodesicDistance(p1, p2);
+        }
+
+        internal LinearUnit GetLinearUnit(DistanceTypes dtype)
+        {
+            LinearUnit result = LinearUnit.Meters;
+            switch(dtype)
+            {
+                case DistanceTypes.Feet:
+                case DistanceTypes.SurveyFoot:
+                    result = LinearUnit.Feet;
+                    break;
+                case DistanceTypes.Kilometers:
+                    result = LinearUnit.Kilometers;
+                    break;
+                case DistanceTypes.NauticalMile:
+                    result = LinearUnit.NauticalMiles;
+                    break;
+                case DistanceTypes.Meters:
+                default:
+                    result = LinearUnit.Meters;
+                    break;
+            }
+            return result;
         }
         /// <summary>
         /// Gets a geodetic polyline from two points

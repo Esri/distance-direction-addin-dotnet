@@ -285,7 +285,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             else if (HasPoint1 && !HasPoint2)
             {
                 // get major distance from polyline
-                MajorAxisDistance = GeometryEngine.GeodesicDistance(Point1, point);
+                MajorAxisDistance = GetGeodesicDistance(Point1, point);
                 // update bearing
                 var segment = QueuedTask.Run(() =>
                 {
@@ -296,7 +296,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             else if (HasPoint1 && HasPoint2 && !HasPoint3)
             {
-                MinorAxisDistance = GeometryEngine.GeodesicDistance(Point1, point);
+                MinorAxisDistance = GetGeodesicDistance(Point1, point);
             }
         }
 
@@ -316,8 +316,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var param = new GeometryEngine.GeodesicEllipseParameter();
 
                 param.Center = new Coordinate(Point1);
-                param.AxisDirection = GetAzimuthAsRadians(); 
-                param.LinearUnit = LinearUnit.Meters;
+                param.AxisDirection = GetAzimuthAsRadians();
+                param.LinearUnit = GetLinearUnit(LineDistanceType);
                 param.OutGeometryType = GeometryType.Polyline;
                 param.SemiAxis1Length = MajorAxisDistance;
                 param.SemiAxis2Length = minorAxis;
@@ -448,7 +448,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 param.Center = new Coordinate(Point1);
                 param.AxisDirection = GetAzimuthAsRadians();
-                param.LinearUnit = LinearUnit.Meters;
+                param.LinearUnit = GetLinearUnit(LineDistanceType);
                 param.OutGeometryType = GeometryType.Polygon;
                 param.SemiAxis1Length = MajorAxisDistance;
                 param.SemiAxis2Length = MinorAxisDistance;

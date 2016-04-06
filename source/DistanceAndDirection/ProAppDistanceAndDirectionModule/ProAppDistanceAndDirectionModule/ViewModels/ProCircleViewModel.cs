@@ -120,8 +120,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType)
         {
-            Distance = distance;
-            UpdateDistanceFromTo(fromDistanceType, LineDistanceType);
+            Distance = UpdateDistanceFromTo(fromDistanceType, LineDistanceType, distance);
             UpdateFeedbackWithGeoCircle();
         }
 
@@ -293,11 +292,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             else if (HasPoint1 && !HasPoint2 && !IsDistanceCalcExpanded)
             {
                 Point2Formatted = string.Empty;
-                // get distance from feedback
-                //var polyline = GetGeoPolylineFromPoints(Point1, point);
-                //UpdateDistance(polyline);
-                //TODO update distance based on Linear unit, etc
-                Distance = GeometryEngine.GeodesicDistance(Point1, point);
+                Distance = GetGeodesicDistance(Point1, point);
             }
 
             // update feedback
@@ -354,7 +349,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             param.Center = new Coordinate(Point1);
             param.AxisDirection = 0.0;
-            param.LinearUnit = LinearUnit.Meters;
+            param.LinearUnit = GetLinearUnit(LineDistanceType);
             param.OutGeometryType = GeometryType.Polygon;
             if (isFeedback)
                 param.OutGeometryType = GeometryType.Polyline;
