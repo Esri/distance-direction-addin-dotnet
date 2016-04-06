@@ -213,7 +213,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     param.OutGeometryType = GeometryType.Polyline;
                     param.SemiAxis1Length = radius;
                     param.SemiAxis2Length = radius;
-                    param.VertexCount = 99;
+                    param.VertexCount = VertexCount;
 
                     var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
@@ -352,7 +352,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.OutGeometryType = GeometryType.Polyline;
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;
-            param.VertexCount = 99;
+            param.VertexCount = VertexCount;
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
@@ -383,7 +383,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.OutGeometryType = GeometryType.Polyline;
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;
-            param.VertexCount = 33;
+            param.VertexCount = VertexCount;
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
             ClearTempGraphics();

@@ -193,7 +193,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 ClearTempGraphics();
                 if (HasPoint1)
-                    AddGraphicToMap(Point1, ColorFactory.Green, true);
+                    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
@@ -317,16 +317,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.Center = new Coordinate(Point1);
             param.AxisDirection = 0.0;
             param.LinearUnit = LinearUnit.Meters;
-            param.OutGeometryType = GeometryType.Polygon;
+            param.OutGeometryType = GeometryType.Polyline;
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;
-            param.VertexCount = 21;
+            param.VertexCount = VertexCount;
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
             ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.Green, true);
-            AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 }, true);
+            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+            AddGraphicToMap(geom, ColorFactory.Grey, true);
         }
 
         #endregion
@@ -372,7 +372,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.OutGeometryType = GeometryType.Polygon;
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;
-            param.VertexCount = 99;
+            param.VertexCount = VertexCount;
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 

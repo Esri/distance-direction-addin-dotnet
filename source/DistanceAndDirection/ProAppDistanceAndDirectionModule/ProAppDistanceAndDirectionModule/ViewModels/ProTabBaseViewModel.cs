@@ -59,12 +59,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 RaisePropertyChanged(() => Point2Formatted);
             });
 
-            //await QueuedTask.Run(() =>
-            //    {
-            //        var color = CIMColor.CreateRGBColor(0, 255, 0);
-            //    });
-
         }
+
+        internal const int VertexCount = 99;
 
         PropertyObserver<DistanceAndDirectionConfig> configObserver;
 
