@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Width="167" Height="120" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Title="Select Output" WindowStartupLocation="CenterScreen" Topmost="True">
+             mc:Ignorable="d" Width="168" Height="119" ResizeMode="NoResize" SizeToContent="WidthAndHeight" Title="Select Output" WindowStartupLocation="CenterScreen" Topmost="True">
     <StackPanel>
         <StackPanel>
             <RadioButton IsChecked="{Binding FeatureIsChecked}" x:Name="rbFeature" Content="Feature class" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top"/>

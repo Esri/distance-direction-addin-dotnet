@@ -19,6 +19,7 @@ using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.Views;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.ViewModels;
+using DistanceAndDirectionLibrary.Models;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -38,6 +39,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             
             RangeView = new GRRangeView();
             RangeView.DataContext = new RangeViewModel();
+
+            // load the configuration file
+            DistanceAndDirectionConfig.AddInConfig.LoadConfiguration();  
         }
 
         #region Properties

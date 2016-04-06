@@ -62,7 +62,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
 
-            configObserver = new PropertyObserver<DistanceAndDirectionConfig>(TabBaseViewModel.AddInConfig)
+            configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
             {
                 RaisePropertyChanged(() => Point1Formatted);
@@ -85,7 +85,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         internal KMLUtils kmlUtils = new KMLUtils();
         internal SaveFileDialog sfDlg = null;
 
-        public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig(); 
+        //public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig(); 
 
         public bool HasMapGraphics
         {
@@ -758,7 +758,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var cn = point as IConversionNotation;
             if (cn != null)
             {
-                switch (AddInConfig.DisplayCoordinateType)
+                switch (DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType)
                 {
                     case CoordinateTypes.DD:
                         result = cn.GetDDFromCoords(6);

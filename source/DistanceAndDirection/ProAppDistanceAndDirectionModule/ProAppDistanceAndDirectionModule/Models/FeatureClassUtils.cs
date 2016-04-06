@@ -32,6 +32,7 @@ using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Editing;
+using ArcGIS.Desktop.Mapping;
 
 namespace ProAppDistanceAndDirectionModule.Models
 {
@@ -139,29 +140,29 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// <param name="graphicsList">List of graphics for selected tab</param>
         /// <param name="ipSpatialRef">Spatial Reference being used</param>
         /// <returns>Output featureclass</returns>
-        public async Task CreateFCOutput(string outputPath, SaveAsType saveAsType, List<Graphic> graphicsList)
+        public async Task CreateFCOutput(string outputPath, SaveAsType saveAsType, List<Graphic> graphicsList, SpatialReference spatialRef, MapView mapview)
         {
             string dataset = System.IO.Path.GetFileName(outputPath);
             string connection = System.IO.Path.GetDirectoryName(outputPath);
             
             try
             {
-                if (saveAsType == SaveAsType.FileGDB)
+                if (saveAsType == SaveAsType.FileGDB || saveAsType == SaveAsType.Shapefile)
                 {
                     
                     await QueuedTask.Run(async () =>
                     {
-                        await CreateFeatureClass(dataset, "POLYLINE", connection);
-                        await CreatePolyLineFeatures(connection, dataset, graphicsList);
+                        await CreateFeatureClass(dataset, "POLYLINE", connection, spatialRef);
+                        await CreatePolyLineFeatures(connection, dataset, graphicsList, mapview);
                     });
                 }
-                else if (saveAsType == SaveAsType.Shapefile)
+                else if (saveAsType == SaveAsType.KML)
                 {
-                    await QueuedTask.Run(async () =>
-                    {
-                        await CreateFeatureClass(dataset, "POLYLINE", connection);
-                        await CreatePolyLineFeatures(connection, dataset, graphicsList);
-                    });
+                    //await QueuedTask.Run(async () =>
+                    //{
+                    //    await CreateFeatureClass(dataset, "POLYLINE", connection, spatialRef);
+                    //    await CreatePolyLineFeatures(connection, dataset, graphicsList, mapview);
+                    //});
                 }
 
                     //if (DoesFeatureClassExist(folderName, fcName))
@@ -198,7 +199,7 @@ namespace ProAppDistanceAndDirectionModule.Models
             }
         }
 
-        private static async Task CreatePolyLineFeatures(string gdbPath, string dataset, List<Graphic> graphicsList)
+        private static async Task CreatePolyLineFeaturesOld(string gdbPath, string dataset, List<Graphic> graphicsList)
         {
             using (Geodatabase fileGeodatabase = new Geodatabase(gdbPath))
             using (FeatureClass featureClass = fileGeodatabase.OpenDataset<FeatureClass>(dataset))
@@ -209,28 +210,27 @@ namespace ProAppDistanceAndDirectionModule.Models
 
                 try
                 {
-                    EditOperation editOperation = new EditOperation();
-                    editOperation.Callback(context =>
-                    {
+                    //EditOperation editOperation = new EditOperation();
+                    //editOperation.Callback(context =>
+                    //{
                         foreach (Graphic graphic in graphicsList)
                         {
                             //int nameIndex = featureClassDefinition.FindField("NAME");
                             rowBuffer = featureClass.CreateRowBuffer();
 
-                            //rowBuffer[featureClassDefinition.GetShapeField()] = new MapPointBuilder(1028367, 1809789).ToGeometry();
                             rowBuffer[featureClassDefinition.GetShapeField()] = new PolylineBuilder(graphic.Geometry as Polyline).ToGeometry();
 
                             feature = featureClass.CreateRow(rowBuffer);
 
                             //To Indicate that the Map has to draw this feature and/or the attribute table to be updated
-                            context.Invalidate(feature); 
+                            //context.Invalidate(feature); 
                         }
 
                         // Do some other processing with the newly-created feature.
 
-                    }, featureClass);
+                    //}, featureClass);
 
-                    bool editResult = editOperation.Execute();
+                    //bool editResult = editOperation.Execute();
 
                     // If the table is non-versioned this is a no-op. If it is versioned, we need the Save to be done for the edits to be persisted.
                     bool saveResult = await Project.Current.SaveEditsAsync();
@@ -251,42 +251,67 @@ namespace ProAppDistanceAndDirectionModule.Models
             }
         }
 
-        private static async Task CreateInMemoryPolyLineFeatures(string shapefile, string dataset, List<Graphic> graphicsList)
+        private static async Task CreatePolyLineFeatures(string shapefile, string dataset, List<Graphic> graphicsList, MapView mapview)
         {
-            using (Geodatabase fileGeodatabase = new Geodatabase(shapefile))
-            using (FeatureClass featureClass = fileGeodatabase.OpenDataset<FeatureClass>(dataset))
-            using (FeatureClassDefinition featureClassDefinition = featureClass.GetDefinition())
             {
                 RowBuffer rowBuffer = null;
                 Feature feature = null;
 
                 try
                 {
-                    EditOperation editOperation = new EditOperation();
-                    editOperation.Callback(context =>
+                    await QueuedTask.Run(async () =>
                     {
-                        foreach (Graphic graphic in graphicsList)
+                        var layer = MapView.Active.GetSelectedLayers()[0];
+                        if (layer is FeatureLayer)
                         {
-                            //int nameIndex = featureClassDefinition.FindField("NAME");
-                            rowBuffer = featureClass.CreateRowBuffer();
+                            var featureLayer = layer as FeatureLayer;
+                            //if (featureLayer.GetTable().GetDatastore() is UnknownDatastore)
+                            //    return;
+                            using (var table = featureLayer.GetTable())
+                            {
+                                TableDefinition definition = table.GetDefinition();
+                                int shapeIndex = definition.FindField("Shape");
+                                foreach (Graphic graphic in graphicsList)
+                                {
+                                    //int nameIndex = featureClassDefinition.FindField("NAME");
+                                    rowBuffer = table.CreateRowBuffer();
 
-                            //rowBuffer[featureClassDefinition.GetShapeField()] = new MapPointBuilder(1028367, 1809789).ToGeometry();
-                            rowBuffer[featureClassDefinition.GetShapeField()] = new PolylineBuilder(graphic.Geometry as Polyline).ToGeometry();
+                                    rowBuffer[shapeIndex] = new PolylineBuilder(graphic.Geometry as Polyline).ToGeometry();
 
-                            feature = featureClass.CreateRow(rowBuffer);
+                                    table.CreateRow(rowBuffer);
 
-                            //To Indicate that the Map has to draw this feature and/or the attribute table to be updated
-                            context.Invalidate(feature);
+                                    //To Indicate that the Map has to draw this feature and/or the attribute table to be updated
+                                    //context.Invalidate(feature);
+                                }
+                            }
                         }
+                    });
+
+                    //EditOperation editOperation = new EditOperation();
+                    //editOperation.Callback(context =>
+                    //{
+                        //foreach (Graphic graphic in graphicsList)
+                        //{
+                        //    //int nameIndex = featureClassDefinition.FindField("NAME");
+                        //    rowBuffer = featureClass.CreateRowBuffer();
+
+                        //    //rowBuffer[featureClassDefinition.GetShapeField()] = new MapPointBuilder(1028367, 1809789).ToGeometry();
+                        //    rowBuffer[featureClassDefinition.GetShapeField()] = new PolylineBuilder(graphic.Geometry as Polyline).ToGeometry();
+
+                        //    feature = featureClass.CreateRow(rowBuffer);
+
+                        //    //To Indicate that the Map has to draw this feature and/or the attribute table to be updated
+                        //    context.Invalidate(feature);
+                        //}
 
                         // Do some other processing with the newly-created feature.
 
-                    }, featureClass);
+                    //}, featureClass);
 
-                    bool editResult = editOperation.Execute();
+                    //bool editResult = editOperation.Execute();
 
                     // If the table is non-versioned this is a no-op. If it is versioned, we need the Save to be done for the edits to be persisted.
-                    bool saveResult = await Project.Current.SaveEditsAsync();
+                    //bool saveResult = await Project.Current.SaveEditsAsync();
                 }
                 catch (GeodatabaseException exObj)
                 {
@@ -315,14 +340,13 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// <item>POLYLINE</item>
         /// <item>POLYGON</item></list></param>
         /// <returns></returns>
-        private static async Task CreateFeatureClass(string featureclassName, string featureclassType, string gdbPath)
+        private static async Task CreateFeatureClass(string featureclassName, string featureclassType, string gdbPath, SpatialReference spatialRef)
         {
             try
             {
                 List<object> arguments = new List<object>();
                 // store the results in the geodatabase
                 arguments.Add(gdbPath);
-                //arguments.Add("in_memory");
                 // name of the feature class
                 arguments.Add(featureclassName);
                 // type of geometry
@@ -333,15 +357,10 @@ namespace ProAppDistanceAndDirectionModule.Models
                 arguments.Add("DISABLED");
                 // no m values
                 arguments.Add("DISABLED");
-
-                await QueuedTask.Run(() =>
-                {
-                    // spatial reference
-                    arguments.Add(SpatialReferenceBuilder.CreateSpatialReference(3857));
-                });
+                arguments.Add(spatialRef);
 
                 var valueArray = Geoprocessing.MakeValueArray(arguments.ToArray());
-                IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", valueArray);
+                IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", valueArray);            
 
             }
             catch (Exception ex)

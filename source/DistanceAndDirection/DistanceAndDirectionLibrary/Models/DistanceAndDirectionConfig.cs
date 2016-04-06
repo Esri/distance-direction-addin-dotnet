@@ -30,6 +30,8 @@ namespace DistanceAndDirectionLibrary.Models
         {
         }
 
+        public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig(); 
+
         private CoordinateTypes displayCoordinateType = CoordinateTypes.None;
         public CoordinateTypes DisplayCoordinateType
         {
