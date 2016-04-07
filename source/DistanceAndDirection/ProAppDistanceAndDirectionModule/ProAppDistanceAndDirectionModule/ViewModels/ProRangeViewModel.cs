@@ -89,9 +89,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get { return numberOfRings; }
             set
             {
-                if (value < 1 || value > 180)
-                    throw new ArgumentException(string.Format(DistanceAndDirectionLibrary.Properties.Resources.AENumOfRings, 1, 180));
-
+                if (!IsInteractive)
+                {
+                    if (value < 1 || value > 180)
+                        throw new ArgumentException(string.Format(DistanceAndDirectionLibrary.Properties.Resources.AENumOfRings, 1, 180));
+                }
                 numberOfRings = value;
                 RaisePropertyChanged(() => NumberOfRings);
             }
@@ -162,9 +164,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             double azimuth = 0.0;
             double interval = 360.0 / NumberOfRadials;
-            double radialLength = Distance * NumberOfRings;
+            double radialLength = 0.0;
+
             if (IsInteractive)
                 radialLength = maxDistance;
+            else
+                radialLength = Distance * NumberOfRings;
 
             try
             {
