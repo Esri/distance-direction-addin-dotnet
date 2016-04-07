@@ -83,12 +83,8 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
+                // try a subject here to limit the amount of times this is handled
                 mouseSubject.OnNext(e);
-                //var mp = await QueuedTask.Run(() =>
-                //{
-                //    return MapView.Active.ClientToMap(e.ClientPoint);
-                //});
-                //Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
             }
             catch(Exception ex)
             {

@@ -33,6 +33,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.AngledEllipse);
             });
 
+            // we may need this in the future, leave commented out for now
             //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
 
             EllipseType = EllipseTypes.Semi;
@@ -149,8 +150,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 majorAxisDistance = value;
 
-                //Point2 = UpdateFeedback(Point1, MajorAxisDistance);
-
                 UpdateFeedbackWithEllipse();
 
                 RaisePropertyChanged(() => MajorAxisDistance);
@@ -192,17 +191,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get 
             {
-                //return azimuth * 0.0174533; 
-                //return ((azimuth - 90) / 180.0) * Math.PI;
                 return azimuth;
             }
             set
             {
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
-
-                // update feedback
-                //Point2 = UpdateFeedback(Point1, MajorAxisDistance);
 
                 UpdateFeedbackWithEllipse();
 
@@ -447,13 +441,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             return radians;
         }
-
-        //private double GetAzimuthAsRadians()
-        //{
-        //    double result = GetAzimuthAsDegrees();
-
-        //    return result * (Math.PI / 180.0);
-        //}
 
         private void DrawEllipse()
         {

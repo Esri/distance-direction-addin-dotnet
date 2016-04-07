@@ -15,7 +15,6 @@
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
-using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
@@ -33,12 +32,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Circle);
             });
 
+            // we may need this in the future
             //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
 
             //properties
             CircleType = CircleFromTypes.Radius;
         }
 
+        // future use
         //private void OnSketchComplete(object obj)
         //{
         //    AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);

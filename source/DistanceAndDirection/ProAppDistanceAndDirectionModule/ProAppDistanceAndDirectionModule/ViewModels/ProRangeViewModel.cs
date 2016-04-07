@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ArcGIS.Core.CIM;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -178,14 +177,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // for each radial, draw from center point
                 for (int x = 0; x < NumberOfRadials; x++)
                 {
-                    //TODO update radials
-                    //var construct = new Polyline() as IConstructGeodetic;
-                    //if (construct == null)
-                    //    continue;
-
-                    //construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-                    //AddGraphicToMap(construct as IGeometry);
-
                     var polyline = QueuedTask.Run(() =>
                     {
                         MapPoint movedMP = null;
@@ -236,11 +227,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     // set the current radius
                     radius += Distance;
-                    //var polyLine = new Polyline() as IPolyline;
-                    //polyLine.SpatialReference = Point1.SpatialReference;
-                    //var construct = polyLine as IConstructGeodetic;
-                    //construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
-                    //AddGraphicToMap(construct as IGeometry);
+
                     var param = new GeometryEngine.GeodesicEllipseParameter();
 
                     param.Center = new Coordinate(Point1);
@@ -367,14 +354,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void ConstructGeoCircle()
         {
-            //var construct = new Polyline() as IConstructGeodetic;
-            //if (construct != null)
-            //{
-            //    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-            //    Point2 = (construct as IPolyline).ToPoint;
-            //    this.AddGraphicToMap(construct as IGeometry);
-            //    maxDistance = Math.Max(Distance, maxDistance);
-            //}
             var param = new GeometryEngine.GeodesicEllipseParameter();
 
             param.Center = new Coordinate(Point1);
@@ -396,17 +375,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (Point1 == null || Distance <= 0.0)
                 return;
-
-            //var construct = new Polyline() as IConstructGeodetic;
-            //if (construct != null)
-            //{
-            //    ClearTempGraphics();
-            //    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
-            //    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-            //    Point2 = (construct as IPolyline).ToPoint;
-            //    var color = new RgbColorClass() as IColor;
-            //    this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
-            //}
 
             var param = new GeometryEngine.GeodesicEllipseParameter();
 

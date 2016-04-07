@@ -83,8 +83,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     ResetFeedback();
                 }
-
-                //UpdateFeedback();
             }
         }
 
@@ -97,28 +95,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = value;
                 RaisePropertyChanged(() => Distance);
 
-                if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
-                {
-                    var segment = QueuedTask.Run(() =>
-                        {
-                            var mpList = new List<MapPoint>() { Point1 };
-                            // get point 2
-                            var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, Distance, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians().Value);
-                            // update feedback
-                            //UpdateFeedback();
-                            foreach (var mp in results)
-                                Point2 = mp;
-                            if (Point2 != null)
-                                return LineBuilder.CreateLineSegment(Point1, Point2);
-                            else
-                                return null;
-                        }).Result;
-
-                    if(segment != null)
-                        UpdateFeedbackWithGeoLine(segment);
-                }
-
-                // UpdateFeedbackWithGeoLine();
+                UpdateManualFeedback();
 
                 DistanceString = distance.ToString("G");
                 RaisePropertyChanged(() => DistanceString);
@@ -159,28 +136,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (double.TryParse(azimuthString, out d))
                     {
                         Azimuth = d;
-                        if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
-                        {
-                            // update feedback
-                            var segment = QueuedTask.Run(() =>
-                            {
-                                var mpList = new List<MapPoint>() { Point1 };
-                                // get point 2
-                                var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, Distance, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians().Value);
-                                // update feedback
-                                //UpdateFeedback();
-                                foreach (var mp in results)
-                                    Point2 = mp;
-                                if (Point2 != null)
-                                    return LineBuilder.CreateLineSegment(Point1, Point2);
-                                else
-                                    return null;
-                            }).Result;
 
-                            if (segment != null)
-                                UpdateFeedbackWithGeoLine(segment);
-                        }
-
+                        UpdateManualFeedback();
                     }
                     else
                     {
@@ -188,6 +145,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                     }
                 }
+            }
+        }
+
+        private void UpdateManualFeedback()
+        {
+            if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
+            {
+                // update feedback
+                var segment = QueuedTask.Run(() =>
+                {
+                    var mpList = new List<MapPoint>() { Point1 };
+                    // get point 2
+                    var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, Distance, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians().Value);
+                    foreach (var mp in results)
+                        Point2 = mp;
+                    if (Point2 != null)
+                        return LineBuilder.CreateLineSegment(Point1, Point2);
+                    else
+                        return null;
+                }).Result;
+
+                if (segment != null)
+                    UpdateFeedbackWithGeoLine(segment);
             }
         }
 
@@ -375,30 +355,5 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        //TODO build segment with point, angle and distance
-        //private void UpdateFeedbackWithGeoLine()
-        //{
-        //    var segment = QueuedTask.Run(() =>
-        //    {
-        //        return LineBuilder.CreateLineSegment(;
-        //    }).Result;
-
-        //    UpdateFeedbackWithGeoLine(segment);
-        //}
-
-        //private void UpdateFeedbackWithGeoLine(LineSegment segment)
-        //{
-        //    if (Point1 == null || segment == null)
-        //        return;
-
-        //    var polyline = QueuedTask.Run(() =>
-        //    {
-        //        return PolylineBuilder.CreatePolyline(segment);
-        //    }).Result;
-
-        //    ClearTempGraphics();
-        //    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-        //    AddGraphicToMap(polyline, ColorFactory.Grey, true);
-        //}
     }
 }
