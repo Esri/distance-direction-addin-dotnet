@@ -31,6 +31,7 @@ using ProAppDistanceAndDirectionModule.Models;
 using System.Windows.Controls;
 using ArcGIS.Core.Data;
 using ProAppDistanceAndDirectionModule.Views;
+using System.IO;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -117,6 +118,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         // lists to store GUIDs of graphics, temp feedback and map graphics
         private static List<Graphic> GraphicsList = new List<Graphic>();
         private FeatureClassUtils fcUtils = new FeatureClassUtils();
+        private KMLUtils kmlUtils = new KMLUtils();
 
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
@@ -1259,7 +1261,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Saves graphics to file gdb or shp file
         /// </summary>
         /// <param name="obj"></param>
-        private void OnSaveAs()
+        private async Task OnSaveAs()
         {
             var dlg = new ProSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
@@ -1299,7 +1301,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         string name = System.IO.Path.GetFileName(path);
                         string folderName = System.IO.Path.GetDirectoryName(path);
-                        string tempShapeFile = folderName + "\\tmpShapefile.shp";
+                        
 
                         if (vm.FeatureIsChecked)
                         {
@@ -1308,6 +1310,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         else if (vm.ShapeIsChecked)
                         {
                             fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active);
+                        }
+                        else if (vm.KmlIsChecked)
+                        {
+                            await fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, true);
+ 
                         }
                     }
                     catch (Exception ex)
