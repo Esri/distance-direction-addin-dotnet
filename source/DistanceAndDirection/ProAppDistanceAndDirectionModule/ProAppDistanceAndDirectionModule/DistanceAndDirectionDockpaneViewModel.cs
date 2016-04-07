@@ -71,7 +71,8 @@ namespace ProAppDistanceAndDirectionModule
 
                 selectedTab = value;
                 var tabItem = selectedTab as TabItem;
-                Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
+                if ((tabItem.Content as UserControl).Content != null)
+                    Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
             }
         }
 
