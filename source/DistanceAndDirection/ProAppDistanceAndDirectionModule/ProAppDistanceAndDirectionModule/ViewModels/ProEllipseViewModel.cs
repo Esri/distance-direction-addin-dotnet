@@ -305,7 +305,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var param = new GeometryEngine.GeodesicEllipseParameter();
 
                 param.Center = new Coordinate(Point1);
-                param.AxisDirection = GetAzimuthAsRadians();
+                param.AxisDirection = GetRadiansFrom360Degrees(GetAzimuthAsDegrees());
                 param.LinearUnit = GetLinearUnit(LineDistanceType);
                 param.OutGeometryType = GeometryType.Polyline;
                 param.SemiAxis1Length = MajorAxisDistance;
@@ -414,7 +414,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateAzimuth(double radians)
         {
+            //System.Diagnostics.Debug.Print(string.Format("radians {0}", radians));
             var degrees = radians * (180.0 / Math.PI);
+            if (degrees <= 90.0)
+                degrees = 90.0 - degrees;
+            else
+                degrees = 360.0 - (degrees - 90.0);
 
             if (AzimuthType == AzimuthTypes.Degrees)
                 Azimuth = degrees;
@@ -422,12 +427,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Azimuth = degrees * 17.777777778;
         }
 
-        private double GetAzimuthAsRadians()
+        private static double GetRadiansFrom360Degrees(double degrees)
         {
-            double result = GetAzimuthAsDegrees();
+            double temp;
+            if (degrees >= 0.0 && degrees <= 270.0)
+                temp = (degrees - 90.0) * -1.0;
+            else
+                temp = 450.0 - degrees;
 
-            return result * (Math.PI / 180.0);
+            var radians = temp * (Math.PI / 180.0);
+
+            return radians;
         }
+
+        //private double GetAzimuthAsRadians()
+        //{
+        //    double result = GetAzimuthAsDegrees();
+
+        //    return result * (Math.PI / 180.0);
+        //}
 
         private void DrawEllipse()
         {
@@ -436,7 +454,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var param = new GeometryEngine.GeodesicEllipseParameter();
 
                 param.Center = new Coordinate(Point1);
-                param.AxisDirection = GetAzimuthAsRadians();
+                param.AxisDirection = GetRadiansFrom360Degrees(GetAzimuthAsDegrees());
                 param.LinearUnit = GetLinearUnit(LineDistanceType);
                 param.OutGeometryType = GeometryType.Polygon;
                 param.SemiAxis1Length = MajorAxisDistance;

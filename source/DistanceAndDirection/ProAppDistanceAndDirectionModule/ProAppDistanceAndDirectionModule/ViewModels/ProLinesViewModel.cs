@@ -287,21 +287,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             try
             {
-                var angleInRadians = 0.0;
-
                 // create line
                 var polyline = QueuedTask.Run(() =>
                     {
                         var segment = LineBuilder.CreateLineSegment(Point1, Point2);
-                        angleInRadians = segment.Angle;
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
-
-                // update distance
-                //Distance = GeometryEngine.GeodesicLength(polyline);
-
-                // update azimuth
-                //UpdateAzimuth(angleInRadians);
 
                 AddGraphicToMap(polyline);
                 ResetPoints();
@@ -315,6 +306,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private void UpdateAzimuth(double radians)
         {
             var degrees = radians * (180.0 / Math.PI);
+            if (degrees <= 90.0)
+                degrees = 90.0 - degrees;
+            else
+                degrees = 360.0 - (degrees - 90.0);
 
             if (LineAzimuthType == AzimuthTypes.Degrees)
                 Azimuth = degrees;
