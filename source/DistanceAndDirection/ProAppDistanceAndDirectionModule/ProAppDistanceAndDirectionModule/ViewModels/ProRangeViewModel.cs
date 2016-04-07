@@ -47,6 +47,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     maxDistance = 0.0;
                     NumberOfRings = 0;
                 }
+                else
+                    NumberOfRings = 10;
             }
         }
 
@@ -282,8 +284,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
 
                 ClearTempGraphics();
-                //var color = new RgbColorClass() { Green = 255 } as IColor;
-                //AddGraphicToMap(Point1, color, true);
                 AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
 
                 // Reset formatted string
