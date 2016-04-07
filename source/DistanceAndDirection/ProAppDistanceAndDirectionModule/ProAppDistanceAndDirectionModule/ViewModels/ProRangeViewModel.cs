@@ -19,6 +19,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Collections.Generic;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -44,6 +45,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (value)
                 {
                     maxDistance = 0.0;
+                    NumberOfRings = 0;
                 }
             }
         }
@@ -177,6 +179,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     //construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                     //AddGraphicToMap(construct as IGeometry);
 
+                    var polyline = QueuedTask.Run(() =>
+                    {
+                        MapPoint movedMP = null;
+                        var mpList = new List<MapPoint>() { Point1 };
+                        // get point 2
+                        var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth));
+                        // update feedback
+                        //UpdateFeedback();
+                        foreach (var mp in results)
+                            movedMP = mp;
+                        if (movedMP != null)
+                        {
+                            var segment = LineBuilder.CreateLineSegment(Point1, movedMP);
+                            return PolylineBuilder.CreatePolyline(segment);
+                        }
+                        else
+                            return null;
+                    }).Result;
+
+                    if (polyline != null)
+                        AddGraphicToMap(polyline);
+
+
                     azimuth += interval;
                 }
             }
@@ -184,6 +209,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 Console.WriteLine(ex);
             }
+        }
+        private double GetAzimuthAsRadians(double azimuth)
+        {
+            return azimuth * (Math.PI / 180.0);
         }
 
         /// <summary>
@@ -278,6 +307,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     // draw a geo ring
                     ConstructGeoCircle();
+
+                    NumberOfRings++;
                 }
             }
         }
@@ -348,6 +379,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.SemiAxis1Length = Distance;
             param.SemiAxis2Length = Distance;
             param.VertexCount = VertexCount;
+
+            maxDistance = Math.Max(maxDistance, Distance);
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
