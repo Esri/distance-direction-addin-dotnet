@@ -427,6 +427,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Azimuth = degrees * 17.777777778;
         }
 
+        /// <summary>
+        /// gets radians in a format the PRO sdk likes
+        /// from 360 degrees, straight up is ZERO
+        /// Radians from far right to far left counter clockwise is 0 to positive PI
+        /// Radians from far right to far left clockwise is 0 to negative PI
+        /// </summary>
+        /// <param name="degrees"></param>
+        /// <returns></returns>
         private static double GetRadiansFrom360Degrees(double degrees)
         {
             double temp;
