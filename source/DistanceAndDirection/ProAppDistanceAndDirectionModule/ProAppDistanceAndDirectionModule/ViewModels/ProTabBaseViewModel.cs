@@ -1261,7 +1261,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Saves graphics to file gdb or shp file
         /// </summary>
         /// <param name="obj"></param>
-        private async Task OnSaveAs()
+        private void OnSaveAs()
         {
             var dlg = new ProSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
@@ -1269,9 +1269,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (dlg.ShowDialog() == true)
             {
-                FeatureClass fc = null;
-                //IFeatureClass fc = null;
-
                 // Get the graphics list for the selected tab
                 List<Graphic> typeGraphicsList = new List<Graphic>();
                 if (this is ProLinesViewModel)
@@ -1291,90 +1288,27 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList();
                 }
 
-                string path = null;
-                //if (vm.FeatureIsChecked)
-                //{
-                path = fcUtils.PromptUserWithSaveDialog(vm.FeatureIsChecked, vm.ShapeIsChecked, vm.KmlIsChecked);
+                string path = fcUtils.PromptUserWithSaveDialog(vm.FeatureIsChecked, vm.ShapeIsChecked, vm.KmlIsChecked);
                 if (path != null)
                 {
                     try
                     {
-                        string name = System.IO.Path.GetFileName(path);
                         string folderName = System.IO.Path.GetDirectoryName(path);
-                        
 
                         if (vm.FeatureIsChecked)
                         {
                             fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active);
                         }
-                        else if (vm.ShapeIsChecked)
+                        else if (vm.ShapeIsChecked || vm.KmlIsChecked)
                         {
-                            fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active);
-                        }
-                        else if (vm.KmlIsChecked)
-                        {
-                            await fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, true);
- 
+                            fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, vm.KmlIsChecked);
                         }
                     }
                     catch (Exception ex)
                     {
 
                     }
-
-
-                    //if (tempFc != null)
-                    //{
-                    //    kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap);
-
-                    //    // delete the temporary shapefile
-                    //    fcUtils.DeleteShapeFile(tempShapeFile);
-                    //}
                 }
-
-                //            if (path != null)
-                //            {
-                //                if (System.IO.Path.GetExtension(path).Equals(".shp"))
-                //                {
-                //                    fc = fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
-                //                }
-                //                else
-                //                {
-                //                    fc = fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
-                //                }
-                //            }
-                //}
-                //        else
-                //        {
-                //            path = PromptSaveFileDialog();
-                //            if (path != null)
-                //            {
-                //                string kmlName = System.IO.Path.GetFileName(path);
-                //                string folderName = System.IO.Path.GetDirectoryName(path);
-                //                string tempShapeFile = folderName + "\\tmpShapefile.shp";
-                //                IFeatureClass tempFc = fcUtils.CreateFCOutput(tempShapeFile, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
-
-                //                if (tempFc != null)
-                //                {
-                //                    kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap);
-
-                //                    // delete the temporary shapefile
-                //                    fcUtils.DeleteShapeFile(tempShapeFile);
-                //                }
-                //            }
-                //        }
-
-                //        if (fc != null)
-                //        {
-                //            IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
-                //            outputFeatureLayer.FeatureClass = fc;
-
-                //            IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
-                //            geoLayer.Name = fc.AliasName;
-
-                //            ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
-                //            map.AddLayer((ILayer)outputFeatureLayer);
-                //        }
             }
         }
 

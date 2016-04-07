@@ -84,7 +84,7 @@ namespace ProAppDistanceAndDirectionModule.Models
         }
 
         /// <summary>
-        /// Creates the output featureclass, either fgdb featureclass or a shapefile
+        /// Creates the output featureclass, either fgdb featureclass or shapefile
         /// </summary>
         /// <param name="outputPath">location of featureclass</param>
         /// <param name="saveAsType">Type of output selected, either fgdb featureclass or shapefile</param>
