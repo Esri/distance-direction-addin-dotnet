@@ -862,6 +862,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             ResetFeedback();
 
             Distance = 0.0;
+            
 
             ClearTempGraphics();
         }
@@ -1153,11 +1154,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return UpdateDistanceFromTo(DistanceTypes.Meters, LineDistanceType, meters);
         }
 
-        private void SetGeodesicDistance(MapPoint p1, MapPoint p2)
+        private async void SetGeodesicDistance(MapPoint p1, MapPoint p2)
         {
             // convert to current linear unit
             Distance = GetGeodesicDistance(p1, p2);
+
+            //UpdateFeedbackWithGeoLine(await QueuedTask.Run(()=>LineBuilder.CreateLineSegment(Point1, Point2)));
         }
+
+        internal void UpdateFeedbackWithGeoLine(LineSegment segment)
+        {
+            if (Point1 == null || segment == null)
+                return;
+
+            var polyline = QueuedTask.Run(() =>
+            {
+                return PolylineBuilder.CreatePolyline(segment);
+            }).Result;
+
+            ClearTempGraphics();
+            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+            AddGraphicToMap(polyline, ColorFactory.Grey, true);
+        }
+
 
         internal LinearUnit GetLinearUnit(DistanceTypes dtype)
         {

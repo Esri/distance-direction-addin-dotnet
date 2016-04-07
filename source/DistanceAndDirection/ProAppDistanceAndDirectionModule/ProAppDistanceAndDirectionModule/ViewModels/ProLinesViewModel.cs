@@ -19,6 +19,7 @@ using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Collections.Generic;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -96,11 +97,28 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = value;
                 RaisePropertyChanged(() => Distance);
 
-                if (LineFromType == LineFromTypes.BearingAndDistance)
+                if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
                 {
-                    // update feedback
-                    //UpdateFeedback();
+                    var segment = QueuedTask.Run(() =>
+                        {
+                            var mpList = new List<MapPoint>() { Point1 };
+                            // get point 2
+                            var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, Distance, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians().Value);
+                            // update feedback
+                            //UpdateFeedback();
+                            foreach (var mp in results)
+                                Point2 = mp;
+                            if (Point2 != null)
+                                return LineBuilder.CreateLineSegment(Point1, Point2);
+                            else
+                                return null;
+                        }).Result;
+
+                    if(segment != null)
+                        UpdateFeedbackWithGeoLine(segment);
                 }
+
+                // UpdateFeedbackWithGeoLine();
 
                 DistanceString = distance.ToString("G");
                 RaisePropertyChanged(() => DistanceString);
@@ -118,9 +136,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 if (!azimuth.HasValue)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
-
-                // update feedback
-                //UpdateFeedback();
 
                 AzimuthString = azimuth.Value.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
@@ -144,6 +159,28 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (double.TryParse(azimuthString, out d))
                     {
                         Azimuth = d;
+                        if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
+                        {
+                            // update feedback
+                            var segment = QueuedTask.Run(() =>
+                            {
+                                var mpList = new List<MapPoint>() { Point1 };
+                                // get point 2
+                                var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, Distance, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians().Value);
+                                // update feedback
+                                //UpdateFeedback();
+                                foreach (var mp in results)
+                                    Point2 = mp;
+                                if (Point2 != null)
+                                    return LineBuilder.CreateLineSegment(Point1, Point2);
+                                else
+                                    return null;
+                            }).Result;
+
+                            if (segment != null)
+                                UpdateFeedbackWithGeoLine(segment);
+                        }
+
                     }
                     else
                     {
@@ -182,6 +219,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.CreateMapElement();
             CreatePolyline();
             Reset(false);
+        }
+
+        internal override void Reset(bool toolReset)
+        {
+            base.Reset(toolReset);
+
+            Azimuth = 0.0;
         }
 
         internal override void OnNewMapPointEvent(object obj)
@@ -254,10 +298,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }).Result;
 
                 // update distance
-                Distance = GeometryEngine.GeodesicLength(polyline);
+                //Distance = GeometryEngine.GeodesicLength(polyline);
 
                 // update azimuth
-                UpdateAzimuth(angleInRadians);
+                //UpdateAzimuth(angleInRadians);
 
                 AddGraphicToMap(polyline);
                 ResetPoints();
@@ -270,8 +314,31 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateAzimuth(double radians)
         {
-            Azimuth = GetAngleDegrees(radians);
+            var degrees = radians * (180.0 / Math.PI);
+
+            if (LineAzimuthType == AzimuthTypes.Degrees)
+                Azimuth = degrees;
+            else if (LineAzimuthType == AzimuthTypes.Mils)
+                Azimuth = degrees * 17.777777778;
         }
+
+        private double? GetAzimuthAsRadians()
+        {
+            double? result = GetAzimuthAsDegrees();
+
+            return result * (Math.PI / 180.0);
+        }
+
+        private double? GetAzimuthAsDegrees()
+        {
+            if (LineAzimuthType == AzimuthTypes.Mils)
+            {
+                return Azimuth * 0.05625;
+            }
+
+            return Azimuth;
+        }
+
 
         private double GetAngleDegrees(double angle)
         {
@@ -313,19 +380,30 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        private void UpdateFeedbackWithGeoLine(LineSegment segment)
-        {
-            if (Point1 == null || segment == null)
-                return;
+        //TODO build segment with point, angle and distance
+        //private void UpdateFeedbackWithGeoLine()
+        //{
+        //    var segment = QueuedTask.Run(() =>
+        //    {
+        //        return LineBuilder.CreateLineSegment(;
+        //    }).Result;
 
-            var polyline = QueuedTask.Run(() =>
-            {
-                return PolylineBuilder.CreatePolyline(segment);
-            }).Result;
+        //    UpdateFeedbackWithGeoLine(segment);
+        //}
 
-            ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-            AddGraphicToMap(polyline, ColorFactory.Grey, true);
-        }
+        //private void UpdateFeedbackWithGeoLine(LineSegment segment)
+        //{
+        //    if (Point1 == null || segment == null)
+        //        return;
+
+        //    var polyline = QueuedTask.Run(() =>
+        //    {
+        //        return PolylineBuilder.CreatePolyline(segment);
+        //    }).Result;
+
+        //    ClearTempGraphics();
+        //    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+        //    AddGraphicToMap(polyline, ColorFactory.Grey, true);
+        //}
     }
 }
