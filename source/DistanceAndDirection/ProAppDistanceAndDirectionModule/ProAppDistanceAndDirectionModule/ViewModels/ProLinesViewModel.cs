@@ -19,6 +19,7 @@ using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Collections.Generic;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -82,8 +83,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     ResetFeedback();
                 }
-
-                //UpdateFeedback();
             }
         }
 
@@ -96,11 +95,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = value;
                 RaisePropertyChanged(() => Distance);
 
-                if (LineFromType == LineFromTypes.BearingAndDistance)
-                {
-                    // update feedback
-                    //UpdateFeedback();
-                }
+                UpdateManualFeedback();
 
                 DistanceString = distance.ToString("G");
                 RaisePropertyChanged(() => DistanceString);
@@ -118,9 +113,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 if (!azimuth.HasValue)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
-
-                // update feedback
-                //UpdateFeedback();
 
                 AzimuthString = azimuth.Value.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
@@ -144,6 +136,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (double.TryParse(azimuthString, out d))
                     {
                         Azimuth = d;
+
+                        UpdateManualFeedback();
                     }
                     else
                     {
@@ -151,6 +145,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                     }
                 }
+            }
+        }
+
+        private void UpdateManualFeedback()
+        {
+            if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
+            {
+                // update feedback
+                var segment = QueuedTask.Run(() =>
+                {
+                    var mpList = new List<MapPoint>() { Point1 };
+                    // get point 2
+                    var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, Distance, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians().Value);
+                    foreach (var mp in results)
+                        Point2 = mp;
+                    if (Point2 != null)
+                        return LineBuilder.CreateLineSegment(Point1, Point2);
+                    else
+                        return null;
+                }).Result;
+
+                if (segment != null)
+                    UpdateFeedbackWithGeoLine(segment);
             }
         }
 
@@ -172,7 +189,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);
         }
 
-        public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
+        public new ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
 
         internal override void CreateMapElement()
         {
@@ -182,6 +199,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.CreateMapElement();
             CreatePolyline();
             Reset(false);
+        }
+
+        internal override void Reset(bool toolReset)
+        {
+            base.Reset(toolReset);
+
+            Azimuth = 0.0;
         }
 
         internal override void OnNewMapPointEvent(object obj)
@@ -229,6 +253,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 UpdateAzimuth(segment.Angle);
+
+                UpdateFeedbackWithGeoLine(segment);
             }
 
             base.OnMouseMoveEvent(obj);
@@ -241,21 +267,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             try
             {
-                var angleInRadians = 0.0;
-
                 // create line
                 var polyline = QueuedTask.Run(() =>
                     {
                         var segment = LineBuilder.CreateLineSegment(Point1, Point2);
-                        angleInRadians = segment.Angle;
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
-
-                // update distance
-                Distance = GeometryEngine.GeodesicDistance(Point1, Point2);
-
-                // update azimuth
-                UpdateAzimuth(angleInRadians);
 
                 AddGraphicToMap(polyline);
                 ResetPoints();
@@ -268,8 +285,35 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateAzimuth(double radians)
         {
-            Azimuth = GetAngleDegrees(radians);
+            var degrees = radians * (180.0 / Math.PI);
+            if (degrees <= 90.0)
+                degrees = 90.0 - degrees;
+            else
+                degrees = 360.0 - (degrees - 90.0);
+
+            if (LineAzimuthType == AzimuthTypes.Degrees)
+                Azimuth = degrees;
+            else if (LineAzimuthType == AzimuthTypes.Mils)
+                Azimuth = degrees * 17.777777778;
         }
+
+        private double? GetAzimuthAsRadians()
+        {
+            double? result = GetAzimuthAsDegrees();
+
+            return result * (Math.PI / 180.0);
+        }
+
+        private double? GetAzimuthAsDegrees()
+        {
+            if (LineAzimuthType == AzimuthTypes.Mils)
+            {
+                return Azimuth * 0.05625;
+            }
+
+            return Azimuth;
+        }
+
 
         private double GetAngleDegrees(double angle)
         {
@@ -310,5 +354,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Console.WriteLine(ex);
             }
         }
+
     }
 }

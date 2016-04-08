@@ -14,10 +14,12 @@
 
 using System;
 using System.Threading.Tasks;
+using System.Reactive.Linq;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary.Helpers;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
+using System.Reactive.Subjects;
 
 namespace ProAppDistanceAndDirectionModule
 {
@@ -32,7 +34,21 @@ namespace ProAppDistanceAndDirectionModule
             SketchType = SketchGeometryType.Point;
             SketchOutputMode = SketchOutputMode.Map;
             Mediator.Register("SET_SKETCH_TOOL_TYPE", (sgType) => SketchType = (SketchGeometryType)sgType);
+
+            //lets limit how many times we call this
+            // take the latest event args every so often
+            // this will keep us from drawing too many feedback geometries
+            mouseSubject.Sample(TimeSpan.FromMilliseconds(25)).Subscribe(x =>
+                {
+                    var mp = QueuedTask.Run(() =>
+                    {
+                        return MapView.Active.ClientToMap(x.ClientPoint);
+                    }).Result;
+                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
+                });
+
         }
+        Subject<MapViewMouseEventArgs> mouseSubject = new Subject<MapViewMouseEventArgs>();
 
         protected override Task<bool> OnSketchCompleteAsync(Geometry geometry)
         {
@@ -45,6 +61,9 @@ namespace ProAppDistanceAndDirectionModule
 
         protected override void OnToolMouseDown(MapViewMouseButtonEventArgs e)
         {
+            if (e.ChangedButton != System.Windows.Input.MouseButton.Left)
+                return;
+
             try
             {
                 QueuedTask.Run(() =>
@@ -64,11 +83,8 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
-                var mp = await QueuedTask.Run(() =>
-                {
-                    return MapView.Active.ClientToMap(e.ClientPoint);
-                });
-                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
+                // try a subject here to limit the amount of times this is handled
+                mouseSubject.OnNext(e);
             }
             catch(Exception ex)
             {
@@ -77,15 +93,15 @@ namespace ProAppDistanceAndDirectionModule
             base.OnToolMouseMove(e);
         }
 
-        protected override void OnToolDoubleClick(MapViewMouseButtonEventArgs e)
+        protected override async void OnToolDoubleClick(MapViewMouseButtonEventArgs e)
         {
             try
             {
-                QueuedTask.Run(() =>
+                var mp = await QueuedTask.Run(() =>
                 {
-                    var mp = MapView.Active.ClientToMap(e.ClientPoint);
-                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, mp);
+                    return MapView.Active.ClientToMap(e.ClientPoint);
                 });
+                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, mp);
             }
             catch(Exception ex)
             {

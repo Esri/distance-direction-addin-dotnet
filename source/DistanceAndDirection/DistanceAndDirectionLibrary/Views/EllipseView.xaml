@@ -113,9 +113,9 @@
                           VerticalAlignment="Stretch"
                           Header="{x:Static prop:Resources.LabelAxisGroup}">
                     <StackPanel>
-                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelMinorAxis}" />
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelMajorAxis}" />
                         <TextBox Margin="3,3,0,0"
-                                 Text="{Binding Path=MinorAxisDistanceString,
+                                 Text="{Binding Path=MajorAxisDistanceString,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">
@@ -126,9 +126,9 @@
                                                                        Path=.}" />
                             </TextBox.InputBindings>
                         </TextBox>
-                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelMajorAxis}" />
+                        <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelMinorAxis}" />
                         <TextBox Margin="3,3,0,0"
-                                 Text="{Binding Path=MajorAxisDistanceString,
+                                 Text="{Binding Path=MinorAxisDistanceString,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">
