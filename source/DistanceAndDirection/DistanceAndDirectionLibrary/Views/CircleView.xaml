@@ -174,7 +174,7 @@
                             Command="{Binding SaveAsCommand}"
                             Content="{x:Static prop:Resources.LabelSaveAs}"
                             ToolTip="{x:Static prop:Resources.LabelSaveAs}">
-                        <!--<Button.Style>
+                        <Button.Style>
                             <Style TargetType="Button">
                                 <Setter Property="IsEnabled" Value="False" />
                                 <Style.Triggers>
@@ -183,7 +183,7 @@
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
-                        </Button.Style>-->
+                        </Button.Style>
                     </Button>
                 </StackPanel>
             </StackPanel>
