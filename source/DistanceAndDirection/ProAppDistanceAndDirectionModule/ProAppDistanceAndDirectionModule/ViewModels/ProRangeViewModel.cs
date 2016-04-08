@@ -73,6 +73,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                             CreateMapElement();
 
                         maxDistance = 0.0;
+                        if (IsInteractive)
+                            NumberOfRings = 0;
                     }
 
                 RaisePropertyChanged(() => IsToolActive);
