@@ -42,7 +42,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             LineDistanceType = DistanceTypes.Meters;
 
             //commands
-            //SaveAsCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnSaveAs());
+            SaveAsCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnSaveAs());
             ClearGraphicsCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnClearGraphics());
             //ActivateToolCommand = new RelayCommand(OnActivateTool);
             EnterKeyCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnEnterKeyCommand);
