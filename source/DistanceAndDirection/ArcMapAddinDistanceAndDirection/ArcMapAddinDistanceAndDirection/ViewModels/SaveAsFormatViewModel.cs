@@ -19,7 +19,7 @@ using DistanceAndDirectionLibrary.ViewModels;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
-    class SelectSaveAsFormatViewModel : BaseViewModel
+    class SaveAsFormatViewModel : BaseViewModel
     {
 
         private bool featureShapeIsChecked = true;
