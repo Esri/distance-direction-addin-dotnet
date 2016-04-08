@@ -27,9 +27,7 @@ using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
 using System.Windows.Controls;
-using ArcGIS.Core.Data;
 using ProAppDistanceAndDirectionModule.Views;
-using System.IO;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -70,8 +68,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public ArcGIS.Desktop.Framework.RelayCommand SaveAsCommand { get; set; }
         public ArcGIS.Desktop.Framework.RelayCommand ClearGraphicsCommand { get; set; }
-        public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
-        //update
+        //public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
         public DistanceAndDirectionLibrary.Helpers.RelayCommand EnterKeyCommand { get; set; }
         public ArcGIS.Desktop.Framework.RelayCommand EditPropertiesDialogCommand { get; set; }
 
