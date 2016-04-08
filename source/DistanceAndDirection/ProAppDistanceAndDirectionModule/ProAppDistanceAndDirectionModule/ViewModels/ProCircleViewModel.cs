@@ -45,7 +45,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         //    AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);
         //}
 
-        public new ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
+        public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
 
         #region Properties
 
