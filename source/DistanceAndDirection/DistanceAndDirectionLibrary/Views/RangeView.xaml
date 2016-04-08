@@ -125,18 +125,7 @@
                           Margin="3,3,0,0"
             ItemsSource="{Binding Source={StaticResource lineDistanceData}}" 
                           SelectedItem="{Binding Path=LineDistanceType,
-                                                 Mode=TwoWay}">
-                    <ComboBox.Style>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="IsEnabled" Value="True" />
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=cbInteractive, Path=IsChecked}" Value="True">
-                                    <Setter Property="IsEnabled" Value="False" />
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </ComboBox.Style>
-                </ComboBox>
+                                                 Mode=TwoWay}" />
                 <TextBlock x:Name="NumberofRadialsLabel"
                            Margin="3,3,0,0"
                            Text="{x:Static prop:Resources.LabelRangeRingsNumberofRadials}" />
