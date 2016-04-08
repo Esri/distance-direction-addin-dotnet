@@ -38,12 +38,12 @@ namespace ProAppDistanceAndDirectionModule
             //lets limit how many times we call this
             // take the latest event args every so often
             // this will keep us from drawing too many feedback geometries
-            mouseSubject.Sample(TimeSpan.FromMilliseconds(25)).Subscribe(x =>
+            mouseSubject.Sample(TimeSpan.FromMilliseconds(50)).Subscribe(async (x) =>
                 {
-                    var mp = QueuedTask.Run(() =>
+                    var mp = await QueuedTask.Run(() =>
                     {
                         return MapView.Active.ClientToMap(x.ClientPoint);
-                    }).Result;
+                    });
                     Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
                 });
 
@@ -79,7 +79,7 @@ namespace ProAppDistanceAndDirectionModule
             base.OnToolMouseDown(e);
         }
 
-        protected override async void OnToolMouseMove(MapViewMouseEventArgs e)
+        protected override void OnToolMouseMove(MapViewMouseEventArgs e)
         {
             try
             {
