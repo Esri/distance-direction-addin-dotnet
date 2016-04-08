@@ -29,6 +29,9 @@ using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
 using System.Windows.Controls;
+using ArcGIS.Core.Data;
+using ProAppDistanceAndDirectionModule.Views;
+using System.IO;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -114,11 +117,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private static System.IDisposable _overlayObject = null;
         // lists to store GUIDs of graphics, temp feedback and map graphics
         private static List<Graphic> GraphicsList = new List<Graphic>();
+        private FeatureClassUtils fcUtils = new FeatureClassUtils();
+        private KMLUtils kmlUtils = new KMLUtils();
 
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
         //internal INewLineFeedback feedback = null;
-        //internal FeatureClassUtils fcUtils = new FeatureClassUtils();
+
         //internal KMLUtils kmlUtils = new KMLUtils();
         //internal SaveFileDialog sfDlg = null;
 
@@ -506,8 +511,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Saves graphics to file gdb or shp file
         /// </summary>
         /// <param name="obj"></param>
-        private void OnSaveAs()
-        {
+        //private void OnSaveAs()
+        //{
             //var dlg = new SelectSaveAsFormatView();
             //var vm = dlg.DataContext as SelectSaveAsFormatViewModel;
 
@@ -582,7 +587,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             //        map.AddLayer((ILayer)outputFeatureLayer);
             //    }
             //}
-        }
+        //}
 
         private string PromptSaveFileDialog()
         {
@@ -1251,6 +1256,62 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         //    feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
         //}
+
+        /// <summary>
+        /// Saves graphics to file gdb or shp file
+        /// </summary>
+        /// <param name="obj"></param>
+        private void OnSaveAs()
+        {
+            var dlg = new ProSaveAsFormatView();
+            dlg.DataContext = new ProSaveAsFormatViewModel();
+            var vm = dlg.DataContext as ProSaveAsFormatViewModel;
+
+            if (dlg.ShowDialog() == true)
+            {
+                // Get the graphics list for the selected tab
+                List<Graphic> typeGraphicsList = new List<Graphic>();
+                if (this is ProLinesViewModel)
+                {
+                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList();
+                }
+                else if (this is ProCircleViewModel)
+                {
+                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Circle).ToList();
+                }
+                else if (this is ProEllipseViewModel)
+                {
+                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Ellipse).ToList();
+                }
+                else if (this is ProRangeViewModel)
+                {
+                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList();
+                }
+
+                string path = fcUtils.PromptUserWithSaveDialog(vm.FeatureIsChecked, vm.ShapeIsChecked, vm.KmlIsChecked);
+                if (path != null)
+                {
+                    try
+                    {
+                        string folderName = System.IO.Path.GetDirectoryName(path);
+
+                        if (vm.FeatureIsChecked)
+                        {
+                            fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active);
+                        }
+                        else if (vm.ShapeIsChecked || vm.KmlIsChecked)
+                        {
+                            fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, vm.KmlIsChecked);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+                }
+            }
+        }
+
         #endregion Private Functions
 
     }

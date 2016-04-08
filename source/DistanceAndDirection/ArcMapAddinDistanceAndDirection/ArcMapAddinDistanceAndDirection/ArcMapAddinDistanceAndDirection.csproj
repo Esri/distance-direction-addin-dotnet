@@ -137,11 +137,8 @@
     <Compile Include="ViewModels\LinesViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
     <Compile Include="ViewModels\RangeViewModel.cs" />
-    <Compile Include="ViewModels\SelectSaveAsFormatViewModel.cs" />
+    <Compile Include="ViewModels\SaveAsFormatViewModel.cs" />
     <Compile Include="ViewModels\TabBaseViewModel.cs" />
-    <Compile Include="Views\SelectSaveAsFormatView.xaml.cs">
-      <DependentUpon>SelectSaveAsFormatView.xaml</DependentUpon>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Config.esriaddinx">
@@ -172,10 +169,6 @@
       <SubType>Code</SubType>
     </Compile>
     <AddInContent Include="Images\DockableWindowDistanceAndDirection.png" />
-    <Page Include="Views\SelectSaveAsFormatView.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ESRI.ArcGIS.ArcMapUI">
@@ -211,12 +204,7 @@
   <ItemGroup>
     <AddInContent Include="Images\MapPointTool.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Attributes\" />
-    <Folder Include="Enums\" />
-    <Folder Include="Helpers\" />
-    <Folder Include="ValueConverters\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj">
       <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
