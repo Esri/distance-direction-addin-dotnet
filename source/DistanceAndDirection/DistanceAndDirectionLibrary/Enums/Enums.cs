@@ -57,6 +57,39 @@ namespace DistanceAndDirectionLibrary
         SurveyFoot = 5
     }
 
+    public enum RateTimeTypes : int
+    {
+        [LocalizableDescription(@"EnumMilesSec", typeof(Resources))]
+        MilesSec = 1,
+
+        [LocalizableDescription(@"EnumMilesHour", typeof(Resources))]
+        MilesHour = 2,
+
+        [LocalizableDescription(@"EnumMetersSec", typeof(Resources))]
+        MetersSec = 3,
+
+        [LocalizableDescription(@"EnumMetersHour", typeof(Resources))]
+        MetersHour = 4,
+
+        [LocalizableDescription(@"EnumKilometersSec", typeof(Resources))]
+        KilometersSec = 5,
+
+        [LocalizableDescription(@"EnumKilometersHour", typeof(Resources))]
+        KilometersHour = 6,
+
+        [LocalizableDescription(@"EnumFeetSec", typeof(Resources))]
+        FeetSec = 7,
+
+        [LocalizableDescription(@"EnumFeetHour", typeof(Resources))]
+        FeetHour = 8,
+
+        [LocalizableDescription(@"EnumNauticalMilesSec", typeof(Resources))]
+        NauticalMilesSec = 9,
+
+        [LocalizableDescription(@"EnumNauticalMilesHour", typeof(Resources))]
+        NauticalMilesHour = 10
+    }
+
     public enum AzimuthTypes : int
     {
         [LocalizableDescription(@"EnumDegrees", typeof(Resources))]

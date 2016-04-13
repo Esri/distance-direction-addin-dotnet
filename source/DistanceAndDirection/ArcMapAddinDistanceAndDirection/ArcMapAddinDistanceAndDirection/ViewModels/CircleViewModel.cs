@@ -71,21 +71,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     return;
                 }
-                //var before = timeUnit;
-                timeUnit = value;
-                //timeValue = ConvertTime(before, value);
+                timeUnit = value;  
 
-                UpdateDistance(travelTime * travelRate, RateUnit);
+                UpdateDistance(TravelTime * travelRate, RateUnit);
 
                 RaisePropertyChanged(() => TimeUnit);
             }
         }
 
-        double travelTime = 0.0;
+        double travelTimeOld = 0.0;
         /// <summary>
         /// Property for time display
         /// </summary>
-        public double TravelTime
+        public double TravelTimeOld
         {
             get
             {
@@ -100,6 +98,47 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // we need to make sure we are in the same units as the Distance property before setting
                 UpdateDistance(travelRate * travelTime, RateUnit);
+
+                RaisePropertyChanged(() => TravelTime);
+            }
+        }
+
+        double travelTime = 0.0;
+        /// <summary>
+        /// Property for time display
+        /// </summary>
+        public double TravelTime
+        {
+            get
+            {
+                return travelTime;
+                //switch (TimeUnit)
+                //{
+                //    case TimeUnits.Seconds:
+                //        {
+                //            return travelTime;
+                //        }
+                //    case TimeUnits.Minutes:
+                //        {
+                //            return travelTime * 60;
+                //        }
+                //    case TimeUnits.Hours:
+                //        {
+                //            return travelTime * 3600;
+                //        }
+                //    default:
+                //        return travelTime;
+                //}
+            }
+            set
+            {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
+                travelTime = value;
+
+                // we need to make sure we are in the same units as the Distance property before setting
+                UpdateDistance(travelRate * TravelTime, RateUnit);
 
                 RaisePropertyChanged(() => TravelTime);
             }
@@ -135,8 +174,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        DistanceTypes rateUnit = DistanceTypes.Meters;
-        public DistanceTypes RateUnit
+        DistanceTypes rateUnitOld = DistanceTypes.Meters;
+        public DistanceTypes RateUnitOld
         {
             get
             {
@@ -156,6 +195,71 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 UpdateDistance(travelTime * travelRate, RateUnit);
 
                 RaisePropertyChanged(() => RateUnit);
+            }
+        }
+
+        DistanceTypes rateUnit = DistanceTypes.Meters;
+        public DistanceTypes RateUnit
+        {
+            get
+            {
+                switch (RateTimeUnit)
+                {
+                    case RateTimeTypes.FeetHour:
+                    case RateTimeTypes.FeetSec:
+                        return DistanceTypes.Feet;
+                    case RateTimeTypes.KilometersHour:
+                    case RateTimeTypes.KilometersSec:
+                        return DistanceTypes.Kilometers;
+                    case RateTimeTypes.MetersHour:
+                    case RateTimeTypes.MetersSec:
+                        return DistanceTypes.Meters;
+                    // TODO: Update this when Miles are added to DistanceTypes
+                    case RateTimeTypes.MilesHour:
+                    case RateTimeTypes.MilesSec:
+                        return DistanceTypes.NauticalMile;
+                    case RateTimeTypes.NauticalMilesHour:
+                    case RateTimeTypes.NauticalMilesSec:
+                        return DistanceTypes.NauticalMile;
+                    default:
+                        return DistanceTypes.Meters;
+                }
+            }
+            set
+            {
+                if (rateUnit == value)
+                {
+                    return;
+                }
+                //var before = rateUnit;
+                rateUnit = value;
+                //UpdateDistanceFromTo(before, value);
+                //rateValue = Distance;
+
+                UpdateDistance(travelTime * travelRate, RateUnit);
+
+                RaisePropertyChanged(() => RateUnit);
+            }
+        }
+
+        RateTimeTypes rateTimeUnit;
+        public RateTimeTypes RateTimeUnit
+        {
+            get
+            {
+                return rateTimeUnit;
+            }
+            set
+            {
+                if (rateTimeUnit == value)
+                {
+                    return;
+                }
+                rateTimeUnit = value;
+
+                UpdateDistance(travelTime * travelRate, RateUnit);
+
+                RaisePropertyChanged(() => RateTimeUnit);
             }
         }
 

@@ -22,6 +22,13 @@
             <x:TypeExtension TypeName="local:DistanceTypes" />
         </ObjectDataProvider.MethodParameters>
     </ObjectDataProvider>
+    <ObjectDataProvider x:Key="rateTimeData"
+                            MethodName="GetValues"
+                            ObjectType="{x:Type sys:Enum}">
+        <ObjectDataProvider.MethodParameters>
+            <x:TypeExtension TypeName="local:RateTimeTypes" />
+        </ObjectDataProvider.MethodParameters>
+    </ObjectDataProvider>
     <!-- store here your styles -->
     <Style TargetType="ComboBox">
             <Setter Property="ItemTemplate">
