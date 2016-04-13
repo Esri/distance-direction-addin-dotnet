@@ -223,7 +223,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        RateTimeTypes rateTimeUnit;
+        RateTimeTypes rateTimeUnit = RateTimeTypes.MilesHour;
         public RateTimeTypes RateTimeUnit
         {
             get
