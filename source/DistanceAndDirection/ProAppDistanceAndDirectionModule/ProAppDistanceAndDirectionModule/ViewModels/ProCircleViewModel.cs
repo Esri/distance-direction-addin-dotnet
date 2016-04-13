@@ -28,7 +28,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
             {
-                FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
+                await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
                 Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Circle);
             });
 

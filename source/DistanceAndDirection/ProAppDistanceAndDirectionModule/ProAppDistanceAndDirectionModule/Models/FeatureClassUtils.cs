@@ -121,7 +121,7 @@ namespace ProAppDistanceAndDirectionModule.Models
                 
             try
             {
-                await QueuedTask.Run(async () =>
+                await QueuedTask.Run(() =>
                 {
                     var layer = MapView.Active.GetSelectedLayers()[0];
                     if (layer is FeatureLayer)
