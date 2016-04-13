@@ -921,6 +921,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var dlg = new ProSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
             var vm = dlg.DataContext as ProSaveAsFormatViewModel;
+            GeomType geomType = GeomType.Polygon;
 
             if (dlg.ShowDialog() == true)
             {
@@ -929,6 +930,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (this is ProLinesViewModel)
                 {
                     typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList();
+                    geomType = GeomType.PolyLine;
                 }
                 else if (this is ProCircleViewModel)
                 {
@@ -952,11 +954,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                         if (vm.FeatureIsChecked)
                         {
-                            await fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active);
+                            await fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, geomType);
                         }
                         else if (vm.ShapeIsChecked || vm.KmlIsChecked)
                         {
-                            await fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, vm.KmlIsChecked);
+                            await fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, geomType, vm.KmlIsChecked);
                         }
                     }
                     catch (Exception ex)
