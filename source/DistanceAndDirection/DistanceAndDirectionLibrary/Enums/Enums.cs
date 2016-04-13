@@ -119,14 +119,14 @@ namespace DistanceAndDirectionLibrary
 
     public enum TimeUnits : int
     {
-        [LocalizableDescription(@"EnumHours", typeof(Resources))]
-        Hours = 1,
+        [LocalizableDescription(@"EnumSeconds", typeof(Resources))]
+        Seconds = 1,
 
         [LocalizableDescription(@"EnumMinutes", typeof(Resources))]
         Minutes = 2,
 
-        [LocalizableDescription(@"EnumSeconds", typeof(Resources))]
-        Seconds = 3
+        [LocalizableDescription(@"EnumHours", typeof(Resources))]
+        Hours = 3
     }
 
     public enum GraphicTypes : int
