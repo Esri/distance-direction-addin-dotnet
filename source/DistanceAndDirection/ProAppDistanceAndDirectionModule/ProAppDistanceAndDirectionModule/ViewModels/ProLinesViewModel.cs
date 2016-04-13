@@ -34,7 +34,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async ()=> 
                 {
-                    FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
+                    await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
                     Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Line);
                 });
 
@@ -208,7 +208,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Azimuth = 0.0;
         }
 
-        internal override void OnNewMapPointEvent(object obj)
+        internal async override void OnNewMapPointEvent(object obj)
         {
             if (!IsActiveTab)
                 return;
@@ -224,7 +224,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                await AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
                 return;
             }
 

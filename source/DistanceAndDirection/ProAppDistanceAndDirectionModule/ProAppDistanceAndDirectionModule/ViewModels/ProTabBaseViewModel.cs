@@ -28,6 +28,7 @@ using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
 using System.Windows.Controls;
 using ProAppDistanceAndDirectionModule.Views;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -377,9 +378,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal async void AddGraphicToMap(Geometry geom, bool IsTempGraphic = false, double size = 1.0)
         {
             // default color Red
-            AddGraphicToMap(geom, ColorFactory.Red, IsTempGraphic, size);
+            await AddGraphicToMap(geom, ColorFactory.Red, IsTempGraphic, size);
         }
-        internal async void AddGraphicToMap(Geometry geom, CIMColor color, bool IsTempGraphic = false, double size = 1.0)
+        internal async Task AddGraphicToMap(Geometry geom, CIMColor color, bool IsTempGraphic = false, double size = 1.0)
         {
             if (geom == null || MapView.Active == null)
                 return;
@@ -797,7 +798,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return UpdateDistanceFromTo(DistanceTypes.Meters, LineDistanceType, meters);
         }
 
-        private async void SetGeodesicDistance(MapPoint p1, MapPoint p2)
+        private void SetGeodesicDistance(MapPoint p1, MapPoint p2)
         {
             // convert to current linear unit
             Distance = GetGeodesicDistance(p1, p2);
@@ -915,7 +916,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Saves graphics to file gdb or shp file
         /// </summary>
         /// <param name="obj"></param>
-        private void OnSaveAs()
+        private async void OnSaveAs()
         {
             var dlg = new ProSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
@@ -951,11 +952,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                         if (vm.FeatureIsChecked)
                         {
-                            fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active);
+                            await fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active);
                         }
                         else if (vm.ShapeIsChecked || vm.KmlIsChecked)
                         {
-                            fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, vm.KmlIsChecked);
+                            await fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, vm.KmlIsChecked);
                         }
                     }
                     catch (Exception ex)
