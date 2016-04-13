@@ -174,6 +174,12 @@
   <data name="EnumFeet" xml:space="preserve">
     <value>Feet</value>
   </data>
+  <data name="EnumFeetHour" xml:space="preserve">
+    <value>Feet / Hour</value>
+  </data>
+  <data name="EnumFeetSec" xml:space="preserve">
+    <value>Feet / Second</value>
+  </data>
   <data name="EnumFull" xml:space="preserve">
     <value>Full</value>
   </data>
@@ -186,17 +192,41 @@
   <data name="EnumKilometers" xml:space="preserve">
     <value>Kilometers</value>
   </data>
+  <data name="EnumKilometersHour" xml:space="preserve">
+    <value>Kilometers / Hour</value>
+  </data>
+  <data name="EnumKilometersSec" xml:space="preserve">
+    <value>Kilometers / Second</value>
+  </data>
   <data name="EnumLoxodrome" xml:space="preserve">
     <value>Loxodrome</value>
   </data>
   <data name="EnumMeters" xml:space="preserve">
     <value>Meters</value>
   </data>
+  <data name="EnumMetersHour" xml:space="preserve">
+    <value>Meters / Hour</value>
+  </data>
+  <data name="EnumMetersSec" xml:space="preserve">
+    <value>Meters / Second</value>
+  </data>
+  <data name="EnumMilesHour" xml:space="preserve">
+    <value>Miles / Hour</value>
+  </data>
+  <data name="EnumMilesSec" xml:space="preserve">
+    <value>Miles / Second</value>
+  </data>
   <data name="EnumMils" xml:space="preserve">
     <value>Mils</value>
   </data>
   <data name="EnumNauticalMile" xml:space="preserve">
     <value>Nautical Mile</value>
+  </data>
+  <data name="EnumNauticalMilesHour" xml:space="preserve">
+    <value>Nautical Miles / Hour</value>
+  </data>
+  <data name="EnumNauticalMilesSec" xml:space="preserve">
+    <value>Nautical Miles / Second</value>
   </data>
   <data name="EnumPoints" xml:space="preserve">
     <value>Points</value>

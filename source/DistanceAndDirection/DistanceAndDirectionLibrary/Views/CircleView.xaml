@@ -147,8 +147,8 @@
                         </TextBox>
                         <ComboBox x:Name="cmbRateType"
                                   Margin="3,3,0,0"
-                                  ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
-                                  SelectedItem="{Binding Path=RateUnit,
+                                  ItemsSource="{Binding Source={StaticResource rateTimeData}}"
+                                  SelectedItem="{Binding Path=RateTimeUnit,
                                                          Mode=TwoWay}" />
                     </StackPanel>
                 </Expander>
