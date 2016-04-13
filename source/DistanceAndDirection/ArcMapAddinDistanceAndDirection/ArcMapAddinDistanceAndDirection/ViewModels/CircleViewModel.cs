@@ -79,34 +79,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        double travelTimeOld = 0.0;
-        /// <summary>
-        /// Property for time display
-        /// </summary>
-        public double TravelTimeOld
-        {
-            get
-            {
-                return travelTime;
-            }
-            set
-            {
-                if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
-
-                travelTime = value;
-
-                // we need to make sure we are in the same units as the Distance property before setting
-                UpdateDistance(travelRate * travelTime, RateUnit);
-
-                RaisePropertyChanged(() => TravelTime);
-            }
-        }
-
         /// <summary>
         /// Property for travel time in seconds
         /// </summary>
-        public double TravelTimeInSeconds
+        private double TravelTimeInSeconds
         {
             get
             {
@@ -130,12 +106,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }   
         }
 
-
-        private double travelRateInSeconds;
         /// <summary>
         /// Property for travel rate in seconds
         /// </summary>
-        public double TravelRateInSeconds
+        private double TravelRateInSeconds
         {
             get
             {
@@ -207,30 +181,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        DistanceTypes rateUnitOld = DistanceTypes.Meters;
-        public DistanceTypes RateUnitOld
-        {
-            get
-            {
-                return rateUnit;
-            }
-            set
-            {
-                if (rateUnit == value)
-                {
-                    return;
-                }
-                //var before = rateUnit;
-                rateUnit = value;
-                //UpdateDistanceFromTo(before, value);
-                //rateValue = Distance;
-
-                UpdateDistance(travelTime * travelRate, RateUnit);
-
-                RaisePropertyChanged(() => RateUnit);
-            }
-        }
-
         DistanceTypes rateUnit = DistanceTypes.Meters;
         public DistanceTypes RateUnit
         {
@@ -264,10 +214,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     return;
                 }
-                //var before = rateUnit;
+
                 rateUnit = value;
-                //UpdateDistanceFromTo(before, value);
-                //rateValue = Distance;
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
 
