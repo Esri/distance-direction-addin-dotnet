@@ -137,6 +137,12 @@ namespace DistanceAndDirectionLibrary
         RangeRing = 4
     }
 
+    public enum GeomType : int
+    {
+        PolyLine = 1,
+        Polygon = 2
+    }
+
     public enum SaveAsType : int
     {
         FileGDB = 1,

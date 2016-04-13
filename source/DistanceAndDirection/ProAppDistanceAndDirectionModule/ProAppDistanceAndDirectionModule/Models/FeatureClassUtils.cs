@@ -32,6 +32,7 @@ using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Mapping;
 
 using DistanceAndDirectionLibrary;
+using System.Windows;
 
 namespace ProAppDistanceAndDirectionModule.Models
 {
@@ -91,7 +92,7 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// <param name="graphicsList">List of graphics for selected tab</param>
         /// <param name="ipSpatialRef">Spatial Reference being used</param>
         /// <returns>Output featureclass</returns>
-        public async Task CreateFCOutput(string outputPath, SaveAsType saveAsType, List<Graphic> graphicsList, SpatialReference spatialRef, MapView mapview, bool isKML = false)
+        public async Task CreateFCOutput(string outputPath, SaveAsType saveAsType, List<Graphic> graphicsList, SpatialReference spatialRef, MapView mapview, GeomType geomType, bool isKML = false)
         {
             string dataset = System.IO.Path.GetFileName(outputPath);
             string connection = System.IO.Path.GetDirectoryName(outputPath);
@@ -100,7 +101,7 @@ namespace ProAppDistanceAndDirectionModule.Models
             {
                 await QueuedTask.Run(async () =>
                 {
-                    await CreateFeatureClass(dataset, "POLYLINE", connection, spatialRef, graphicsList, mapview, isKML);
+                    await CreateFeatureClass(dataset, geomType, connection, spatialRef, graphicsList, mapview, isKML);
                 });  
             }
             catch (Exception ex)
@@ -114,13 +115,13 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// </summary>
         /// <param name="graphicsList">List of graphics to add to table</param>
         /// <returns></returns>
-        private static async Task CreatePolyLineFeatures(List<Graphic> graphicsList)
+        private static async Task CreateFeatures(List<Graphic> graphicsList)
         {
             RowBuffer rowBuffer = null;
                 
             try
             {
-                await QueuedTask.Run(async () =>
+                await QueuedTask.Run(() =>
                 {
                     var layer = MapView.Active.GetSelectedLayers()[0];
                     if (layer is FeatureLayer)
@@ -139,7 +140,10 @@ namespace ProAppDistanceAndDirectionModule.Models
                                     //int nameIndex = featureClassDefinition.FindField("NAME");
                                     rowBuffer = table.CreateRowBuffer();
 
-                                    rowBuffer[shapeIndex] = new PolylineBuilder(graphic.Geometry as Polyline).ToGeometry();
+                                    if (graphic.Geometry is Polyline)
+                                        rowBuffer[shapeIndex] = new PolylineBuilder(graphic.Geometry as Polyline).ToGeometry();
+                                    else if (graphic.Geometry is Polygon)
+                                        rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
 
                                     Row row = table.CreateRow(rowBuffer);
 
@@ -182,17 +186,19 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// <param name="mapview">MapView object</param>
         /// <param name="isKML">Is this a kml output</param>
         /// <returns></returns>
-        private static async Task CreateFeatureClass(string dataset, string featureclassType, string connection, SpatialReference spatialRef, List<Graphic> graphicsList, MapView mapview, bool isKML = false)
+        private static async Task CreateFeatureClass(string dataset, GeomType geomType, string connection, SpatialReference spatialRef, List<Graphic> graphicsList, MapView mapview, bool isKML = false)
         {
             try
             {
+                string strGeomType = geomType == GeomType.PolyLine ? "POLYLINE" : "POLYGON";
+
                 List<object> arguments = new List<object>();
                 // store the results in the geodatabase
                 arguments.Add(connection);
                 // name of the feature class
                 arguments.Add(dataset);
                 // type of geometry
-                arguments.Add(featureclassType);
+                arguments.Add(strGeomType);
                 // no template
                 arguments.Add("");
                 // no z values
@@ -201,10 +207,18 @@ namespace ProAppDistanceAndDirectionModule.Models
                 arguments.Add("DISABLED");
                 arguments.Add(spatialRef);
 
+                //IReadOnlyList<string> valueArray = null;
+                //await QueuedTask.Run(async () =>
+                //{
+                //    valueArray = Geoprocessing.MakeValueArray(arguments.ToArray());
+                //});
+
+                //block the CIM for a second
+                //Task.Delay(5000).Wait();
                 var valueArray = Geoprocessing.MakeValueArray(arguments.ToArray());
                 IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", valueArray);
 
-                await CreatePolyLineFeatures(graphicsList);
+                await CreateFeatures(graphicsList);
 
                 if (isKML)
                 {                
@@ -222,7 +236,7 @@ namespace ProAppDistanceAndDirectionModule.Models
             }
             catch (Exception ex)
             {
-
+                MessageBox.Show(ex.ToString());
             }
         }
 /*
