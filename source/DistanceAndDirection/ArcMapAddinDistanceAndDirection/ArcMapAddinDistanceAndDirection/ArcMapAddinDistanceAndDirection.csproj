@@ -205,7 +205,6 @@
   <ItemGroup>
     <AddInContent Include="Images\MapPointTool.png" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj">
       <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
