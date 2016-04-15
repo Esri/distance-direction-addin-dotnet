@@ -221,6 +221,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private void DrawRings()
         {
+            if (Point1 == null || double.IsNaN(Distance))
+                return;
+
             double radius = 0.0;
 
             try
@@ -354,6 +357,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void ConstructGeoCircle()
         {
+            if (Point1 == null || double.IsNaN(Distance))
+                return;
+
             var param = new GeometryEngine.GeodesicEllipseParameter();
 
             param.Center = new Coordinate(Point1);
@@ -373,7 +379,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateFeedbackWithGeoCircle()
         {
-            if (Point1 == null || Distance <= 0.0)
+            if (Point1 == null || double.IsNaN(Distance) || Distance <= 0.0)
                 return;
 
             var param = new GeometryEngine.GeodesicEllipseParameter();

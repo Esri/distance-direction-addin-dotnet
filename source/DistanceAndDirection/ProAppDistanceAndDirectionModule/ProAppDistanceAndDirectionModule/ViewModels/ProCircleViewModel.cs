@@ -427,7 +427,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private void CreateCircle(bool isFeedback)
         {
-            if (Point1 == null || Distance <= 0.0)
+            if (Point1 == null || double.IsNaN(Distance) || Distance <= 0.0)
             {
                 return;
             }

@@ -285,7 +285,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateFeedbackWithEllipse(bool HasMinorAxis = true)
         {
-            if (!HasPoint1)
+            if (!HasPoint1 || double.IsNaN(MajorAxisDistance) || double.IsNaN(MinorAxisDistance))
                 return;
             
             var minorAxis = MinorAxisDistance;
@@ -444,6 +444,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void DrawEllipse()
         {
+            if (Point1 == null || double.IsNaN(MajorAxisDistance) || double.IsNaN(MinorAxisDistance))
+                return;
+
             try
             {
                 var param = new GeometryEngine.GeodesicEllipseParameter();
