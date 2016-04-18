@@ -210,6 +210,9 @@
   <data name="EnumMetersSec" xml:space="preserve">
     <value>Meters / Second</value>
   </data>
+  <data name="EnumMiles" xml:space="preserve">
+    <value>Miles</value>
+  </data>
   <data name="EnumMilesHour" xml:space="preserve">
     <value>Miles / Hour</value>
   </data>
@@ -239,6 +242,9 @@
   </data>
   <data name="EnumSurveyFoot" xml:space="preserve">
     <value>US Survey Foot</value>
+  </data>
+  <data name="EnumYards" xml:space="preserve">
+    <value>Yards</value>
   </data>
   <data name="LabelAngle" xml:space="preserve">
     <value>Angle</value>
