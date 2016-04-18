@@ -695,6 +695,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             IsActiveTab = (obj == this);
         }
 
+        internal double ConvertFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
+        {
+            double result = 0.0;
+
+            var linearUnitFrom = GetLinearUnit(fromType);
+            var linearUnitTo = GetLinearUnit(toType);
+
+            var unit = LinearUnit.CreateLinearUnit(linearUnitFrom.FactoryCode);
+
+            result = unit.ConvertTo(input, linearUnitTo);
+
+            return result;
+        }
+
+//        private esriUnits GetEsriUnit(DistanceTypes distanceType)
+
         /// <summary>
         /// Ugly method to convert to/from different types of distance units
         /// </summary>

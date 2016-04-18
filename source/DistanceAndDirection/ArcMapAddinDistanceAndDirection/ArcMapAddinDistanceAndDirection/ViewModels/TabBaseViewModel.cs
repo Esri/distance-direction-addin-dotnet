@@ -968,6 +968,49 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             return srf3.CreateUnit(unitType) as ILinearUnit;
         }
 
+        internal double ConvertFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
+        {
+            double result = 0.0;
+
+            var converter = new UnitConverterClass() as IUnitConverter;
+
+            result = converter.ConvertUnits(input, GetEsriUnit(fromType), GetEsriUnit(toType));
+
+            return result;
+        }
+
+        private esriUnits GetEsriUnit(DistanceTypes distanceType)
+        {
+            esriUnits unit = esriUnits.esriMeters;
+
+            switch(distanceType)
+            {
+                case DistanceTypes.Feet:
+                    unit = esriUnits.esriFeet;
+                    break;
+                case DistanceTypes.Kilometers:
+                    unit = esriUnits.esriKilometers;
+                    break;
+                case DistanceTypes.Meters:
+                    unit = esriUnits.esriMeters;
+                    break;
+                case DistanceTypes.Miles:
+                    unit = esriUnits.esriMiles;
+                    break;
+                case DistanceTypes.NauticalMile:
+                    unit = esriUnits.esriNauticalMiles;
+                    break;
+                case DistanceTypes.Yards:
+                    unit = esriUnits.esriYards;
+                    break;
+                default:
+                    unit = esriUnits.esriMeters;
+                    break;
+            }
+
+            return unit;
+        }
+
         /// <summary>
         /// Ugly method to convert to/from different types of distance units
         /// </summary>
