@@ -153,8 +153,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType)
         {
-            Distance = distance;
-            UpdateDistanceFromTo(fromDistanceType, LineDistanceType);
+            Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
             UpdateFeedbackWithGeoCircle();
         }
 
