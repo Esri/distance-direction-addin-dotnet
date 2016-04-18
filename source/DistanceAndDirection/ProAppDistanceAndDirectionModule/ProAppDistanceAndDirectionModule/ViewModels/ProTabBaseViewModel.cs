@@ -848,8 +848,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 case DistanceTypes.Kilometers:
                     result = LinearUnit.Kilometers;
                     break;
+                case DistanceTypes.Miles:
+                    result = LinearUnit.Miles;
+                    break;
                 case DistanceTypes.NauticalMile:
                     result = LinearUnit.NauticalMiles;
+                    break;
+                case DistanceTypes.Yards:
+                    result = LinearUnit.Yards;
                     break;
                 case DistanceTypes.Meters:
                 default:

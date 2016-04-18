@@ -954,11 +954,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 case DistanceTypes.Meters:
                     unitType = (int)esriSRUnitType.esriSRUnit_Meter;
                     break;
+                case DistanceTypes.Miles:
+                    unitType = (int)esriSRUnitType.esriSRUnit_SurveyMile;
+                    break;
                 case DistanceTypes.NauticalMile:
                     unitType = (int)esriSRUnitType.esriSRUnit_NauticalMile;
                     break;
                 case DistanceTypes.SurveyFoot:
                     unitType = (int)esriSRUnitType.esriSRUnit_SurveyFoot;
+                    break;
+                case DistanceTypes.Yards:
+                    unitType = (int)esriSRUnit2Type.esriSRUnit_SurveyYard;
                     break;
                 default:
                     unitType = (int)esriSRUnitType.esriSRUnit_Meter;
