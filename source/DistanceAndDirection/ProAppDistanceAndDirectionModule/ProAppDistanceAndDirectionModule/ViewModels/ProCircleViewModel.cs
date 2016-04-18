@@ -168,7 +168,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType)
         {
-            Distance = UpdateDistanceFromTo(fromDistanceType, LineDistanceType, distance);
+            Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
             UpdateFeedbackWithGeoCircle();
         }
 

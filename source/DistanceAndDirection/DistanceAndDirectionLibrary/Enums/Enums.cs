@@ -50,11 +50,14 @@ namespace DistanceAndDirectionLibrary
         [LocalizableDescription(@"EnumMeters", typeof(Resources))]
         Meters = 3,
 
+        [LocalizableDescription(@"EnumMiles", typeof(Resources))]
+        Miles = 4,
+        
         [LocalizableDescription(@"EnumNauticalMile", typeof(Resources))]
-        NauticalMile = 4,
+        NauticalMile = 5,
 
-        [LocalizableDescription(@"EnumSurveyFoot", typeof(Resources))]
-        SurveyFoot = 5
+        [LocalizableDescription(@"EnumYards", typeof(Resources))]
+        Yards = 6
     }
 
     public enum RateTimeTypes : int

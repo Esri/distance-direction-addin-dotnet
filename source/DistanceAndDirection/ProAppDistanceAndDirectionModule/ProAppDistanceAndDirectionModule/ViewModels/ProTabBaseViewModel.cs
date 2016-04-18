@@ -305,7 +305,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 var before = lineDistanceType;
                 lineDistanceType = value;
-                Distance = UpdateDistanceFromTo(before, value, Distance);
+                Distance = ConvertFromTo(before, value, Distance);
             }
         }
 
@@ -695,65 +695,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             IsActiveTab = (obj == this);
         }
 
-        /// <summary>
-        /// Ugly method to convert to/from different types of distance units
-        /// </summary>
-        /// <param name="fromType">DistanceTypes</param>
-        /// <param name="toType">DistanceTypes</param>
-        internal double UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
+        internal double ConvertFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
         {
-            try
-            {
-                double length = input;
+            double result = 0.0;
 
-                if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Kilometers)
-                    length /= 1000.0;
-                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Feet)
-                    length *= 3.28084;
-                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.SurveyFoot)
-                    length *= 3.280833333;
-                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.NauticalMile)
-                    length *= 0.000539957;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Meters)
-                    length *= 1000.0;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Feet)
-                    length *= 3280.84;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.SurveyFoot)
-                    length *= 3280.833333;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.NauticalMile)
-                    length *= 0.539957;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Kilometers)
-                    length *= 0.0003048;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Meters)
-                    length *= 0.3048;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.SurveyFoot)
-                    length *= 0.999998000004;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.NauticalMile)
-                    length *= 0.000164579;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Kilometers)
-                    length *= 0.0003048006096;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Meters)
-                    length *= 0.3048006096;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Feet)
-                    length *= 1.000002;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.NauticalMile)
-                    length *= 0.00016457916285097;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Kilometers)
-                    length *= 1.852001376036;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Meters)
-                    length *= 1852.001376036;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Feet)
-                    length *= 6076.1154855643;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.SurveyFoot)
-                    length *= 6076.1033333576;
+            var linearUnitFrom = GetLinearUnit(fromType);
+            var linearUnitTo = GetLinearUnit(toType);
 
-                return length;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            return input;
+            var unit = LinearUnit.CreateLinearUnit(linearUnitFrom.FactoryCode);
+
+            result = unit.ConvertTo(input, linearUnitTo);
+
+            return result;
         }
 
         /// <summary>
@@ -795,7 +748,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             var meters = GeometryEngine.GeodesicDistance(p1, p2);
             // convert to current linear unit
-            return UpdateDistanceFromTo(DistanceTypes.Meters, LineDistanceType, meters);
+            return ConvertFromTo(DistanceTypes.Meters, LineDistanceType, meters);
         }
 
         private void SetGeodesicDistance(MapPoint p1, MapPoint p2)
@@ -826,14 +779,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             switch(dtype)
             {
                 case DistanceTypes.Feet:
-                case DistanceTypes.SurveyFoot:
                     result = LinearUnit.Feet;
                     break;
                 case DistanceTypes.Kilometers:
                     result = LinearUnit.Kilometers;
                     break;
+                case DistanceTypes.Miles:
+                    result = LinearUnit.Miles;
+                    break;
                 case DistanceTypes.NauticalMile:
                     result = LinearUnit.NauticalMiles;
+                    break;
+                case DistanceTypes.Yards:
+                    result = LinearUnit.Yards;
                     break;
                 case DistanceTypes.Meters:
                 default:
