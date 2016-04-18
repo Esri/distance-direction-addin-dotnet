@@ -114,6 +114,7 @@
                         <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelTime,
+                                                Mode=OneWayToSource,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">
@@ -135,6 +136,7 @@
                         <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelRate,
+                                                Mode=OneWayToSource,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">
