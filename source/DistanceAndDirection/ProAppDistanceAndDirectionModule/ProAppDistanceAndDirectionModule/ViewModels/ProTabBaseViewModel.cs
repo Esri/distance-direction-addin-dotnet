@@ -121,19 +121,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (this is ProLinesViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Line);
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Line && g.IsTemp == false);
                 }
                 else if (this is ProCircleViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Circle);
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Circle && g.IsTemp == false);
                 }
                 else if (this is ProEllipseViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Ellipse);
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Ellipse && g.IsTemp == false);
                 }
                 else if (this is ProRangeViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.RangeRing);
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.RangeRing && g.IsTemp == false);
                 }
 
                 return false;
