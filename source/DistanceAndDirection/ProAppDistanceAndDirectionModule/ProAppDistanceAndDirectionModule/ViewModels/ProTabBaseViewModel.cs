@@ -842,7 +842,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             switch(dtype)
             {
                 case DistanceTypes.Feet:
-                case DistanceTypes.SurveyFoot:
                     result = LinearUnit.Feet;
                     break;
                 case DistanceTypes.Kilometers:

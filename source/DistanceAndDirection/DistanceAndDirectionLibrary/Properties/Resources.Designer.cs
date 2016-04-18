@@ -430,15 +430,6 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to US Survey Foot.
-        /// </summary>
-        public static string EnumSurveyFoot {
-            get {
-                return ResourceManager.GetString("EnumSurveyFoot", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to Yards.
         /// </summary>
         public static string EnumYards {

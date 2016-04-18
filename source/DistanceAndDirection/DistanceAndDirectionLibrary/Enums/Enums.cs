@@ -56,11 +56,8 @@ namespace DistanceAndDirectionLibrary
         [LocalizableDescription(@"EnumNauticalMile", typeof(Resources))]
         NauticalMile = 5,
 
-        [LocalizableDescription(@"EnumSurveyFoot", typeof(Resources))]
-        SurveyFoot = 6,
-
         [LocalizableDescription(@"EnumYards", typeof(Resources))]
-        Yards = 7
+        Yards = 6
     }
 
     public enum RateTimeTypes : int
