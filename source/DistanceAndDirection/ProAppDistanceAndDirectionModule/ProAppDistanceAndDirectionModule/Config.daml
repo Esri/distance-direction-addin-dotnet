@@ -41,7 +41,7 @@
         </tool>
       </controls>
       <dockPanes>
-        <dockPane id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane" caption="DistanceAndDirectionDockpane " className="DistanceAndDirectionDockpaneViewModel" dock="group" dockWith="esri_core_contentsDockPane">
+        <dockPane id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane" caption="Distance And Direction" className="DistanceAndDirectionDockpaneViewModel" dock="group" dockWith="esri_core_contentsDockPane">
           <content className="DistanceAndDirectionDockpaneView" />
         </dockPane>
       </dockPanes>
