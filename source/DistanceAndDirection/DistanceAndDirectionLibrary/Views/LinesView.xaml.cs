@@ -21,9 +21,20 @@ namespace DistanceAndDirectionLibrary.Views
     /// </summary>
     public partial class GRLinesView : UserControl
     {
+        #region Properties
+
+        public ComboBox CmbLineType
+        {
+            get { return cmbLineType; }
+        }
+
+        #endregion
+
         public GRLinesView()
         {
             InitializeComponent();
         }
+
+        
     }
 }
