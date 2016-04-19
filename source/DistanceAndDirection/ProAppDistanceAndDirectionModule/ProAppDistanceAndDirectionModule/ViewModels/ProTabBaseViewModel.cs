@@ -278,11 +278,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     point2Formatted = value;
                     Point2 = point;
+                    HasPoint2 = true;
                     if (HasPoint1)
                     {
                         // lets try feedback
                         SetGeodesicDistance(Point1, Point2);
-                    }
+                    }       
                 }
                 else
                 {

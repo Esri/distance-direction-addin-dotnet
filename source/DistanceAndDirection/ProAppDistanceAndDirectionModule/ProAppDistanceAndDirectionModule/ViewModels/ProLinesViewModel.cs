@@ -149,7 +149,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        private void UpdateManualFeedback()
+        private async void UpdateManualFeedback()
         {
             if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
             {
@@ -168,7 +168,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 if (segment != null)
-                    UpdateFeedbackWithGeoLine(segment);
+                    await UpdateFeedbackWithGeoLine(segment);
+            }
+            else if (LineFromType == LineFromTypes.Points && HasPoint1 && Point1 != null && HasPoint2 && Point2 != null)
+            {
+                // update feedback
+                var segment = QueuedTask.Run(() =>
+                {
+                    return LineBuilder.CreateLineSegment(Point1, Point2);
+                }).Result;
+
+                if (segment != null)
+                    await UpdateFeedbackWithGeoLine(segment);
             }
         }
 
