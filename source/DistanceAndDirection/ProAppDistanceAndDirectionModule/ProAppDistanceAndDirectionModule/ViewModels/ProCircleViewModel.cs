@@ -109,11 +109,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         }
                     case TimeUnits.Minutes:
                         {
-                            return travelTime * 60;
+                            return travelTime * 60.0;
                         }
                     case TimeUnits.Hours:
                         {
-                            return travelTime * 3600;
+                            return travelTime * 3600.0;
                         }
                     default:
                         return travelTime;
@@ -135,7 +135,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     case RateTimeTypes.MetersHour:
                     case RateTimeTypes.MilesHour:
                     case RateTimeTypes.NauticalMilesHour:
-                        return TravelRate / 3600;
+                        return TravelRate / 3600.0;
                     default:
                         return TravelRate;
                 }
@@ -267,8 +267,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 isDistanceCalcExpanded = value;
                 if (value == true)
                 {
-                    TravelRate = 0;
-                    TravelTime = 0;
+                    TravelRate = 0.0;
+                    TravelTime = 0.0;
                     Distance = 0.0;
                     ResetFeedback();
                 }
@@ -419,8 +419,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal override void Reset(bool toolReset)
         {
             base.Reset(toolReset);
-            TravelTime = 0;
-            TravelRate = 0;
+            TravelTime = 0.0;
+            TravelRate = 0.0;
         }
         /// <summary>
         /// Create geodetic circle
