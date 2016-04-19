@@ -106,9 +106,11 @@ The add-in provides the ability to create geodesic features such as lines, circl
 3. Enter a starting point and the distance of the circles radius by clicking on the map
 4. Expand the **Distance Calculator** section
 5. Enter a **Time**
-6. Enter a **Rate**
-7. Press *Enter* key and the graphic will be drawn on the map
-8. Optional - Select the Save As button to export the Circle features to a file geodatabase, shapefile, or KML
+6. Select a time unit using the drop down box
+7. Enter a **Rate**
+8. Select a rate unit using the drop down box
+9. Press *Enter* key and the graphic will be drawn on the map
+10. Optional - Select the Save As button to export the Circle features to a file geodatabase, shapefile, or KML
 
 ### Create Ellipses Interactively
 1. Choose the **Ellipse** tab on the *Distance and Direction* Tool
