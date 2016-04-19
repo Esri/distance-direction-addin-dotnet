@@ -140,7 +140,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 3. Select the **Map Point Tool** (arrow icon) next to the **Center Point** text box
 4. *First* click on the map sets the center point (green dot)
 5. Subsequent clicks draw rings from the center point
-6. Select the **Map Point Tool** a second time to stop adding rings
+6. Double-click to create final ring or select the **Map Point Tool** a second time to stop adding rings
 	* To start a second set of range rings, repeat steps 3 through 6.
 7. Optional - Select the Save As button to export the Range Ring features to a file geodatabase, shapefile, or KML
 8. Uncheck **Interactive** to return to manual entry
