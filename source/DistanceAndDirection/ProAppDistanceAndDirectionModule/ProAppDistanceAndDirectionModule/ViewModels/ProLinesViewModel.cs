@@ -20,6 +20,7 @@ using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -231,7 +232,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.OnNewMapPointEvent(obj);
         }
 
-        internal override void OnMouseMoveEvent(object obj)
+        internal override async void OnMouseMoveEvent(object obj)
         {
             if (!IsActiveTab)
                 return;
@@ -253,8 +254,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 UpdateAzimuth(segment.Angle);
-
-                UpdateFeedbackWithGeoLine(segment);
+                await UpdateFeedbackWithGeoLine(segment);                        
             }
 
             base.OnMouseMoveEvent(obj);

@@ -419,7 +419,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     overlayObjects.Add(disposable);
 
                     var gt = GetGraphicType();
-                    
+
                     GraphicsList.Add(new Graphic(gt, disposable, geom, IsTempGraphic));
                 });
         }
@@ -757,19 +757,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Distance = GetGeodesicDistance(p1, p2);
         }
 
-        internal void UpdateFeedbackWithGeoLine(LineSegment segment)
+        internal async Task UpdateFeedbackWithGeoLine(LineSegment segment)
         {
             if (Point1 == null || segment == null)
                 return;
 
-            var polyline = QueuedTask.Run(() =>
+            var polyline = await QueuedTask.Run(() =>
             {
                 return PolylineBuilder.CreatePolyline(segment);
-            }).Result;
+            });
 
             ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-            AddGraphicToMap(polyline, ColorFactory.Grey, true);
+            await AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+            await AddGraphicToMap(polyline, ColorFactory.Grey, true);
         }
 
 
