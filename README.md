@@ -122,6 +122,18 @@ The add-in provides the ability to create geodesic features such as lines, circl
 7. Repeat until all desired graphics have been included
 8. Optional - Select the Save As button to export the Ellipse features to a file geodatabase, shapefile, or KML
 
+### Create Ellipses Manually
+1. Choose the **Ellipse** tab on the *Distance and Direction* Tool
+2. Enter a cooridnate into the **Center Point** text box
+3. Enter a distance into the **Major Axis** text box
+4. Enter a distance into the **Minor Axis** text box
+5. Optionally change the axis **Units** using the drop down box
+6. Enter the desired angle in the **Angle** text box
+7. Optionally change the orientation **Unit** using the drop down box
+8. Press the **ENTER** key
+9. Repeat until all desired graphics have been included
+10. Optional - Select the Save As button to export the Ellipse features to a file geodatabase, shapefile, or KML
+
 ### Create Range Rings Interactively 
 1. Choose the **Rings** tab on the *Distance and Direction* Tool
 2. Check **Interactive**
