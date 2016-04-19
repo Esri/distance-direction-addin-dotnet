@@ -130,7 +130,14 @@
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource timeData}}"
                                   SelectedItem="{Binding Path=TimeUnit,
-                                                         Mode=TwoWay}" />
+                                                         Mode=TwoWay}">
+                            <ComboBox.InputBindings>
+                                    <KeyBinding Key="Enter"
+                                    Command="{Binding EnterKeyCommand}"
+                                    CommandParameter="{Binding ElementName=mainControl,
+                                                               Path=.}" />
+                            </ComboBox.InputBindings>
+                        </ComboBox>
                         <TextBlock 
                                    Margin="3,3,0,0"
                                    Text="{x:Static prop:Resources.LabelRate}" />
@@ -153,7 +160,14 @@
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource rateTimeData}}"
                                   SelectedItem="{Binding Path=RateTimeUnit,
-                                                         Mode=TwoWay}" />
+                                                         Mode=TwoWay}">
+                            <ComboBox.InputBindings>
+                                <KeyBinding Key="Enter"
+                                    Command="{Binding EnterKeyCommand}"
+                                    CommandParameter="{Binding ElementName=mainControl,
+                                                               Path=.}" />
+                            </ComboBox.InputBindings>
+                        </ComboBox>
                     </StackPanel>
                 </Expander>
                 <StackPanel Margin="3,3,0,0"
