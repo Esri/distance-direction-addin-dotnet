@@ -197,6 +197,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        public override DistanceTypes LineDistanceType
+        {
+            get
+            {
+                return base.LineDistanceType;
+            }
+            set
+            {
+                if (IsDistanceCalcExpanded)
+                {
+                    var before = base.LineDistanceType;
+                    Distance = ConvertFromTo(before, value, Distance);
+                }
+
+                base.LineDistanceType = value;
+            }
+        }
+
+
         DistanceTypes rateUnit = DistanceTypes.Meters;
         public DistanceTypes RateUnit
         {
