@@ -58,6 +58,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        public System.Windows.Visibility LineTypeComboVisibility
+        {
+            get { return System.Windows.Visibility.Collapsed; }
+        }
+
         AzimuthTypes lineAzimuthType = AzimuthTypes.Degrees;
         public AzimuthTypes LineAzimuthType
         {

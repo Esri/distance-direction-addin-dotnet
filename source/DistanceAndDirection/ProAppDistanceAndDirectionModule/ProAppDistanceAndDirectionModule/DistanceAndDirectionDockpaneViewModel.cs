@@ -32,8 +32,6 @@ namespace ProAppDistanceAndDirectionModule
             // set some views and datacontext
             LinesView = new GRLinesView();
             LinesView.DataContext = new ProLinesViewModel();
-            // Hide the ComboBox until we have more than one line type to select from
-            LinesView.CmbLineType.Visibility = System.Windows.Visibility.Collapsed;
 
             CircleView = new GRCircleView();
             CircleView.DataContext = new ProCircleViewModel();
