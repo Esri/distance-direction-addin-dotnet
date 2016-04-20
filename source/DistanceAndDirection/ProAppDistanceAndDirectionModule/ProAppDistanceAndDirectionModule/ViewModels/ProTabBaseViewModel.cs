@@ -278,7 +278,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     point2Formatted = value;
                     Point2 = point;
-                    HasPoint2 = true;
                     if (HasPoint1)
                     {
                         // lets try feedback
@@ -299,15 +298,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Property for the distance type
         /// </summary>
-        public DistanceTypes LineDistanceType
+        public virtual DistanceTypes LineDistanceType
         {
             get { return lineDistanceType; }
             set
             {
-                var before = lineDistanceType;
                 lineDistanceType = value;
-                Distance = ConvertFromTo(before, value, Distance);
+                UpdateFeedback();
             }
+        }
+
+        internal virtual void UpdateFeedback()
+        {
+
         }
 
         double distance = 0.0;

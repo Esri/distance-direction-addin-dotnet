@@ -69,9 +69,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get { return lineAzimuthType; }
             set
             {
-                var before = lineAzimuthType;
-                lineAzimuthType = value;
-                UpdateAzimuthFromTo(before, value);
+                if (LineFromType == LineFromTypes.Points)
+                {
+                    var before = lineAzimuthType;
+                    lineAzimuthType = value;
+                    UpdateAzimuthFromTo(before, value);
+                }
+                else
+                {
+                    lineAzimuthType = value;
+                }
             }
         }
 
@@ -101,10 +108,52 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = value;
                 RaisePropertyChanged(() => Distance);
 
-                UpdateManualFeedback();
+                if (LineFromType == LineFromTypes.BearingAndDistance)
+                    UpdateManualFeedback();
+                else
+                    UpdateFeedback();
 
                 DistanceString = distance.ToString("G");
                 RaisePropertyChanged(() => DistanceString);
+            }
+        }
+
+        public override DistanceTypes LineDistanceType
+        {
+            get
+            {
+                return base.LineDistanceType;
+            }
+            set
+            {
+                if (LineFromType == LineFromTypes.Points)
+                {
+                    var before = base.LineDistanceType;
+                    Distance = ConvertFromTo(before, value, Distance);
+                }
+                base.LineDistanceType = value;
+            }
+        }
+
+        internal override async void UpdateFeedback()
+        {
+            if (LineFromType == LineFromTypes.Points)
+            {
+                if (Point1 == null || Point2 == null)
+                    return;
+
+                var segment = QueuedTask.Run(() =>
+                {
+                    return LineBuilder.CreateLineSegment(Point1, Point2);
+                }).Result;
+
+                UpdateAzimuth(segment.Angle);
+
+                await UpdateFeedbackWithGeoLine(segment);
+            }
+            else
+            {
+                UpdateManualFeedback();
             }
         }
 
@@ -163,7 +212,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     var mpList = new List<MapPoint>() { Point1 };
                     // get point 2
-                    var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, Distance, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians().Value);
+                    // SDK Bug, GeometryEngine.GeodesicMove seems to not honor the LinearUnit passed in, always does Meters
+                    var tempDistance = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
+                    var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value);
                     foreach (var mp in results)
                         Point2 = mp;
                     if (Point2 != null)

@@ -64,8 +64,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 circleType = value;
 
                 // reset distance
-                RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
+                //RaisePropertyChanged(() => Distance);
+
+                UpdateFeedback();
             }
         }
 
@@ -195,6 +197,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        public override DistanceTypes LineDistanceType
+        {
+            get
+            {
+                return base.LineDistanceType;
+            }
+            set
+            {
+                if (IsDistanceCalcExpanded)
+                {
+                    var before = base.LineDistanceType;
+                    Distance = ConvertFromTo(before, value, Distance);
+                }
+
+                base.LineDistanceType = value;
+            }
+        }
+
+
         DistanceTypes rateUnit = DistanceTypes.Meters;
         public DistanceTypes RateUnit
         {
@@ -214,7 +235,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // TODO: Update this when Miles are added to DistanceTypes
                     case RateTimeTypes.MilesHour:
                     case RateTimeTypes.MilesSec:
-                        return DistanceTypes.NauticalMile;
+                        return DistanceTypes.Miles;
                     case RateTimeTypes.NauticalMilesHour:
                     case RateTimeTypes.NauticalMilesSec:
                         return DistanceTypes.NauticalMile;
@@ -357,7 +378,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (IsDistanceCalcExpanded)
             {
-                UpdateDistance(travelRate * travelTime, RateUnit);
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
             }
         }
 
@@ -387,6 +408,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 UpdateFeedbackWithGeoCircle();
             }
+        }
+
+        internal override void UpdateFeedback()
+        {
+            UpdateFeedbackWithGeoCircle();
         }
 
         private void UpdateFeedbackWithGeoCircle()
