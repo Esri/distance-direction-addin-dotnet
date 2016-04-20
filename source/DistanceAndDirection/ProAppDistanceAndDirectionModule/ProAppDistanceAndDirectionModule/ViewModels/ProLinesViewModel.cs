@@ -129,13 +129,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (LineFromType == LineFromTypes.Points)
                 {
                     var before = base.LineDistanceType;
-                    base.LineDistanceType = value;
                     Distance = ConvertFromTo(before, value, Distance);
                 }
-                else
-                {
-                    base.LineDistanceType = value;
-                }
+                base.LineDistanceType = value;
             }
         }
 
