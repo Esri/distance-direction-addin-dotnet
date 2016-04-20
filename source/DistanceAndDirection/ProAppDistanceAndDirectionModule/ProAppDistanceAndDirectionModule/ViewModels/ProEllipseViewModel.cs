@@ -178,6 +178,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (double.TryParse(majorAxisDistanceString, out d))
                 {                            
                     MajorAxisDistance = d;
+
+                    UpdateFeedbackWithEllipse();
                 }
                 else
                 {
@@ -231,7 +233,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #endregion
 
-        #region Overriden Functions
+        #region Overridden Functions
 
         internal override void CreateMapElement()
         {
@@ -373,6 +375,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             MinorAxisDistance = 0.0;
             Azimuth = 0.0;
         }
+
+        internal override void UpdateFeedback()
+        {
+            UpdateFeedbackWithEllipse();
+        }
+
         #endregion
 
         #region Private Functions
