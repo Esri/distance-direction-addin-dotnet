@@ -135,7 +135,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        internal override void UpdateFeedback()
+        internal override async void UpdateFeedback()
         {
             if (LineFromType == LineFromTypes.Points)
             {
@@ -149,7 +149,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 UpdateAzimuth(segment.Angle);
 
-                UpdateFeedbackWithGeoLine(segment);
+                await UpdateFeedbackWithGeoLine(segment);
             }
             else
             {
