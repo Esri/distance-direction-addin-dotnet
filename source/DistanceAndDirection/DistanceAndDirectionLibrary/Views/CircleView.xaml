@@ -114,6 +114,8 @@
                         <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelTime,
+                                                FallbackValue=0,
+                                                Mode=OneWayToSource,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">
@@ -128,13 +130,22 @@
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource timeData}}"
                                   SelectedItem="{Binding Path=TimeUnit,
-                                                         Mode=TwoWay}" />
+                                                         Mode=TwoWay}">
+                            <ComboBox.InputBindings>
+                                    <KeyBinding Key="Enter"
+                                    Command="{Binding EnterKeyCommand}"
+                                    CommandParameter="{Binding ElementName=mainControl,
+                                                               Path=.}" />
+                            </ComboBox.InputBindings>
+                        </ComboBox>
                         <TextBlock 
                                    Margin="3,3,0,0"
                                    Text="{x:Static prop:Resources.LabelRate}" />
                         <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelRate,
+                                                Mode=OneWayToSource,
+                                                FallbackValue=0,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">
@@ -149,7 +160,14 @@
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource rateTimeData}}"
                                   SelectedItem="{Binding Path=RateTimeUnit,
-                                                         Mode=TwoWay}" />
+                                                         Mode=TwoWay}">
+                            <ComboBox.InputBindings>
+                                <KeyBinding Key="Enter"
+                                    Command="{Binding EnterKeyCommand}"
+                                    CommandParameter="{Binding ElementName=mainControl,
+                                                               Path=.}" />
+                            </ComboBox.InputBindings>
+                        </ComboBox>
                     </StackPanel>
                 </Expander>
                 <StackPanel Margin="3,3,0,0"
