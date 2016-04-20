@@ -16,6 +16,7 @@ using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
+using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
@@ -184,7 +185,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         MapPoint movedMP = null;
                         var mpList = new List<MapPoint>() { Point1 };
                         // get point 2
-                        var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth));
+                        var tempRadialLength = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, radialLength);
+                        var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, tempRadialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth));
                         // update feedback
                         //UpdateFeedback();
                         foreach (var mp in results)

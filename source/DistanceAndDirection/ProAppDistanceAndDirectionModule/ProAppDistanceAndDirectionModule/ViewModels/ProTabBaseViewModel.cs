@@ -298,12 +298,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Property for the distance type
         /// </summary>
-        public DistanceTypes LineDistanceType
+        public virtual DistanceTypes LineDistanceType
         {
             get { return lineDistanceType; }
             set
             {
-                var before = lineDistanceType;
+                //var before = lineDistanceType;
                 lineDistanceType = value;
                 //Distance = ConvertFromTo(before, value, Distance);
                 UpdateFeedback();
