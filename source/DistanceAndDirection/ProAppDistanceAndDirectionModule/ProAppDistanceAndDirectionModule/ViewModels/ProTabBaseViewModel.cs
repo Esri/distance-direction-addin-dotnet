@@ -303,9 +303,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get { return lineDistanceType; }
             set
             {
-                //var before = lineDistanceType;
                 lineDistanceType = value;
-                //Distance = ConvertFromTo(before, value, Distance);
                 UpdateFeedback();
             }
         }
