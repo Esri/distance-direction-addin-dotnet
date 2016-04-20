@@ -422,6 +422,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     var gt = GetGraphicType();
 
                     GraphicsList.Add(new Graphic(gt, disposable, geom, IsTempGraphic));
+
+                    RaisePropertyChanged(() => HasMapGraphics);
                 });
         }
 
