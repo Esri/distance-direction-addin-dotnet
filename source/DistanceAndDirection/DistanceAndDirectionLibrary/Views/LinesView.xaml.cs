@@ -24,6 +24,6 @@ namespace DistanceAndDirectionLibrary.Views
         public GRLinesView()
         {
             InitializeComponent();
-        }
+        }  
     }
 }

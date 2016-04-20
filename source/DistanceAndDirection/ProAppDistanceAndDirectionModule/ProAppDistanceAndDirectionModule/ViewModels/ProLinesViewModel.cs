@@ -20,6 +20,7 @@ using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -55,6 +56,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // stop feedback when from type changes
                 ResetFeedback();
             }
+        }
+
+        public System.Windows.Visibility LineTypeComboVisibility
+        {
+            get { return System.Windows.Visibility.Collapsed; }
         }
 
         AzimuthTypes lineAzimuthType = AzimuthTypes.Degrees;
@@ -148,7 +154,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        private void UpdateManualFeedback()
+        private async void UpdateManualFeedback()
         {
             if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
             {
@@ -167,7 +173,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 if (segment != null)
-                    UpdateFeedbackWithGeoLine(segment);
+                    await UpdateFeedbackWithGeoLine(segment);
             }
         }
 
@@ -231,7 +237,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.OnNewMapPointEvent(obj);
         }
 
-        internal override void OnMouseMoveEvent(object obj)
+        internal override async void OnMouseMoveEvent(object obj)
         {
             if (!IsActiveTab)
                 return;
@@ -253,8 +259,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 UpdateAzimuth(segment.Angle);
-
-                UpdateFeedbackWithGeoLine(segment);
+                await UpdateFeedbackWithGeoLine(segment);                        
             }
 
             base.OnMouseMoveEvent(obj);
