@@ -359,7 +359,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (IsDistanceCalcExpanded)
             {
-                UpdateDistance(travelRate * travelTime, RateUnit);
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
             }
         }
 
