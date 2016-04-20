@@ -261,11 +261,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     var av = mxdoc.FocusMap as IActiveView;
                     Point2.Project(mxdoc.FocusMap.SpatialReference);
 
-                    //if (feedback != null)
-                    //{
-                    //    // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
-                    //    FeedbackMoveTo(point);
-                    //}
                     if (HasPoint1)
                     {
                         // lets try feedback
@@ -315,10 +310,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return lineDistanceType; }
             set
             {
-                var before = lineDistanceType;
+                //var before = lineDistanceType;
                 lineDistanceType = value;
-                Distance = ConvertFromTo(before, value, Distance);
+                //Distance = ConvertFromTo(before, value, Distance);
+                UpdateFeedback();
             }
+        }
+
+        internal virtual void UpdateFeedback()
+        {
+
         }
 
         double distance = 0.0;
@@ -829,6 +830,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             feedback.Stop();
             feedback = null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
         }
 
         /// <summary>
