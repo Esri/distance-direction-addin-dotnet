@@ -274,6 +274,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                     // draw a geo ring
                     ConstructGeoCircle();
+
+                    NumberOfRings++;
                 }
             }
         }
