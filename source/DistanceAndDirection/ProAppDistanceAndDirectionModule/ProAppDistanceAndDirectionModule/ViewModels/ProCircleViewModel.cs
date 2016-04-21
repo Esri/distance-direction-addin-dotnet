@@ -63,6 +63,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 circleType = value;
 
+                if (IsDistanceCalcExpanded)
+                {
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit);
+                }
+                else
+                {
+                    if (value == CircleFromTypes.Diameter)
+                        Distance /= 2.0;
+                    else
+                        Distance *= 2.0;
+                }
+
                 // reset distance
                 RaisePropertyChanged(() => DistanceString);
                 //RaisePropertyChanged(() => Distance);
@@ -170,7 +182,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType)
         {
-            Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
+            if(CircleType == CircleFromTypes.Diameter)
+                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance) * 2.0;
+            else
+                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
             UpdateFeedbackWithGeoCircle();
         }
 
@@ -208,7 +223,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (IsDistanceCalcExpanded)
                 {
                     var before = base.LineDistanceType;
-                    Distance = ConvertFromTo(before, value, Distance);
+                    var temp = ConvertFromTo(before, value, Distance);
+                    if (CircleType == CircleFromTypes.Diameter)
+                        Distance = temp * 2.0;
+                    else
+                        Distance = temp;
                 }
 
                 base.LineDistanceType = value;
@@ -324,8 +343,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 // lets avoid an infinite loop here
-                if (string.Equals(base.DistanceString, value))
-                    return;
+                if (CircleType == CircleFromTypes.Diameter)
+                {
+                    if (string.Equals(base.DistanceString, (Convert.ToDouble(value)*2.0).ToString()))
+                        return;
+                }
+                else
+                {
+                    if (string.Equals(base.DistanceString, value))
+                        return;
+                }
 
                 base.DistanceString = value;
 
@@ -334,10 +361,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (double.TryParse(value, out d))
                 {
                     if (CircleType == CircleFromTypes.Diameter)
+                    {
+                        if (Distance * 2.0 == d)
+                            return;
+                    }
+                    else
+                    {
+                        if (Distance == d)
+                            return;
+                    }
+                    if (CircleType == CircleFromTypes.Diameter)
                         d /= 2.0;
-
-                    if (Distance == d)
-                        return;
 
                     Distance = d;
 
