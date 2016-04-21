@@ -222,6 +222,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double d = 0.0;
                 if (double.TryParse(azimuthString, out d))
                 {
+                    if (Azimuth == d)
+                        return;
+
                     Azimuth = d;
                 }
                 else

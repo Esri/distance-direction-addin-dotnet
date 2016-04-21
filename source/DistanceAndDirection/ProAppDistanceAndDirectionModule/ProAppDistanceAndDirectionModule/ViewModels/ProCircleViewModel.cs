@@ -327,12 +327,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (string.Equals(base.DistanceString, value))
                     return;
 
+                base.DistanceString = value;
+
                 // divide the manual input by 2
                 double d = 0.0;
                 if (double.TryParse(value, out d))
                 {
                     if (CircleType == CircleFromTypes.Diameter)
                         d /= 2.0;
+
+                    if (Distance == d)
+                        return;
 
                     Distance = d;
 

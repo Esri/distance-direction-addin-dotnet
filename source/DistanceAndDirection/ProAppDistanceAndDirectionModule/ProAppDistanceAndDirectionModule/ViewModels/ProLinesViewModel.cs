@@ -184,12 +184,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
 
                 azimuthString = value;
+
                 if (LineFromType == LineFromTypes.BearingAndDistance)
                 {
                     // update azimuth
                     double d = 0.0;
                     if (double.TryParse(azimuthString, out d))
                     {
+                        if (Azimuth == d)
+                            return;
+
                         Azimuth = d;
 
                         UpdateManualFeedback();
