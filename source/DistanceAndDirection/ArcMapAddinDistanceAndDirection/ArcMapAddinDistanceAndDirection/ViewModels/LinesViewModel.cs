@@ -93,7 +93,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 base.Point2 = value;
 
-                UpdateFeedback();
+                if (LineFromType == LineFromTypes.Points)
+                {
+                    UpdateFeedback();
+                }
             }
         }
 
@@ -129,8 +132,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (!azimuth.HasValue)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
-                // update feedback
-                //UpdateFeedback();
+                if (LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    // update feedback
+                    UpdateFeedback();
+                }
 
                 AzimuthString = azimuth.Value.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
