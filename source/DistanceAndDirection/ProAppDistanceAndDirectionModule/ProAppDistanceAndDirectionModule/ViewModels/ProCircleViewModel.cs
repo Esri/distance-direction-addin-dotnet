@@ -251,7 +251,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     case RateTimeTypes.MetersHour:
                     case RateTimeTypes.MetersSec:
                         return DistanceTypes.Meters;
-                    // TODO: Update this when Miles are added to DistanceTypes
                     case RateTimeTypes.MilesHour:
                     case RateTimeTypes.MilesSec:
                         return DistanceTypes.Miles;
