@@ -48,7 +48,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 var before = azimuthType;
                 azimuthType = value;
-                UpdateAzimuthFromTo(before, value);
+                Azimuth = Azimuth;
             }
         }
 
@@ -315,7 +315,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (minorAxis > MajorAxisDistance)
                 minorAxis = MajorAxisDistance;
 
-            ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, minorAxis, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+            ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, minorAxis, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
             var line = ellipticArc as IPolyline;
             if (line != null)
             {
