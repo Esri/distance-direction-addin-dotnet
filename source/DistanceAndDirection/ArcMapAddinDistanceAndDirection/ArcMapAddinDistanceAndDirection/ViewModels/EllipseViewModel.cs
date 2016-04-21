@@ -324,6 +324,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        internal override void UpdateFeedback()
+        {
+            UpdateFeedbackWithEllipse();
+        }
+
         internal override void ResetPoints()
         {
             HasPoint1 = HasPoint2 = HasPoint3 = false;
