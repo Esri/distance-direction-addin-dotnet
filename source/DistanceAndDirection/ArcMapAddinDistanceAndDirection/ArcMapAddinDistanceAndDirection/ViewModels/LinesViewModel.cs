@@ -83,6 +83,23 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        public override IPoint Point2
+        {
+            get
+            {
+                return base.Point2;
+            }
+            set
+            {
+                base.Point2 = value;
+
+                if (LineFromType == LineFromTypes.Points)
+                {
+                    UpdateFeedback();
+                }
+            }
+        }
+
         double distance = 0.0;
         public override double Distance
         {
@@ -115,8 +132,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (!azimuth.HasValue)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
-                // update feedback
-                UpdateFeedback();
+                if (LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    // update feedback
+                    UpdateFeedback();
+                }
 
                 AzimuthString = azimuth.Value.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
@@ -349,34 +369,42 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #endregion
 
-        private void UpdateFeedback()
+        internal override void UpdateFeedback()
         {
             // for now lets stick with only updating feedback here with Bearing and Distance case
             if (LineFromType != LineFromTypes.BearingAndDistance)
-                return;
-
-            if(Point1 != null && HasPoint1)
             {
-                if(feedback == null)
+                if(Point1 != null && Point2 != null && HasPoint1)
                 {
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
-                    feedback.Start(Point1);
+                    var polyline = GetGeoPolylineFromPoints(Point1, Point2);
+                    UpdateAzimuth(polyline);
                 }
-
-                // now get second point from distance and bearing
-                var construct = new Polyline() as IConstructGeodetic;
-                if (construct == null)
-                    return;
-
-                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-
-                var line = construct as IPolyline;
-
-                if (line.ToPoint != null)
+            }
+            else
+            {
+                if (Point1 != null && HasPoint1)
                 {
-                    FeedbackMoveTo(line.ToPoint);
-                    Point2 = line.ToPoint;
+                    if (feedback == null)
+                    {
+                        var mxdoc = ArcMap.Application.Document as IMxDocument;
+                        CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
+                        feedback.Start(Point1);
+                    }
+
+                    // now get second point from distance and bearing
+                    var construct = new Polyline() as IConstructGeodetic;
+                    if (construct == null)
+                        return;
+
+                    construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+
+                    var line = construct as IPolyline;
+
+                    if (line.ToPoint != null)
+                    {
+                        FeedbackMoveTo(line.ToPoint);
+                        Point2 = line.ToPoint;
+                    }
                 }
             }
         }
