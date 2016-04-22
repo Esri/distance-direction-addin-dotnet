@@ -151,7 +151,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         IFeature feature = fc.CreateFeature();
 
                         if (graphic.GraphicType != GraphicTypes.Line)
-                            feature.Shape = PolylineToPolygon(graphic.Geometry, ipSpatialRef);
+                            feature.Shape = PolylineToPolygon(graphic.Geometry);
                         else
                             feature.Shape = graphic.Geometry;
 
@@ -366,11 +366,15 @@ namespace ArcMapAddinDistanceAndDirection.Models
             return pFClass;
         }
 
-        public IPolygon PolylineToPolygon(IGeometry geom, ISpatialReference ipSpatialRef)
+        /// <summary>
+        /// Convert a polyline feature to a polygon
+        /// </summary>
+        /// <param name="geom">IGeometry</param>
+        /// <returns>IPolygon</returns>
+        private IPolygon PolylineToPolygon(IGeometry geom)
         {
             //Build a polygon segment-by-segment.
             IPolygon polygon = new PolygonClass();
-
             Polyline polyLine = geom as Polyline;
 
             ISegmentCollection polygonSegs = polygon as ISegmentCollection;
@@ -387,8 +391,5 @@ namespace ArcMapAddinDistanceAndDirection.Models
             return polygon;
 
         }
-
-    }
-
-    
+    } 
 }
