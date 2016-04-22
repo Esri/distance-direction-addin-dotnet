@@ -511,16 +511,41 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 if (fc != null)
                 {
-                    IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
-                    outputFeatureLayer.FeatureClass = fc;
-
-                    IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
-                    geoLayer.Name = fc.AliasName;
-
-                    ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
-                    map.AddLayer((ILayer)outputFeatureLayer);
+                    AddFeatureLayerToMap(fc);
                 }
             }       
+        }
+
+        /// <summary>
+        /// Add the feature layer to the map 
+        /// </summary>
+        /// <param name="fc">IFeatureClass</param>
+        private void AddFeatureLayerToMap(IFeatureClass fc)
+        {
+            IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
+            outputFeatureLayer.FeatureClass = fc;
+
+            IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
+
+            if (geoLayer.FeatureClass.ShapeType != esriGeometryType.esriGeometryPolyline)
+            {
+                IFeatureRenderer pFeatureRender;
+                pFeatureRender = (IFeatureRenderer)new SimpleRenderer();
+                ISimpleFillSymbol pSimpleFillSymbol = new SimpleFillSymbolClass();
+                pSimpleFillSymbol.Style = esriSimpleFillStyle.esriSFSHollow;
+                pSimpleFillSymbol.Outline.Width = 0.4;
+
+                ISimpleRenderer pSimpleRenderer;
+                pSimpleRenderer = new SimpleRenderer();
+                pSimpleRenderer.Symbol = (ISymbol)pSimpleFillSymbol;
+
+                geoLayer.Renderer = (IFeatureRenderer)pSimpleRenderer;
+            }
+            
+            geoLayer.Name = fc.AliasName;
+
+            ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
+            map.AddLayer((ILayer)outputFeatureLayer);
         }
 
         private string PromptSaveFileDialog()
