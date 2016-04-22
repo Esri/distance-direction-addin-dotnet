@@ -127,33 +127,39 @@ namespace ProAppDistanceAndDirectionModule.Models
                     if (layer is FeatureLayer)
                     {
                         var featureLayer = layer as FeatureLayer;
+                        
                         using (var table = featureLayer.GetTable())
                         {
                             TableDefinition definition = table.GetDefinition();
                             int shapeIndex = definition.FindField("Shape");
                                 
-                            //EditOperation editOperation = new EditOperation();
-                            //editOperation.Callback(context =>
-                            //{
-                                foreach (Graphic graphic in graphicsList)
+                            foreach (Graphic graphic in graphicsList)
+                            {
+                                rowBuffer = table.CreateRowBuffer();
+
+                                if (graphic.Geometry is Polyline)
                                 {
-                                    //int nameIndex = featureClassDefinition.FindField("NAME");
-                                    rowBuffer = table.CreateRowBuffer();
+                                    Polyline poly = new PolylineBuilder(graphic.Geometry as Polyline).ToGeometry();
+                                    rowBuffer[shapeIndex] = poly;
+                                } 
+                                else if (graphic.Geometry is Polygon)
+                                    rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
 
-                                    if (graphic.Geometry is Polyline)
-                                        rowBuffer[shapeIndex] = new PolylineBuilder(graphic.Geometry as Polyline).ToGeometry();
-                                    else if (graphic.Geometry is Polygon)
-                                        rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
-
-                                    Row row = table.CreateRow(rowBuffer);
-
-                                    //To Indicate that the Map has to draw this feature and/or the attribute table to be updated
-                                    //context.Invalidate(row);
-                                }
-                            //});
-                            //bool editResult = editOperation.Execute();
-                            //bool saveResult = await Project.Current.SaveEditsAsync();
+                                Row row = table.CreateRow(rowBuffer);
+                            }
                         }
+
+                        //Get simple renderer from feature layer 
+                        CIMSimpleRenderer currentRenderer = featureLayer.GetRenderer() as CIMSimpleRenderer;
+                        CIMSymbolReference sybmol = currentRenderer.Symbol;
+
+                        var outline = SymbolFactory.ConstructStroke(ColorFactory.Red, 1.0, SimpleLineStyle.Solid);
+                        var s = SymbolFactory.ConstructPolygonSymbol(ColorFactory.Red, SimpleFillStyle.Null, outline);
+                        CIMSymbolReference symbolRef = new CIMSymbolReference() { Symbol = s };
+                        currentRenderer.Symbol = symbolRef;
+
+                        featureLayer.SetRenderer(currentRenderer);
+
                     }
                 });
 
@@ -207,14 +213,6 @@ namespace ProAppDistanceAndDirectionModule.Models
                 arguments.Add("DISABLED");
                 arguments.Add(spatialRef);
 
-                //IReadOnlyList<string> valueArray = null;
-                //await QueuedTask.Run(async () =>
-                //{
-                //    valueArray = Geoprocessing.MakeValueArray(arguments.ToArray());
-                //});
-
-                //block the CIM for a second
-                //Task.Delay(5000).Wait();
                 var valueArray = Geoprocessing.MakeValueArray(arguments.ToArray());
                 IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", valueArray);
 
@@ -239,55 +237,5 @@ namespace ProAppDistanceAndDirectionModule.Models
                 MessageBox.Show(ex.ToString());
             }
         }
-/*
-        /// <summary>
-        /// Determines if selected feature class already exists
-        /// </summary>
-        /// <param name="gdbPath">Path to the file gdb</param>
-        /// <param name="fcName">Name of selected feature class</param>
-        /// <returns>True if already exists, false otherwise</returns>
-        private bool DoesFeatureClassExist(string gdbPath, string fcName)
-        {
-            List<string> dsNames = GetAllDatasetNames(gdbPath);
-
-            if (dsNames.Contains(fcName))
-                return true;
-
-            return false;
-        }
-
-        /// <summary>
-        /// Retrieves all datasets names from filegdb
-        /// </summary>
-        /// <param name="gdbFilePath">Path to filegdb</param>
-        /// <returns>List of names of all featureclasses in filegdb</returns>
-        private List<string> GetAllDatasetNames(string gdbFilePath)
-        {
-            IWorkspaceFactory workspaceFactory = new FileGDBWorkspaceFactory();
-            IWorkspace workspace = workspaceFactory.OpenFromFile (gdbFilePath, 0);
-            IEnumDataset enumDataset = workspace.get_Datasets(esriDatasetType.esriDTAny);
-            List<string> names = new List<string>();
-            IDataset dataset = null;
-            while((dataset = enumDataset.Next())!= null)
-            {
-                names.Add(dataset.Name);
-            }
-            return names;
-        }
-
-        /// <summary>
-        /// Delete a featureclass
-        /// </summary>
-        /// <param name="fWorkspace">IFeatureWorkspace</param>
-        /// <param name="fcName">Name of featureclass to delete</param>
-        private void DeleteFeatureClass(IFeatureWorkspace fWorkspace, string fcName)
-        {
-            IDataset ipDs = fWorkspace.OpenFeatureClass(fcName) as IDataset;
-            ipDs.Delete();
-        }
- */
-
     }
-
-    
 }
