@@ -29,6 +29,7 @@ using ESRI.ArcGIS.DataSourcesFile;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.ADF;
 using DistanceAndDirectionLibrary;
+using ESRI.ArcGIS.Display;
 
 namespace ArcMapAddinDistanceAndDirection.Models
 {
@@ -143,16 +144,19 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         DeleteFeatureClass(fWorkspace, fcName);
                     }
 
-                    fc = CreatePolylineFeatureClass(fWorkspace, fcName);
+                    fc = CreateFeatureClass(fWorkspace, fcName, graphicsList[0].GraphicType == GraphicTypes.Line);
 
                     foreach (Graphic graphic in graphicsList)
                     {
                         IFeature feature = fc.CreateFeature();
 
-                        feature.Shape = graphic.Geometry;
+                        if (graphic.GraphicType != GraphicTypes.Line)
+                            feature.Shape = PolylineToPolygon(graphic.Geometry, ipSpatialRef);
+                        else
+                            feature.Shape = graphic.Geometry;
+
                         feature.Store();
                     }
-
                 }
                 else if (saveAsType == SaveAsType.Shapefile)
                 {
@@ -330,7 +334,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <param name="featWorkspace">IFeatureWorkspace</param> 
         /// <param name="name">Name of the featureclass</param> 
         /// <returns>IFeatureClass</returns> 
-        private IFeatureClass CreatePolylineFeatureClass(IFeatureWorkspace featWorkspace, string name)
+        private IFeatureClass CreateFeatureClass(IFeatureWorkspace featWorkspace, string name, bool polyLineFC)
         {
             IFieldsEdit pFldsEdt = new FieldsClass();
             IFieldEdit pFldEdt = new FieldClass();
@@ -343,7 +347,11 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
             IGeometryDefEdit pGeoDef;
             pGeoDef = new GeometryDefClass();
-            pGeoDef.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+            if (polyLineFC)
+                pGeoDef.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+            else
+                pGeoDef.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
+
             pGeoDef.SpatialReference_2 = ArcMap.Document.FocusMap.SpatialReference;
 
             pFldEdt = new FieldClass();
@@ -356,6 +364,28 @@ namespace ArcMapAddinDistanceAndDirection.Models
             IFeatureClass pFClass = featWorkspace.CreateFeatureClass(name, pFldsEdt, null, null, esriFeatureType.esriFTSimple, "SHAPE", "");
 
             return pFClass;
+        }
+
+        public IPolygon PolylineToPolygon(IGeometry geom, ISpatialReference ipSpatialRef)
+        {
+            //Build a polygon segment-by-segment.
+            IPolygon polygon = new PolygonClass();
+
+            Polyline polyLine = geom as Polyline;
+
+            ISegmentCollection polygonSegs = polygon as ISegmentCollection;
+            ISegmentCollection polylineSegs = polyLine as ISegmentCollection;
+
+            for (int i = 0; i < polylineSegs.SegmentCount; i++)
+            {
+                ISegment seg = polylineSegs.Segment[i];
+                polygonSegs.AddSegment(seg);
+            }
+
+            polygon.SimplifyPreserveFromTo();
+
+            return polygon;
+
         }
 
     }
