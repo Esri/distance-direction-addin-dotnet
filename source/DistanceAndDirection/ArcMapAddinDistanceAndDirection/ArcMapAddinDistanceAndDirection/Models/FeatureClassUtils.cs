@@ -164,9 +164,9 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     if (File.Exists(outputPath))
                     {
                         DeleteShapeFile(outputPath);
-                    }            
+                    }
 
-                    fc = ExportToShapefile(outputPath, graphicsList, ipSpatialRef);
+                    fc = ExportToShapefile(outputPath, graphicsList, ipSpatialRef, graphicsList[0].GraphicType == GraphicTypes.Line);
                 }
                 return fc;
             }
@@ -208,7 +208,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <param name="graphicsList">List of graphics for selected tab</param>
         /// <param name="ipSpatialRef">Spatial Reference being used</param>
         /// <returns>Created featureclass</returns>
-        private IFeatureClass ExportToShapefile(string fileNamePath, List<Graphic> graphicsList, ISpatialReference ipSpatialRef)
+        private IFeatureClass ExportToShapefile(string fileNamePath, List<Graphic> graphicsList, ISpatialReference ipSpatialRef, bool polyLineFC)
         {
             int index = fileNamePath.LastIndexOf('\\');
             string folder = fileNamePath.Substring(0, index);
@@ -239,20 +239,15 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     geomDef = new GeometryDefClass();///#########
                     geomDefEdit = (IGeometryDefEdit)geomDef;
 
-                    //This is for line shapefiles
-                    geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+                    if (polyLineFC)
+                        geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+                    else
+                        geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
+                    
                     geomDefEdit.SpatialReference_2 = ipSpatialRef;
 
                     fieldEdit.GeometryDef_2 = geomDef;
                     fieldsEdit.AddField(field);
-
-                    ////Add another miscellaneous text field
-                    //field = new FieldClass();
-                    //fieldEdit = (IFieldEdit)field;
-                    //fieldEdit.Length_2 = 30;
-                    //fieldEdit.Name_2 = "TextField";
-                    //fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-                    //fieldsEdit.AddField(field);
 
                     featClass = featureWorkspace.CreateFeatureClass(nameOfShapeFile, fields, null, null, esriFeatureType.esriFTSimple, shapeFieldName, "");
 
@@ -260,7 +255,11 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     {
                         IFeature feature = featClass.CreateFeature();
 
-                        feature.Shape = graphic.Geometry;
+                        if (polyLineFC)
+                            feature.Shape = graphic.Geometry;
+                        else
+                            feature.Shape = PolylineToPolygon(graphic.Geometry);
+
                         feature.Store();
                     }
 
