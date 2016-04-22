@@ -907,6 +907,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else if (this is ProRangeViewModel)
                 {
                     typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList();
+                    geomType = GeomType.PolyLine;
                 }
 
                 string path = fcUtils.PromptUserWithSaveDialog(vm.FeatureIsChecked, vm.ShapeIsChecked, vm.KmlIsChecked);
