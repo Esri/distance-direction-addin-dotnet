@@ -196,10 +196,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     case RateTimeTypes.MetersHour:
                     case RateTimeTypes.MetersSec:
                         return DistanceTypes.Meters;
-                    // TODO: Update this when Miles are added to DistanceTypes
                     case RateTimeTypes.MilesHour:
                     case RateTimeTypes.MilesSec:
-                        return DistanceTypes.NauticalMile;
+                        return DistanceTypes.Miles;
                     case RateTimeTypes.NauticalMilesHour:
                     case RateTimeTypes.NauticalMilesSec:
                         return DistanceTypes.NauticalMile;
@@ -326,6 +325,28 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         #endregion
 
         #region override events
+
+        public override DistanceTypes LineDistanceType
+        {
+            get
+            {
+                return base.LineDistanceType;
+            }
+            set
+            {
+                if (IsDistanceCalcExpanded)
+                {
+                    var before = base.LineDistanceType;
+                    var temp = ConvertFromTo(before, value, Distance);
+                    if (CircleType == CircleFromTypes.Diameter)
+                        Distance = temp * 2.0;
+                    else
+                        Distance = temp;
+                }
+
+                base.LineDistanceType = value;
+            }
+        }
 
         internal override void OnNewMapPointEvent(object obj)
         {

@@ -31,14 +31,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         public EllipseViewModel()
         {
-            EllipseType = EllipseTypes.Semi;
         }
 
         #region Properties
 
-        public EllipseTypes EllipseType { get; set; }
         public IPoint CenterPoint { get; set; }
         public ISymbol FeedbackSymbol { get; set; }
+
+        private EllipseTypes ellipseType = EllipseTypes.Semi;
+        public EllipseTypes EllipseType 
+        {
+            get { return ellipseType; }
+            set
+            {
+                ellipseType = value;
+
+                RaisePropertyChanged(() => MajorAxisDistance);
+                RaisePropertyChanged(() => MajorAxisDistanceString);
+            }
+        }
 
         AzimuthTypes azimuthType = AzimuthTypes.Degrees;
         public AzimuthTypes AzimuthType
@@ -165,10 +176,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     return;
 
                 majorAxisDistanceString = value;
+
                 double d = 0.0;
                 if (double.TryParse(majorAxisDistanceString, out d))
-                {                            
-                    MajorAxisDistance = d;
+                {
+                    if (EllipseType == EllipseTypes.Full)
+                        MajorAxisDistance = d / 2.0;
+                    else
+                        MajorAxisDistance = d;
                 }
                 else
                 {
