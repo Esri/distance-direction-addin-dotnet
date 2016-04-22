@@ -115,7 +115,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                return MinorAxisDistance.ToString("G");
+                if (string.IsNullOrWhiteSpace(minorAxisDistanceString))
+                {
+                    return MinorAxisDistance.ToString("G");
+                }
+                else
+                    return minorAxisDistanceString;
             }
             set
             {
@@ -126,11 +131,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double d = 0.0;
                 if (double.TryParse(minorAxisDistanceString, out d))
                 {
+                    if (MinorAxisDistance == d)
+                        return;
+
                     MinorAxisDistance = d;
                     RaisePropertyChanged(() => MinorAxisDistance);
-
-                    // update feedback
-                    //Point3 = UpdateFeedback(Point1, minorAxisDistance);
                 }
                 else
                 {
@@ -162,11 +167,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                if (EllipseType == EllipseTypes.Full)
+                if (string.IsNullOrWhiteSpace(majorAxisDistanceString))
                 {
-                    return (MajorAxisDistance * 2.0).ToString("G");
+                    if (EllipseType == EllipseTypes.Full)
+                    {
+                        return (MajorAxisDistance * 2.0).ToString("G");
+                    }
+                    return MajorAxisDistance.ToString("G");
                 }
-                return MajorAxisDistance.ToString("G");
+                else
+                    return majorAxisDistanceString;
             }
             set
             {
@@ -176,7 +186,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 majorAxisDistanceString = value;
                 double d = 0.0;
                 if (double.TryParse(majorAxisDistanceString, out d))
-                {                            
+                {
+                    if (MajorAxisDistance == d)
+                        return;
+
                     MajorAxisDistance = d;
 
                     UpdateFeedbackWithEllipse();
@@ -222,6 +235,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double d = 0.0;
                 if (double.TryParse(azimuthString, out d))
                 {
+                    if (Azimuth == d)
+                        return;
+
                     Azimuth = d;
                 }
                 else
@@ -370,6 +386,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.Reset(toolReset);
             HasPoint3 = false;
             Point3 = null;
+
+            majorAxisDistanceString = string.Empty;
+            minorAxisDistanceString = string.Empty;
 
             MajorAxisDistance = 0.0;
             MinorAxisDistance = 0.0;

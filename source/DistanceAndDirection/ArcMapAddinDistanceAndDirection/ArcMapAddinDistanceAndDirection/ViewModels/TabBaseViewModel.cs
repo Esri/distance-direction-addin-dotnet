@@ -305,7 +305,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// Property for the distance type
         /// </summary>
-        public DistanceTypes LineDistanceType
+        public virtual DistanceTypes LineDistanceType
         {
             get { return lineDistanceType; }
             set

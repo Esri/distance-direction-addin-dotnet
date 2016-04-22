@@ -339,7 +339,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                return Distance.ToString("G");
+                if (string.IsNullOrWhiteSpace(distanceString))
+                    return Distance.ToString("G");
+                else
+                    return distanceString;
+                
             }
             set
             {
@@ -353,7 +357,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double d = 0.0;
                 if (double.TryParse(distanceString, out d))
                 {
-                    Distance = d;
+                    if (Distance != d)
+                    {
+                        Distance = d;
+                        UpdateFeedback();
+                    }
                 }
                 else
                 {
