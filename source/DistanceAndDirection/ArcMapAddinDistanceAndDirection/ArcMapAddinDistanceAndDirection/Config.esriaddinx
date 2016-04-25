@@ -4,8 +4,8 @@
   <Description>Create Lines, Circles, Ellipses and Range Rings</Description>
   <Version>1.0</Version>
   <Image>Images\ArcMapAddinDistanceAndDirection.png</Image>
-  <Author>ESRI</Author>
-  <Company>ESRI</Company>
+  <Author>Esri</Author>
+  <Company>Esri</Company>
   <Date>1/25/2016</Date>
   <Targets>
     <Target name="Desktop" version="10.3" />
