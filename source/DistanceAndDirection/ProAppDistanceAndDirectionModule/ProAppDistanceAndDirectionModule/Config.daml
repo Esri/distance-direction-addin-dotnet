@@ -12,16 +12,10 @@
   </AddInInfo>
   <modules>
     <insertModule id="ProAppDistanceAndDirectionModule_Module" className="DistanceAndDirectionModule" autoLoad="false" caption="Distance And Direction">
-      <!-- uncomment to have the control hosted on a separate tab-->
-      <tabs>
-        <!--<tab id="ProAppDistanceAndDirectionModule_Tab1" caption="New Tab">
-          <group refID="ProAppDistanceAndDirectionModule_Group1"/>
-        </tab>-->
-      </tabs>
       <groups>
         <!-- comment this out if you have no controls on the Addin tab to avoid
               an empty group-->
-        <group id="ProAppDistanceAndDirectionModule_Group1" caption="Distance and Direction" appearsOnAddInTab="true">
+        <group id="DistanceAndDirection_Group" caption="Distance and Direction" appearsOnAddInTab="true">
           <!-- host controls within groups -->
           <button refID="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" size="large" />
           <button refID="ProAppDistanceAndDirectionModule_PropertiesButton" size="large" />
@@ -30,7 +24,7 @@
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" caption="Show" className="DistanceAndDirectionDockpane_ShowButton" loadOnClick="true" smallImage="Images\GenericButtonPurple16.png" largeImage="Images\GenericButtonPurple32.png">
+        <button id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" caption="Distance and Direction" className="DistanceAndDirectionDockpane_ShowButton" loadOnClick="true" smallImage="Images\DistanceAndDirectionButton16.png" largeImage="Images\DistanceAndDirectionButton32.png">
           <tooltip heading="Show Dockpane">Show Distance and Direction Dockpane<disabledText /></tooltip>
         </button>
         <button id="ProAppDistanceAndDirectionModule_PropertiesButton" caption="Properties" className="PropertiesButton" loadOnClick="true" smallImage="Images\GenericButtonBlue16.png" largeImage="Images\GenericButtonBlue32.png">
