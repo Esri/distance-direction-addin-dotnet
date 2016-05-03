@@ -817,10 +817,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Method used to convert a string to a known coordinate
         /// Assumes WGS84 for now
-        /// Uses the IConversionNotation interface
         /// </summary>
         /// <param name="coordinate">the coordinate as a string</param>
-        /// <returns>IPoint if successful, null if not</returns>
+        /// <returns>MapPoint if successful, null if not</returns>
         internal MapPoint GetMapPointFromString(string coordinate)
         {
             MapPoint point = null;
