@@ -101,6 +101,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
                 minorAxisDistance = value;
 
                 UpdateFeedbackWithEllipse();
@@ -148,6 +151,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
                 majorAxisDistance = value;
 
                 Point2 = UpdateFeedback(Point1, MajorAxisDistance);
@@ -198,6 +204,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return azimuth; }
             set
             {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
 
