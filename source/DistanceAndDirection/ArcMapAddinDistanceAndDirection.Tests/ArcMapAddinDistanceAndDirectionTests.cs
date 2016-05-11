@@ -10,6 +10,61 @@ namespace ArcMapAddinDistanceAndDirection.Tests
     [TestClass]
     public class ArcMapAddinDistanceAndDirectionTests
     {
+        #region Lines View Model
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void LinesViewModel_ThrowsException()
+        {
+            var lineVM = new LinesViewModel();
+
+            lineVM.DistanceString = "esri";
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void LinesViewModel_ThrowsException2()
+        {
+            var lineVM = new LinesViewModel();
+
+            lineVM.LineFromType = LineFromTypes.BearingAndDistance;
+
+            lineVM.AzimuthString = "esri";
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void LinesViewModel_ThrowsException3()
+        {
+            var lineVM = new LinesViewModel();
+
+            lineVM.Point1Formatted = "esri";
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void LinesViewModel_ThrowsException4()
+        {
+            var lineVM = new LinesViewModel();
+
+            lineVM.Point2Formatted = "esri";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void LinesViewModel_ThrowsException5()
+        {
+            var lineVM = new LinesViewModel();
+
+            lineVM.Distance = -1;
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void LinesViewModel_ThrowsException6()
+        {
+            var lineVM = new LinesViewModel();
+
+            lineVM.Azimuth = -1;
+        }
+
+
         [TestMethod]
         public void LineViewModel()
         {
@@ -59,6 +114,44 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             aoInitialize.Shutdown();
         }
 
+        #endregion Lines View Model
+
+        #region Circle View Model
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.DistanceString = "esri";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException2()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.Point1Formatted = "esri";
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException3()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TravelTime = -1;
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException4()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TravelRate = -1;
+        }
+
         [TestMethod]
         public void CircleViewModel()
         {
@@ -89,6 +182,10 @@ namespace ArcMapAddinDistanceAndDirection.Tests
 
             aoInitialize.Shutdown();
         }
+
+        #endregion Circle View Model
+
+        #region Ellipse View Model
 
         [TestMethod]
         public void EllipseViewModel()
@@ -125,6 +222,8 @@ namespace ArcMapAddinDistanceAndDirection.Tests
 
             aoInitialize.Shutdown();
         }
+
+
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void EllipseViewModel_ThrowsException()
@@ -175,6 +274,9 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             ellipseVM.Azimuth = -1;
         }
 
+        #endregion Ellipse View Model
+
+        #region Range View Model
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
         public void RangeViewModel_ThrowsException()
@@ -238,5 +340,6 @@ namespace ArcMapAddinDistanceAndDirection.Tests
 
             aoInitialize.Shutdown();
         }
+        #endregion Range View Model
     }
 }
