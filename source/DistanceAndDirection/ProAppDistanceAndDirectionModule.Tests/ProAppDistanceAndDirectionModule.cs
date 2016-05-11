@@ -13,103 +13,6 @@ namespace ProAppDistanceAndDirectionModule.Tests
     [TestClass]
     public class ProAppDistanceAndDirectionModule
     {
-        #region Lines View Model
-
-        //[TestMethod]
-        //[ExpectedException(typeof(ArgumentException))]
-        //public void ProLinesViewModel_ThrowsException()
-        //{
-        //    var lineVM = new ProLinesViewModel();
-
-        //    lineVM.DistanceString = "esri";
-        //}
-        //[TestMethod]
-        //[ExpectedException(typeof(ArgumentException))]
-        //public void ProLinesViewModel_ThrowsException2()
-        //{
-        //    var lineVM = new ProLinesViewModel();
-
-        //    lineVM.LineFromType = LineFromTypes.BearingAndDistance;
-
-        //    lineVM.AzimuthString = "esri";
-        //}
-        //[TestMethod]
-        //[ExpectedException(typeof(ArgumentException))]
-        //public void ProLinesViewModel_ThrowsException3()
-        //{
-        //    var lineVM = new ProLinesViewModel();
-
-        //    lineVM.Point1Formatted = "esri";
-        //}
-        //[TestMethod]
-        //[ExpectedException(typeof(ArgumentException))]
-        //public void ProLinesViewModel_ThrowsException4()
-        //{
-        //    var lineVM = new ProLinesViewModel();
-
-        //    lineVM.Point2Formatted = "esri";
-        //}
-
-        //[TestMethod]
-        //[ExpectedException(typeof(ArgumentException))]
-        //public void ProLinesViewModel_ThrowsException5()
-        //{
-        //    var lineVM = new ProLinesViewModel();
-
-        //    lineVM.Distance = -1;
-        //}
-        //[TestMethod]
-        //[ExpectedException(typeof(ArgumentException))]
-        //public void ProLinesViewModel_ThrowsException6()
-        //{
-        //    var lineVM = new ProLinesViewModel();
-
-        //    lineVM.Azimuth = -1;
-        //}
-
-
-        //[TestMethod]
-        //public void ProLineViewModel()
-        //{
-        //    var lineVM = new ProLinesViewModel();
-
-        //    // can we create an element
-        //    Assert.IsFalse(lineVM.CanCreateElement);
-        //    lineVM.LineAzimuthType = DistanceAndDirectionLibrary.AzimuthTypes.Degrees;
-        //    lineVM.Azimuth = 90.1;
-        //    Assert.AreEqual("90.1", lineVM.AzimuthString);
-        //    lineVM.Azimuth = 90.0;
-        //    Assert.AreEqual("90", lineVM.AzimuthString);
-        //    lineVM.LineAzimuthType = DistanceAndDirectionLibrary.AzimuthTypes.Mils;
-        //    Assert.AreEqual(1600.00000002, lineVM.Azimuth);
-
-        //    // test points
-        //    lineVM.Point1 = MapPointBuilder.CreateMapPoint(-119.8, 34.4);
-        //    lineVM.Point2 = MapPointBuilder.CreateMapPoint(-74.1, 41.8);
-        //    // can we create an element
-        //    Assert.IsTrue(lineVM.CanCreateElement);
-
-        //    // can't test manual input of of starting and ending points
-        //    // they call methods that reference the ArcMap Application/Document objects
-        //    // which is not available in unit testing
-
-        //    // test Distance and Bearing mode
-
-        //    // manual input of azimuth
-        //    lineVM.LineAzimuthType = DistanceAndDirectionLibrary.AzimuthTypes.Degrees;
-        //    lineVM.LineFromType = DistanceAndDirectionLibrary.LineFromTypes.BearingAndDistance;
-        //    lineVM.AzimuthString = "90.1";
-        //    Assert.AreEqual(90.1, lineVM.Azimuth);
-        //    // manual input of distance
-        //    lineVM.LineDistanceType = DistanceAndDirectionLibrary.DistanceTypes.Meters;
-        //    lineVM.DistanceString = "50.5";
-        //    Assert.AreEqual(50.5, lineVM.Distance);
-        //    lineVM.LineDistanceType = DistanceAndDirectionLibrary.DistanceTypes.Miles;
-        //    Assert.AreEqual(50.5, lineVM.Distance);
-
-        //}
-
-        #endregion Lines View Model
 
         #region Circle View Model
 
@@ -147,63 +50,44 @@ namespace ProAppDistanceAndDirectionModule.Tests
             circleVM.TravelRate = -1;
         }
 
-        //[TestMethod]
-        //public void ProCircleViewModel()
-        //{
-        //    //Host.Initialize();
+        [TestMethod]
+        public void ProCircleViewModel()
+        {
+            //Host.Initialize();
 
-        //    var circleVM = new ProCircleViewModel();
+            var circleVM = new ProCircleViewModel();
 
-        //    // can we create an element
-        //    Assert.IsFalse(circleVM.CanCreateElement);
+            // can we create an element
+            Assert.IsFalse(circleVM.CanCreateElement);
 
-        //    circleVM.Distance = 1000.0;
-
-        //    // test points
-        //    circleVM.Point1 = MapPointBuilder.CreateMapPoint(-119.8, 34.4);
-        //    // can we create an element
-        //    //Assert.IsTrue(circleVM.CanCreateElement);
-
-        //    Assert.AreEqual(circleVM.Point1Formatted, "34.4 -119.8");
-
-        //    // can't test manual input of of starting and ending points
-        //    // they call methods that reference the ArcMap Application/Document objects
-        //    // which is not available in unit testing
-
-        //}
+            circleVM.Distance = 1000.0;
+        }
 
         #endregion Circle View Model
 
         #region Ellipse View Model
 
-        //[TestMethod]
-        //public void ProEllipseViewModel()
-        //{
+        [TestMethod]
+        public void ProEllipseViewModel()
+        {
 
-        //    var ellipseVM = new ProEllipseViewModel();
+            var ellipseVM = new ProEllipseViewModel();
 
-        //    // can we create an element
-        //    Assert.IsFalse(ellipseVM.CanCreateElement);
+            // can we create an element
+            Assert.IsFalse(ellipseVM.CanCreateElement);
 
-        //    ellipseVM.Distance = 1000.0;
+            ellipseVM.Distance = 1000.0;
 
-        //    // test points
-        //    ellipseVM.Point1 = MapPointBuilder.CreateMapPoint(-119.8, 34.4);
-        //    // can we create an element
-        //    //Assert.IsTrue(circleVM.CanCreateElement);
+            // can't test manual input of of starting and ending points
+            // they call methods that reference the ArcMap Application/Document objects
+            // which is not available in unit testing
 
-        //    Assert.AreEqual(ellipseVM.Point1Formatted, "34.4 -119.8");
+            // manual input of azimuth
+            ellipseVM.AzimuthType = DistanceAndDirectionLibrary.AzimuthTypes.Degrees;
+            ellipseVM.AzimuthString = "90.1";
+            Assert.AreEqual(90.1, ellipseVM.Azimuth);
 
-        //    // can't test manual input of of starting and ending points
-        //    // they call methods that reference the ArcMap Application/Document objects
-        //    // which is not available in unit testing
-
-        //    // manual input of azimuth
-        //    ellipseVM.AzimuthType = DistanceAndDirectionLibrary.AzimuthTypes.Degrees;
-        //    ellipseVM.AzimuthString = "90.1";
-        //    Assert.AreEqual(90.1, ellipseVM.Azimuth);
-
-        //}
+        }
 
 
         [TestMethod]
@@ -292,29 +176,17 @@ namespace ProAppDistanceAndDirectionModule.Tests
             rangeVM.DistanceString = "esri";
         }
 
-        //[TestMethod]
-        //public void ProRangeViewModel()
-        //{
+        [TestMethod]
+        public void ProRangeViewModel()
+        {
 
-        //    var rangeVM = new ProRangeViewModel();
+            var rangeVM = new ProRangeViewModel();
 
-        //    // can we create an element
-        //    Assert.IsFalse(rangeVM.CanCreateElement);
+            // can we create an element
+            Assert.IsFalse(rangeVM.CanCreateElement);
 
-        //    rangeVM.Distance = 1000.0;
-
-        //    // test points
-        //    rangeVM.Point1 = MapPointBuilder.CreateMapPoint(-119.8, 34.4);
-        //    // can we create an element
-        //    //Assert.IsTrue(circleVM.CanCreateElement);
-
-        //    Assert.AreEqual(rangeVM.Point1Formatted, "34.4 -119.8");
-
-        //    // can't test manual input of of starting and ending points
-        //    // they call methods that reference the ArcMap Application/Document objects
-        //    // which is not available in unit testing
-
-        //}
+            rangeVM.Distance = 1000.0;
+        }
         #endregion Range View Model
     }
 }
