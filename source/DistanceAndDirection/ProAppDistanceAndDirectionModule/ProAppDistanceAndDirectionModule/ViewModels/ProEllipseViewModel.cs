@@ -101,6 +101,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             set
             {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
                 minorAxisDistance = value;
 
                 UpdateFeedbackWithEllipse();
@@ -153,6 +156,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             set
             {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
                 majorAxisDistance = value;
 
                 UpdateFeedbackWithEllipse();
@@ -210,6 +216,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             set
             {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
 
