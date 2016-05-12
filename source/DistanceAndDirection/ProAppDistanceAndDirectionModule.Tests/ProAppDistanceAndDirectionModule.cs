@@ -63,8 +63,6 @@ namespace ProAppDistanceAndDirectionModule.Tests
         [TestMethod]
         public void ProCircleViewModel()
         {
-            //Host.Initialize();
-
             var circleVM = new ProCircleViewModel();
 
             // can we create an element

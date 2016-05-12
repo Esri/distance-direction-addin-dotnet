@@ -26,6 +26,17 @@ namespace ArcMapAddinDistanceAndDirection.Tests
     [TestClass]
     public class ArcMapAddinDistanceAndDirectionTests
     {
+
+        [ClassInitialize()]
+        [TestCategory("ArcMapAddin")]
+        public static void MyClassInitialize(TestContext testContext)
+        {
+            bool blnBoundToRuntime = ESRI.ArcGIS.RuntimeManager.Bind(ESRI.ArcGIS.ProductCode.EngineOrDesktop);
+            Assert.IsTrue(blnBoundToRuntime, "Not bound to runtime");
+            IAoInitialize aoInitialize = new AoInitializeClass();
+            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeAdvanced);
+        }
+
         #region Lines View Model
 
         [TestMethod]
@@ -84,13 +95,6 @@ namespace ArcMapAddinDistanceAndDirection.Tests
         [TestMethod]
         public void LineViewModel()
         {
-            bool isBound = ESRI.ArcGIS.RuntimeManager.Bind(ESRI.ArcGIS.ProductCode.Desktop);
-            if (!isBound)
-                return;
-
-            IAoInitialize aoInitialize = new AoInitializeClass();
-            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeAdvanced);
-
             var lineVM = new LinesViewModel();
 
             // can we create an element
@@ -126,8 +130,6 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             Assert.AreEqual(50.5, lineVM.Distance);
             lineVM.LineDistanceType = DistanceAndDirectionLibrary.DistanceTypes.Miles;
             Assert.AreEqual(50.5, lineVM.Distance);
-
-            aoInitialize.Shutdown();
         }
 
         #endregion Lines View Model
@@ -171,13 +173,6 @@ namespace ArcMapAddinDistanceAndDirection.Tests
         [TestMethod]
         public void CircleViewModel()
         {
-            bool isBound = ESRI.ArcGIS.RuntimeManager.Bind(ESRI.ArcGIS.ProductCode.Desktop);
-            if (!isBound)
-                return;
-
-            IAoInitialize aoInitialize = new AoInitializeClass();
-            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeAdvanced);
-
             var circleVM = new CircleViewModel();
 
             // can we create an element
@@ -187,16 +182,8 @@ namespace ArcMapAddinDistanceAndDirection.Tests
 
             // test points
             circleVM.Point1 = new Point() { X = -119.8, Y = 34.4 };
-            // can we create an element
-            //Assert.IsTrue(circleVM.CanCreateElement);
 
             Assert.AreEqual(circleVM.Point1Formatted, "34.4 -119.8");
-
-            // can't test manual input of of starting and ending points
-            // they call methods that reference the ArcMap Application/Document objects
-            // which is not available in unit testing
-
-            aoInitialize.Shutdown();
         }
 
         #endregion Circle View Model
@@ -206,13 +193,6 @@ namespace ArcMapAddinDistanceAndDirection.Tests
         [TestMethod]
         public void EllipseViewModel()
         {
-            bool isBound = ESRI.ArcGIS.RuntimeManager.Bind(ESRI.ArcGIS.ProductCode.Desktop);
-            if (!isBound)
-                return;
-
-            IAoInitialize aoInitialize = new AoInitializeClass();
-            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeAdvanced);
-
             var ellipseVM = new EllipseViewModel();
 
             // can we create an element
@@ -235,8 +215,6 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             ellipseVM.AzimuthType = DistanceAndDirectionLibrary.AzimuthTypes.Degrees;
             ellipseVM.AzimuthString = "90.1";
             Assert.AreEqual(90.1, ellipseVM.Azimuth);
-
-            aoInitialize.Shutdown();
         }
 
 
@@ -329,13 +307,6 @@ namespace ArcMapAddinDistanceAndDirection.Tests
         [TestMethod]
         public void RangeViewModel()
         {
-            bool isBound = ESRI.ArcGIS.RuntimeManager.Bind(ESRI.ArcGIS.ProductCode.Desktop);
-            if (!isBound)
-                return;
-
-            IAoInitialize aoInitialize = new AoInitializeClass();
-            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeAdvanced);
-
             var rangeVM = new RangeViewModel();
 
             // can we create an element
@@ -346,15 +317,8 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             // test points
             rangeVM.Point1 = new Point() { X = -119.8, Y = 34.4 };
             // can we create an element
-            //Assert.IsTrue(circleVM.CanCreateElement);
 
             Assert.AreEqual(rangeVM.Point1Formatted, "34.4 -119.8");
-
-            // can't test manual input of of starting and ending points
-            // they call methods that reference the ArcMap Application/Document objects
-            // which is not available in unit testing
-
-            aoInitialize.Shutdown();
         }
         #endregion Range View Model
     }
