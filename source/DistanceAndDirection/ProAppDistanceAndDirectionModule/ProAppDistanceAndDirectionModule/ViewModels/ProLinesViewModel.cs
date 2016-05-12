@@ -20,7 +20,6 @@ using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -163,6 +162,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get { return azimuth; }
             set
             {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
 

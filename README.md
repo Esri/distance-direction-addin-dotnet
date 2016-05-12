@@ -48,8 +48,12 @@ The add-in provides the ability to create geodesic features such as lines, circl
 		* Open and build solution file
 	* To use MSBuild to build the solution
 		* Open a Visual Studio Command Prompt: Start Menu | Visual Studio 2013 | Visual Studio Tools | Developer Command Prompt for VS2013
-		* ``` cd distance-and-direction-addin-dotnet\source\DistanceAndDirection\ArcMapAddinDistanceAndDirection ```
-		* ``` msbuild ArcMapAddinDistanceAndDirection.sln /property:Configuration=Release ```
+		* ` cd distance-and-direction-addin-dotnet\source\DistanceAndDirection\ArcMapAddinDistanceAndDirection `
+		* ` msbuild ArcMapAddinDistanceAndDirection.sln /property:Configuration=Release `
+	* To run Unit test from command prompt
+		* Open a Visual Studio Command Prompt: Start Menu | Visual Studio 2013 | Visual Studio Tools | Developer Command Prompt for VS2013
+		* ` cd distance-direction-addin-dotnet\source\DistanceAndDirection\ArcMapAddinDistanceAndDirection.Tests\bin\Release `
+		* ` MSTest /testcontainer:ArcMapAddinDistanceAndDirection.Tests.dll `* 
 	* Note : Assembly references are based on a default install of the SDK, you may have to update the references if you chose an alternate install option
 
 ## Desktop Users
