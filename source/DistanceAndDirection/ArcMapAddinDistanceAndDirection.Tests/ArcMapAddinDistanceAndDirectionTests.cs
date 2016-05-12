@@ -34,7 +34,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             bool blnBoundToRuntime = ESRI.ArcGIS.RuntimeManager.Bind(ESRI.ArcGIS.ProductCode.EngineOrDesktop);
             Assert.IsTrue(blnBoundToRuntime, "Not bound to runtime");
             IAoInitialize aoInitialize = new AoInitializeClass();
-            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeAdvanced);
+            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeBasic);
         }
 
         #region Lines View Model
