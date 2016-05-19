@@ -10,7 +10,7 @@
   <Targets>
     <Target name="Desktop" version="10.3" />
   </Targets>
-  <AddIn language="CLR4.5" library="ArcMapAddinDistanceAndDirection.dll" namespace="ArcMapAddinDistanceAndDirection">
+  <AddIn language="CLR4.5" library="DistanceAndDirection.dll" namespace="ArcMapAddinDistanceAndDirection">
     <ArcMap>
       <DockableWindows>
         <DockableWindow id="Esri_ArcMapAddinDistanceAndDirection_DockableWindowDistanceAndDirection" class="DockableWindowDistanceAndDirection+AddinImpl" caption="Distance and Direction" image="Images\DockableWindowDistanceAndDirection.png">
