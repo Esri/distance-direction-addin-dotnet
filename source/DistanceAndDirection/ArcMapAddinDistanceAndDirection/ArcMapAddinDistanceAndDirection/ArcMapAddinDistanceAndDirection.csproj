@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ArcMapAddinDistanceAndDirection</RootNamespace>
-    <AssemblyName>ArcMapAddinDistanceAndDirection</AssemblyName>
+    <AssemblyName>DistanceAndDirection</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
