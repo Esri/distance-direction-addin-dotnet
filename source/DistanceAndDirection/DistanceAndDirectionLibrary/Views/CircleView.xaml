@@ -68,7 +68,7 @@
                             ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
                         <Image Width="18"
                                Height="18"
-                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point32_d.png" />
+                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point.png" />
                     </Button>
                 </Grid>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelRadiusDiameter}" />

@@ -103,7 +103,7 @@
                             ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
                         <Image Width="18"
                                Height="18"
-                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point32_d.png" />
+                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point.png" />
                     </Button>
                 </Grid>
                 <GroupBox Grid.Row="4"
