@@ -13,7 +13,7 @@
   <AddIn language="CLR4.5" library="DistanceAndDirection.dll" namespace="ArcMapAddinDistanceAndDirection">
     <ArcMap>
       <DockableWindows>
-        <DockableWindow id="Esri_ArcMapAddinDistanceAndDirection_DockableWindowDistanceAndDirection" class="DockableWindowDistanceAndDirection+AddinImpl" caption="Distance and Direction" image="Images\DockableWindowDistanceAndDirection.png">
+        <DockableWindow id="Esri_ArcMapAddinDistanceAndDirection_DockableWindowDistanceAndDirection" class="DockableWindowDistanceAndDirection+AddinImpl" caption="Distance and Direction" image="Images\distance-direction-16.png">
           <InitialPlacement height="300" width="300" state="pinned" position="left" />
         </DockableWindow>
       </DockableWindows>
