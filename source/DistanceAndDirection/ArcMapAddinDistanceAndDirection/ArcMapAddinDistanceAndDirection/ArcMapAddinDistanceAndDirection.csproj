@@ -211,6 +211,9 @@
       <Name>DistanceAndDirectionLibrary</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <AddInContent Include="Images\distance-direction-16.png" />
+  </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>
     <AddInTargetProduct>Desktop</AddInTargetProduct>
