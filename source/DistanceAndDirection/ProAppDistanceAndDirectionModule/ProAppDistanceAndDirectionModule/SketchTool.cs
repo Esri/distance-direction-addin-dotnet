@@ -27,18 +27,16 @@ namespace ProAppDistanceAndDirectionModule
     {
         public SketchTool()
         {
-            // we may use the sketch tool if it supports geodesic feedback
-            // but it doesn't look like it does
-            // need to see what geodesic support is available
-            IsSketchTool = false;
+            IsSketchTool = true;
             SketchType = SketchGeometryType.Point;
-            SketchOutputMode = SketchOutputMode.Map;
-            Mediator.Register("SET_SKETCH_TOOL_TYPE", (sgType) => SketchType = (SketchGeometryType)sgType);
+            UseSnapping = true;
+            // will need to use this in the future, commented out for now
+            //Mediator.Register("SET_SKETCH_TOOL_TYPE", (sgType) => SketchType = (SketchGeometryType)sgType);
 
             //lets limit how many times we call this
             // take the latest event args every so often
             // this will keep us from drawing too many feedback geometries
-            mouseSubject.Sample(TimeSpan.FromMilliseconds(50)).Subscribe(async (x) =>
+            mouseSubject.Sample(TimeSpan.FromMilliseconds(150)).Subscribe(async (x) =>
                 {
                     var mp = await QueuedTask.Run(() =>
                     {
@@ -52,31 +50,17 @@ namespace ProAppDistanceAndDirectionModule
 
         protected override Task<bool> OnSketchCompleteAsync(Geometry geometry)
         {
-            QueuedTask.Run(() =>
-                {
-                    Mediator.NotifyColleagues("SKETCH_COMPLETE", geometry);
-                });
-            return base.OnSketchCompleteAsync(geometry);
-        }
-
-        protected override void OnToolMouseDown(MapViewMouseButtonEventArgs e)
-        {
-            if (e.ChangedButton != System.Windows.Input.MouseButton.Left)
-                return;
-
             try
             {
-                QueuedTask.Run(() =>
-                {
-                    var mp = MapView.Active.ClientToMap(e.ClientPoint);
-                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, mp);
-                });
+                var mp = geometry as MapPoint;
+                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, mp);
             }
             catch(Exception ex)
             {
-
+                // do nothing
             }
-            base.OnToolMouseDown(e);
+
+            return base.OnSketchCompleteAsync(geometry);
         }
 
         protected override void OnToolMouseMove(MapViewMouseEventArgs e)
@@ -88,7 +72,7 @@ namespace ProAppDistanceAndDirectionModule
             }
             catch(Exception ex)
             {
-
+                // do nothing
             }
             base.OnToolMouseMove(e);
         }
