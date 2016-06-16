@@ -18,11 +18,11 @@ using System;
 // Esri
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
 
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
-using ESRI.ArcGIS.ArcMapUI;
-using ESRI.ArcGIS.Carto;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
