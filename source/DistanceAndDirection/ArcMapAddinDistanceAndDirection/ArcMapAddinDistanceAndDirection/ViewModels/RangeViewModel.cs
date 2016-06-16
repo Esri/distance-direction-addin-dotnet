@@ -18,6 +18,8 @@ using System;
 // Esri
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
 
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
@@ -207,16 +209,29 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             try
             {
+                IConstructGeodetic construct = null;
                 for (int x = 0; x < numberOfRings; x++)
                 {
                     // set the current radius
                     radius += Distance;
                     var polyLine = new Polyline() as IPolyline;
                     polyLine.SpatialReference = Point1.SpatialReference;
-                    var construct = polyLine as IConstructGeodetic;
+                    construct = polyLine as IConstructGeodetic;
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
                     AddGraphicToMap(construct as IGeometry);
                 }
+
+                // Set map extent to extent of last range ring
+                if (construct != null)
+                {
+                    var mxdoc = ArcMap.Application.Document as IMxDocument;
+                    var av = mxdoc.FocusMap as IActiveView;
+                    IGeometry geom = construct as IGeometry;
+
+                    av.Extent = geom.Envelope;
+                    av.Refresh();
+                }
+
             }
             catch(Exception ex)
             {
