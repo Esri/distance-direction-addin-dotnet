@@ -28,8 +28,9 @@ using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.DataSourcesFile;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.ADF;
-using DistanceAndDirectionLibrary;
 using ESRI.ArcGIS.Display;
+
+using DistanceAndDirectionLibrary;
 
 namespace ArcMapAddinDistanceAndDirection.Models
 {
@@ -133,6 +134,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
             try
             {
+                bool isGraphicLineOrRangeRing = graphicsList[0].GraphicType == GraphicTypes.Line || graphicsList[0].GraphicType == GraphicTypes.RangeRing;
                 if (saveAsType == SaveAsType.FileGDB)
                 {
                     IWorkspaceFactory workspaceFactory = new FileGDBWorkspaceFactory();
@@ -144,7 +146,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         DeleteFeatureClass(fWorkspace, fcName);
                     }
 
-                    fc = CreateFeatureClass(fWorkspace, fcName, graphicsList[0].GraphicType == GraphicTypes.Line);
+                    fc = CreateFeatureClass(fWorkspace, fcName, isGraphicLineOrRangeRing);
 
                     foreach (Graphic graphic in graphicsList)
                     {
@@ -166,7 +168,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         DeleteShapeFile(outputPath);
                     }
 
-                    fc = ExportToShapefile(outputPath, graphicsList, ipSpatialRef, graphicsList[0].GraphicType == GraphicTypes.Line);
+                    fc = ExportToShapefile(outputPath, graphicsList, ipSpatialRef, isGraphicLineOrRangeRing);
                 }
                 return fc;
             }
