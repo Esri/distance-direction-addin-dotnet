@@ -486,7 +486,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                         IEnvelope env = geom.Envelope;
 
-                        double extentPercent = (env.XMax - env.XMin) * .3;
+                        double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
                         env.XMax = env.XMax + extentPercent;
                         env.XMin = env.XMin - extentPercent;
                         env.YMax = env.YMax + extentPercent;
