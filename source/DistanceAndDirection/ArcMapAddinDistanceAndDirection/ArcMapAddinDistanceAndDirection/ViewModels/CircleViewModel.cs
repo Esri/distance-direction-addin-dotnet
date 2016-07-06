@@ -484,8 +484,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         var mxdoc = ArcMap.Application.Document as IMxDocument;
                         var av = mxdoc.FocusMap as IActiveView;
 
-                        geom.Envelope.Expand(1.05, 1.05, true);
-                        av.Extent = geom.Envelope;
+                        IEnvelope env = geom.Envelope;
+
+                        double extentPercent = (env.XMax - env.XMin) * .3;
+                        env.XMax = env.XMax + extentPercent;
+                        env.XMin = env.XMin - extentPercent;
+                        env.YMax = env.YMax + extentPercent;
+                        env.YMin = env.YMin - extentPercent;
+
+                        av.Extent = env;
                         av.Refresh();
                     }
                 }
