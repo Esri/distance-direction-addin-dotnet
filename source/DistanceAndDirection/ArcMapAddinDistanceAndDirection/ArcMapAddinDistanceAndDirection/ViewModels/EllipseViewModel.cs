@@ -267,13 +267,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Overriden Functions
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
+        internal override void CreateMapElement(bool interactiveMode = true)
         {
             if (Point1 == null || Point2 == null || Point3 == null)
             {
                 return;
             }
-            DrawEllipse();
+            DrawEllipse(interactiveMode);
             Reset(false);
         }
 
@@ -544,9 +548,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             catch { }
 
             return construct as IPolyline;
-        }        
+        }
 
-        private void DrawEllipse()
+        /// <summary>
+        /// Create a geodetic ellipse
+        /// </summary>
+        /// <param name="interactiveMode">Sets the mode the feature was created in</param>
+        private void DrawEllipse(bool interactiveMode)
         {
             try
             {
@@ -561,6 +569,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (line != null)
                 {
                     AddGraphicToMap(line as IGeometry);
+
+                    // Set map extent to extent of ellipse if manually entered
+                    if (!interactiveMode)
+                    {
+                        IGeometry geom = line as IGeometry;
+                        var mxdoc = ArcMap.Application.Document as IMxDocument;
+                        var av = mxdoc.FocusMap as IActiveView;
+
+                        av.Extent = geom.Envelope;
+                        av.Refresh();
+                    }
                 }
 
                 //ElementTag = Guid.NewGuid().ToString();

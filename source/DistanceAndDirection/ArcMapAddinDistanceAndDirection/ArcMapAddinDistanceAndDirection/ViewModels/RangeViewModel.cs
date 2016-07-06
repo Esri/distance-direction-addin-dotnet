@@ -140,7 +140,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Method used to create the needed map elements to add to the graphics container
         /// Is called by the base class when the "Enter" key is pressed
         /// </summary>
-        internal override void CreateMapElement()
+        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
+        internal override void CreateMapElement(bool interactiveMode = true)
         {
             // do we have enough data?
             if (!CanCreateElement)

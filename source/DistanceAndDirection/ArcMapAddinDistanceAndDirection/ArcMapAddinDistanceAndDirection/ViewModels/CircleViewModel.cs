@@ -19,6 +19,8 @@ using System;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -418,10 +420,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Private Functions
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
+        internal override void CreateMapElement(bool interactiveMode = true)
         {
             base.CreateMapElement();
-            CreateCircle();
+            CreateCircle(interactiveMode);
             Reset(false);
         }
 
@@ -439,10 +445,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             TravelTime = 0;
             TravelRate = 0;
         }
+
         /// <summary>
-        /// Create geodetic circle
+        /// Create a geodetic circle
         /// </summary>
-        private void CreateCircle()
+        /// <param name="interactiveMode">Sets the mode the feature was created in</param>
+        private void CreateCircle(bool interactiveMode)
         {
             if (Point1 == null && Point2 == null)
             {
@@ -468,6 +476,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     Point2 = null; 
                     HasPoint2 = false;
                     ResetFeedback();
+
+                    // Set map extent to extent of circle if manually entered
+                    if (!interactiveMode)
+                    {
+                        IGeometry geom = construct as IGeometry;
+                        var mxdoc = ArcMap.Application.Document as IMxDocument;
+                        var av = mxdoc.FocusMap as IActiveView;
+
+                        geom.Envelope.Expand(1.05, 1.05, true);
+                        av.Extent = geom.Envelope;
+                        av.Refresh();
+                    }
                 }
             }
             catch (Exception ex)

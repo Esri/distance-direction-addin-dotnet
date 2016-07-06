@@ -216,7 +216,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             //}
         }
 
-        private void CreatePolyline()
+        /// <summary>
+        /// Create a geodetic line
+        /// </summary>
+        /// <param name="interactiveMode">Sets the mode the feature was created in</param>
+        private void CreatePolyline(bool interactiveMode)
         {
             try
             {
@@ -248,6 +252,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(construct as IGeometry);
                 ResetPoints();
+
+                // Set map extent to extent of line if manually entered
+                if (construct != null && !interactiveMode)
+                {
+                    IGeometry geom = construct as IGeometry;
+                    IEnvelope env = geom.Envelope;
+
+                    av.Extent = env;
+                    av.Refresh();
+                }
             }
             catch (Exception ex)
             {
@@ -340,13 +354,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             base.OnNewMapPointEvent(obj);
         }
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
+        internal override void CreateMapElement(bool interactiveMode = true)
         {
             if (!CanCreateElement)
                 return;
 
             base.CreateMapElement();
-            CreatePolyline();
+            CreatePolyline(interactiveMode);
             Reset(false);
         }
 
