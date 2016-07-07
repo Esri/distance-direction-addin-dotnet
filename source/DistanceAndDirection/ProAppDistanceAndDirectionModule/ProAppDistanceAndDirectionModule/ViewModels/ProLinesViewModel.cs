@@ -254,7 +254,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
+        internal override void CreateMapElement(bool interactiveMode = true)
         {
             if (!CanCreateElement)
                 return;

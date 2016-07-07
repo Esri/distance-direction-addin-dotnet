@@ -260,7 +260,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Overridden Functions
 
-        internal override void CreateMapElement()
+
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
+        internal override void CreateMapElement(bool interactiveMode = true)
         {
             if (!CanCreateElement)
             {
