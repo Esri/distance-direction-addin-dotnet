@@ -455,7 +455,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Derived class must override this method in order to create map elements
         /// Clears temp graphics by default
         /// </summary>
-        internal virtual void CreateMapElement()
+        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
+        internal virtual void CreateMapElement(bool interactiveMode = true)
         {
             ClearTempGraphics();
         }
