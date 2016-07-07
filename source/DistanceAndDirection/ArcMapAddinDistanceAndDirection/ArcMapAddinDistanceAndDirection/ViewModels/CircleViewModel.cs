@@ -478,22 +478,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ResetFeedback();
 
                     // Set map extent to extent of circle if manually entered
-                    if (!interactiveMode)
+                    if (!interactiveMode && construct != null)
                     {
-                        IGeometry geom = construct as IGeometry;
-                        var mxdoc = ArcMap.Application.Document as IMxDocument;
-                        var av = mxdoc.FocusMap as IActiveView;
-
-                        IEnvelope env = geom.Envelope;
-
-                        double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
-                        env.XMax = env.XMax + extentPercent;
-                        env.XMin = env.XMin - extentPercent;
-                        env.YMax = env.YMax + extentPercent;
-                        env.YMin = env.YMin - extentPercent;
-
-                        av.Extent = env;
-                        av.Refresh();
+                        // zoom to extent of circle
+                        ZoomToExtent(construct as IGeometry);                     
                     }
                 }
             }

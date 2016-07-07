@@ -225,19 +225,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 // Set map extent to extent of last range ring
                 if (construct != null)
                 {
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    var av = mxdoc.FocusMap as IActiveView;
-                    IGeometry geom = construct as IGeometry;
-                    IEnvelope env = geom.Envelope;
-
-                    double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) *.3 ;
-                    env.XMax = env.XMax + extentPercent;
-                    env.XMin = env.XMin - extentPercent;
-                    env.YMax = env.YMax + extentPercent;
-                    env.YMin = env.YMin - extentPercent;
-
-                    av.Extent = env;
-                    av.Refresh();
+                    ZoomToExtent(construct as IGeometry);
                 }
 
             }

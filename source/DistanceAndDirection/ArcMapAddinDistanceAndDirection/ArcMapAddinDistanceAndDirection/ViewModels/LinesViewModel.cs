@@ -256,17 +256,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 // Set map extent to extent of line if manually entered
                 if (construct != null && !interactiveMode)
                 {
-                    IGeometry geom = construct as IGeometry;
-                    IEnvelope env = geom.Envelope;
-
-                    double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
-                    env.XMax = env.XMax + extentPercent;
-                    env.XMin = env.XMin - extentPercent;
-                    env.YMax = env.YMax + extentPercent;
-                    env.YMin = env.YMin - extentPercent;
-
-                    av.Extent = env;
-                    av.Refresh();
+                    // zoom to extent of line
+                    ZoomToExtent(construct as IGeometry);
                 }
             }
             catch (Exception ex)
