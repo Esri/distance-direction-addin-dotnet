@@ -423,7 +423,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// Overrides TabBaseViewModel CreateMapElement
         /// </summary>
-        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
         internal override IGeometry CreateMapElement()
         {
             base.CreateMapElement();

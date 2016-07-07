@@ -460,7 +460,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (Point1 == null || Distance <= 0.0)
                 return;
 
-            CreateCircle(true, true);
+            CreateCircle(true);
         }
 
         #endregion
@@ -470,12 +470,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Overrides TabBaseViewModel CreateMapElement
         /// </summary>
-        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
-        internal override void CreateMapElement(bool interactiveMode = true)
+        internal override Geometry CreateMapElement()
         {
             base.CreateMapElement();
-            CreateCircle(false, interactiveMode);
+            Geometry geom = CreateCircle(false);
             Reset(false);
+
+            return geom;
         }
 
         public override bool CanCreateElement
@@ -495,11 +496,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Create geodetic circle
         /// </summary>
-        private async Task CreateCircle(bool isFeedback, bool interactiveMode)
+        private Geometry CreateCircle(bool isFeedback)
         {
             if (Point1 == null || double.IsNaN(Distance) || Distance <= 0.0)
             {
-                return;
+                return null;
             }
 
             var param = new GeometryEngine.GeodesicEllipseParameter();
@@ -525,11 +526,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             AddGraphicToMap(geom, color, IsTempGraphic: isFeedback);
 
-            if (!interactiveMode && geom != null)
-            {
-                // Zoom to extent of circle
-                ZoomToExtent(geom.Extent);
-            }
+            return geom as Geometry;
         }
 
         #endregion

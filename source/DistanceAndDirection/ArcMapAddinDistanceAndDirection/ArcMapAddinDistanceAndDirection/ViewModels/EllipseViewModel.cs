@@ -555,7 +555,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// Create a geodetic ellipse
         /// </summary>
-        /// <param name="interactiveMode">Sets the mode the feature was created in</param>
         private IGeometry DrawEllipse()
         {
             try

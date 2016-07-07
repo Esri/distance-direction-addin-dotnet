@@ -455,10 +455,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Derived class must override this method in order to create map elements
         /// Clears temp graphics by default
         /// </summary>
-        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
-        internal virtual void CreateMapElement(bool interactiveMode = true)
+        internal virtual Geometry CreateMapElement()
         {
             ClearTempGraphics();
+            return null;
         }
 
         #region Private Event Functions
@@ -516,7 +516,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!CanCreateElement)
                 return;
 
-            CreateMapElement(false);
+            Geometry geom = CreateMapElement();
+
+            if (geom != null)
+            {
+                ZoomToExtent(geom.Extent);
+            }
         }
 
         private bool IsValid(System.Windows.DependencyObject obj)
@@ -568,7 +573,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (HasPoint1 && HasPoint2)
             {
-                CreateMapElement(true);
+                CreateMapElement();
                 ResetPoints();
             }
         }

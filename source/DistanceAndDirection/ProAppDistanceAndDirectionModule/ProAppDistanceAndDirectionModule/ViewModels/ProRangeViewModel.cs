@@ -138,23 +138,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Method used to create the needed map elements to add to the graphics container
         /// Is called by the base class when the "Enter" key is pressed
         /// </summary>
-        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
-        internal override void CreateMapElement(bool interactiveMode = true)
+        internal override Geometry CreateMapElement()
         {
+            Geometry geom = null;
             // do we have enough data?
             if (!CanCreateElement)
-                return;
+                return geom;
 
             if (!IsInteractive)
             {
                 base.CreateMapElement();
 
-                DrawRings();
+                geom = DrawRings();
             }
 
             DrawRadials();
 
             Reset(false);
+
+            return geom;
         }
 
         /// <summary>
@@ -223,10 +225,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Method used to draw the rings at the desired interval
         /// Rings are constructed as geodetic circles
         /// </summary>
-        private async Task DrawRings()
+        private Geometry DrawRings()
         {
             if (Point1 == null || double.IsNaN(Distance))
-                return;
+                return null;
 
             double radius = 0.0;
 
@@ -253,16 +255,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     AddGraphicToMap(geom);   
                 }
 
-                // Zoom to extent of range ring
-                if (geom != null)
-                {
-                    // Zoom to extent of range rings
-                    ZoomToExtent(geom.Extent);
-                }              
+                return geom;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                return null;
             }
         }
 

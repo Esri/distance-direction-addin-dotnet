@@ -265,15 +265,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Overrides TabBaseViewModel CreateMapElement
         /// </summary>
-        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
-        internal override void CreateMapElement(bool interactiveMode = true)
+        internal override Geometry CreateMapElement()
         {
+            Geometry geom = null;
             if (!CanCreateElement)
             {
-                return;
+                return geom;
             }
-            DrawEllipse(interactiveMode);
+            geom = DrawEllipse();
             Reset(false);
+
+            return geom;
         }
 
         public override bool CanCreateElement
@@ -484,10 +486,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return radians;
         }
 
-        private async Task DrawEllipse(bool interactiveMode)
+        private Geometry DrawEllipse()
         {
             if (Point1 == null || double.IsNaN(MajorAxisDistance) || double.IsNaN(MinorAxisDistance))
-                return;
+                return null;
 
             try
             {
@@ -505,15 +507,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 });
 
-                if (!interactiveMode && geom != null)
-                {
-                    // zoom to extent of ellipse
-                    ZoomToExtent(geom.Extent);
-                }
+                return geom as Geometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return null;
             }
         }
         #endregion

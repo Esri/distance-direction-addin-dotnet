@@ -258,15 +258,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Overrides TabBaseViewModel CreateMapElement
         /// </summary>
-        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
-        internal override void CreateMapElement(bool interactiveMode = true)
+        internal override Geometry CreateMapElement()
         {
+            Geometry geom = null;
             if (!CanCreateElement)
-                return;
+                return geom;
 
             base.CreateMapElement();
-            CreatePolyline(interactiveMode);
+            geom = CreatePolyline();
             Reset(false);
+
+            return geom;
         }
 
         internal override void Reset(bool toolReset)
@@ -327,10 +329,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.OnMouseMoveEvent(obj);
         }
 
-        private async Task CreatePolyline(bool interactiveMode = true)
+        private Geometry CreatePolyline()
         {
             if (Point1 == null || Point2 == null)
-                return;
+                return null;
 
             try
             {
@@ -344,15 +346,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 AddGraphicToMap(polyline);
                 ResetPoints();
 
-                if (!interactiveMode && polyline != null)
-                {
-                    // zoom to extent of polyline
-                    ZoomToExtent(polyline.Extent);   
-                }
+                return polyline as Geometry;
             }
             catch(Exception ex)
             {
                 // do nothing
+                return null;
             }
         }
 
