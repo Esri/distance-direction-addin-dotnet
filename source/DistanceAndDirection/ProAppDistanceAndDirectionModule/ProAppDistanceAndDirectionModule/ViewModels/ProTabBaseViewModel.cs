@@ -516,7 +516,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!CanCreateElement)
                 return;
 
-            CreateMapElement();
+            CreateMapElement(false);
         }
 
         private bool IsValid(System.Windows.DependencyObject obj)
@@ -568,7 +568,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (HasPoint1 && HasPoint2)
             {
-                CreateMapElement();
+                CreateMapElement(true);
                 ResetPoints();
             }
         }
