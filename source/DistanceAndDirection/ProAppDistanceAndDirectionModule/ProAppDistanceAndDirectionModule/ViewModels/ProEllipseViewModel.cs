@@ -20,6 +20,7 @@ using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -271,7 +272,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 return;
             }
-            DrawEllipse();
+            DrawEllipse(interactiveMode);
             Reset(false);
         }
 
@@ -483,7 +484,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return radians;
         }
 
-        private void DrawEllipse()
+        private async Task DrawEllipse(bool interactiveMode)
         {
             if (Point1 == null || double.IsNaN(MajorAxisDistance) || double.IsNaN(MinorAxisDistance))
                 return;
@@ -503,6 +504,27 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 });
+
+                if (!interactiveMode)
+                {
+                    // Zoom to extent of ellipse
+                    if (geom != null)
+                    {
+                        var env = geom.Extent;
+
+                        double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
+                        double xmax = env.XMax + extentPercent;
+                        double xmin = env.XMin - extentPercent;
+                        double ymax = env.YMax + extentPercent;
+                        double ymin = env.YMin - extentPercent;
+
+                        //Create the envelope
+                        var envelope = await QueuedTask.Run(() => ArcGIS.Core.Geometry.EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, MapView.Active.Map.SpatialReference));
+
+                        //Zoom the view to a given extent.
+                        await MapView.Active.ZoomToAsync(envelope, TimeSpan.FromSeconds(2));
+                    }
+                }
             }
             catch (Exception ex)
             {

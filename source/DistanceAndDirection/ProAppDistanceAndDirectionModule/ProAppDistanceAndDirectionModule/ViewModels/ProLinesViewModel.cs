@@ -346,7 +346,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 if (!interactiveMode)
                 {
-                    // Zoom to extent of range ring
+                    // Zoom to extent of line
                     if (polyline != null)
                     {
                         var env = polyline.Extent;
