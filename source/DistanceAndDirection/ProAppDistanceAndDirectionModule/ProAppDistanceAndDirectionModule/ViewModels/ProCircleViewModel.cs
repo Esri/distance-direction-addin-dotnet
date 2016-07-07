@@ -15,10 +15,12 @@
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -458,7 +460,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (Point1 == null || Distance <= 0.0)
                 return;
 
-            CreateCircle(true);
+            CreateCircle(true, true);
         }
 
         #endregion
@@ -472,7 +474,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal override void CreateMapElement(bool interactiveMode = true)
         {
             base.CreateMapElement();
-            CreateCircle(false);
+            CreateCircle(false, interactiveMode);
             Reset(false);
         }
 
@@ -493,7 +495,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Create geodetic circle
         /// </summary>
-        private void CreateCircle(bool isFeedback)
+        private async Task CreateCircle(bool isFeedback, bool interactiveMode)
         {
             if (Point1 == null || double.IsNaN(Distance) || Distance <= 0.0)
             {
@@ -522,6 +524,27 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
             }
             AddGraphicToMap(geom, color, IsTempGraphic: isFeedback);
+
+            if (!interactiveMode)
+            {
+                // Zoom to extent of circle
+                if (geom != null)
+                {
+                    var env = geom.Extent;
+
+                    double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
+                    double xmax = env.XMax + extentPercent;
+                    double xmin = env.XMin - extentPercent;
+                    double ymax = env.YMax + extentPercent;
+                    double ymin = env.YMin - extentPercent;
+
+                    //Create the envelope
+                    var envelope = await QueuedTask.Run(() => ArcGIS.Core.Geometry.EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, MapView.Active.Map.SpatialReference));
+
+                    //Zoom the view to a given extent.
+                    await MapView.Active.ZoomToAsync(envelope, TimeSpan.FromSeconds(2));
+                }
+            }
         }
 
         #endregion
