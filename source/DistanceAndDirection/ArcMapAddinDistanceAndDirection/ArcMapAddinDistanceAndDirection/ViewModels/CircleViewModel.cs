@@ -477,7 +477,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     HasPoint2 = false;
                     ResetFeedback();
 
-                    // Set map extent to extent of circle if manually entered
+                    // Set map extent to extent of circle if graphic was manually entered
                     if (!interactiveMode && construct != null)
                     {
                         // zoom to extent of circle
