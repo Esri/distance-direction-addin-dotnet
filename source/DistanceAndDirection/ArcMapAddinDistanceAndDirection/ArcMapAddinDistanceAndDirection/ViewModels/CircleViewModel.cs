@@ -424,11 +424,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Overrides TabBaseViewModel CreateMapElement
         /// </summary>
         /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
-        internal override void CreateMapElement(bool interactiveMode = true)
+        internal override IGeometry CreateMapElement()
         {
             base.CreateMapElement();
-            CreateCircle(interactiveMode);
+            IGeometry geom = CreateCircle();
             Reset(false);
+
+            return geom;
         }
 
         public override bool CanCreateElement
@@ -449,12 +451,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// Create a geodetic circle
         /// </summary>
-        /// <param name="interactiveMode">Sets the mode the feature was created in</param>
-        private void CreateCircle(bool interactiveMode)
+        private IGeometry CreateCircle()
         {
             if (Point1 == null && Point2 == null)
             {
-                return;
+                return null;
             }
 
             var polyLine = new Polyline() as IPolyline;
@@ -475,19 +476,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     this.AddGraphicToMap(construct as IGeometry);
                     Point2 = null; 
                     HasPoint2 = false;
-                    ResetFeedback();
-
-                    // Set map extent to extent of circle if graphic was manually entered
-                    if (!interactiveMode && construct != null)
-                    {
-                        // zoom to extent of circle
-                        ZoomToExtent(construct as IGeometry);                     
-                    }
+                    ResetFeedback();   
                 }
+                return construct as IGeometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return null;
             }
         }
 

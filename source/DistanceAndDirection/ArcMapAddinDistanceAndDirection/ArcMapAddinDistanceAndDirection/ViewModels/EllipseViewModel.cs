@@ -270,15 +270,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// Overrides TabBaseViewModel CreateMapElement
         /// </summary>
-        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
-        internal override void CreateMapElement(bool interactiveMode = true)
+        internal override IGeometry CreateMapElement()
         {
+            IGeometry geom = null;
             if (Point1 == null || Point2 == null || Point3 == null)
             {
-                return;
+                return geom;
             }
-            DrawEllipse(interactiveMode);
+            geom = DrawEllipse();
             Reset(false);
+
+            return geom;
         }
 
         internal override void OnMouseMoveEvent(object obj)
@@ -554,35 +556,23 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Create a geodetic ellipse
         /// </summary>
         /// <param name="interactiveMode">Sets the mode the feature was created in</param>
-        private void DrawEllipse(bool interactiveMode)
+        private IGeometry DrawEllipse()
         {
             try
             {
-                //RemoveGraphics(((IMxDocument)ArcMap.Application.Document).ActivatedView.GraphicsContainer, 
-                //    ElementTag, esriGeometryType.esriGeometryPolyline);
-                //RemoveGraphics(((IMxDocument)ArcMap.Application.Document).ActivatedView.GraphicsContainer, 
-                //    ElementTag, esriGeometryType.esriGeometryPoint);
-                
                 var ellipticArc = new Polyline() as IConstructGeodetic;
                 ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
                     AddGraphicToMap(line as IGeometry);
-
-                    // Set map extent to extent of ellipse if manually entered
-                    if (!interactiveMode && line != null)
-                    {
-                        // zoom to extent of ellipse
-                        ZoomToExtent(line as IGeometry);
-                    }
                 }
-
-                //ElementTag = Guid.NewGuid().ToString();
+                return line as IGeometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return null;
             }
         }
         #endregion

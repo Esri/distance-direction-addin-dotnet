@@ -406,10 +406,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Derived class must override this method in order to create map elements
         /// Clears temp graphics by default
         /// </summary>
-        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
-        internal virtual void CreateMapElement(bool interactiveMode = true)
+        internal virtual IGeometry CreateMapElement()
         {
             ClearTempGraphics();
+            return null;
         }
 
         #region Private Event Functions
@@ -668,7 +668,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (!CanCreateElement)
                 return;
 
-            CreateMapElement(false);
+            IGeometry geom = CreateMapElement();
+            if (geom != null)
+            {
+                ZoomToExtent(geom);
+            }
         }
 
         /// <summary>

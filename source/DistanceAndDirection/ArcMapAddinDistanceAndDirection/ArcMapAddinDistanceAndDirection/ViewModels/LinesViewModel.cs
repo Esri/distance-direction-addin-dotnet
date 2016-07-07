@@ -219,18 +219,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// Create a geodetic line
         /// </summary>
-        /// <param name="interactiveMode">Sets the mode the feature was created in</param>
-        private void CreatePolyline(bool interactiveMode)
+        private IGeometry CreatePolyline()
         {
             try
             {
                 if (Point1 == null || Point2 == null)
-                    return;
+                    return null;
 
                 var construct = new Polyline() as IConstructGeodetic;
 
                 if (construct == null)
-                    return;
+                    return null;
 
                 if (srf3 == null)
                 {
@@ -253,16 +252,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 AddGraphicToMap(construct as IGeometry);
                 ResetPoints();
 
-                // Set map extent to extent of line if manually entered
-                if (construct != null && !interactiveMode)
-                {
-                    // zoom to extent of line
-                    ZoomToExtent(construct as IGeometry);
-                }
+                return construct as IGeometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                return null;
             }
         }
 
@@ -354,15 +349,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// Overrides TabBaseViewModel CreateMapElement
         /// </summary>
-        /// <param name="interactiveMode">indicates whether the Enter key was pressed (interactiveMode = false) or mouse click (interactiveMode = true)</param>
-        internal override void CreateMapElement(bool interactiveMode = true)
+        internal override IGeometry CreateMapElement()
         {
+            IGeometry geom = null;
             if (!CanCreateElement)
-                return;
+                return geom;
 
             base.CreateMapElement();
-            CreatePolyline(interactiveMode);
+            geom = CreatePolyline();
             Reset(false);
+
+            return geom;
         }
 
         internal override void OnMouseMoveEvent(object obj)
