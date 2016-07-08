@@ -19,6 +19,8 @@ using System;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -418,11 +420,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Private Functions
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        internal override IGeometry CreateMapElement()
         {
             base.CreateMapElement();
-            CreateCircle();
+            var geom = CreateCircle();
             Reset(false);
+
+            return geom;
         }
 
         public override bool CanCreateElement
@@ -439,14 +446,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             TravelTime = 0;
             TravelRate = 0;
         }
+
         /// <summary>
-        /// Create geodetic circle
+        /// Create a geodetic circle
         /// </summary>
-        private void CreateCircle()
+        private IGeometry CreateCircle()
         {
             if (Point1 == null && Point2 == null)
             {
-                return;
+                return null;
             }
 
             var polyLine = new Polyline() as IPolyline;
@@ -467,12 +475,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     this.AddGraphicToMap(construct as IGeometry);
                     Point2 = null; 
                     HasPoint2 = false;
-                    ResetFeedback();
+                    ResetFeedback();   
                 }
+                return construct as IGeometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return null;
             }
         }
 

@@ -20,6 +20,7 @@ using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -260,14 +261,21 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Overridden Functions
 
-        internal override void CreateMapElement()
+
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        internal override Geometry CreateMapElement()
         {
+            Geometry geom = null;
             if (!CanCreateElement)
             {
-                return;
+                return geom;
             }
-            DrawEllipse();
+            geom = DrawEllipse();
             Reset(false);
+
+            return geom;
         }
 
         public override bool CanCreateElement
@@ -336,8 +344,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-                AddGraphicToMap(geom, ColorFactory.Grey, true);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                AddGraphicToMap(geom, ColorFactory.GreyRGB, true);
             }
             catch(Exception ex)
             {
@@ -365,7 +373,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
             }
             else if (!HasPoint2)
@@ -478,10 +486,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return radians;
         }
 
-        private void DrawEllipse()
+        private Geometry DrawEllipse()
         {
             if (Point1 == null || double.IsNaN(MajorAxisDistance) || double.IsNaN(MinorAxisDistance))
-                return;
+                return null;
 
             try
             {
@@ -498,10 +506,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 });
+
+                return geom as Geometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return null;
             }
         }
         #endregion

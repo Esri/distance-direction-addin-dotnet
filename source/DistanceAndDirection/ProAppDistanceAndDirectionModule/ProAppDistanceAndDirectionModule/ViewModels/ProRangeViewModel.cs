@@ -20,6 +20,7 @@ using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -137,22 +138,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Method used to create the needed map elements to add to the graphics container
         /// Is called by the base class when the "Enter" key is pressed
         /// </summary>
-        internal override void CreateMapElement()
+        internal override Geometry CreateMapElement()
         {
+            Geometry geom = null;
             // do we have enough data?
             if (!CanCreateElement)
-                return;
+                return geom;
 
             if (!IsInteractive)
             {
                 base.CreateMapElement();
 
-                DrawRings();
+                geom = DrawRings();
             }
 
             DrawRadials();
 
             Reset(false);
+
+            return geom;
         }
 
         /// <summary>
@@ -186,7 +190,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         var mpList = new List<MapPoint>() { Point1 };
                         // get point 2
                         var tempRadialLength = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, radialLength);
-                        var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, tempRadialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth));
+                        var results = GeometryEngine.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempRadialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
                         // update feedback
                         //UpdateFeedback();
                         foreach (var mp in results)
@@ -221,15 +225,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Method used to draw the rings at the desired interval
         /// Rings are constructed as geodetic circles
         /// </summary>
-        private void DrawRings()
+        private Geometry DrawRings()
         {
             if (Point1 == null || double.IsNaN(Distance))
-                return;
+                return null;
 
             double radius = 0.0;
 
             try
             {
+                Geometry geom = null;
                 for (int x = 0; x < numberOfRings; x++)
                 {
                     // set the current radius
@@ -245,15 +250,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     param.SemiAxis2Length = radius;
                     param.VertexCount = VertexCount;
 
-                    var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
+                    geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-                    AddGraphicToMap(geom);
-
+                    AddGraphicToMap(geom);   
                 }
+
+                return geom;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                return null;
             }
         }
 
@@ -278,7 +285,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
 
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                 // Reset formatted string
                 Point1Formatted = string.Empty;
@@ -292,7 +299,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     HasPoint1 = true;
 
                     ClearTempGraphics();
-                    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                     // Reset formatted string
                     Point1Formatted = string.Empty;
@@ -396,8 +403,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
             ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-            AddGraphicToMap(geom, ColorFactory.Grey, true);
+            AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+            AddGraphicToMap(geom, ColorFactory.GreyRGB, true);
         }
     }
 }

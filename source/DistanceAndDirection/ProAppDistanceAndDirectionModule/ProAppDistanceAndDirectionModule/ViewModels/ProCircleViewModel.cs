@@ -15,10 +15,12 @@
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -318,7 +320,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 ClearTempGraphics();
                 if (HasPoint1)
-                    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
@@ -465,11 +467,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Private Functions
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        internal override Geometry CreateMapElement()
         {
             base.CreateMapElement();
-            CreateCircle(false);
+            var geom = CreateCircle(false);
             Reset(false);
+
+            return geom;
         }
 
         public override bool CanCreateElement
@@ -489,11 +496,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Create geodetic circle
         /// </summary>
-        private void CreateCircle(bool isFeedback)
+        private Geometry CreateCircle(bool isFeedback)
         {
             if (Point1 == null || double.IsNaN(Distance) || Distance <= 0.0)
             {
-                return;
+                return null;
             }
 
             var param = new GeometryEngine.GeodesicEllipseParameter();
@@ -513,11 +520,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             CIMColor color =  new CIMRGBColor() { R=255,B=0,G=0,Alpha=25};
             if(isFeedback)
             {
-                color = ColorFactory.Grey;
+                color = ColorFactory.GreyRGB;
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
             }
             AddGraphicToMap(geom, color, IsTempGraphic: isFeedback);
+
+            return geom as Geometry;
         }
 
         #endregion
