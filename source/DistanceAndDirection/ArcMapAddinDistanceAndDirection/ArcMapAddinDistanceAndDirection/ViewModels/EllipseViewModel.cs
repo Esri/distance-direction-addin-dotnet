@@ -267,14 +267,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Overriden Functions
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        internal override IGeometry CreateMapElement()
         {
+            IGeometry geom = null;
             if (Point1 == null || Point2 == null || Point3 == null)
             {
-                return;
+                return geom;
             }
-            DrawEllipse();
+            geom = DrawEllipse();
             Reset(false);
+
+            return geom;
         }
 
         internal override void OnMouseMoveEvent(object obj)
@@ -544,17 +550,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             catch { }
 
             return construct as IPolyline;
-        }        
+        }
 
-        private void DrawEllipse()
+        /// <summary>
+        /// Create a geodetic ellipse
+        /// </summary>
+        private IGeometry DrawEllipse()
         {
             try
             {
-                //RemoveGraphics(((IMxDocument)ArcMap.Application.Document).ActivatedView.GraphicsContainer, 
-                //    ElementTag, esriGeometryType.esriGeometryPolyline);
-                //RemoveGraphics(((IMxDocument)ArcMap.Application.Document).ActivatedView.GraphicsContainer, 
-                //    ElementTag, esriGeometryType.esriGeometryPoint);
-                
                 var ellipticArc = new Polyline() as IConstructGeodetic;
                 ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
                 var line = ellipticArc as IPolyline;
@@ -562,12 +566,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     AddGraphicToMap(line as IGeometry);
                 }
-
-                //ElementTag = Guid.NewGuid().ToString();
+                return line as IGeometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return null;
             }
         }
         #endregion

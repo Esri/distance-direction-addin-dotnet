@@ -221,8 +221,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     point1Formatted = value;
                     HasPoint1 = true;
                     Point1 = point;
-                    
-                    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                     if (Point2 != null)
                     {
@@ -391,7 +391,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal async void AddGraphicToMap(Geometry geom, bool IsTempGraphic = false, double size = 1.0)
         {
             // default color Red
-            await AddGraphicToMap(geom, ColorFactory.Red, IsTempGraphic, size);
+            await AddGraphicToMap(geom, ColorFactory.RedRGB, IsTempGraphic, size);
         }
         internal async Task AddGraphicToMap(Geometry geom, CIMColor color, bool IsTempGraphic = false, double size = 1.0)
         {
@@ -420,7 +420,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 await QueuedTask.Run(() =>
                 {
-                    var outline = SymbolFactory.ConstructStroke(ColorFactory.Black, 1.0, SimpleLineStyle.Solid);
+                    var outline = SymbolFactory.ConstructStroke(ColorFactory.BlackRGB, 1.0, SimpleLineStyle.Solid);
                     var s = SymbolFactory.ConstructPolygonSymbol(color, SimpleFillStyle.Solid, outline);
                     symbol = new CIMSymbolReference() { Symbol = s };
                 });
@@ -456,9 +456,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Derived class must override this method in order to create map elements
         /// Clears temp graphics by default
         /// </summary>
-        internal virtual void CreateMapElement()
+        internal virtual Geometry CreateMapElement()
         {
             ClearTempGraphics();
+            return null;
         }
 
         #region Private Event Functions
@@ -516,7 +517,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!CanCreateElement)
                 return;
 
-            CreateMapElement();
+            var geom = CreateMapElement();
+
+            if (geom != null)
+            {
+                ZoomToExtent(geom.Extent);
+            }
         }
 
         private bool IsValid(System.Windows.DependencyObject obj)
@@ -551,7 +557,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                 // lets try feedback
                 //CreateFeedback(point, av);
@@ -587,9 +593,28 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 FrameworkApplication.SetCurrentToolAsync(String.Empty);
             }
         }
+
         #endregion
 
         #region Private Functions
+
+        private async Task ZoomToExtent(Envelope env)
+        {
+            if (env == null || MapView.Active == null || MapView.Active.Map == null)
+                return;
+
+            double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
+            double xmax = env.XMax + extentPercent;
+            double xmin = env.XMin - extentPercent;
+            double ymax = env.YMax + extentPercent;
+            double ymin = env.YMin - extentPercent;
+
+            //Create the envelope
+            var envelope = await QueuedTask.Run(() => ArcGIS.Core.Geometry.EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, MapView.Active.Map.SpatialReference));
+
+            //Zoom the view to a given extent.
+            await MapView.Active.ZoomToAsync(envelope, TimeSpan.FromSeconds(0.5));
+        }
 
         /// <summary>
         /// Method will return a formatted point as a string based on the configuration settings for display coordinate type
@@ -783,8 +808,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             });
 
             ClearTempGraphics();
-            await AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-            await AddGraphicToMap(polyline, ColorFactory.Grey, true);
+            await AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+            await AddGraphicToMap(polyline, ColorFactory.GreyRGB, true);
         }
 
 
@@ -815,6 +840,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             return result;
         }
+
+        internal CurveType GetCurveType()
+        {
+            if (LineType == LineTypes.Geodesic)
+                return CurveType.Geodesic;
+            else if (LineType == LineTypes.GreatElliptic)
+                return CurveType.GreatElliptic;
+            else if (LineType == LineTypes.Loxodrome)
+                return CurveType.Loxodrome;
+
+            return CurveType.Geodesic;
+        }
+
         /// <summary>
         /// Method used to convert a string to a known coordinate
         /// Assumes WGS84 for now

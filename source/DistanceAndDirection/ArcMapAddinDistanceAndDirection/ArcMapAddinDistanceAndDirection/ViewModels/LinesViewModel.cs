@@ -216,17 +216,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             //}
         }
 
-        private void CreatePolyline()
+        /// <summary>
+        /// Create a geodetic line
+        /// </summary>
+        private IGeometry CreatePolyline()
         {
             try
             {
                 if (Point1 == null || Point2 == null)
-                    return;
+                    return null;
 
                 var construct = new Polyline() as IConstructGeodetic;
 
                 if (construct == null)
-                    return;
+                    return null;
 
                 if (srf3 == null)
                 {
@@ -248,10 +251,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(construct as IGeometry);
                 ResetPoints();
+
+                return construct as IGeometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                return null;
             }
         }
 
@@ -340,14 +346,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             base.OnNewMapPointEvent(obj);
         }
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        internal override IGeometry CreateMapElement()
         {
+            IGeometry geom = null;
             if (!CanCreateElement)
-                return;
+                return geom;
 
             base.CreateMapElement();
-            CreatePolyline();
+            geom = CreatePolyline();
             Reset(false);
+
+            return geom;
         }
 
         internal override void OnMouseMoveEvent(object obj)

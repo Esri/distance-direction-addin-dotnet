@@ -406,9 +406,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Derived class must override this method in order to create map elements
         /// Clears temp graphics by default
         /// </summary>
-        internal virtual void CreateMapElement()
+        internal virtual IGeometry CreateMapElement()
         {
             ClearTempGraphics();
+            return null;
         }
 
         #region Private Event Functions
@@ -667,7 +668,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (!CanCreateElement)
                 return;
 
-            CreateMapElement();
+            var geom = CreateMapElement();
+
+            if (geom != null)
+            {
+                ZoomToExtent(geom);
+            }
         }
 
         /// <summary>
@@ -769,9 +775,30 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (commandItem != null)
                 application.CurrentTool = commandItem;
         }
+
         #endregion
 
         #region Private Functions
+
+        private void ZoomToExtent(IGeometry geom)
+        {
+            if (geom == null || ArcMap.Application.Document == null)
+                return;
+
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxdoc.FocusMap as IActiveView;
+
+            IEnvelope env = geom.Envelope;
+
+            double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
+            env.XMax = env.XMax + extentPercent;
+            env.XMin = env.XMin - extentPercent;
+            env.YMax = env.YMax + extentPercent;
+            env.YMin = env.YMin - extentPercent;
+
+            av.Extent = env;
+            av.Refresh();
+        }
 
         /// <summary>
         /// Method will return a formatted point as a string based on the configuration settings for display coordinate type

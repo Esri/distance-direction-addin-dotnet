@@ -20,6 +20,7 @@ using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -59,7 +60,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public System.Windows.Visibility LineTypeComboVisibility
         {
-            get { return System.Windows.Visibility.Collapsed; }
+            get { return System.Windows.Visibility.Visible; }
         }
 
         AzimuthTypes lineAzimuthType = AzimuthTypes.Degrees;
@@ -220,7 +221,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // get point 2
                     // SDK Bug, GeometryEngine.GeodesicMove seems to not honor the LinearUnit passed in, always does Meters
                     var tempDistance = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
-                    var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value);
+                    var results = GeometryEngine.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value, GetCurveType());
                     foreach (var mp in results)
                         Point2 = mp;
                     if (Point2 != null)
@@ -254,14 +255,20 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        internal override Geometry CreateMapElement()
         {
+            Geometry geom = null;
             if (!CanCreateElement)
-                return;
+                return geom;
 
             base.CreateMapElement();
-            CreatePolyline();
+            geom = CreatePolyline();
             Reset(false);
+
+            return geom;
         }
 
         internal override void Reset(bool toolReset)
@@ -287,7 +294,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                await AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                await AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
                 return;
             }
 
@@ -322,10 +329,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.OnMouseMoveEvent(obj);
         }
 
-        private void CreatePolyline()
+        private Geometry CreatePolyline()
         {
             if (Point1 == null || Point2 == null)
-                return;
+                return null;
 
             try
             {
@@ -338,10 +345,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 AddGraphicToMap(polyline);
                 ResetPoints();
+
+                return polyline as Geometry;
             }
             catch(Exception ex)
             {
                 // do nothing
+                return null;
             }
         }
 

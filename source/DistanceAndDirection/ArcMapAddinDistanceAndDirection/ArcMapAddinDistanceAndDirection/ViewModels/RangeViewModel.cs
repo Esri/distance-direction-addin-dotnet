@@ -140,22 +140,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Method used to create the needed map elements to add to the graphics container
         /// Is called by the base class when the "Enter" key is pressed
         /// </summary>
-        internal override void CreateMapElement()
+        internal override IGeometry CreateMapElement()
         {
+            IGeometry geom = null;
             // do we have enough data?
             if (!CanCreateElement)
-                return;
+                return geom;
 
             if (!IsInteractive)
             {
                 base.CreateMapElement();
 
-                DrawRings();
+                geom = DrawRings();
             }
 
             DrawRadials();
 
             Reset(false);
+
+            return geom;
         }
 
         /// <summary>
@@ -203,7 +206,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Method used to draw the rings at the desired interval
         /// Rings are constructed as geodetic circles
         /// </summary>
-        private void DrawRings()
+        private IGeometry DrawRings()
         {
             double radius = 0.0;
 
@@ -221,21 +224,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     AddGraphicToMap(construct as IGeometry);
                 }
 
-                // Set map extent to extent of last range ring
-                if (construct != null)
-                {
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    var av = mxdoc.FocusMap as IActiveView;
-                    IGeometry geom = construct as IGeometry;
-
-                    av.Extent = geom.Envelope;
-                    av.Refresh();
-                }
-
+                return construct as IGeometry;
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex);
+                return null;
             }
         }
 
