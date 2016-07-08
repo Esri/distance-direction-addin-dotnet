@@ -344,8 +344,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-                AddGraphicToMap(geom, ColorFactory.Grey, true);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                AddGraphicToMap(geom, ColorFactory.GreyRGB, true);
             }
             catch(Exception ex)
             {
@@ -373,7 +373,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
             }
             else if (!HasPoint2)

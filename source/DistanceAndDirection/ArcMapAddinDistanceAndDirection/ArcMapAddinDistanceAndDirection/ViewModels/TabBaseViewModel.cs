@@ -668,7 +668,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (!CanCreateElement)
                 return;
 
-            IGeometry geom = CreateMapElement();
+            var geom = CreateMapElement();
+
             if (geom != null)
             {
                 ZoomToExtent(geom);
@@ -775,8 +776,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 application.CurrentTool = commandItem;
         }
 
-        public void ZoomToExtent(IGeometry geom)
+        #endregion
+
+        #region Private Functions
+
+        private void ZoomToExtent(IGeometry geom)
         {
+            if (geom == null || ArcMap.Application.Document == null)
+                return;
+
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             var av = mxdoc.FocusMap as IActiveView;
 
@@ -791,9 +799,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             av.Extent = env;
             av.Refresh();
         }
-        #endregion
-
-        #region Private Functions
 
         /// <summary>
         /// Method will return a formatted point as a string based on the configuration settings for display coordinate type

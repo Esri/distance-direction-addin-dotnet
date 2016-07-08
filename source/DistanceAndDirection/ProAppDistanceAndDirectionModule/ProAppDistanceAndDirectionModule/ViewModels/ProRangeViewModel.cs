@@ -190,7 +190,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         var mpList = new List<MapPoint>() { Point1 };
                         // get point 2
                         var tempRadialLength = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, radialLength);
-                        var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, tempRadialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth));
+                        var results = GeometryEngine.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempRadialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
                         // update feedback
                         //UpdateFeedback();
                         foreach (var mp in results)
@@ -285,7 +285,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
 
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                 // Reset formatted string
                 Point1Formatted = string.Empty;
@@ -299,7 +299,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     HasPoint1 = true;
 
                     ClearTempGraphics();
-                    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                     // Reset formatted string
                     Point1Formatted = string.Empty;
@@ -403,8 +403,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
             ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-            AddGraphicToMap(geom, ColorFactory.Grey, true);
+            AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+            AddGraphicToMap(geom, ColorFactory.GreyRGB, true);
         }
     }
 }

@@ -60,7 +60,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public System.Windows.Visibility LineTypeComboVisibility
         {
-            get { return System.Windows.Visibility.Collapsed; }
+            get { return System.Windows.Visibility.Visible; }
         }
 
         AzimuthTypes lineAzimuthType = AzimuthTypes.Degrees;
@@ -221,7 +221,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // get point 2
                     // SDK Bug, GeometryEngine.GeodesicMove seems to not honor the LinearUnit passed in, always does Meters
                     var tempDistance = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
-                    var results = GeometryEngine.GeodesicMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value);
+                    var results = GeometryEngine.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value, GetCurveType());
                     foreach (var mp in results)
                         Point2 = mp;
                     if (Point2 != null)
@@ -294,7 +294,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                await AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                await AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
                 return;
             }
 

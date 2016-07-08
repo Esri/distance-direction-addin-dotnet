@@ -426,7 +426,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         internal override IGeometry CreateMapElement()
         {
             base.CreateMapElement();
-            IGeometry geom = CreateCircle();
+            var geom = CreateCircle();
             Reset(false);
 
             return geom;

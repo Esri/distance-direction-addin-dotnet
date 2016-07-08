@@ -320,7 +320,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 ClearTempGraphics();
                 if (HasPoint1)
-                    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
@@ -473,7 +473,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal override Geometry CreateMapElement()
         {
             base.CreateMapElement();
-            Geometry geom = CreateCircle(false);
+            var geom = CreateCircle(false);
             Reset(false);
 
             return geom;
@@ -520,9 +520,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             CIMColor color =  new CIMRGBColor() { R=255,B=0,G=0,Alpha=25};
             if(isFeedback)
             {
-                color = ColorFactory.Grey;
+                color = ColorFactory.GreyRGB;
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
             }
             AddGraphicToMap(geom, color, IsTempGraphic: isFeedback);
 
