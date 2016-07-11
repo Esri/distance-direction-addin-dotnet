@@ -15,6 +15,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -26,9 +29,7 @@ using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
-using System.Windows.Controls;
 using ProAppDistanceAndDirectionModule.Views;
-using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -904,6 +905,31 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             catch(Exception ex)
             {
                 // do nothing
+            }
+
+            if(point == null)
+            {
+                // lets support web mercator
+                Regex regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
+
+                var matchMercator = regexMercator.Match(coordinate);
+
+                if (matchMercator.Success && matchMercator.Length == coordinate.Length)
+                {
+                    try
+                    {
+                        var Lat = Double.Parse(matchMercator.Groups["latitude"].Value);
+                        var Lon = Double.Parse(matchMercator.Groups["longitude"].Value);
+                        point = QueuedTask.Run(() =>
+                        {
+                            return MapPointBuilder.CreateMapPoint(Lon, Lat, SpatialReferences.WebMercator);
+                        }).Result;
+                    }
+                    catch (Exception ex)
+                    {
+                        // do nothing
+                    }
+                }
             }
 
             return point;
