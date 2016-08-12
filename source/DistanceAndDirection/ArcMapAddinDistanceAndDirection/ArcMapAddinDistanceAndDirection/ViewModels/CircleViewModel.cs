@@ -473,6 +473,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
                     //var color = new RgbColorClass() { Red = 255 } as IColor;
                     this.AddGraphicToMap(construct as IGeometry);
+
+                    //Construct a polygon from geodesic polyline
+                    var newPoly = this.PolylineToPolygon((IPolyline)construct);
+                    if (newPoly != null)
+                    {
+                        //Get centroid of polygon
+                        var area = newPoly as IArea;
+                        //Add text using centroid point                        
+                        DistanceTypes dtVal = (DistanceTypes)LineDistanceType; //Get line distance type
+                        this.AddTextToMap(area.Centroid, string.Format("{0}: {1}{2}",
+                            "Radius",
+                            Distance.ToString("G"),
+                            dtVal.ToString()));
+                    }
+                    
                     Point2 = null; 
                     HasPoint2 = false;
                     ResetFeedback();   
@@ -485,7 +500,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return null;
             }
         }
-
         #endregion
     }
 }
