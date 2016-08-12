@@ -902,6 +902,31 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         }
 
         /// <summary>
+        /// Adds graphics text to the map graphics container
+        /// </summary>
+        /// <param name="geom"></param>
+        /// <param name="text"></param>
+        internal void AddTextToMap(IGeometry geom, string text)
+        {
+            var mxDoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxDoc.FocusMap as IActiveView;
+            var gc = av as IGraphicsContainer;
+
+            var textEle = new TextElement() as ITextElement;
+            textEle.Text = text;
+            var elem = textEle as IElement;
+            elem.Geometry = geom;
+
+            var eprop = elem as IElementProperties;
+            eprop.Name = Guid.NewGuid().ToString();
+
+            gc.AddElement(elem, 0);
+            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+
+            RaisePropertyChanged(() => HasMapGraphics);
+        }
+
+        /// <summary>
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>

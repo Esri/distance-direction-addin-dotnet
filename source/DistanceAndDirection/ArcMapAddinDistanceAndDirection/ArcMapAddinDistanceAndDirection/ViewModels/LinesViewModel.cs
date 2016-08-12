@@ -250,6 +250,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(construct as IGeometry);
+
+                if (HasPoint1 && HasPoint2)
+                {
+                    //Get line distance type
+                    DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
+                    //Get mid point of geodetic line
+                    IPoint midPoint = null;
+                    ((IPolyline)((IGeometry)construct)).QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, false, midPoint);
+                    //Create text symbol using text and midPoint
+                    AddTextToMap(midPoint != null ? midPoint : Point2, 
+                        string.Format("{0} {1}", Distance.ToString("G"), dtVal.ToString()));
+                }
+
                 ResetPoints();
 
                 return construct as IGeometry;
@@ -357,6 +370,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             base.CreateMapElement();
             geom = CreatePolyline();
+
             Reset(false);
 
             return geom;
