@@ -901,11 +901,40 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             IsActiveTab = (obj == this);
         }
 
+
+        /// <summary>
+        /// Converts a polyline into a polygon
+        /// </summary>
+        /// <param name="line">IPolyline</param>
+        /// <returns>IPolygon</returns>
+        internal IPolygon PolylineToPolygon(IPolyline line)
+        {
+            try
+            {
+                var geomCol = new Polygon() as IGeometryCollection;
+                var polylineGeoms = line as IGeometryCollection;
+                for (var i = 0; i < polylineGeoms.GeometryCount - 1; i++)
+                {
+                    var ringSegs = new RingClass() as ISegmentCollection;
+                    ringSegs.AddSegmentCollection((ISegmentCollection)polylineGeoms.Geometry[i]);
+                    geomCol.AddGeometry((IGeometry)ringSegs);
+                }
+                var newPoly = geomCol as IPolygon;
+                newPoly.SimplifyPreserveFromTo();
+                return newPoly;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
         /// <summary>
         /// Adds graphics text to the map graphics container
         /// </summary>
-        /// <param name="geom"></param>
-        /// <param name="text"></param>
+        /// <param name="geom">IGeometry</param>
+        /// <param name="text">string</param>
         internal void AddTextToMap(IGeometry geom, string text)
         {
             var mxDoc = ArcMap.Application.Document as IMxDocument;
