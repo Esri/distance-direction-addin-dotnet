@@ -262,10 +262,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ((IPolyline)((IGeometry)construct)).QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, false, midPoint);
                     //Create text symbol using text and midPoint
                     AddTextToMap(midPoint != null ? midPoint : Point2, 
-                        string.Format("{0}: {1}{2} \n {3}: {4}{5}", 
+                        string.Format("{0}:{1}{2}{3}{4}:{5}{6}", 
                         "Distance", 
-                        Distance.ToString("G"), 
+                        DistanceString, 
                         dtVal.ToString(), 
+                        Environment.NewLine,
                         "Angle",
                         AzimuthString,
                         atVal.ToString()));
