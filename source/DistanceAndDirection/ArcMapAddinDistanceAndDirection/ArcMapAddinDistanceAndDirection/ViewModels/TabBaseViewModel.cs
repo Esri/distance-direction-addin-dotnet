@@ -913,7 +913,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 var geomCol = new Polygon() as IGeometryCollection;
                 var polylineGeoms = line as IGeometryCollection;
-                for (var i = 0; i < polylineGeoms.GeometryCount - 1; i++)
+                for (var i = 0; i < polylineGeoms.GeometryCount; i++)
                 {
                     var ringSegs = new RingClass() as ISegmentCollection;
                     ringSegs.AddSegmentCollection((ISegmentCollection)polylineGeoms.Geometry[i]);
@@ -948,6 +948,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             var eprop = elem as IElementProperties;
             eprop.Name = Guid.NewGuid().ToString();
+
+            if (this is LinesViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, false));
+            else if (this is CircleViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, false));
+            else if (this is EllipseViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, false));
+            else if (this is RangeViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, false));
 
             gc.AddElement(elem, 0);
             av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);

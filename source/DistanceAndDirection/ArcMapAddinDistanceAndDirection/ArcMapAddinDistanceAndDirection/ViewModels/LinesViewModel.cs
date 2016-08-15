@@ -258,7 +258,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     //Get azimuth type
                     AzimuthTypes atVal = (AzimuthTypes)LineAzimuthType;
                     //Get mid point of geodetic line
-                    IPoint midPoint = null;
+                    var midPoint = new Point() as IPoint;
                     ((IPolyline)((IGeometry)construct)).QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, false, midPoint);
                     //Create text symbol using text and midPoint
                     AddTextToMap(midPoint != null ? midPoint : Point2, 
