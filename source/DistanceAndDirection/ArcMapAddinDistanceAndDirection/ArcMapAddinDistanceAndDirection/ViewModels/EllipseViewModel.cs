@@ -565,6 +565,31 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (line != null)
                 {
                     AddGraphicToMap(line as IGeometry);
+                    //Convert ellipse polyline to polygon
+                    var newPoly = PolylineToPolygon((IPolyline)ellipticArc);
+                    if (newPoly != null)
+                    {
+                        //Get centroid of polygon
+                        var area = newPoly as IArea;
+                        //Add text using centroid point                        
+                        DistanceTypes dtVal = (DistanceTypes)LineDistanceType; //Get line distance type                                                    
+                        AzimuthTypes atVal = (AzimuthTypes)AzimuthType; //Get azimuth type
+                        if (area != null)
+                        {
+                            AddTextToMap(area.Centroid, string.Format("{0}:{1}{2}{3}{4}:{5}{6}{7}{8}:{9}{10}",
+                                "Major Axis",
+                                MajorAxisDistanceString,
+                                dtVal.ToString(),
+                                Environment.NewLine,
+                                "Minor Axis",
+                                MinorAxisDistanceString,
+                                dtVal.ToString(),
+                                Environment.NewLine,
+                                "Orientation Angle",
+                                AzimuthString,
+                                atVal.ToString()));
+                        }
+                    }
                 }
                 return line as IGeometry;
             }
