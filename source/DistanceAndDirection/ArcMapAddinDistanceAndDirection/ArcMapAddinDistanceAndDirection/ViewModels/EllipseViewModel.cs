@@ -576,17 +576,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         AzimuthTypes atVal = (AzimuthTypes)AzimuthType; //Get azimuth type
                         if (area != null)
                         {
-                            AddTextToMap(area.Centroid, string.Format("{0}:{1}{2}{3}{4}:{5}{6}{7}{8}:{9}{10}",
+                            AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
                                 "Major Axis",
-                                MajorAxisDistanceString,
+                                Math.Round(majorAxisDistance,2),
                                 dtVal.ToString(),
                                 Environment.NewLine,
                                 "Minor Axis",
-                                MinorAxisDistanceString,
+                                Math.Round(minorAxisDistance,2),
                                 dtVal.ToString(),
                                 Environment.NewLine,
                                 "Orientation Angle",
-                                AzimuthString,
+                                Math.Round(azimuth,2),
                                 atVal.ToString()));
                         }
                     }
