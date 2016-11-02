@@ -118,7 +118,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     UpdateFeedback();
                 }
 
-                DistanceString = distance.ToString("F2");
+                DistanceString = distance.ToString("G");
                 RaisePropertyChanged(() => DistanceString);
             }
         }
