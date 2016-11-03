@@ -482,9 +482,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         var area = newPoly as IArea;
                         //Add text using centroid point                        
                         DistanceTypes dtVal = (DistanceTypes)LineDistanceType; //Get line distance type
-                        this.AddTextToMap(area.Centroid, string.Format("{0}:{1}{2}",
+                        this.AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}",
                             "Radius",
-                            DistanceString,
+                            Math.Round(Distance,2).ToString("N2"),
                             dtVal.ToString()));
                     }
                     
