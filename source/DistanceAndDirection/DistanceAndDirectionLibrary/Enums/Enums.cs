@@ -137,7 +137,8 @@ namespace DistanceAndDirectionLibrary
         Line = 1,
         Circle  = 2,
         Ellipse = 3,
-        RangeRing = 4
+        RangeRing = 4,
+        Point = 5
     }
 
     public enum GeomType : int
