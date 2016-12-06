@@ -996,14 +996,33 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             else if(geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
                 // create graphic then add to map
-                var lineSymbol = new SimpleLineSymbolClass();
-                lineSymbol.Color = color;
-                lineSymbol.Width = width;
+                ICartographicLineSymbol lineSymbol = new CartographicLineSymbolClass()
+                {
+                    Color = color,
+                    Width = width
+                };
                 if (IsTempGraphic && rasterOpCode != esriRasterOpCode.esriROPNOP)
                 {
                     lineSymbol.Width = 1;
-                    lineSymbol.ROP2 = rasterOpCode;
+                    ((ISymbol)lineSymbol).ROP2 = rasterOpCode;
                 }
+
+                ISimpleLineDecorationElement simpleLineDecorationElement = new SimpleLineDecorationElementClass();
+                simpleLineDecorationElement.AddPosition(1);
+                simpleLineDecorationElement.MarkerSymbol = new ArrowMarkerSymbolClass()
+                {
+                    Color = color,
+                    Size = 6,
+                    Length = 8,
+                    Width = 6,
+                    XOffset = 0.8
+                };
+
+                ILineDecoration lineDecoration = new LineDecorationClass();
+                lineDecoration.AddElement(simpleLineDecorationElement);
+
+                ILineProperties lineProperties = (ILineProperties)lineSymbol;
+                lineProperties.LineDecoration = lineDecoration;
 
                 var le = new LineElementClass() as ILineElement;  
                 element = le as IElement;
