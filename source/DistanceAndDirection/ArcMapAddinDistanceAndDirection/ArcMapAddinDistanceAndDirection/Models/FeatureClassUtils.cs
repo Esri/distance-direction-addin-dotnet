@@ -151,7 +151,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     {
                         IFeature feature = fc.CreateFeature();
 
-                        if (graphic.GraphicType != GraphicTypes.Line)
+                        if (graphic.GraphicType != GraphicTypes.Line && graphic.GraphicType != GraphicTypes.RangeRing)
                             feature.Shape = PolylineToPolygon(graphic.Geometry);
                         else
                             feature.Shape = graphic.Geometry;

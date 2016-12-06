@@ -39,6 +39,7 @@ namespace ProAppDistanceAndDirectionModule.Models
     class FeatureClassUtils
     {
         private string previousLocation = "";
+        private string previousSaveType = "";
 
         /// <summary>
         /// Prompts the user to save features
@@ -51,9 +52,19 @@ namespace ProAppDistanceAndDirectionModule.Models
             SaveItemDialog saveItemDlg = new SaveItemDialog();
             saveItemDlg.Title = "Select output";
             saveItemDlg.OverwritePrompt = true;
-            if (!string.IsNullOrEmpty(previousLocation))
+            string saveType = featureChecked ? "gdb" : "file";
+            if (string.IsNullOrEmpty(previousSaveType))
+                previousSaveType = saveType;
+            if (!string.IsNullOrEmpty(previousLocation) && previousSaveType == saveType)
                 saveItemDlg.InitialLocation = previousLocation;
-
+            else
+            {
+                if (featureChecked)
+                    saveItemDlg.InitialLocation = ArcGIS.Desktop.Core.Project.Current.DefaultGeodatabasePath;
+                else
+                    saveItemDlg.InitialLocation = ArcGIS.Desktop.Core.Project.Current.HomeFolderPath;
+            }
+            previousSaveType = saveType;
 
             // Set the filters and default extension
             if (featureChecked)
@@ -118,6 +129,7 @@ namespace ProAppDistanceAndDirectionModule.Models
         private static async Task CreateFeatures(List<Graphic> graphicsList)
         {
             RowBuffer rowBuffer = null;
+            bool isLine = false;
                 
             try
             {
@@ -139,9 +151,11 @@ namespace ProAppDistanceAndDirectionModule.Models
 
                                 if (graphic.Geometry is Polyline)
                                 {
-                                    Polyline poly = new PolylineBuilder(graphic.Geometry as Polyline).ToGeometry();
-                                    rowBuffer[shapeIndex] = poly;
-                                } 
+                                    PolylineBuilder pb = new PolylineBuilder(graphic.Geometry as Polyline);
+                                    pb.HasZ = false;
+                                    rowBuffer[shapeIndex] = pb.ToGeometry();
+                                    isLine = true;
+                                }
                                 else if (graphic.Geometry is Polygon)
                                     rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
 
@@ -154,7 +168,11 @@ namespace ProAppDistanceAndDirectionModule.Models
                         CIMSymbolReference sybmol = currentRenderer.Symbol;
 
                         var outline = SymbolFactory.ConstructStroke(ColorFactory.RedRGB, 1.0, SimpleLineStyle.Solid);
-                        var s = SymbolFactory.ConstructPolygonSymbol(ColorFactory.RedRGB, SimpleFillStyle.Null, outline);
+                        CIMSymbol s;
+                        if(isLine)
+                            s = SymbolFactory.ConstructLineSymbol(outline);
+                        else
+                            s = SymbolFactory.ConstructPolygonSymbol(ColorFactory.RedRGB, SimpleFillStyle.Null, outline);
                         CIMSymbolReference symbolRef = new CIMSymbolReference() { Symbol = s };
                         currentRenderer.Symbol = symbolRef;
 
@@ -207,9 +225,9 @@ namespace ProAppDistanceAndDirectionModule.Models
                 arguments.Add(strGeomType);
                 // no template
                 arguments.Add("");
-                // no z values
-                arguments.Add("DISABLED");
                 // no m values
+                arguments.Add("DISABLED");
+                // no z values
                 arguments.Add("DISABLED");
                 arguments.Add(spatialRef);
 
