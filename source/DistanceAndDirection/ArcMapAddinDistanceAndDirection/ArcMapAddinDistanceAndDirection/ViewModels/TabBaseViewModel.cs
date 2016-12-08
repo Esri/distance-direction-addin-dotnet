@@ -996,35 +996,41 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             else if(geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
                 // create graphic then add to map
-                ICartographicLineSymbol lineSymbol = new CartographicLineSymbolClass()
+                ILineSymbol lineSymbol;
+                if (this is LinesViewModel)
                 {
-                    Color = color,
-                    Width = width
-                };
+                    lineSymbol = new CartographicLineSymbolClass();
+
+                    ISimpleLineDecorationElement simpleLineDecorationElement = new SimpleLineDecorationElementClass();
+                    simpleLineDecorationElement.AddPosition(1);
+                    simpleLineDecorationElement.MarkerSymbol = new ArrowMarkerSymbolClass() {
+                        Color = color,
+                        Size = 6,
+                        Length = 8,
+                        Width = 6,
+                        XOffset = 0.8
+                    };
+
+                    ILineDecoration lineDecoration = new LineDecorationClass();
+                    lineDecoration.AddElement(simpleLineDecorationElement);
+
+                    ((ILineProperties)lineSymbol).LineDecoration = lineDecoration;
+                }
+                else
+                {
+                    lineSymbol = new SimpleLineSymbolClass();
+                }
+
+                lineSymbol.Color = color;
+                lineSymbol.Width = width;
+
                 if (IsTempGraphic && rasterOpCode != esriRasterOpCode.esriROPNOP)
                 {
                     lineSymbol.Width = 1;
                     ((ISymbol)lineSymbol).ROP2 = rasterOpCode;
                 }
 
-                ISimpleLineDecorationElement simpleLineDecorationElement = new SimpleLineDecorationElementClass();
-                simpleLineDecorationElement.AddPosition(1);
-                simpleLineDecorationElement.MarkerSymbol = new ArrowMarkerSymbolClass()
-                {
-                    Color = color,
-                    Size = 6,
-                    Length = 8,
-                    Width = 6,
-                    XOffset = 0.8
-                };
-
-                ILineDecoration lineDecoration = new LineDecorationClass();
-                lineDecoration.AddElement(simpleLineDecorationElement);
-
-                ILineProperties lineProperties = (ILineProperties)lineSymbol;
-                lineProperties.LineDecoration = lineDecoration;
-
-                var le = new LineElementClass() as ILineElement;  
+                var le = new LineElementClass() as ILineElement;
                 element = le as IElement;
                 le.Symbol = lineSymbol;
             }
