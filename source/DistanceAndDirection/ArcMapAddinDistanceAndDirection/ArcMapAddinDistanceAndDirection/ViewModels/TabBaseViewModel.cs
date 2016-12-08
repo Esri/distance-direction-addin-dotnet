@@ -811,31 +811,37 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var cn = point as IConversionNotation;
             if (cn != null)
             {
-                switch (DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType)
+                try
                 {
-                    case CoordinateTypes.DD:
-                        result = cn.GetDDFromCoords(6);
-                        break;
-                    case CoordinateTypes.DDM:
-                        result = cn.GetDDMFromCoords(4);
-                        break;
-                    case CoordinateTypes.DMS:
-                        result = cn.GetDMSFromCoords(2);
-                        break;
-                    case CoordinateTypes.GARS:
-                        result = cn.GetGARSFromCoords();
-                        break;
-                    case CoordinateTypes.MGRS:
-                        result = cn.CreateMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_Automatic);
-                        break;
-                    case CoordinateTypes.USNG:
-                        result = cn.GetUSNGFromCoords(5, true, true);
-                        break;
-                    case CoordinateTypes.UTM:
-                        result = cn.GetUTMFromCoords(esriUTMConversionOptionsEnum.esriUTMAddSpaces | esriUTMConversionOptionsEnum.esriUTMUseNS);
-                        break;
-                    default:
-                        break;
+                    switch (DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType)
+                    {
+                        case CoordinateTypes.DD:
+                            result = cn.GetDDFromCoords(6);
+                            break;
+                        case CoordinateTypes.DDM:
+                            result = cn.GetDDMFromCoords(4);
+                            break;
+                        case CoordinateTypes.DMS:
+                            result = cn.GetDMSFromCoords(2);
+                            break;
+                        case CoordinateTypes.GARS:
+                            result = cn.GetGARSFromCoords();
+                            break;
+                        case CoordinateTypes.MGRS:
+                            result = cn.CreateMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_Automatic);
+                            break;
+                        case CoordinateTypes.USNG:
+                            result = cn.GetUSNGFromCoords(5, true, true);
+                            break;
+                        case CoordinateTypes.UTM:
+                            result = cn.GetUTMFromCoords(esriUTMConversionOptionsEnum.esriUTMAddSpaces | esriUTMConversionOptionsEnum.esriUTMUseNS);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
                 }
             }
             return result;
