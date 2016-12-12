@@ -560,7 +560,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             try
             {
                 var ellipticArc = new Polyline() as IConstructGeodetic;
-                ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                double bearing;
+                if (AzimuthType==AzimuthTypes.Mils)
+                {
+                    bearing = GetAzimuthAsDegrees();
+                }
+                else
+                {
+                    bearing = Azimuth;
+                }
+                ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, bearing, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
