@@ -433,7 +433,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     var gt = GetGraphicType();
 
-                    GraphicsList.Add(new Graphic(gt, disposable, geom, IsTempGraphic));
+                    GraphicsList.Add(new Graphic(gt, disposable, geom, this, IsTempGraphic));
 
                     RaisePropertyChanged(() => HasMapGraphics);
                 });
@@ -472,15 +472,28 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <param name="obj"></param>
         private void OnClearGraphics()
         {
+            List<Graphic> removedGraphics = new List<Graphic>();
+
             if (MapView.Active == null)
                 return;
 
             foreach (var item in GraphicsList)
             {
-                item.Disposable.Dispose();
+                Graphic graphic = item as Graphic;
+                if (graphic != null && graphic.ViewModel == this)
+                {
+                    item.Disposable.Dispose();
+                    removedGraphics.Add(graphic);
+                }
+                    
             }
 
-            GraphicsList.Clear();
+            // clean up the GraphicsList and remove the necessary graphics from it
+            foreach (Graphic graphic in removedGraphics)
+            {
+                GraphicsList.Remove(graphic);
+            }
+            //GraphicsList.Clear();
 
             RaisePropertyChanged(() => HasMapGraphics);
         }
