@@ -614,7 +614,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var eleProps = element as IElementProperties;
                 foreach (Graphic graphic in GraphicsList)
                 {
-                    if (graphic.UniqueId.Equals(eleProps.Name))
+                    if (graphic.UniqueId.Equals(eleProps.Name) && graphic.ViewModel == this)
                     {
                         if (graphic.IsTemp == removeOnlyTemporary)
                         {
@@ -956,15 +956,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             eprop.Name = Guid.NewGuid().ToString();
 
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
-                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, false));
+                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, false));
             else if (this is LinesViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, false));
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, false));
             else if (this is CircleViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, false));
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, false));
             else if (this is EllipseViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, false));
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, false));
             else if (this is RangeViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, false));
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, false));
 
             gc.AddElement(elem, 0);
             av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
@@ -1056,15 +1056,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             eprop.Name = Guid.NewGuid().ToString();
 
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
-                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, false));
+                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, false));
             else if (this is LinesViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, IsTempGraphic));
             else if (this is CircleViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, IsTempGraphic));
             else if (this is EllipseViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, IsTempGraphic));
             else if (this is RangeViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, IsTempGraphic));
 
             gc.AddElement(element, 0);
 
