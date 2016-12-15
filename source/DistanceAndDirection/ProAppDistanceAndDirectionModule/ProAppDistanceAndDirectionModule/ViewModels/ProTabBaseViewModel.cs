@@ -474,17 +474,76 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (MapView.Active == null)
                 return;
-
-            foreach (var item in GraphicsList)
+            if (this is ProAppDistanceAndDirectionModule.ViewModels.ProCircleViewModel)
             {
-                item.Disposable.Dispose();
-            }
 
-            GraphicsList.Clear();
+                foreach (var item in GraphicsList)
+                {
+                    if (item.GraphicType == GraphicTypes.Circle)
+                    {
+                        item.Disposable.Dispose();
+                    }
+                }
+                GraphicsList.RemoveAll(IsCircle);
+            }
+            else if (this is ProAppDistanceAndDirectionModule.ViewModels.ProLinesViewModel)
+            {
+                foreach (var item in GraphicsList)
+                {
+                    if (item.GraphicType == GraphicTypes.Line)
+                    {
+                        item.Disposable.Dispose();
+                    }
+                }
+                GraphicsList.RemoveAll(IsLine);
+            }
+            else if (this is ProAppDistanceAndDirectionModule.ViewModels.ProEllipseViewModel)
+            {
+                foreach (var item in GraphicsList)
+                {
+                    if (item.GraphicType == GraphicTypes.Ellipse)
+                    {
+                        item.Disposable.Dispose();
+                    }
+                }
+                GraphicsList.RemoveAll(IsEllipse);
+            }
+            else if (this is ProAppDistanceAndDirectionModule.ViewModels.ProRangeViewModel)
+            {
+                foreach (var item in GraphicsList)
+                {
+                    if (item.GraphicType == GraphicTypes.RangeRing)
+                    {
+                        item.Disposable.Dispose();
+                        GraphicsList.Remove(item);
+                    }
+                }
+                GraphicsList.RemoveAll(IsRing);
+            }
+            //GraphicsList.Clear();
 
             RaisePropertyChanged(() => HasMapGraphics);
         }
 
+        private bool IsCircle(Graphic item)
+        {
+            return item.GraphicType == GraphicTypes.Circle;
+        }
+
+        private bool IsLine(Graphic item)
+        {
+            return item.GraphicType == GraphicTypes.Line;
+        }
+
+        private bool IsRing(Graphic item)
+        {
+            return item.GraphicType == GraphicTypes.RangeRing;
+        }
+
+        private bool IsEllipse(Graphic item)
+        {
+            return item.GraphicType == GraphicTypes.Ellipse;
+        }
         /// <summary>
         /// Method to clear all temp graphics
         /// </summary>
