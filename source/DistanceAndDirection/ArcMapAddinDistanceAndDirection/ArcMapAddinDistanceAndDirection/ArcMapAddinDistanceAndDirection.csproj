@@ -211,13 +211,13 @@
     <AddInContent Include="Images\MapPointTool.png" />
   </ItemGroup>
   <ItemGroup>
+    <AddInContent Include="Images\distance-direction-16.png" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\..\DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj">
       <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
       <Name>DistanceAndDirectionLibrary</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <AddInContent Include="Images\distance-direction-16.png" />
   </ItemGroup>
   <PropertyGroup>
     <ZipFileExtension>esriAddIn</ZipFileExtension>

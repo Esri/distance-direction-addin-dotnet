@@ -28,8 +28,9 @@ using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.DataSourcesFile;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.ADF;
-using DistanceAndDirectionLibrary;
 using ESRI.ArcGIS.Display;
+
+using DistanceAndDirectionLibrary;
 
 namespace ArcMapAddinDistanceAndDirection.Models
 {
