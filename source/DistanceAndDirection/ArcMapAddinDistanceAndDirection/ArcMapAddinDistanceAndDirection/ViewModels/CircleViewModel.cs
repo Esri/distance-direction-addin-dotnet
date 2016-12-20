@@ -69,11 +69,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
-                if (timeUnit == value) 
+                if (timeUnit == value)
                 {
                     return;
                 }
-                timeUnit = value;  
+                timeUnit = value;
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
 
@@ -105,7 +105,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     default:
                         return travelTime;
                 }
-            }   
+            }
         }
 
         /// <summary>
@@ -245,7 +245,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         }
 
         bool isDistanceCalcExpanded = false;
-        public bool IsDistanceCalcExpanded 
+        public bool IsDistanceCalcExpanded
         {
             get { return isDistanceCalcExpanded; }
             set
@@ -258,13 +258,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     Distance = 0.0;
                     ResetFeedback();
                 }
-                else 
+                else
                 {
                     Reset(false);
                 }
 
                 ClearTempGraphics();
-                if(HasPoint1)
+                if (HasPoint1)
                     AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
@@ -279,7 +279,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                if(CircleType == CircleFromTypes.Diameter)
+                if (CircleType == CircleFromTypes.Diameter)
                 {
                     return (Distance * 2.0).ToString("G");
                 }
@@ -294,9 +294,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // divide the manual input by 2
                 double d = 0.0;
-                if(double.TryParse(value, out d))
+                if (double.TryParse(value, out d))
                 {
-                    if(CircleType == CircleFromTypes.Diameter)
+                    if (CircleType == CircleFromTypes.Diameter)
                         d /= 2.0;
 
                     Distance = d;
@@ -460,7 +460,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var polyLine = new Polyline() as IPolyline;
             polyLine.SpatialReference = Point1.SpatialReference;
             var ptCol = polyLine as IPointCollection;
-            ptCol.AddPoint(Point1); 
+            ptCol.AddPoint(Point1);
             ptCol.AddPoint(Point2);
 
             UpdateDistance(polyLine as IGeometry);
@@ -480,17 +480,32 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     {
                         //Get centroid of polygon
                         var area = newPoly as IArea;
-                        //Add text using centroid point                        
+
+                        // Ensure we use the correct distance, dependent on whether we are in Radius or Diameter mode
+                        string distanceLabel;
+                        if (circleType == CircleFromTypes.Radius)
+                        {
+                            distanceLabel = Math.Round(Distance, 2).ToString("N2");
+                        }
+                        else
+                        {
+                            distanceLabel = Math.Round((Distance * 2), 2).ToString("N2");
+                        }
+
+                        //Add text using centroid point
+                        //Use circleType to ensure our label contains either Radius or Diameter dependent on mode
                         DistanceTypes dtVal = (DistanceTypes)LineDistanceType; //Get line distance type
                         this.AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}",
-                            "Radius",
-                            Math.Round(Distance,2).ToString("N2"),
+                            circleType,
+                            distanceLabel,
                             dtVal.ToString()));
+
+
                     }
-                    
-                    Point2 = null; 
+
+                    Point2 = null;
                     HasPoint2 = false;
-                    ResetFeedback();   
+                    ResetFeedback();
                 }
                 return construct as IGeometry;
             }
