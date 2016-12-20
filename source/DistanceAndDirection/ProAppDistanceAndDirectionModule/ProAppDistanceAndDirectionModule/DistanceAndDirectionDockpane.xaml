@@ -15,9 +15,9 @@
     </UserControl.Resources>
     <Grid Margin="0,0,0,0">
         <TabControl SelectedItem="{Binding SelectedTab, Mode=OneWayToSource}">
-            <TabItem Header="{x:Static libprop:Resources.LabelTabLines}">
+            <!--<TabItem Header="{x:Static libprop:Resources.LabelTabLines}">
                 <UserControl Content="{Binding LinesView}" />
-            </TabItem>
+            </TabItem>-->
             <TabItem Header="{x:Static libprop:Resources.LabelTabCircle}">
                 <UserControl Content="{Binding CircleView}" />
             </TabItem>
