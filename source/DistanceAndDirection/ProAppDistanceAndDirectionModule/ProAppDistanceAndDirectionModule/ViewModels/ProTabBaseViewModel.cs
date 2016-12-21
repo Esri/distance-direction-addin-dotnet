@@ -810,8 +810,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Distance = GetGeodesicDistance(p1, p2);
         }
 
-        internal async Task UpdateFeedbackWithGeoLine(LineSegment segment)
+        internal async Task UpdateFeedbackWithGeoLine(LineSegment segment, CurveType type)
         {
+          
             if (Point1 == null || segment == null)
                 return;
 
@@ -821,8 +822,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             });
 
             ClearTempGraphics();
+            Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, type);
             await AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
-            await AddGraphicToMap(polyline, ColorFactory.GreyRGB, true);
+            await AddGraphicToMap(newline, ColorFactory.GreyRGB, true);
         }
 
 
