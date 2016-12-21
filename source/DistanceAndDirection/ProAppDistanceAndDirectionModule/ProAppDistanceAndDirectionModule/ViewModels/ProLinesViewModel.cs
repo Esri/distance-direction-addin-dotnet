@@ -58,10 +58,35 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        LineTypes lineType = LineTypes.Geodesic;
+        public LineTypes LineType
+        {
+            get { return lineType;  }
+            set
+            {
+                lineType = value;
+                RaisePropertyChanged(() => LineType);
+                ResetFeedback();
+            }
+        }
+
+        public CurveType DeriveCurveType(LineTypes type)
+        {
+            CurveType curveType = CurveType.Geodesic;
+            if (type == LineTypes.Geodesic)
+                curveType = CurveType.Geodesic;
+            else if (type == LineTypes.GreatElliptic)
+                curveType = CurveType.GreatElliptic;
+            else if (type == LineTypes.Loxodrome)
+                curveType = CurveType.Loxodrome;
+            return curveType;
+        }
+
         public System.Windows.Visibility LineTypeComboVisibility
         {
             get { return System.Windows.Visibility.Visible; }
         }
+
 
         AzimuthTypes lineAzimuthType = AzimuthTypes.Degrees;
         public AzimuthTypes LineAzimuthType
@@ -137,6 +162,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal override async void UpdateFeedback()
         {
+            CurveType curveType = DeriveCurveType(LineType);
             if (LineFromType == LineFromTypes.Points)
             {
                 if (Point1 == null || Point2 == null)
@@ -146,10 +172,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     return LineBuilder.CreateLineSegment(Point1, Point2);
                 }).Result;
-
+          
+                
                 UpdateAzimuth(segment.Angle);
 
-                await UpdateFeedbackWithGeoLine(segment);
+                await UpdateFeedbackWithGeoLine(segment, curveType);
             }
             else
             {
@@ -214,6 +241,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
             {
+                CurveType curveType = DeriveCurveType(LineType);
                 // update feedback
                 var segment = QueuedTask.Run(() =>
                 {
@@ -231,7 +259,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 if (segment != null)
-                    await UpdateFeedbackWithGeoLine(segment);
+                    await UpdateFeedbackWithGeoLine(segment, curveType);
             }
         }
 
@@ -303,6 +331,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal override async void OnMouseMoveEvent(object obj)
         {
+            CurveType curveType = DeriveCurveType(LineType);
             if (!IsActiveTab)
                 return;
 
@@ -323,7 +352,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 UpdateAzimuth(segment.Angle);
-                await UpdateFeedbackWithGeoLine(segment);                        
+                await UpdateFeedbackWithGeoLine(segment, curveType);                        
             }
 
             base.OnMouseMoveEvent(obj);
@@ -333,7 +362,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (Point1 == null || Point2 == null)
                 return null;
-
+            CurveType curveType = DeriveCurveType(LineType);
             try
             {
                 // create line
@@ -342,11 +371,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         var segment = LineBuilder.CreateLineSegment(Point1, Point2);
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
-
-                AddGraphicToMap(polyline);
+                Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, curveType);
+                AddGraphicToMap(newline);
                 ResetPoints();
 
-                return polyline as Geometry;
+                return newline as Geometry;
             }
             catch(Exception ex)
             {
