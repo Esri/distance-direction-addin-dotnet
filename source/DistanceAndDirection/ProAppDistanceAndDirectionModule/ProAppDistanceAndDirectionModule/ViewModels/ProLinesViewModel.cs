@@ -160,9 +160,28 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        public LinearUnit DeriveUnit(DistanceTypes distType)
+        {
+            LinearUnit lu = LinearUnit.Meters;
+            if (distType == DistanceTypes.Feet)
+                lu = LinearUnit.Feet;
+            else if (distType == DistanceTypes.Kilometers)
+                lu = LinearUnit.Kilometers;
+            else if (distType == DistanceTypes.Meters)
+                lu = LinearUnit.Meters;
+            else if (distType == DistanceTypes.Miles)
+                lu = LinearUnit.Miles;
+            else if (distType == DistanceTypes.NauticalMile)
+                lu = LinearUnit.NauticalMiles;
+            else if (distType == DistanceTypes.Yards)
+                lu = LinearUnit.Yards;
+            return lu;
+        }
+
         internal override async void UpdateFeedback()
         {
             CurveType curveType = DeriveCurveType(LineType);
+            LinearUnit lu = DeriveUnit(LineDistanceType);
             if (LineFromType == LineFromTypes.Points)
             {
                 if (Point1 == null || Point2 == null)
@@ -176,7 +195,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 
                 UpdateAzimuth(segment.Angle);
 
-                await UpdateFeedbackWithGeoLine(segment, curveType);
+                await UpdateFeedbackWithGeoLine(segment, curveType, lu);
             }
             else
             {
@@ -242,6 +261,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
             {
                 CurveType curveType = DeriveCurveType(LineType);
+                LinearUnit lu = DeriveUnit(LineDistanceType);
                 // update feedback
                 var segment = QueuedTask.Run(() =>
                 {
@@ -259,7 +279,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 if (segment != null)
-                    await UpdateFeedbackWithGeoLine(segment, curveType);
+                    await UpdateFeedbackWithGeoLine(segment, curveType, lu);
             }
         }
 
@@ -332,6 +352,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal override async void OnMouseMoveEvent(object obj)
         {
             CurveType curveType = DeriveCurveType(LineType);
+            LinearUnit lu = DeriveUnit(LineDistanceType);
             if (!IsActiveTab)
                 return;
 
@@ -352,7 +373,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }).Result;
 
                 UpdateAzimuth(segment.Angle);
-                await UpdateFeedbackWithGeoLine(segment, curveType);                        
+                await UpdateFeedbackWithGeoLine(segment, curveType, lu);                        
             }
 
             base.OnMouseMoveEvent(obj);
@@ -363,6 +384,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (Point1 == null || Point2 == null)
                 return null;
             CurveType curveType = DeriveCurveType(LineType);
+            LinearUnit lu = DeriveUnit(LineDistanceType);
             try
             {
                 // create line
@@ -371,7 +393,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         var segment = LineBuilder.CreateLineSegment(Point1, Point2);
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
-                Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, curveType);
+                Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, lu, curveType);
                 AddGraphicToMap(newline);
                 ResetPoints();
 

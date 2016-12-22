@@ -189,8 +189,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         MapPoint movedMP = null;
                         var mpList = new List<MapPoint>() { Point1 };
                         // get point 2
-                        var tempRadialLength = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, radialLength);
-                        var results = GeometryEngine.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempRadialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
+                        
+                        var results = GeometryEngine.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
                         // update feedback
                         //UpdateFeedback();
                         foreach (var mp in results)
@@ -203,9 +203,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         else
                             return null;
                     }).Result;
-
-                    if (polyline != null)
-                        AddGraphicToMap(polyline);
+                    Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, CurveType.Loxodrome);
+                    if (newline != null)
+                        
+                        AddGraphicToMap(newline);
 
 
                     azimuth += interval;
