@@ -149,7 +149,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (MinorAxisDistance == d)
                         return;
 
-                    //MinorAxisDistance = d;
                     RaisePropertyChanged(() => MinorAxisDistance);
                 }
                 else
