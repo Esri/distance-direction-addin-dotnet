@@ -118,6 +118,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
+                if (EllipseType == EllipseTypes.Full)
+                {
+                    return (MinorAxisDistance * 2).ToString("G");
+                }
                 return MinorAxisDistance.ToString("G");
             }
             set
@@ -129,11 +133,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double d = 0.0;
                 if (double.TryParse(minorAxisDistanceString, out d))
                 {
-                    MinorAxisDistance = d;
-                    RaisePropertyChanged(() => MinorAxisDistance);
+                    if (EllipseType == EllipseTypes.Full)
+                    {
+                        MinorAxisDistance = d / 2;
+                    }
+                    else
+                        MinorAxisDistance = d;
 
-                    // update feedback
-                    //Point3 = UpdateFeedback(Point1, minorAxisDistance);
+                    if (MinorAxisDistance == d)
+                        return;
                 }
                 else
                 {

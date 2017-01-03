@@ -121,6 +121,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(minorAxisDistanceString))
                 {
+                    if(EllipseType == EllipseTypes.Full)
+                    {
+                        return (MinorAxisDistance * 2).ToString("G");
+                    }
                     return MinorAxisDistance.ToString("G");
                 }
                 else
@@ -135,10 +139,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double d = 0.0;
                 if (double.TryParse(minorAxisDistanceString, out d))
                 {
+                    if (EllipseType == EllipseTypes.Full)
+                    {
+                        MinorAxisDistance = d / 2;
+                    }
+                    else
+                        MinorAxisDistance = d;
+
                     if (MinorAxisDistance == d)
                         return;
 
-                    MinorAxisDistance = d;
                     RaisePropertyChanged(() => MinorAxisDistance);
                 }
                 else
@@ -194,10 +204,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double d = 0.0;
                 if (double.TryParse(majorAxisDistanceString, out d))
                 {
+                    if (EllipseType == EllipseTypes.Full)
+                        MajorAxisDistance = d / 2.0;
+                    else
+                        MajorAxisDistance = d;
                     if (MajorAxisDistance == d)
                         return;
-
-                    MajorAxisDistance = d;
 
                     UpdateFeedbackWithEllipse();
                 }
