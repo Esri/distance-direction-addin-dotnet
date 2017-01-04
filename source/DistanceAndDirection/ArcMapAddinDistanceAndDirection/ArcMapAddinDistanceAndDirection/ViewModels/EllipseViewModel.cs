@@ -260,7 +260,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         internal override void OnEnterKeyCommand(object obj)
         {
             if (MajorAxisDistance == 0.0 || Point1 == null || 
-                MinorAxisDistance == 0.0 || Azimuth == 0.0)
+                MinorAxisDistance == 0.0)
             {
                 return;
             }
