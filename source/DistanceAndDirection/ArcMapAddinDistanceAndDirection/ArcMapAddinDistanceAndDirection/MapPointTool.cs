@@ -23,6 +23,7 @@ using ESRI.ArcGIS.Controls;
 
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
+using ESRI.ArcGIS.Framework;
 
 namespace ArcMapAddinDistanceAndDirection
 {
@@ -79,6 +80,8 @@ namespace ArcMapAddinDistanceAndDirection
         {
             try
             {
+                IMouseCursor cursor = new MouseCursorClass();
+                cursor.SetCursor(3);
                 IActiveView activeView = ArcMap.Document.FocusMap as IActiveView;
 
                 var point = activeView.ScreenDisplay.DisplayTransformation.ToMapPoint(arg.X, arg.Y) as IPoint;
