@@ -18,8 +18,8 @@
         <group id="DistanceAndDirection_Group" caption="Distance and Direction" appearsOnAddInTab="true">
           <!-- host controls within groups -->
           <button refID="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" size="large" />
-          <button refID="ProAppDistanceAndDirectionModule_PropertiesButton" size="large" />
-          <tool refID="ProAppDistanceAndDirectionModule_SketchTool" size="large" />
+          <!--<button refID="ProAppDistanceAndDirectionModule_PropertiesButton" size="large" />
+          <tool refID="ProAppDistanceAndDirectionModule_SketchTool" size="large" />-->
         </group>
       </groups>
       <controls>
