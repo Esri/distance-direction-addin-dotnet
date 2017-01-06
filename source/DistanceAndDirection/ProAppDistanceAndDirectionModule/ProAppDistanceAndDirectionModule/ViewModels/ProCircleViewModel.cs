@@ -51,6 +51,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Properties
 
+        // Record whether we are updating Distance field interactively or manually
+        // as this governs how we handle updates to DistanceString
+        private enum DistanceCaller { Manual, Interactive };
+        private DistanceCaller distanceCaller = DistanceCaller.Manual;
+
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
         /// Type of circle property
@@ -371,10 +376,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         if (Distance == d)
                             return;
                     }
-                    if (CircleType == CircleFromTypes.Diameter)
+                    // distanceCaller check: avoid handling interactive input as if it were manual
+                    if (CircleType == CircleFromTypes.Diameter && distanceCaller == DistanceCaller.Manual)
+                    {
                         d /= 2.0;
-
-                    Distance = d;
+                        Distance = d;
+                    }
 
                     UpdateFeedbackWithGeoCircle();
                 }
@@ -424,6 +431,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal override void OnMouseMoveEvent(object obj)
         {
+            // set to interactive for the duration of the method only, in order to avoid unnecessary division by two
+            // in update to DistanceString
+            distanceCaller = DistanceCaller.Interactive;
+
             if (!IsActiveTab)
                 return;
 
@@ -448,6 +459,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 UpdateFeedbackWithGeoCircle();
             }
+
+            // as we are done for the moment, assume it's manual until we have another interactive update
+            distanceCaller = DistanceCaller.Manual;
         }
 
         internal override void UpdateFeedback()
