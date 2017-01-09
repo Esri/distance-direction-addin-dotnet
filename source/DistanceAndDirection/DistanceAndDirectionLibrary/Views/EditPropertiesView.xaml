@@ -31,10 +31,19 @@
         <TextBlock Text="{x:Static libprop:Resources.LabelDisplayCoordinate}" 
                    Margin="3,3,0,0" />
         <ComboBox 
+            
             ItemsSource="{Binding Source={StaticResource coordinateTypes}}"
             SelectedItem="{Binding Path=SelectedCoordinateType, Mode=TwoWay}"
+            Foreground="Black"
             Height="Auto" 
-            Margin="3,3,0,0" />
+            Margin="3,3,0,0" >
+            <ComboBox.ItemContainerStyle>
+            <Style TargetType="ComboBoxItem">
+                <Setter Property="Foreground" Value="Black" />
+            </Style>
+                </ComboBox.ItemContainerStyle>
+        </ComboBox>
+
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Content="{x:Static libprop:Resources.ButtonOK}" 
                     Command="{Binding OKButtonPressedCommand}" 

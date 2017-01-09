@@ -38,7 +38,13 @@
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource circleFromData}}"
                           SelectedItem="{Binding Path=CircleType,
-                                                 Mode=TwoWay}" />
+                                                 Mode=TwoWay}" >
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelCenterPoint}" />
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -101,7 +107,13 @@
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
                           SelectedItem="{Binding Path=LineDistanceType,
-                                                 Mode=TwoWay}" />
+                                                 Mode=TwoWay}" >
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
                 <Expander Margin="0,3,0,0"
                           Header="{x:Static prop:Resources.LabelDistanceCalculator}"
                           IsExpanded="{Binding IsDistanceCalcExpanded,
