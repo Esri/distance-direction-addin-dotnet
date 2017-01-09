@@ -363,7 +363,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     if (CircleType == CircleFromTypes.Diameter)
                     {
-                        //if (Distance * 2.0 == d)
                             return;
                     }
                     else
