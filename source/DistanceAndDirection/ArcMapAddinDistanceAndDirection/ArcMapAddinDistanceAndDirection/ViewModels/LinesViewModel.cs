@@ -194,28 +194,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         // when someone hits the enter key, create geodetic graphic
         internal override void OnEnterKeyCommand(object obj)
         {
-            //base.OnEnterKeyCommand(obj);
 
-            //if (!CanCreateElement)
-                //return;
-            if (!Azimuth.HasValue || Point1Formatted == null || Point2Formatted == null)
+            Point1 = GetPointFromString(Point1Formatted);
+            Point2 = GetPointFromString(Point2Formatted);
+            if (!Azimuth.HasValue || Point1 == null || Point2 == null)
                 return;
-            if(LineFromType == LineFromTypes.Points)
-            {
-                
-                base.OnEnterKeyCommand(obj);
-            }
-            else
-            {
-                ClearTempGraphics();
-                // Bearing and Distance
-                UpdateFeedback();
-                feedback.AddPoint(Point2);
-                var polyline = feedback.Stop();
-                ResetFeedback();
-                var color = new RgbColorClass() { Red = 255 } as IColor;
-                AddGraphicToMap(polyline);
-            }
+            HasPoint1 = true;
+            HasPoint2 = true;
+            IGeometry geo = CreatePolyline();
+            IPolyline line = geo as IPolyline;
+            AddGraphicToMap(line);
+            base.OnEnterKeyCommand(obj);
         }
 
         /// <summary>
