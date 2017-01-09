@@ -363,7 +363,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     if (CircleType == CircleFromTypes.Diameter)
                     {
-                        if (Distance * 2.0 == d)
                             return;
                     }
                     else
@@ -371,6 +370,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         if (Distance == d)
                             return;
                     }
+                    if (CircleType == CircleFromTypes.Diameter)
+                        
+                        d /= 2.0;
+
+                    Distance = d;
+
+                    UpdateFeedbackWithGeoCircle();
                     if (CircleType == CircleFromTypes.Diameter)
                         d /= 2.0;
 

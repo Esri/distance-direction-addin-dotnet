@@ -295,7 +295,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 // divide the manual input by 2
                 double d = 0.0;
                 if (double.TryParse(value, out d))
-                {
+                { 
                     if (CircleType == CircleFromTypes.Diameter)
                         d /= 2.0;
 
