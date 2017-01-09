@@ -202,16 +202,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
             if(LineFromType == LineFromTypes.Points)
             {
-                var construct = new Polyline() as IConstructGeodetic;
-                IPoint Point1 = GetPointFromString(Point1Formatted);
-                IPoint Point2 = GetPointFromString(Point2Formatted);
-                CreateMapElement();
-                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-                var line = construct as IPolyline;
-                var color = new RgbColorClass() { Red = 255 } as IColor;
-                AddGraphicToMap(line);
                 
-                //base.OnEnterKeyCommand(obj);
+                base.OnEnterKeyCommand(obj);
             }
             else
             {
