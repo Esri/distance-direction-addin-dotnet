@@ -328,7 +328,7 @@
     <value>Center Point</value>
   </data>
   <data name="LabelRangeRingsDistanceBetween" xml:space="preserve">
-    <value>Distance Between Rings</value>
+    <value>Distance between Rings</value>
   </data>
   <data name="LabelRangeRingsNumberofRadials" xml:space="preserve">
     <value>Number of Radials</value>
