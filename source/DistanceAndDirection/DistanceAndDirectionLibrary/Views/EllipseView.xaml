@@ -65,7 +65,13 @@
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource ellipseTypes}}"
                           SelectedItem="{Binding Path=EllipseType,
-                                                 Mode=TwoWay}" />
+                                                 Mode=TwoWay}" >
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
                 <TextBlock Grid.Row="2"
                            Grid.ColumnSpan="3"
                            Margin="3,3,0,0"
@@ -151,6 +157,11 @@
                                             CommandParameter="{Binding ElementName=mainControl,
                                                                        Path=.}" />
                             </ComboBox.InputBindings>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
                         </ComboBox>
                     </StackPanel>
                 </GroupBox>
@@ -186,6 +197,11 @@
                                             CommandParameter="{Binding ElementName=mainControl,
                                                                        Path=.}" />
                             </ComboBox.InputBindings>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
                         </ComboBox>
                     </StackPanel>
                 </GroupBox>
