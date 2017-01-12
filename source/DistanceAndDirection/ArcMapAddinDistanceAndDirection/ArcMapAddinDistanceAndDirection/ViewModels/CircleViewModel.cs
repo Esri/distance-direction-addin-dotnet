@@ -347,6 +347,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 base.LineDistanceType = value;
+
+                UpdateFeedbackWithGeoCircle();
             }
         }
 
