@@ -224,7 +224,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     AddGraphicToMap(construct as IGeometry);
 
                     // Use negative radius to get the location for the distance label
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.001);
                     this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}{2}", radius.ToString(), GetLinearUnit().Name, "s"));
                 }
 
