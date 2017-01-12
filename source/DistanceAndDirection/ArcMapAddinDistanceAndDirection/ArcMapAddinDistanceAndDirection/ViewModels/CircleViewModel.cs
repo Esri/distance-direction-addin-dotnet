@@ -470,7 +470,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var construct = new Polyline() as IConstructGeodetic;
                 if (construct != null)
                 {
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                     //var color = new RgbColorClass() { Red = 255 } as IColor;
                     this.AddGraphicToMap(construct as IGeometry);
 
