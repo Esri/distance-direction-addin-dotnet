@@ -220,7 +220,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     var polyLine = new Polyline() as IPolyline;
                     polyLine.SpatialReference = Point1.SpatialReference;
                     construct = polyLine as IConstructGeodetic;
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.001);
                     AddGraphicToMap(construct as IGeometry);
 
                     // Use negative radius to get the location for the distance label
