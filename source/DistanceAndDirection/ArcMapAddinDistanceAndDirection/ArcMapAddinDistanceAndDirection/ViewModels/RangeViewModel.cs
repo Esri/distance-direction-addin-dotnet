@@ -222,6 +222,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     construct = polyLine as IConstructGeodetic;
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
                     AddGraphicToMap(construct as IGeometry);
+
+                    // Use negative radius to get the location for the distance label
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}{2}", radius.ToString(), GetLinearUnit().Name, "s"));
                 }
 
                 return construct as IGeometry;
