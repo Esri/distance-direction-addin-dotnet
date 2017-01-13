@@ -577,7 +577,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     bearing = Azimuth;
                 }
-                ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, bearing, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, bearing, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
