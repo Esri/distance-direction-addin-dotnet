@@ -350,6 +350,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 Point2 = (construct as IPolyline).ToPoint;
                 this.AddGraphicToMap(construct as IGeometry);
                 maxDistance = Math.Max(Distance, maxDistance);
+
+                // Use negative Distance to get the location for the distance label
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}{2}", Math.Round(Distance, 2).ToString(), GetLinearUnit().Name, "s"));
             }
         }
 
