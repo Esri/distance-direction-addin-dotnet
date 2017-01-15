@@ -204,7 +204,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             IGeometry geo = CreatePolyline();
             IPolyline line = geo as IPolyline;
             AddGraphicToMap(line);
-            base.OnEnterKeyCommand(obj);
+            //base.OnEnterKeyCommand(obj);
         }
 
         /// <summary>
