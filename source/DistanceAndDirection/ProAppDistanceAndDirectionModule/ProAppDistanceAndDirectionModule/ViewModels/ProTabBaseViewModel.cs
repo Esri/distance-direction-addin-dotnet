@@ -666,10 +666,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         tgparam.NumDigits = 2;
                         result = point.ToGeoCoordinateString(tgparam);
                         break;
-                    case CoordinateTypes.GARS:
-                        tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.GARS);
-                        result = point.ToGeoCoordinateString(tgparam);
-                        break;
+                    //case CoordinateTypes.GARS:
+                    //    tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.GARS);
+                    //    result = point.ToGeoCoordinateString(tgparam);
+                    //    break;
                     case CoordinateTypes.MGRS:
                         tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.MGRS);
                         result = point.ToGeoCoordinateString(tgparam);
