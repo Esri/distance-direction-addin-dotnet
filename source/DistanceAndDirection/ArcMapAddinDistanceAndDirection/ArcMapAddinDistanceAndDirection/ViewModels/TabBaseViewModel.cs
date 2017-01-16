@@ -824,9 +824,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         case CoordinateTypes.DMS:
                             result = cn.GetDMSFromCoords(2);
                             break;
-                        case CoordinateTypes.GARS:
-                            result = cn.GetGARSFromCoords();
-                            break;
+                        //case CoordinateTypes.GARS:
+                        //    result = cn.GetGARSFromCoords();
+                        //    break;
                         case CoordinateTypes.MGRS:
                             result = cn.CreateMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_Automatic);
                             break;
