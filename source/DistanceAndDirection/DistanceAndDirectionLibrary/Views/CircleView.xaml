@@ -149,6 +149,11 @@
                                     CommandParameter="{Binding ElementName=mainControl,
                                                                Path=.}" />
                             </ComboBox.InputBindings>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
                         </ComboBox>
                         <TextBlock 
                                    Margin="3,3,0,0"
@@ -179,6 +184,11 @@
                                     CommandParameter="{Binding ElementName=mainControl,
                                                                Path=.}" />
                             </ComboBox.InputBindings>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
                         </ComboBox>
                     </StackPanel>
                 </Expander>
