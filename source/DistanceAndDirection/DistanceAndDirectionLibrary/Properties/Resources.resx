@@ -184,7 +184,7 @@
     <value>Full</value>
   </data>
   <data name="EnumGeodesic" xml:space="preserve">
-    <value>Geodesic</value>
+    <value>Geodetic</value>
   </data>
   <data name="EnumGreatElliptic" xml:space="preserve">
     <value>Great Elliptic</value>
