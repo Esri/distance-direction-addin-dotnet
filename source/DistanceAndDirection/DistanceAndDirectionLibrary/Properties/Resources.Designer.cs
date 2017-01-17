@@ -655,7 +655,7 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Unit.
+        ///   Looks up a localized string similar to Units.
         /// </summary>
         public static string LabelOrientationUnit {
             get {
@@ -754,7 +754,7 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lines.
+        ///   Looks up a localized string similar to Line.
         /// </summary>
         public static string LabelTabLines {
             get {
