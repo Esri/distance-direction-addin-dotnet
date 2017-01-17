@@ -316,7 +316,7 @@
     <value>Orientation</value>
   </data>
   <data name="LabelOrientationUnit" xml:space="preserve">
-    <value>Unit</value>
+    <value>Units</value>
   </data>
   <data name="LabelRadius" xml:space="preserve">
     <value>Radius</value>
