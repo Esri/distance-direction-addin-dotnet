@@ -754,7 +754,7 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Lines.
+        ///   Looks up a localized string similar to Line.
         /// </summary>
         public static string LabelTabLines {
             get {
