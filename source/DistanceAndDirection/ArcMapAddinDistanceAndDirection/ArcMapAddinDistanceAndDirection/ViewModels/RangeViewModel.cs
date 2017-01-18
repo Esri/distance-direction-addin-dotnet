@@ -55,35 +55,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        public bool IsToolActive
+        public override bool IsToolActive
         {
             get
             {
-                if (ArcMap.Application.CurrentTool != null)
-                    return ArcMap.Application.CurrentTool.Name == "Esri_ArcMapAddinDistanceAndDirection_MapPointTool";
-
-                return false;
+                return base.IsToolActive;
             }
-
             set
             {
-                if (value)
-                    OnActivateTool(null);
-                else
-                    if (ArcMap.Application.CurrentTool != null)
-                    {
-                        ArcMap.Application.CurrentTool = null;
-                        if (CanCreateElement)
-                            CreateMapElement();
+                base.IsToolActive = value;
 
-                        maxDistance = 0.0;
-                        if (IsInteractive)
-                            NumberOfRings = 0;
-                    }
+                if (CanCreateElement)
+                    CreateMapElement();
 
-                RaisePropertyChanged(() => IsToolActive);
+                maxDistance = 0.0;
+                if (IsInteractive)
+                    NumberOfRings = 0;
             }
         }
+
         // keep track of the max distance for drawing of radials in interactive mode
         double maxDistance = 0.0;
 

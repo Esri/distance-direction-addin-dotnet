@@ -101,16 +101,14 @@
                     <Button Grid.Column="1"
                             Margin="3,3,0,0"
                             Style="{StaticResource buttonProperties}" />
-                    <Button Grid.Column="2"
-                            Width="Auto"
-                            Margin="3,3,0,0"
-                            HorizontalAlignment="Right"
-                            Command="{Binding ActivateToolCommand}"
-                            ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
+                    <ToggleButton Grid.Column="2"
+                                  Margin="3,3,0,0"
+                                  IsChecked="{Binding IsToolActive}"
+                                  ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
                         <Image Width="18"
                                Height="18"
                                Source="/DistanceAndDirectionLibrary;component/Images/Add_Point.png" />
-                    </Button>
+                    </ToggleButton>
                 </Grid>
                 <GroupBox Grid.Row="4"
                           Grid.ColumnSpan="2"

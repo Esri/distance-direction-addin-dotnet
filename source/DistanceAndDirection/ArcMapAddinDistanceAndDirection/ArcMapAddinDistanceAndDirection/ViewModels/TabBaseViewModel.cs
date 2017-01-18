@@ -44,6 +44,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
     /// </summary>
     public class TabBaseViewModel : BaseViewModel
     {
+        public const System.String MAP_TOOL_NAME = "Esri_ArcMapAddinDistanceAndDirection_MapPointTool";
+
         public TabBaseViewModel()
         {
             //properties
@@ -387,7 +389,30 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        /// <summary>
+        /// Property to determine if map tool is enabled or disabled
+        /// </summary>
+        public virtual bool IsToolActive
+        {
+            get
+            {
+                if (ArcMap.Application.CurrentTool != null)
+                    return ArcMap.Application.CurrentTool.Name == MAP_TOOL_NAME;
 
+                return false;
+            }
+
+            set
+            {
+                if (value)
+                    OnActivateTool(null);
+                else
+                    if (ArcMap.Application.CurrentTool != null)
+                        ArcMap.Application.CurrentTool = null;
+
+                RaisePropertyChanged(() => IsToolActive);
+            }
+        }
         #endregion Properties
 
         #region Commands
@@ -650,7 +675,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj"></param>
         internal void OnActivateTool(object obj)
         {
-            SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinDistanceAndDirection_MapPointTool");
+            SetToolActiveInToolBar(ArcMap.Application, MAP_TOOL_NAME);
         }
         /// <summary>
         /// Handler for the "Enter"key command
