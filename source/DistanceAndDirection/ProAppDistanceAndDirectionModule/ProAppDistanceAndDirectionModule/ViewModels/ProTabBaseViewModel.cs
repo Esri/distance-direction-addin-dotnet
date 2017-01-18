@@ -35,6 +35,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 {
     public class ProTabBaseViewModel : BaseViewModel
     {
+        public const System.String MAP_TOOL_NAME = "ProAppDistanceAndDirectionModule_SketchTool";
+
         public ProTabBaseViewModel()
         {
             //properties
@@ -52,6 +54,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Mediator.Register(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, OnNewMapPointEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+
+            // Get Current tool
+            CurrentTool = FrameworkApplication.CurrentTool;
 
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
@@ -107,6 +112,41 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 RaisePropertyChanged(() => IsActiveTab);
             }
         }
+
+        public string CurrentTool
+        {
+            get; set;
+        }
+
+        public virtual bool IsToolActive
+        {
+            get
+            {
+                if (FrameworkApplication.CurrentTool != null)
+                    return FrameworkApplication.CurrentTool == MAP_TOOL_NAME;
+
+                return false;
+            }
+
+            set
+            {
+                if (value)
+                {
+                    CurrentTool = FrameworkApplication.CurrentTool;
+                    FrameworkApplication.SetCurrentToolAsync(MAP_TOOL_NAME);
+                }
+                else
+                {
+                    if (FrameworkApplication.CurrentTool != null)
+                    {
+                        DeactivateTool(MAP_TOOL_NAME);
+                    }
+                }
+
+                RaisePropertyChanged(() => IsToolActive);
+            }
+        }
+
         private List<IDisposable> overlayObjects = new List<IDisposable>();
         // lists to store GUIDs of graphics, temp feedback and map graphics
         private static List<Graphic> GraphicsList = new List<Graphic>();
@@ -388,6 +428,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         }
 
         #endregion
+
         internal async void AddGraphicToMap(Geometry geom, bool IsTempGraphic = false, double size = 1.0)
         {
             // default color Red
@@ -603,7 +644,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (FrameworkApplication.CurrentTool != null &&
                 FrameworkApplication.CurrentTool.Equals(toolname))
             {
-                FrameworkApplication.SetCurrentToolAsync(String.Empty);
+                FrameworkApplication.SetCurrentToolAsync(CurrentTool);
             }
         }
 
@@ -703,7 +744,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (toolReset)
             {
-                DeactivateTool("ProAppDistanceAndDirectionModule_SketchTool");
+                DeactivateTool(MAP_TOOL_NAME);
             }
 
             ResetPoints();

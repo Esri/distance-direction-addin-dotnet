@@ -53,35 +53,26 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        public bool IsToolActive
+        public override bool IsToolActive
         {
             get
             {
-                if (FrameworkApplication.CurrentTool != null)
-                    return FrameworkApplication.CurrentTool == "ProAppDistanceAndDirectionModule_SketchTool";
-
-                return false;
+                return base.IsToolActive;
             }
-
             set
             {
-                if (value)
-                    FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
-                else
-                    if (FrameworkApplication.CurrentTool != null)
-                    {
-                        DeactivateTool("ProAppDistanceAndDirectionModule_SketchTool");
-                        if (CanCreateElement)
-                            CreateMapElement();
+                base.IsToolActive = value;
 
-                        maxDistance = 0.0;
-                        if (IsInteractive)
-                            NumberOfRings = 0;
-                    }
+                if (CanCreateElement)
+                    CreateMapElement();
 
-                RaisePropertyChanged(() => IsToolActive);
+                maxDistance = 0.0;
+                if (IsInteractive)
+                    NumberOfRings = 0;
             }
         }
+
+
         // keep track of the max distance for drawing of radials in interactive mode
         double maxDistance = 0.0;
 
