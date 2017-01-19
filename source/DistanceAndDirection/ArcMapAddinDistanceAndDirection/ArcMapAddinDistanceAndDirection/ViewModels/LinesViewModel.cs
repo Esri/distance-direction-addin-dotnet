@@ -195,10 +195,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         internal override void OnEnterKeyCommand(object obj)
         {
 
-            Point1 = GetPointFromString(Point1Formatted);
-            Point2 = GetPointFromString(Point2Formatted);
-            if (!Azimuth.HasValue || Point1 == null || Point2 == null)
-                return;
+            if (LineFromType == LineFromTypes.Points)
+            {
+                Point1 = GetPointFromString(Point1Formatted);
+                Point2 = GetPointFromString(Point2Formatted);
+                if (!Azimuth.HasValue || Point1 == null || Point2 == null)
+                    return;
+            }
+            else
+            {
+                Point1 = GetPointFromString(Point1Formatted);
+                if (!Azimuth.HasValue || Point1 == null)
+                    return;
+            }
             HasPoint1 = true;
             HasPoint2 = true;
             IGeometry geo = CreatePolyline();
@@ -230,14 +239,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
-
-                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-
+                esriGeodeticType type = GetEsriGeodeticType();
+                IGeometry geo = Point1;
+                if(LineFromType == LineFromTypes.Points)
+                    construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+                else
+                    construct.ConstructGeodeticLineFromDistance(type, Point1, linearUnit, Distance, (double)Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation,-1.0);
                 var mxdoc = ArcMap.Application.Document as IMxDocument;
                 var av = mxdoc.FocusMap as IActiveView;
-
-                UpdateDistance(construct as IGeometry);
-                UpdateAzimuth(construct as IGeometry);
+                if (LineFromType == LineFromTypes.Points)
+                {
+                    UpdateDistance(construct as IGeometry);
+                    UpdateAzimuth(construct as IGeometry);
+                }
+                
 
                 //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(construct as IGeometry);
