@@ -213,7 +213,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             IGeometry geo = CreatePolyline();
             IPolyline line = geo as IPolyline;
             AddGraphicToMap(line);
-            //base.OnEnterKeyCommand(obj);
+            ResetPoints();
+            ClearTempGraphics();
+            base.OnEnterKeyCommand(obj);
         }
 
         /// <summary>
