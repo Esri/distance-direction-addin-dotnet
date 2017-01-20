@@ -1081,7 +1081,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             eprop.Name = Guid.NewGuid().ToString();
 
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
-                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, false));
+                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, IsTempGraphic));
             else if (this is LinesViewModel)
                 GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, IsTempGraphic));
             else if (this is CircleViewModel)
