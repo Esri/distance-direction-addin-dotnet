@@ -305,6 +305,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
+                    UpdateFeedbackWithGeoCircle();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
@@ -403,7 +404,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private void UpdateFeedbackWithGeoCircle()
         {
-            if (Point1 == null || Distance <= 0.0)
+            if (Point1 == null)
                 return;
 
             var construct = new Polyline() as IConstructGeodetic;
