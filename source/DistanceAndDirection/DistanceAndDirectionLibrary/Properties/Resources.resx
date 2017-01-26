@@ -184,7 +184,7 @@
     <value>Full</value>
   </data>
   <data name="EnumGeodesic" xml:space="preserve">
-    <value>Geodesic</value>
+    <value>Geodetic</value>
   </data>
   <data name="EnumGreatElliptic" xml:space="preserve">
     <value>Great Elliptic</value>
@@ -209,6 +209,9 @@
   </data>
   <data name="EnumMetersSec" xml:space="preserve">
     <value>Meters / Second</value>
+  </data>
+  <data name="EnumMiles" xml:space="preserve">
+    <value>Miles</value>
   </data>
   <data name="EnumMilesHour" xml:space="preserve">
     <value>Miles / Hour</value>
@@ -237,8 +240,8 @@
   <data name="EnumSemi" xml:space="preserve">
     <value>Semi</value>
   </data>
-  <data name="EnumSurveyFoot" xml:space="preserve">
-    <value>US Survey Foot</value>
+  <data name="EnumYards" xml:space="preserve">
+    <value>Yards</value>
   </data>
   <data name="LabelAngle" xml:space="preserve">
     <value>Angle</value>
@@ -313,7 +316,7 @@
     <value>Orientation</value>
   </data>
   <data name="LabelOrientationUnit" xml:space="preserve">
-    <value>Unit</value>
+    <value>Units</value>
   </data>
   <data name="LabelRadius" xml:space="preserve">
     <value>Radius</value>
@@ -325,7 +328,7 @@
     <value>Center Point</value>
   </data>
   <data name="LabelRangeRingsDistanceBetween" xml:space="preserve">
-    <value>Distance Between Rings</value>
+    <value>Distance between Rings</value>
   </data>
   <data name="LabelRangeRingsNumberofRadials" xml:space="preserve">
     <value>Number of Radials</value>
@@ -346,7 +349,7 @@
     <value>Ellipse</value>
   </data>
   <data name="LabelTabLines" xml:space="preserve">
-    <value>Lines</value>
+    <value>Line</value>
   </data>
   <data name="LabelTabRange" xml:space="preserve">
     <value>Rings</value>

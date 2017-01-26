@@ -14,6 +14,7 @@
   *   limitations under the License. 
   ******************************************************************************/
 
+using ArcMapAddinDistanceAndDirection.ViewModels;
 using DistanceAndDirectionLibrary;
 // Esri
 using ESRI.ArcGIS.Geometry;
@@ -22,12 +23,13 @@ namespace ArcMapAddinDistanceAndDirection.Models
 {
     public class Graphic
     {
-        public Graphic(GraphicTypes _graphicType, string _uniqueid, IGeometry _geometry, bool _isTemp = false)
+        public Graphic(GraphicTypes _graphicType, string _uniqueid, IGeometry _geometry, TabBaseViewModel _model, bool _isTemp = false)
         {
             GraphicType = _graphicType;
             UniqueId = _uniqueid;
             Geometry = _geometry;
             IsTemp = _isTemp;
+            ViewModel = _model;
         }
         
         // properties   
@@ -50,7 +52,12 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <summary>
         /// Property to determine if graphic is temporary or not
         /// </summary>
-        public bool IsTemp {get;set;} 
+        public bool IsTemp {get;set;}
+
+        /// <summary>
+        /// Property to determine what view the graphic was created in
+        /// </summary>
+        public TabBaseViewModel ViewModel { get; set; }
         
     }
 }

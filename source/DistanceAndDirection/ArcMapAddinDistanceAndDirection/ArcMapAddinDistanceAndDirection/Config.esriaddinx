@@ -4,21 +4,21 @@
   <Description>Create Lines, Circles, Ellipses and Range Rings</Description>
   <Version>1.0</Version>
   <Image>Images\ArcMapAddinDistanceAndDirection.png</Image>
-  <Author>ESRI</Author>
-  <Company>ESRI</Company>
+  <Author>Esri</Author>
+  <Company>Esri</Company>
   <Date>1/25/2016</Date>
   <Targets>
     <Target name="Desktop" version="10.3" />
   </Targets>
-  <AddIn language="CLR4.5" library="ArcMapAddinDistanceAndDirection.dll" namespace="ArcMapAddinDistanceAndDirection">
+  <AddIn language="CLR4.5" library="DistanceAndDirection.dll" namespace="ArcMapAddinDistanceAndDirection">
     <ArcMap>
       <DockableWindows>
-        <DockableWindow id="Esri_ArcMapAddinDistanceAndDirection_DockableWindowDistanceAndDirection" class="DockableWindowDistanceAndDirection+AddinImpl" caption="Distance and Direction" image="Images\DockableWindowDistanceAndDirection.png">
+        <DockableWindow id="Esri_ArcMapAddinDistanceAndDirection_DockableWindowDistanceAndDirection" class="DockableWindowDistanceAndDirection+AddinImpl" caption="Distance and Direction" image="Images\distance-direction-16.png">
           <InitialPlacement height="300" width="300" state="pinned" position="left" />
         </DockableWindow>
       </DockableWindows>
       <Commands>
-        <Button id="Esri_ArcMapAddinDistanceAndDirection_DistanceAndDirectionButton" class="DistanceAndDirectionButton" message="Add-in command to show Distance and Direction." caption="Show Distance and Direction" tip="Show Distance and Direction." category="Add-In Controls" image="Images\DistanceAndDirectionButton.png" />
+        <Button id="Esri_ArcMapAddinDistanceAndDirection_DistanceAndDirectionButton" class="DistanceAndDirectionButton" message="Interactively create geodetic lines, circles, ellipses, range rings, and distance calculations based on time and rate. Created graphics can be saved to feature classes, shapefiles, and KMZ files." caption="Distance and Direction" tip="Distance and Direction." category="Add-In Controls" image="Images\distance-direction-16.png" />
         <Tool id="Esri_ArcMapAddinDistanceAndDirection_MapPointTool" class="MapPointTool" message="Add-in command for Map Point Tool." caption="Map Point" tip="Map Point Tool" category="Add-In Controls" image="Images\MapPointTool.png" />
       </Commands>
     </ArcMap>

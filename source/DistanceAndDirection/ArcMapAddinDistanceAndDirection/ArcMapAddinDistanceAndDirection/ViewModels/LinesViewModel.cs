@@ -83,12 +83,32 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        public override IPoint Point2
+        {
+            get
+            {
+                return base.Point2;
+            }
+            set
+            {
+                base.Point2 = value;
+
+                if (LineFromType == LineFromTypes.Points)
+                {
+                    UpdateFeedback();
+                }
+            }
+        }
+
         double distance = 0.0;
         public override double Distance
         {
             get { return distance; }
             set
             {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
                 distance = value;
                 RaisePropertyChanged(() => Distance);
 
@@ -109,14 +129,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return azimuth; }
             set
             {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
 
                 if (!azimuth.HasValue)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
-                // update feedback
-                UpdateFeedback();
+                if (LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    // update feedback
+                    UpdateFeedback();
+                }
 
                 AzimuthString = azimuth.Value.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
@@ -168,39 +194,44 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         // when someone hits the enter key, create geodetic graphic
         internal override void OnEnterKeyCommand(object obj)
         {
+
+            if (LineFromType == LineFromTypes.Points)
+            {
+                Point1 = GetPointFromString(Point1Formatted);
+                Point2 = GetPointFromString(Point2Formatted);
+                if (!Azimuth.HasValue || Point1 == null || Point2 == null)
+                    return;
+            }
+            else
+            {
+                Point1 = GetPointFromString(Point1Formatted);
+                if (!Azimuth.HasValue || Point1 == null)
+                    return;
+            }
+            HasPoint1 = true;
+            HasPoint2 = true;
+            IGeometry geo = CreatePolyline();
+            IPolyline line = geo as IPolyline;
+            AddGraphicToMap(line);
+            ResetPoints();
+            ClearTempGraphics();
             base.OnEnterKeyCommand(obj);
-
-            //if (!CanCreateElement)
-            //    return;
-
-            //if(LineFromType == LineFromTypes.Points)
-            //{
-            //    base.OnEnterKeyCommand(obj);
-            //}
-            //else
-            //{
-            //    ClearTempGraphics();
-            //    // Bearing and Distance
-            //    UpdateFeedback();
-            //    feedback.AddPoint(Point2);
-            //    var polyline = feedback.Stop();
-            //    ResetFeedback();
-            //    //var color = new RgbColorClass() { Red = 255 } as IColor;
-            //    AddGraphicToMap(polyline);
-            //}
         }
 
-        private void CreatePolyline()
+        /// <summary>
+        /// Create a geodetic line
+        /// </summary>
+        private IGeometry CreatePolyline()
         {
             try
             {
                 if (Point1 == null || Point2 == null)
-                    return;
+                    return null;
 
                 var construct = new Polyline() as IConstructGeodetic;
 
                 if (construct == null)
-                    return;
+                    return null;
 
                 if (srf3 == null)
                 {
@@ -210,22 +241,53 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
-
-                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, linearUnit, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-
+                esriGeodeticType type = GetEsriGeodeticType();
+                IGeometry geo = Point1;
+                if(LineFromType == LineFromTypes.Points)
+                    construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+                else
+                    construct.ConstructGeodeticLineFromDistance(type, Point1, GetLinearUnit(), Distance, (double)Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation,-1.0);
                 var mxdoc = ArcMap.Application.Document as IMxDocument;
                 var av = mxdoc.FocusMap as IActiveView;
-
-                UpdateDistance(construct as IGeometry);
-                UpdateAzimuth(construct as IGeometry);
+                if (LineFromType == LineFromTypes.Points)
+                {
+                    UpdateDistance(construct as IGeometry);
+                    UpdateAzimuth(construct as IGeometry);
+                }
+                
 
                 //var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(construct as IGeometry);
+
+                if (HasPoint1 && HasPoint2)
+                {
+                    //Get line distance type
+                    DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
+                    //Get azimuth type
+                    AzimuthTypes atVal = (AzimuthTypes)LineAzimuthType;
+                    //Get mid point of geodetic line
+                    var midPoint = new Point() as IPoint;
+                    ((IPolyline)((IGeometry)construct)).QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, false, midPoint);
+                    //Create text symbol using text and midPoint
+                    AddTextToMap(midPoint != null ? midPoint : Point2, 
+                        string.Format("{0}:{1} {2}{3}{4}:{5} {6}", 
+                        "Distance", 
+                        Math.Round(Distance,2).ToString("N2"),
+                        dtVal.ToString(), 
+                        Environment.NewLine,
+                        "Angle",
+                        Math.Round(azimuth.Value,2),
+                        atVal.ToString()));
+                }
+
                 ResetPoints();
+
+                return construct as IGeometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+                return null;
             }
         }
 
@@ -314,14 +376,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             base.OnNewMapPointEvent(obj);
         }
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        internal override IGeometry CreateMapElement()
         {
+            IGeometry geom = null;
             if (!CanCreateElement)
-                return;
+                return geom;
 
             base.CreateMapElement();
-            CreatePolyline();
+            geom = CreatePolyline();
+
             Reset(false);
+
+            return geom;
         }
 
         internal override void OnMouseMoveEvent(object obj)
@@ -349,34 +418,42 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #endregion
 
-        private void UpdateFeedback()
+        internal override void UpdateFeedback()
         {
             // for now lets stick with only updating feedback here with Bearing and Distance case
             if (LineFromType != LineFromTypes.BearingAndDistance)
-                return;
-
-            if(Point1 != null && HasPoint1)
             {
-                if(feedback == null)
+                if(Point1 != null && Point2 != null && HasPoint1)
                 {
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
-                    feedback.Start(Point1);
+                    var polyline = GetGeoPolylineFromPoints(Point1, Point2);
+                    UpdateAzimuth(polyline);
                 }
-
-                // now get second point from distance and bearing
-                var construct = new Polyline() as IConstructGeodetic;
-                if (construct == null)
-                    return;
-
-                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-
-                var line = construct as IPolyline;
-
-                if (line.ToPoint != null)
+            }
+            else
+            {
+                if (Point1 != null && HasPoint1)
                 {
-                    FeedbackMoveTo(line.ToPoint);
-                    Point2 = line.ToPoint;
+                    if (feedback == null)
+                    {
+                        var mxdoc = ArcMap.Application.Document as IMxDocument;
+                        CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
+                        feedback.Start(Point1);
+                    }
+
+                    // now get second point from distance and bearing
+                    var construct = new Polyline() as IConstructGeodetic;
+                    if (construct == null)
+                        return;
+
+                    construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), Distance, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+
+                    var line = construct as IPolyline;
+
+                    if (line.ToPoint != null)
+                    {
+                        FeedbackMoveTo(line.ToPoint);
+                        Point2 = line.ToPoint;
+                    }
                 }
             }
         }

@@ -46,14 +46,27 @@
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource lineData}}"
                           SelectedItem="{Binding Path=LineType,
-                                                 Mode=TwoWay}" />
+                                                 Mode=TwoWay}"
+                          Visibility="{Binding LineTypeComboVisibility}">
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                    </ComboBox>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelFrom}" />
                 <ComboBox x:Name="cmbLineFromType"
                           Height="Auto"
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource lineFromData}}"
                           SelectedItem="{Binding Path=LineFromType,
-                                                 Mode=TwoWay}" />
+                                                 Mode=TwoWay}" >
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
                 <TextBlock Grid.Row="1"
                            Margin="3,3,0,0"
                            Text="{x:Static prop:Resources.LabelStartingPoint}" />
@@ -79,15 +92,14 @@
                     <Button Grid.Column="1"
                             Margin="3,3,0,0"
                             Style="{StaticResource buttonProperties}" />
-                    <Button Grid.Column="2"
-                            Margin="3,3,0,0"
-                            HorizontalAlignment="Center"
-                            Command="{Binding ActivateToolCommand}"
-                            ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
+                    <ToggleButton Grid.Column="2"
+                                  Margin="3,3,0,0"
+                                  IsChecked="{Binding IsToolActive}"
+                                  ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
                         <Image Width="18"
                                Height="18"
-                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point32_d.png" />
-                    </Button>
+                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point.png" />
+                    </ToggleButton>
                 </Grid>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelEndingPoint}" />
                 <TextBox Height="24"
@@ -141,11 +153,21 @@
                     </TextBox.Style>
                 </TextBox>
                 <ComboBox x:Name="cmbLineDistanceType"
-                          Height="Auto"
-                          Margin="3,3,0,0"
-                          ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
-                          SelectedItem="{Binding Path=LineDistanceType,
-                                                 Mode=TwoWay}" />
+                	Height="Auto"
+                	Margin="3,3,0,0"
+                	ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
+                	SelectedItem="{Binding LineDistanceType, Mode=TwoWay}">
+                    <ComboBox.InputBindings>
+                        <KeyBinding Key="Enter"
+                			Command="{Binding EnterKeyCommand}"
+                			CommandParameter="{Binding ., ElementName=mainControl}" />
+                    </ComboBox.InputBindings>
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="{x:Type ComboBoxItem}">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelAngle}" />
                 <TextBox Margin="3,3,0,0"
                          Text="{Binding Path=AzimuthString,
@@ -176,7 +198,19 @@
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource lineAzimuthData}}"
                           SelectedItem="{Binding Path=LineAzimuthType,
-                                                 Mode=TwoWay}" />
+                                                 Mode=TwoWay}">
+                    <ComboBox.InputBindings>
+                        <KeyBinding Key="Enter"
+                                    Command="{Binding EnterKeyCommand}"
+                                    CommandParameter="{Binding ElementName=mainControl,
+                                                               Path=.}" />
+                    </ComboBox.InputBindings>
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
                 <StackPanel Margin="3,3,0,0"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">

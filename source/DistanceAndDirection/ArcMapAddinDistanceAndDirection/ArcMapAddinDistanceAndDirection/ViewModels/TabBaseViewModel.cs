@@ -44,6 +44,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
     /// </summary>
     public class TabBaseViewModel : BaseViewModel
     {
+        public const System.String MAP_TOOL_NAME = "Esri_ArcMapAddinDistanceAndDirection_MapPointTool";
+
         public TabBaseViewModel()
         {
             //properties
@@ -261,11 +263,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     var av = mxdoc.FocusMap as IActiveView;
                     Point2.Project(mxdoc.FocusMap.SpatialReference);
 
-                    //if (feedback != null)
-                    //{
-                    //    // I have to create a new point here, otherwise "MoveTo" will change the spatial reference to world mercator
-                    //    FeedbackMoveTo(point);
-                    //}
                     if (HasPoint1)
                     {
                         // lets try feedback
@@ -310,15 +307,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// Property for the distance type
         /// </summary>
-        public DistanceTypes LineDistanceType
+        public virtual DistanceTypes LineDistanceType
         {
             get { return lineDistanceType; }
             set
             {
-                var before = lineDistanceType;
+                //var before = lineDistanceType;
                 lineDistanceType = value;
-                UpdateDistanceFromTo(before, value);
+                //Distance = ConvertFromTo(before, value, Distance);
+                UpdateFeedback();
             }
+        }
+
+        internal virtual void UpdateFeedback()
+        {
+
         }
 
         double distance = 0.0;
@@ -386,7 +389,30 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        /// <summary>
+        /// Property to determine if map tool is enabled or disabled
+        /// </summary>
+        public virtual bool IsToolActive
+        {
+            get
+            {
+                if (ArcMap.Application.CurrentTool != null)
+                    return ArcMap.Application.CurrentTool.Name == MAP_TOOL_NAME;
 
+                return false;
+            }
+
+            set
+            {
+                if (value)
+                    OnActivateTool(null);
+                else
+                    if (ArcMap.Application.CurrentTool != null)
+                        ArcMap.Application.CurrentTool = null;
+
+                RaisePropertyChanged(() => IsToolActive);
+            }
+        }
         #endregion Properties
 
         #region Commands
@@ -405,9 +431,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Derived class must override this method in order to create map elements
         /// Clears temp graphics by default
         /// </summary>
-        internal virtual void CreateMapElement()
+        internal virtual IGeometry CreateMapElement()
         {
             ClearTempGraphics();
+            return null;
         }
 
         #region Private Event Functions
@@ -510,16 +537,41 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 if (fc != null)
                 {
-                    IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
-                    outputFeatureLayer.FeatureClass = fc;
-
-                    IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
-                    geoLayer.Name = fc.AliasName;
-
-                    ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
-                    map.AddLayer((ILayer)outputFeatureLayer);
+                    AddFeatureLayerToMap(fc);
                 }
             }       
+        }
+
+        /// <summary>
+        /// Add the feature layer to the map 
+        /// </summary>
+        /// <param name="fc">IFeatureClass</param>
+        private void AddFeatureLayerToMap(IFeatureClass fc)
+        {
+            IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
+            outputFeatureLayer.FeatureClass = fc;
+
+            IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
+
+            if (geoLayer.FeatureClass.ShapeType != esriGeometryType.esriGeometryPolyline)
+            {
+                IFeatureRenderer pFeatureRender;
+                pFeatureRender = (IFeatureRenderer)new SimpleRenderer();
+                ISimpleFillSymbol pSimpleFillSymbol = new SimpleFillSymbolClass();
+                pSimpleFillSymbol.Style = esriSimpleFillStyle.esriSFSHollow;
+                pSimpleFillSymbol.Outline.Width = 0.4;
+
+                ISimpleRenderer pSimpleRenderer;
+                pSimpleRenderer = new SimpleRenderer();
+                pSimpleRenderer.Symbol = (ISymbol)pSimpleFillSymbol;
+
+                geoLayer.Renderer = (IFeatureRenderer)pSimpleRenderer;
+            }
+            
+            geoLayer.Name = fc.AliasName;
+
+            ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
+            map.AddLayer((ILayer)outputFeatureLayer);
         }
 
         private string PromptSaveFileDialog()
@@ -587,7 +639,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var eleProps = element as IElementProperties;
                 foreach (Graphic graphic in GraphicsList)
                 {
-                    if (graphic.UniqueId.Equals(eleProps.Name))
+                    if (graphic.UniqueId.Equals(eleProps.Name) && graphic.ViewModel == this)
                     {
                         if (graphic.IsTemp == removeOnlyTemporary)
                         {
@@ -623,7 +675,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj"></param>
         internal void OnActivateTool(object obj)
         {
-            SetToolActiveInToolBar(ArcMap.Application, "Esri_ArcMapAddinDistanceAndDirection_MapPointTool");
+            SetToolActiveInToolBar(ArcMap.Application, MAP_TOOL_NAME);
         }
         /// <summary>
         /// Handler for the "Enter"key command
@@ -641,7 +693,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (!CanCreateElement)
                 return;
 
-            CreateMapElement();
+            var geom = CreateMapElement();
+
+            if (geom != null)
+            {
+                ZoomToExtent(geom);
+            }
         }
 
         /// <summary>
@@ -743,9 +800,30 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (commandItem != null)
                 application.CurrentTool = commandItem;
         }
+
         #endregion
 
         #region Private Functions
+
+        private void ZoomToExtent(IGeometry geom)
+        {
+            if (geom == null || ArcMap.Application.Document == null)
+                return;
+
+            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxdoc.FocusMap as IActiveView;
+
+            IEnvelope env = geom.Envelope;
+
+            double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
+            env.XMax = env.XMax + extentPercent;
+            env.XMin = env.XMin - extentPercent;
+            env.YMax = env.YMax + extentPercent;
+            env.YMin = env.YMin - extentPercent;
+
+            av.Extent = env;
+            av.Refresh();
+        }
 
         /// <summary>
         /// Method will return a formatted point as a string based on the configuration settings for display coordinate type
@@ -758,31 +836,37 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var cn = point as IConversionNotation;
             if (cn != null)
             {
-                switch (DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType)
+                try
                 {
-                    case CoordinateTypes.DD:
-                        result = cn.GetDDFromCoords(6);
-                        break;
-                    case CoordinateTypes.DDM:
-                        result = cn.GetDDMFromCoords(4);
-                        break;
-                    case CoordinateTypes.DMS:
-                        result = cn.GetDMSFromCoords(2);
-                        break;
-                    case CoordinateTypes.GARS:
-                        result = cn.GetGARSFromCoords();
-                        break;
-                    case CoordinateTypes.MGRS:
-                        result = cn.CreateMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_Automatic);
-                        break;
-                    case CoordinateTypes.USNG:
-                        result = cn.GetUSNGFromCoords(5, true, true);
-                        break;
-                    case CoordinateTypes.UTM:
-                        result = cn.GetUTMFromCoords(esriUTMConversionOptionsEnum.esriUTMAddSpaces | esriUTMConversionOptionsEnum.esriUTMUseNS);
-                        break;
-                    default:
-                        break;
+                    switch (DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType)
+                    {
+                        case CoordinateTypes.DD:
+                            result = cn.GetDDFromCoords(6);
+                            break;
+                        case CoordinateTypes.DDM:
+                            result = cn.GetDDMFromCoords(4);
+                            break;
+                        case CoordinateTypes.DMS:
+                            result = cn.GetDMSFromCoords(2);
+                            break;
+                        //case CoordinateTypes.GARS:
+                        //    result = cn.GetGARSFromCoords();
+                        //    break;
+                        case CoordinateTypes.MGRS:
+                            result = cn.CreateMGRS(5, true, esriMGRSModeEnum.esriMGRSMode_Automatic);
+                            break;
+                        case CoordinateTypes.USNG:
+                            result = cn.GetUSNGFromCoords(5, true, true);
+                            break;
+                        case CoordinateTypes.UTM:
+                            result = cn.GetUTMFromCoords(esriUTMConversionOptionsEnum.esriUTMAddSpaces | esriUTMConversionOptionsEnum.esriUTMUseNS);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
                 }
             }
             return result;
@@ -829,6 +913,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             feedback.Stop();
             feedback = null;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
         }
 
         /// <summary>
@@ -842,6 +930,71 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             IsActiveTab = (obj == this);
+        }
+
+
+        /// <summary>
+        /// Converts a polyline into a polygon
+        /// </summary>
+        /// <param name="line">IPolyline</param>
+        /// <returns>IPolygon</returns>
+        internal IPolygon PolylineToPolygon(IPolyline line)
+        {
+            try
+            {
+                var geomCol = new Polygon() as IGeometryCollection;
+                var polylineGeoms = line as IGeometryCollection;
+                for (var i = 0; i < polylineGeoms.GeometryCount; i++)
+                {
+                    var ringSegs = new RingClass() as ISegmentCollection;
+                    ringSegs.AddSegmentCollection((ISegmentCollection)polylineGeoms.Geometry[i]);
+                    geomCol.AddGeometry((IGeometry)ringSegs);
+                }
+                var newPoly = geomCol as IPolygon;
+                newPoly.SimplifyPreserveFromTo();
+                return newPoly;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Adds graphics text to the map graphics container
+        /// </summary>
+        /// <param name="geom">IGeometry</param>
+        /// <param name="text">string</param>
+        internal void AddTextToMap(IGeometry geom, string text)
+        {
+            var mxDoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxDoc.FocusMap as IActiveView;
+            var gc = av as IGraphicsContainer;
+
+            var textEle = new TextElement() as ITextElement;
+            textEle.Text = text;
+            var elem = textEle as IElement;
+            elem.Geometry = geom;
+
+            var eprop = elem as IElementProperties;
+            eprop.Name = Guid.NewGuid().ToString();
+
+            if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
+                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, false));
+            else if (this is LinesViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, false));
+            else if (this is CircleViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, false));
+            else if (this is EllipseViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, false));
+            else if (this is RangeViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, false));
+
+            gc.AddElement(elem, 0);
+            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+
+            RaisePropertyChanged(() => HasMapGraphics);
         }
 
         /// <summary>
@@ -874,16 +1027,41 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             else if(geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
                 // create graphic then add to map
-                var lineSymbol = new SimpleLineSymbolClass();
+                ILineSymbol lineSymbol;
+                if (this is LinesViewModel)
+                {
+                    lineSymbol = new CartographicLineSymbolClass();
+
+                    ISimpleLineDecorationElement simpleLineDecorationElement = new SimpleLineDecorationElementClass();
+                    simpleLineDecorationElement.AddPosition(1);
+                    simpleLineDecorationElement.MarkerSymbol = new ArrowMarkerSymbolClass() {
+                        Color = color,
+                        Size = 6,
+                        Length = 8,
+                        Width = 6,
+                        XOffset = 0.8
+                    };
+
+                    ILineDecoration lineDecoration = new LineDecorationClass();
+                    lineDecoration.AddElement(simpleLineDecorationElement);
+
+                    ((ILineProperties)lineSymbol).LineDecoration = lineDecoration;
+                }
+                else
+                {
+                    lineSymbol = new SimpleLineSymbolClass();
+                }
+
                 lineSymbol.Color = color;
                 lineSymbol.Width = width;
+
                 if (IsTempGraphic && rasterOpCode != esriRasterOpCode.esriROPNOP)
                 {
                     lineSymbol.Width = 1;
-                    lineSymbol.ROP2 = rasterOpCode;
+                    ((ISymbol)lineSymbol).ROP2 = rasterOpCode;
                 }
 
-                var le = new LineElementClass() as ILineElement;  
+                var le = new LineElementClass() as ILineElement;
                 element = le as IElement;
                 le.Symbol = lineSymbol;
             }
@@ -901,15 +1079,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             // store guid
             var eprop = element as IElementProperties;
             eprop.Name = Guid.NewGuid().ToString();
- 
-            if (this is LinesViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, IsTempGraphic));
+
+            if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
+                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, IsTempGraphic));
+            else if (this is LinesViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, IsTempGraphic));
             else if (this is CircleViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, IsTempGraphic));
             else if (this is EllipseViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, IsTempGraphic));
             else if (this is RangeViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, IsTempGraphic));
 
             gc.AddElement(element, 0);
 
@@ -954,11 +1134,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 case DistanceTypes.Meters:
                     unitType = (int)esriSRUnitType.esriSRUnit_Meter;
                     break;
+                case DistanceTypes.Miles:
+                    unitType = (int)esriSRUnitType.esriSRUnit_SurveyMile;
+                    break;
                 case DistanceTypes.NauticalMile:
                     unitType = (int)esriSRUnitType.esriSRUnit_NauticalMile;
                     break;
-                case DistanceTypes.SurveyFoot:
-                    unitType = (int)esriSRUnitType.esriSRUnit_SurveyFoot;
+                case DistanceTypes.Yards:
+                    unitType = (int)esriSRUnit2Type.esriSRUnit_InternationalYard;
                     break;
                 default:
                     unitType = (int)esriSRUnitType.esriSRUnit_Meter;
@@ -968,64 +1151,47 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             return srf3.CreateUnit(unitType) as ILinearUnit;
         }
 
-        /// <summary>
-        /// Ugly method to convert to/from different types of distance units
-        /// </summary>
-        /// <param name="fromType">DistanceTypes</param>
-        /// <param name="toType">DistanceTypes</param>
-        internal void UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType)
+        internal double ConvertFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
         {
-            try
-            {
-                double length = Distance;
+            double result = 0.0;
 
-                if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Kilometers)
-                    length /= 1000.0;
-                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Feet)
-                    length *= 3.28084;
-                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.SurveyFoot)
-                    length *= 3.280833333;
-                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.NauticalMile)
-                    length *= 0.000539957;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Meters)
-                    length *= 1000.0;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Feet)
-                    length *= 3280.84;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.SurveyFoot)
-                    length *= 3280.833333;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.NauticalMile)
-                    length *= 0.539957;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Kilometers)
-                    length *= 0.0003048;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Meters)
-                    length *= 0.3048;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.SurveyFoot)
-                    length *= 0.999998000004;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.NauticalMile)
-                    length *= 0.000164579;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Kilometers)
-                    length *= 0.0003048006096;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Meters)
-                    length *= 0.3048006096;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Feet)
-                    length *= 1.000002;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.NauticalMile)
-                    length *= 0.00016457916285097;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Kilometers)
-                    length *= 1.852001376036;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Meters)
-                    length *= 1852.001376036;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Feet)
-                    length *= 6076.1154855643;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.SurveyFoot)
-                    length *= 6076.1033333576;
+            var converter = new UnitConverterClass() as IUnitConverter;
 
-                Distance = length;
-            }
-            catch (Exception ex)
+            result = converter.ConvertUnits(input, GetEsriUnit(fromType), GetEsriUnit(toType));
+
+            return result;
+        }
+
+        private esriUnits GetEsriUnit(DistanceTypes distanceType)
+        {
+            esriUnits unit = esriUnits.esriMeters;
+
+            switch(distanceType)
             {
-                Console.WriteLine(ex);
+                case DistanceTypes.Feet:
+                    unit = esriUnits.esriFeet;
+                    break;
+                case DistanceTypes.Kilometers:
+                    unit = esriUnits.esriKilometers;
+                    break;
+                case DistanceTypes.Meters:
+                    unit = esriUnits.esriMeters;
+                    break;
+                case DistanceTypes.Miles:
+                    unit = esriUnits.esriMiles;
+                    break;
+                case DistanceTypes.NauticalMile:
+                    unit = esriUnits.esriNauticalMiles;
+                    break;
+                case DistanceTypes.Yards:
+                    unit = esriUnits.esriYards;
+                    break;
+                default:
+                    unit = esriUnits.esriMeters;
+                    break;
             }
+
+            return unit;
         }
 
         /// <summary>

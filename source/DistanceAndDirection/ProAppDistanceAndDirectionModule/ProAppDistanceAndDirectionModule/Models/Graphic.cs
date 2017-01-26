@@ -14,6 +14,7 @@
 
 using ArcGIS.Core.Geometry;
 using DistanceAndDirectionLibrary;
+using ProAppDistanceAndDirectionModule.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,13 +25,14 @@ namespace ProAppDistanceAndDirectionModule.Models
 {
     public class Graphic
     {
-        public Graphic(GraphicTypes _graphicType, IDisposable _disposable, Geometry _geometry, bool _isTemp = false)
+        public Graphic(GraphicTypes _graphicType, IDisposable _disposable, Geometry _geometry, ProTabBaseViewModel _viewModel, bool _isTemp = false)
         {
             GraphicType = _graphicType;
             //UniqueId = _uniqueid;
             Disposable = _disposable;
             Geometry = _geometry;
             IsTemp = _isTemp;
+            ViewModel = _viewModel;
         }
 
         // properties   
@@ -55,6 +57,11 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// Property to determine if graphic is temporary or not
         /// </summary>
         public bool IsTemp { get; set; }
+
+        /// <summary>
+        /// Property to determine what view model the graphic was created in
+        /// </summary>
+        public ProTabBaseViewModel ViewModel { get; set; }
 
     }
 }

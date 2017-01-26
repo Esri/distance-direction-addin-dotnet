@@ -29,6 +29,7 @@ using ESRI.ArcGIS.DataSourcesFile;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.ADF;
 using DistanceAndDirectionLibrary;
+using ESRI.ArcGIS.Display;
 
 namespace ArcMapAddinDistanceAndDirection.Models
 {
@@ -132,6 +133,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
             try
             {
+                bool isGraphicLineOrRangeRing = graphicsList[0].GraphicType == GraphicTypes.Line || graphicsList[0].GraphicType == GraphicTypes.RangeRing;
                 if (saveAsType == SaveAsType.FileGDB)
                 {
                     IWorkspaceFactory workspaceFactory = new FileGDBWorkspaceFactory();
@@ -143,16 +145,19 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         DeleteFeatureClass(fWorkspace, fcName);
                     }
 
-                    fc = CreatePolylineFeatureClass(fWorkspace, fcName);
+                    fc = CreateFeatureClass(fWorkspace, fcName, isGraphicLineOrRangeRing);
 
                     foreach (Graphic graphic in graphicsList)
                     {
                         IFeature feature = fc.CreateFeature();
 
-                        feature.Shape = graphic.Geometry;
+                        if (graphic.GraphicType != GraphicTypes.Line && graphic.GraphicType != GraphicTypes.RangeRing)
+                            feature.Shape = PolylineToPolygon(graphic.Geometry);
+                        else
+                            feature.Shape = graphic.Geometry;
+
                         feature.Store();
                     }
-
                 }
                 else if (saveAsType == SaveAsType.Shapefile)
                 {
@@ -160,9 +165,9 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     if (File.Exists(outputPath))
                     {
                         DeleteShapeFile(outputPath);
-                    }            
+                    }
 
-                    fc = ExportToShapefile(outputPath, graphicsList, ipSpatialRef);
+                    fc = ExportToShapefile(outputPath, graphicsList, ipSpatialRef, isGraphicLineOrRangeRing);
                 }
                 return fc;
             }
@@ -204,7 +209,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <param name="graphicsList">List of graphics for selected tab</param>
         /// <param name="ipSpatialRef">Spatial Reference being used</param>
         /// <returns>Created featureclass</returns>
-        private IFeatureClass ExportToShapefile(string fileNamePath, List<Graphic> graphicsList, ISpatialReference ipSpatialRef)
+        private IFeatureClass ExportToShapefile(string fileNamePath, List<Graphic> graphicsList, ISpatialReference ipSpatialRef, bool polyLineFC)
         {
             int index = fileNamePath.LastIndexOf('\\');
             string folder = fileNamePath.Substring(0, index);
@@ -235,20 +240,15 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     geomDef = new GeometryDefClass();///#########
                     geomDefEdit = (IGeometryDefEdit)geomDef;
 
-                    //This is for line shapefiles
-                    geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+                    if (polyLineFC)
+                        geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+                    else
+                        geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
+                    
                     geomDefEdit.SpatialReference_2 = ipSpatialRef;
 
                     fieldEdit.GeometryDef_2 = geomDef;
                     fieldsEdit.AddField(field);
-
-                    ////Add another miscellaneous text field
-                    //field = new FieldClass();
-                    //fieldEdit = (IFieldEdit)field;
-                    //fieldEdit.Length_2 = 30;
-                    //fieldEdit.Name_2 = "TextField";
-                    //fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
-                    //fieldsEdit.AddField(field);
 
                     featClass = featureWorkspace.CreateFeatureClass(nameOfShapeFile, fields, null, null, esriFeatureType.esriFTSimple, shapeFieldName, "");
 
@@ -256,7 +256,11 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     {
                         IFeature feature = featClass.CreateFeature();
 
-                        feature.Shape = graphic.Geometry;
+                        if (polyLineFC)
+                            feature.Shape = graphic.Geometry;
+                        else
+                            feature.Shape = PolylineToPolygon(graphic.Geometry);
+
                         feature.Store();
                     }
 
@@ -330,7 +334,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <param name="featWorkspace">IFeatureWorkspace</param> 
         /// <param name="name">Name of the featureclass</param> 
         /// <returns>IFeatureClass</returns> 
-        private IFeatureClass CreatePolylineFeatureClass(IFeatureWorkspace featWorkspace, string name)
+        private IFeatureClass CreateFeatureClass(IFeatureWorkspace featWorkspace, string name, bool polyLineFC)
         {
             IFieldsEdit pFldsEdt = new FieldsClass();
             IFieldEdit pFldEdt = new FieldClass();
@@ -343,7 +347,11 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
             IGeometryDefEdit pGeoDef;
             pGeoDef = new GeometryDefClass();
-            pGeoDef.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+            if (polyLineFC)
+                pGeoDef.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
+            else
+                pGeoDef.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
+
             pGeoDef.SpatialReference_2 = ArcMap.Document.FocusMap.SpatialReference;
 
             pFldEdt = new FieldClass();
@@ -358,7 +366,30 @@ namespace ArcMapAddinDistanceAndDirection.Models
             return pFClass;
         }
 
-    }
+        /// <summary>
+        /// Convert a polyline feature to a polygon
+        /// </summary>
+        /// <param name="geom">IGeometry</param>
+        /// <returns>IPolygon</returns>
+        private IPolygon PolylineToPolygon(IGeometry geom)
+        {
+            //Build a polygon segment-by-segment.
+            IPolygon polygon = new PolygonClass();
+            Polyline polyLine = geom as Polyline;
 
-    
+            ISegmentCollection polygonSegs = polygon as ISegmentCollection;
+            ISegmentCollection polylineSegs = polyLine as ISegmentCollection;
+
+            for (int i = 0; i < polylineSegs.SegmentCount; i++)
+            {
+                ISegment seg = polylineSegs.Segment[i];
+                polygonSegs.AddSegment(seg);
+            }
+
+            polygon.SimplifyPreserveFromTo();
+
+            return polygon;
+
+        }
+    } 
 }

@@ -48,15 +48,19 @@ The add-in provides the ability to create geodesic features such as lines, circl
 		* Open and build solution file
 	* To use MSBuild to build the solution
 		* Open a Visual Studio Command Prompt: Start Menu | Visual Studio 2013 | Visual Studio Tools | Developer Command Prompt for VS2013
-		* ``` cd distance-and-direction-addin-dotnet\source\DistanceAndDirection\ArcMapAddinDistanceAndDirection ```
-		* ``` msbuild ArcMapAddinDistanceAndDirection.sln /property:Configuration=Release ```
+		* ` cd distance-and-direction-addin-dotnet\source\DistanceAndDirection\ArcMapAddinDistanceAndDirection `
+		* ` msbuild ArcMapAddinDistanceAndDirection.sln /property:Configuration=Release `
+	* To run Unit test from command prompt
+		* Open a Visual Studio Command Prompt: Start Menu | Visual Studio 2013 | Visual Studio Tools | Developer Command Prompt for VS2013
+		* ` cd distance-direction-addin-dotnet\source\DistanceAndDirection\ArcMapAddinDistanceAndDirection.Tests\bin\Release `
+		* ` MSTest /testcontainer:ArcMapAddinDistanceAndDirection.Tests.dll `* 
 	* Note : Assembly references are based on a default install of the SDK, you may have to update the references if you chose an alternate install option
 
 ## Desktop Users
 * Running the add-in
 	* To run from a stand-alone deployment
 		* ArcMap
-			* Install the add-in from the application folder by double clicking the **ArcMapAddinDistanceAndDirection.esriAddIn** file.
+			* Install the add-in from the latest Release on Github (https://github.com/Esri/distance-direction-addin-dotnet/releases)
 			* Add the add-in command to a toolbar via menu option 
 				* **Customize** -> **Customize mode**
 				* Select **Commands** Tab
@@ -106,9 +110,11 @@ The add-in provides the ability to create geodesic features such as lines, circl
 3. Enter a starting point and the distance of the circles radius by clicking on the map
 4. Expand the **Distance Calculator** section
 5. Enter a **Time**
-6. Enter a **Rate**
-7. Press *Enter* key and the graphic will be drawn on the map
-8. Optional - Select the Save As button to export the Circle features to a file geodatabase, shapefile, or KML
+6. Select a time unit using the drop down box
+7. Enter a **Rate**
+8. Select a rate unit using the drop down box
+9. Press *Enter* key and the graphic will be drawn on the map
+10. Optional - Select the Save As button to export the Circle features to a file geodatabase, shapefile, or KML
 
 ### Create Ellipses Interactively
 1. Choose the **Ellipse** tab on the *Distance and Direction* Tool
@@ -120,13 +126,25 @@ The add-in provides the ability to create geodesic features such as lines, circl
 7. Repeat until all desired graphics have been included
 8. Optional - Select the Save As button to export the Ellipse features to a file geodatabase, shapefile, or KML
 
+### Create Ellipses Manually
+1. Choose the **Ellipse** tab on the *Distance and Direction* Tool
+2. Enter a cooridnate into the **Center Point** text box
+3. Enter a distance into the **Major Axis** text box
+4. Enter a distance into the **Minor Axis** text box
+5. Optionally change the axis **Units** using the drop down box
+6. Enter the desired angle in the **Angle** text box
+7. Optionally change the orientation **Unit** using the drop down box
+8. Press the **ENTER** key
+9. Repeat until all desired graphics have been included
+10. Optional - Select the Save As button to export the Ellipse features to a file geodatabase, shapefile, or KML
+
 ### Create Range Rings Interactively 
 1. Choose the **Rings** tab on the *Distance and Direction* Tool
 2. Check **Interactive**
 3. Select the **Map Point Tool** (arrow icon) next to the **Center Point** text box
 4. *First* click on the map sets the center point (green dot)
 5. Subsequent clicks draw rings from the center point
-6. Select the **Map Point Tool** a second time to stop adding rings
+6. Double-click to create final ring or select the **Map Point Tool** a second time to stop adding rings
 	* To start a second set of range rings, repeat steps 3 through 6.
 7. Optional - Select the Save As button to export the Range Ring features to a file geodatabase, shapefile, or KML
 8. Uncheck **Interactive** to return to manual entry

@@ -15,6 +15,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Text.RegularExpressions;
+using System.Windows.Controls;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -26,14 +29,14 @@ using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
-using System.Windows.Controls;
 using ProAppDistanceAndDirectionModule.Views;
-using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
     public class ProTabBaseViewModel : BaseViewModel
     {
+        public const System.String MAP_TOOL_NAME = "ProAppDistanceAndDirectionModule_SketchTool";
+
         public ProTabBaseViewModel()
         {
             //properties
@@ -51,6 +54,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Mediator.Register(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, OnNewMapPointEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+
+            // Get Current tool
+            CurrentTool = FrameworkApplication.CurrentTool;
 
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
@@ -106,6 +112,41 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 RaisePropertyChanged(() => IsActiveTab);
             }
         }
+
+        public string CurrentTool
+        {
+            get; set;
+        }
+
+        public virtual bool IsToolActive
+        {
+            get
+            {
+                if (FrameworkApplication.CurrentTool != null)
+                    return FrameworkApplication.CurrentTool == MAP_TOOL_NAME;
+
+                return false;
+            }
+
+            set
+            {
+                if (value)
+                {
+                    CurrentTool = FrameworkApplication.CurrentTool;
+                    FrameworkApplication.SetCurrentToolAsync(MAP_TOOL_NAME);
+                }
+                else
+                {
+                    if (FrameworkApplication.CurrentTool != null)
+                    {
+                        DeactivateTool(MAP_TOOL_NAME);
+                    }
+                }
+
+                RaisePropertyChanged(() => IsToolActive);
+            }
+        }
+
         private List<IDisposable> overlayObjects = new List<IDisposable>();
         // lists to store GUIDs of graphics, temp feedback and map graphics
         private static List<Graphic> GraphicsList = new List<Graphic>();
@@ -121,19 +162,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (this is ProLinesViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Line);
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Line && g.IsTemp == false);
                 }
                 else if (this is ProCircleViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Circle);
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Circle && g.IsTemp == false);
                 }
                 else if (this is ProEllipseViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Ellipse);
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Ellipse && g.IsTemp == false);
                 }
                 else if (this is ProRangeViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.RangeRing);
+                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.RangeRing && g.IsTemp == false);
                 }
 
                 return false;
@@ -220,8 +261,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     point1Formatted = value;
                     HasPoint1 = true;
                     Point1 = point;
-                    
-                    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                     if (Point2 != null)
                     {
@@ -282,7 +323,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         // lets try feedback
                         SetGeodesicDistance(Point1, Point2);
-                    }
+                    }       
                 }
                 else
                 {
@@ -298,15 +339,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Property for the distance type
         /// </summary>
-        public DistanceTypes LineDistanceType
+        public virtual DistanceTypes LineDistanceType
         {
             get { return lineDistanceType; }
             set
             {
-                var before = lineDistanceType;
                 lineDistanceType = value;
-                Distance = UpdateDistanceFromTo(before, value, Distance);
+                UpdateFeedback();
             }
+        }
+
+        internal virtual void UpdateFeedback()
+        {
+
         }
 
         double distance = 0.0;
@@ -335,7 +380,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                return Distance.ToString("G");
+                if (string.IsNullOrWhiteSpace(distanceString))
+                    return Distance.ToString("G");
+                else
+                    return distanceString;
+                
             }
             set
             {
@@ -349,7 +398,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double d = 0.0;
                 if (double.TryParse(distanceString, out d))
                 {
-                    Distance = d;
+                    if (Distance != d)
+                    {
+                        Distance = d;
+                        UpdateFeedback();
+                    }
                 }
                 else
                 {
@@ -375,10 +428,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         }
 
         #endregion
+
         internal async void AddGraphicToMap(Geometry geom, bool IsTempGraphic = false, double size = 1.0)
         {
             // default color Red
-            await AddGraphicToMap(geom, ColorFactory.Red, IsTempGraphic, size);
+            await AddGraphicToMap(geom, ColorFactory.RedRGB, IsTempGraphic, size);
         }
         internal async Task AddGraphicToMap(Geometry geom, CIMColor color, bool IsTempGraphic = false, double size = 1.0)
         {
@@ -407,8 +461,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 await QueuedTask.Run(() =>
                 {
-                    var outline = SymbolFactory.ConstructStroke(ColorFactory.Black, 1.0, SimpleLineStyle.Solid);
-                    var s = SymbolFactory.ConstructPolygonSymbol(color, SimpleFillStyle.Solid, outline);
+                    var outline = SymbolFactory.ConstructStroke(ColorFactory.RedRGB, 1.0, SimpleLineStyle.Solid);
+                    var s = SymbolFactory.ConstructPolygonSymbol(color, SimpleFillStyle.Null, outline);
                     symbol = new CIMSymbolReference() { Symbol = s };
                 });
             }
@@ -419,8 +473,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     overlayObjects.Add(disposable);
 
                     var gt = GetGraphicType();
-                    
-                    GraphicsList.Add(new Graphic(gt, disposable, geom, IsTempGraphic));
+
+                    GraphicsList.Add(new Graphic(gt, disposable, geom, this, IsTempGraphic));
+
+                    RaisePropertyChanged(() => HasMapGraphics);
                 });
         }
 
@@ -441,9 +497,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Derived class must override this method in order to create map elements
         /// Clears temp graphics by default
         /// </summary>
-        internal virtual void CreateMapElement()
+        internal virtual Geometry CreateMapElement()
         {
             ClearTempGraphics();
+            return null;
         }
 
         #region Private Event Functions
@@ -456,15 +513,28 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <param name="obj"></param>
         private void OnClearGraphics()
         {
+            List<Graphic> removedGraphics = new List<Graphic>();
+
             if (MapView.Active == null)
                 return;
 
             foreach (var item in GraphicsList)
             {
-                item.Disposable.Dispose();
+                Graphic graphic = item as Graphic;
+                if (graphic != null && graphic.ViewModel == this)
+                {
+                    item.Disposable.Dispose();
+                    removedGraphics.Add(graphic);
+                }
+                    
             }
 
-            GraphicsList.Clear();
+            // clean up the GraphicsList and remove the necessary graphics from it
+            foreach (Graphic graphic in removedGraphics)
+            {
+                GraphicsList.Remove(graphic);
+            }
+            //GraphicsList.Clear();
 
             RaisePropertyChanged(() => HasMapGraphics);
         }
@@ -501,7 +571,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!CanCreateElement)
                 return;
 
-            CreateMapElement();
+            var geom = CreateMapElement();
+
+            if (geom != null)
+            {
+                ZoomToExtent(geom.Extent);
+            }
         }
 
         private bool IsValid(System.Windows.DependencyObject obj)
@@ -536,7 +611,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                 // lets try feedback
                 //CreateFeedback(point, av);
@@ -569,12 +644,31 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (FrameworkApplication.CurrentTool != null &&
                 FrameworkApplication.CurrentTool.Equals(toolname))
             {
-                FrameworkApplication.SetCurrentToolAsync(String.Empty);
+                FrameworkApplication.SetCurrentToolAsync(CurrentTool);
             }
         }
+
         #endregion
 
         #region Private Functions
+
+        private async Task ZoomToExtent(Envelope env)
+        {
+            if (env == null || MapView.Active == null || MapView.Active.Map == null)
+                return;
+
+            double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
+            double xmax = env.XMax + extentPercent;
+            double xmin = env.XMin - extentPercent;
+            double ymax = env.YMax + extentPercent;
+            double ymin = env.YMin - extentPercent;
+
+            //Create the envelope
+            var envelope = await QueuedTask.Run(() => ArcGIS.Core.Geometry.EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, MapView.Active.Map.SpatialReference));
+
+            //Zoom the view to a given extent.
+            await MapView.Active.ZoomToAsync(envelope, TimeSpan.FromSeconds(0.5));
+        }
 
         /// <summary>
         /// Method will return a formatted point as a string based on the configuration settings for display coordinate type
@@ -613,10 +707,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         tgparam.NumDigits = 2;
                         result = point.ToGeoCoordinateString(tgparam);
                         break;
-                    case CoordinateTypes.GARS:
-                        tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.GARS);
-                        result = point.ToGeoCoordinateString(tgparam);
-                        break;
+                    //case CoordinateTypes.GARS:
+                    //    tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.GARS);
+                    //    result = point.ToGeoCoordinateString(tgparam);
+                    //    break;
                     case CoordinateTypes.MGRS:
                         tgparam = new ToGeoCoordinateParameter(GeoCoordinateType.MGRS);
                         result = point.ToGeoCoordinateString(tgparam);
@@ -650,7 +744,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (toolReset)
             {
-                DeactivateTool("ProAppDistanceAndDirectionModule_SketchTool");
+                DeactivateTool(MAP_TOOL_NAME);
             }
 
             ResetPoints();
@@ -695,65 +789,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             IsActiveTab = (obj == this);
         }
 
-        /// <summary>
-        /// Ugly method to convert to/from different types of distance units
-        /// </summary>
-        /// <param name="fromType">DistanceTypes</param>
-        /// <param name="toType">DistanceTypes</param>
-        internal double UpdateDistanceFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
+        internal double ConvertFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
         {
-            try
-            {
-                double length = input;
+            double result = 0.0;
 
-                if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Kilometers)
-                    length /= 1000.0;
-                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.Feet)
-                    length *= 3.28084;
-                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.SurveyFoot)
-                    length *= 3.280833333;
-                else if (fromType == DistanceTypes.Meters && toType == DistanceTypes.NauticalMile)
-                    length *= 0.000539957;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Meters)
-                    length *= 1000.0;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.Feet)
-                    length *= 3280.84;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.SurveyFoot)
-                    length *= 3280.833333;
-                else if (fromType == DistanceTypes.Kilometers && toType == DistanceTypes.NauticalMile)
-                    length *= 0.539957;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Kilometers)
-                    length *= 0.0003048;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.Meters)
-                    length *= 0.3048;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.SurveyFoot)
-                    length *= 0.999998000004;
-                else if (fromType == DistanceTypes.Feet && toType == DistanceTypes.NauticalMile)
-                    length *= 0.000164579;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Kilometers)
-                    length *= 0.0003048006096;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Meters)
-                    length *= 0.3048006096;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.Feet)
-                    length *= 1.000002;
-                else if (fromType == DistanceTypes.SurveyFoot && toType == DistanceTypes.NauticalMile)
-                    length *= 0.00016457916285097;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Kilometers)
-                    length *= 1.852001376036;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Meters)
-                    length *= 1852.001376036;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.Feet)
-                    length *= 6076.1154855643;
-                else if (fromType == DistanceTypes.NauticalMile && toType == DistanceTypes.SurveyFoot)
-                    length *= 6076.1033333576;
+            var linearUnitFrom = GetLinearUnit(fromType);
+            var linearUnitTo = GetLinearUnit(toType);
 
-                return length;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            return input;
+            var unit = LinearUnit.CreateLinearUnit(linearUnitFrom.FactoryCode);
+
+            result = unit.ConvertTo(input, linearUnitTo);
+
+            return result;
         }
 
         /// <summary>
@@ -795,7 +842,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             var meters = GeometryEngine.GeodesicDistance(p1, p2);
             // convert to current linear unit
-            return UpdateDistanceFromTo(DistanceTypes.Meters, LineDistanceType, meters);
+            return ConvertFromTo(DistanceTypes.Meters, LineDistanceType, meters);
         }
 
         private void SetGeodesicDistance(MapPoint p1, MapPoint p2)
@@ -804,19 +851,21 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Distance = GetGeodesicDistance(p1, p2);
         }
 
-        internal void UpdateFeedbackWithGeoLine(LineSegment segment)
+        internal async Task UpdateFeedbackWithGeoLine(LineSegment segment, CurveType type, LinearUnit lu)
         {
+          
             if (Point1 == null || segment == null)
                 return;
 
-            var polyline = QueuedTask.Run(() =>
+            var polyline = await QueuedTask.Run(() =>
             {
                 return PolylineBuilder.CreatePolyline(segment);
-            }).Result;
+            });
 
             ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
-            AddGraphicToMap(polyline, ColorFactory.Grey, true);
+            Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, lu, type);
+            await AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+            await AddGraphicToMap(newline, ColorFactory.GreyRGB, true);
         }
 
 
@@ -826,14 +875,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             switch(dtype)
             {
                 case DistanceTypes.Feet:
-                case DistanceTypes.SurveyFoot:
                     result = LinearUnit.Feet;
                     break;
                 case DistanceTypes.Kilometers:
                     result = LinearUnit.Kilometers;
                     break;
+                case DistanceTypes.Miles:
+                    result = LinearUnit.Miles;
+                    break;
                 case DistanceTypes.NauticalMile:
                     result = LinearUnit.NauticalMiles;
+                    break;
+                case DistanceTypes.Yards:
+                    result = LinearUnit.Yards;
                     break;
                 case DistanceTypes.Meters:
                 default:
@@ -842,13 +896,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             return result;
         }
+
+        internal CurveType GetCurveType()
+        {
+            if (LineType == LineTypes.Geodesic)
+                return CurveType.Geodesic;
+            else if (LineType == LineTypes.GreatElliptic)
+                return CurveType.GreatElliptic;
+            else if (LineType == LineTypes.Loxodrome)
+                return CurveType.Loxodrome;
+
+            return CurveType.Geodesic;
+        }
+
         /// <summary>
         /// Method used to convert a string to a known coordinate
         /// Assumes WGS84 for now
-        /// Uses the IConversionNotation interface
         /// </summary>
         /// <param name="coordinate">the coordinate as a string</param>
-        /// <returns>IPoint if successful, null if not</returns>
+        /// <returns>MapPoint if successful, null if not</returns>
         internal MapPoint GetMapPointFromString(string coordinate)
         {
             MapPoint point = null;
@@ -897,6 +963,31 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // do nothing
             }
 
+            if(point == null)
+            {
+                // lets support web mercator
+                Regex regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
+
+                var matchMercator = regexMercator.Match(coordinate);
+
+                if (matchMercator.Success && matchMercator.Length == coordinate.Length)
+                {
+                    try
+                    {
+                        var Lat = Double.Parse(matchMercator.Groups["latitude"].Value);
+                        var Lon = Double.Parse(matchMercator.Groups["longitude"].Value);
+                        point = QueuedTask.Run(() =>
+                        {
+                            return MapPointBuilder.CreateMapPoint(Lon, Lat, SpatialReferences.WebMercator);
+                        }).Result;
+                    }
+                    catch (Exception ex)
+                    {
+                        // do nothing
+                    }
+                }
+            }
+
             return point;
         }
         /// <summary>
@@ -943,6 +1034,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else if (this is ProRangeViewModel)
                 {
                     typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList();
+                    geomType = GeomType.PolyLine;
                 }
 
                 string path = fcUtils.PromptUserWithSaveDialog(vm.FeatureIsChecked, vm.ShapeIsChecked, vm.KmlIsChecked);

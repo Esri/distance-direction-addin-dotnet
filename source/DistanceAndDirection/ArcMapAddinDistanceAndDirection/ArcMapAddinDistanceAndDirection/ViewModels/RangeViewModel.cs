@@ -18,6 +18,8 @@ using System;
 // Esri
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
 
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
@@ -53,35 +55,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        public bool IsToolActive
+        public override bool IsToolActive
         {
             get
             {
-                if (ArcMap.Application.CurrentTool != null)
-                    return ArcMap.Application.CurrentTool.Name == "Esri_ArcMapAddinDistanceAndDirection_MapPointTool";
-
-                return false;
+                return base.IsToolActive;
             }
-
             set
             {
-                if (value)
-                    OnActivateTool(null);
-                else
-                    if (ArcMap.Application.CurrentTool != null)
-                    {
-                        ArcMap.Application.CurrentTool = null;
-                        if (CanCreateElement)
-                            CreateMapElement();
+                base.IsToolActive = value;
 
-                        maxDistance = 0.0;
-                        if (IsInteractive)
-                            NumberOfRings = 0;
-                    }
+                if (CanCreateElement)
+                    CreateMapElement();
 
-                RaisePropertyChanged(() => IsToolActive);
+                maxDistance = 0.0;
+                if (IsInteractive)
+                    NumberOfRings = 0;
             }
         }
+
         // keep track of the max distance for drawing of radials in interactive mode
         double maxDistance = 0.0;
 
@@ -138,22 +130,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Method used to create the needed map elements to add to the graphics container
         /// Is called by the base class when the "Enter" key is pressed
         /// </summary>
-        internal override void CreateMapElement()
+        internal override IGeometry CreateMapElement()
         {
+            IGeometry geom = null;
             // do we have enough data?
             if (!CanCreateElement)
-                return;
+                return geom;
 
             if (!IsInteractive)
             {
                 base.CreateMapElement();
 
-                DrawRings();
+                geom = DrawRings();
             }
 
             DrawRadials();
 
             Reset(false);
+
+            return geom;
         }
 
         /// <summary>
@@ -201,26 +196,35 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Method used to draw the rings at the desired interval
         /// Rings are constructed as geodetic circles
         /// </summary>
-        private void DrawRings()
+        private IGeometry DrawRings()
         {
             double radius = 0.0;
 
             try
             {
+                IConstructGeodetic construct = null;
                 for (int x = 0; x < numberOfRings; x++)
                 {
                     // set the current radius
                     radius += Distance;
                     var polyLine = new Polyline() as IPolyline;
                     polyLine.SpatialReference = Point1.SpatialReference;
-                    var construct = polyLine as IConstructGeodetic;
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    construct = polyLine as IConstructGeodetic;
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.001);
                     AddGraphicToMap(construct as IGeometry);
+
+                    // Use negative radius to get the location for the distance label
+                    DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.001);
+                    this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}", radius.ToString(), dtVal.ToString()));
                 }
+
+                return construct as IGeometry;
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex);
+                return null;
             }
         }
 
@@ -274,6 +278,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                     // draw a geo ring
                     ConstructGeoCircle();
+
+                    NumberOfRings++;
                 }
             }
         }
@@ -335,6 +341,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 Point2 = (construct as IPolyline).ToPoint;
                 this.AddGraphicToMap(construct as IGeometry);
                 maxDistance = Math.Max(Distance, maxDistance);
+
+                // Use negative Distance to get the location for the distance label
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}{2}", Math.Round(Distance, 2).ToString(), GetLinearUnit().Name, "s"));
             }
         }
 

@@ -15,10 +15,12 @@
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Framework;
+using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -63,9 +65,23 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 circleType = value;
 
+                if (IsDistanceCalcExpanded)
+                {
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit);
+                }
+                else
+                {
+                    if (value == CircleFromTypes.Diameter)
+                        Distance /= 2.0;
+                    else
+                        Distance *= 2.0;
+                }
+
                 // reset distance
-                RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
+                //RaisePropertyChanged(() => Distance);
+
+                UpdateFeedback();
             }
         }
 
@@ -109,11 +125,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         }
                     case TimeUnits.Minutes:
                         {
-                            return travelTime * 60;
+                            return travelTime * 60.0;
                         }
                     case TimeUnits.Hours:
                         {
-                            return travelTime * 3600;
+                            return travelTime * 3600.0;
                         }
                     default:
                         return travelTime;
@@ -135,7 +151,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     case RateTimeTypes.MetersHour:
                     case RateTimeTypes.MilesHour:
                     case RateTimeTypes.NauticalMilesHour:
-                        return TravelRate / 3600;
+                        return TravelRate / 3600.0;
                     default:
                         return TravelRate;
                 }
@@ -168,7 +184,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType)
         {
-            Distance = UpdateDistanceFromTo(fromDistanceType, LineDistanceType, distance);
+            if(CircleType == CircleFromTypes.Diameter)
+                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance) * 2.0;
+            else
+                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
             UpdateFeedbackWithGeoCircle();
         }
 
@@ -195,6 +214,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        public override DistanceTypes LineDistanceType
+        {
+            get
+            {
+                return base.LineDistanceType;
+            }
+            set
+            {
+                if (IsDistanceCalcExpanded)
+                {
+                    var before = base.LineDistanceType;
+                    var temp = ConvertFromTo(before, value, Distance);
+                    if (CircleType == CircleFromTypes.Diameter)
+                        Distance = temp * 2.0;
+                    else
+                        Distance = temp;
+                }
+
+                base.LineDistanceType = value;
+            }
+        }
+
+
         DistanceTypes rateUnit = DistanceTypes.Meters;
         public DistanceTypes RateUnit
         {
@@ -211,10 +253,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     case RateTimeTypes.MetersHour:
                     case RateTimeTypes.MetersSec:
                         return DistanceTypes.Meters;
-                    // TODO: Update this when Miles are added to DistanceTypes
                     case RateTimeTypes.MilesHour:
                     case RateTimeTypes.MilesSec:
-                        return DistanceTypes.NauticalMile;
+                        return DistanceTypes.Miles;
                     case RateTimeTypes.NauticalMilesHour:
                     case RateTimeTypes.NauticalMilesSec:
                         return DistanceTypes.NauticalMile;
@@ -267,8 +308,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 isDistanceCalcExpanded = value;
                 if (value == true)
                 {
-                    TravelRate = 0;
-                    TravelTime = 0;
+                    TravelRate = 0.0;
+                    TravelTime = 0.0;
                     Distance = 0.0;
                     ResetFeedback();
                 }
@@ -279,7 +320,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 ClearTempGraphics();
                 if (HasPoint1)
-                    AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
@@ -303,13 +344,39 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 // lets avoid an infinite loop here
-                if (string.Equals(base.DistanceString, value))
-                    return;
+                if (CircleType == CircleFromTypes.Diameter)
+                {
+                    if (string.Equals(base.DistanceString, (Convert.ToDouble(value)*2.0).ToString()))
+                        return;
+                }
+                else
+                {
+                    if (string.Equals(base.DistanceString, value))
+                        return;
+                }
+
+                base.DistanceString = value;
 
                 // divide the manual input by 2
                 double d = 0.0;
                 if (double.TryParse(value, out d))
                 {
+                    if (CircleType == CircleFromTypes.Diameter)
+                    {
+                            return;
+                    }
+                    else
+                    {
+                        if (Distance == d)
+                            return;
+                    }
+                    if (CircleType == CircleFromTypes.Diameter)
+                        
+                        d /= 2.0;
+
+                    Distance = d;
+
+                    UpdateFeedbackWithGeoCircle();
                     if (CircleType == CircleFromTypes.Diameter)
                         d /= 2.0;
 
@@ -357,7 +424,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (IsDistanceCalcExpanded)
             {
-                UpdateDistance(travelRate * travelTime, RateUnit);
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
             }
         }
 
@@ -389,6 +456,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        internal override void UpdateFeedback()
+        {
+            UpdateFeedbackWithGeoCircle();
+        }
+
         private void UpdateFeedbackWithGeoCircle()
         {
             if (Point1 == null || Distance <= 0.0)
@@ -401,11 +473,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Private Functions
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        internal override Geometry CreateMapElement()
         {
             base.CreateMapElement();
-            CreateCircle(false);
+            var geom = CreateCircle(false);
             Reset(false);
+
+            return geom;
         }
 
         public override bool CanCreateElement
@@ -419,17 +496,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal override void Reset(bool toolReset)
         {
             base.Reset(toolReset);
-            TravelTime = 0;
-            TravelRate = 0;
+            TravelTime = 0.0;
+            TravelRate = 0.0;
         }
         /// <summary>
         /// Create geodetic circle
         /// </summary>
-        private void CreateCircle(bool isFeedback)
+        private Geometry CreateCircle(bool isFeedback)
         {
-            if (Point1 == null || Distance <= 0.0)
+            if (Point1 == null || double.IsNaN(Distance) || Distance <= 0.0)
             {
-                return;
+                return null;
             }
 
             var param = new GeometryEngine.GeodesicEllipseParameter();
@@ -449,11 +526,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             CIMColor color =  new CIMRGBColor() { R=255,B=0,G=0,Alpha=25};
             if(isFeedback)
             {
-                color = ColorFactory.Grey;
+                color = ColorFactory.GreyRGB;
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.Green, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
             }
             AddGraphicToMap(geom, color, IsTempGraphic: isFeedback);
+
+            return geom as Geometry;
         }
 
         #endregion

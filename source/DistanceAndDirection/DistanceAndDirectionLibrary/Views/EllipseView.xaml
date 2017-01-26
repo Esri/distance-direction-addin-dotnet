@@ -65,7 +65,13 @@
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource ellipseTypes}}"
                           SelectedItem="{Binding Path=EllipseType,
-                                                 Mode=TwoWay}" />
+                                                 Mode=TwoWay}" >
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
                 <TextBlock Grid.Row="2"
                            Grid.ColumnSpan="3"
                            Margin="3,3,0,0"
@@ -95,16 +101,14 @@
                     <Button Grid.Column="1"
                             Margin="3,3,0,0"
                             Style="{StaticResource buttonProperties}" />
-                    <Button Grid.Column="2"
-                            Width="Auto"
-                            Margin="3,3,0,0"
-                            HorizontalAlignment="Right"
-                            Command="{Binding ActivateToolCommand}"
-                            ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
+                    <ToggleButton Grid.Column="2"
+                                  Margin="3,3,0,0"
+                                  IsChecked="{Binding IsToolActive}"
+                                  ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
                         <Image Width="18"
                                Height="18"
-                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point32_d.png" />
-                    </Button>
+                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point.png" />
+                    </ToggleButton>
                 </Grid>
                 <GroupBox Grid.Row="4"
                           Grid.ColumnSpan="2"
@@ -144,7 +148,19 @@
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
                                   SelectedItem="{Binding Path=LineDistanceType,
-                                                         Mode=TwoWay}" />
+                                                         Mode=TwoWay}">
+                            <ComboBox.InputBindings>
+                                <KeyBinding Key="Enter"
+                                            Command="{Binding EnterKeyCommand}"
+                                            CommandParameter="{Binding ElementName=mainControl,
+                                                                       Path=.}" />
+                            </ComboBox.InputBindings>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
                     </StackPanel>
                 </GroupBox>
                 <GroupBox Grid.Row="5"
@@ -172,7 +188,19 @@
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource azimuthData}}"
                                   SelectedItem="{Binding Path=AzimuthType,
-                                                         Mode=TwoWay}" />
+                                                         Mode=TwoWay}">
+                            <ComboBox.InputBindings>
+                                <KeyBinding Key="Enter"
+                                            Command="{Binding EnterKeyCommand}"
+                                            CommandParameter="{Binding ElementName=mainControl,
+                                                                       Path=.}" />
+                            </ComboBox.InputBindings>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
                     </StackPanel>
                 </GroupBox>
                 <StackPanel Grid.Row="6"

@@ -38,7 +38,13 @@
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource circleFromData}}"
                           SelectedItem="{Binding Path=CircleType,
-                                                 Mode=TwoWay}" />
+                                                 Mode=TwoWay}" >
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelCenterPoint}" />
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -61,15 +67,14 @@
                     <Button Grid.Column="1"
                             Margin="3,3,0,0"
                             Style="{StaticResource buttonProperties}" />
-                    <Button Grid.Column="2"
-                            Width="Auto"
-                            Margin="3,3,0,0"
-                            Command="{Binding ActivateToolCommand}"
-                            ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
+                    <ToggleButton Grid.Column="2"
+                                  Margin="3,3,0,0"
+                                  IsChecked="{Binding IsToolActive}"
+                                  ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
                         <Image Width="18"
                                Height="18"
-                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point32_d.png" />
-                    </Button>
+                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point.png" />
+                    </ToggleButton>
                 </Grid>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelRadiusDiameter}" />
                 <TextBox Margin="3,3,0,0"
@@ -101,7 +106,13 @@
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
                           SelectedItem="{Binding Path=LineDistanceType,
-                                                 Mode=TwoWay}" />
+                                                 Mode=TwoWay}" >
+                    <ComboBox.ItemContainerStyle>
+                        <Style TargetType="ComboBoxItem">
+                            <Setter Property="Foreground" Value="Black" />
+                        </Style>
+                    </ComboBox.ItemContainerStyle>
+                </ComboBox>
                 <Expander Margin="0,3,0,0"
                           Header="{x:Static prop:Resources.LabelDistanceCalculator}"
                           IsExpanded="{Binding IsDistanceCalcExpanded,
@@ -114,6 +125,8 @@
                         <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelTime,
+                                                FallbackValue=0,
+                                                Mode=Default,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">
@@ -128,13 +141,27 @@
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource timeData}}"
                                   SelectedItem="{Binding Path=TimeUnit,
-                                                         Mode=TwoWay}" />
+                                                         Mode=TwoWay}">
+                            <ComboBox.InputBindings>
+                                    <KeyBinding Key="Enter"
+                                    Command="{Binding EnterKeyCommand}"
+                                    CommandParameter="{Binding ElementName=mainControl,
+                                                               Path=.}" />
+                            </ComboBox.InputBindings>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
                         <TextBlock 
                                    Margin="3,3,0,0"
                                    Text="{x:Static prop:Resources.LabelRate}" />
                         <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelRate,
+                                                Mode=Default,
+                                                FallbackValue=0,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">
@@ -149,7 +176,19 @@
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource rateTimeData}}"
                                   SelectedItem="{Binding Path=RateTimeUnit,
-                                                         Mode=TwoWay}" />
+                                                         Mode=TwoWay}">
+                            <ComboBox.InputBindings>
+                                <KeyBinding Key="Enter"
+                                    Command="{Binding EnterKeyCommand}"
+                                    CommandParameter="{Binding ElementName=mainControl,
+                                                               Path=.}" />
+                            </ComboBox.InputBindings>
+                            <ComboBox.ItemContainerStyle>
+                                <Style TargetType="ComboBoxItem">
+                                    <Setter Property="Foreground" Value="Black" />
+                                </Style>
+                            </ComboBox.ItemContainerStyle>
+                        </ComboBox>
                     </StackPanel>
                 </Expander>
                 <StackPanel Margin="3,3,0,0"

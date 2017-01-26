@@ -19,6 +19,8 @@ using System;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -67,11 +69,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
-                if (timeUnit == value) 
+                if (timeUnit == value)
                 {
                     return;
                 }
-                timeUnit = value;  
+                timeUnit = value;
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
 
@@ -103,7 +105,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     default:
                         return travelTime;
                 }
-            }   
+            }
         }
 
         /// <summary>
@@ -153,8 +155,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType)
         {
-            Distance = distance;
-            UpdateDistanceFromTo(fromDistanceType, LineDistanceType);
+            Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
             UpdateFeedbackWithGeoCircle();
         }
 
@@ -197,10 +198,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     case RateTimeTypes.MetersHour:
                     case RateTimeTypes.MetersSec:
                         return DistanceTypes.Meters;
-                    // TODO: Update this when Miles are added to DistanceTypes
                     case RateTimeTypes.MilesHour:
                     case RateTimeTypes.MilesSec:
-                        return DistanceTypes.NauticalMile;
+                        return DistanceTypes.Miles;
                     case RateTimeTypes.NauticalMilesHour:
                     case RateTimeTypes.NauticalMilesSec:
                         return DistanceTypes.NauticalMile;
@@ -245,7 +245,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         }
 
         bool isDistanceCalcExpanded = false;
-        public bool IsDistanceCalcExpanded 
+        public bool IsDistanceCalcExpanded
         {
             get { return isDistanceCalcExpanded; }
             set
@@ -258,13 +258,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     Distance = 0.0;
                     ResetFeedback();
                 }
-                else 
+                else
                 {
                     Reset(false);
                 }
 
                 ClearTempGraphics();
-                if(HasPoint1)
+                if (HasPoint1)
                     AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
@@ -279,7 +279,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                if(CircleType == CircleFromTypes.Diameter)
+                if (CircleType == CircleFromTypes.Diameter)
                 {
                     return (Distance * 2.0).ToString("G");
                 }
@@ -294,9 +294,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // divide the manual input by 2
                 double d = 0.0;
-                if(double.TryParse(value, out d))
-                {
-                    if(CircleType == CircleFromTypes.Diameter)
+                if (double.TryParse(value, out d))
+                { 
+                    if (CircleType == CircleFromTypes.Diameter)
                         d /= 2.0;
 
                     Distance = d;
@@ -327,6 +327,30 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         #endregion
 
         #region override events
+
+        public override DistanceTypes LineDistanceType
+        {
+            get
+            {
+                return base.LineDistanceType;
+            }
+            set
+            {
+                if (IsDistanceCalcExpanded)
+                {
+                    var before = base.LineDistanceType;
+                    var temp = ConvertFromTo(before, value, Distance);
+                    if (CircleType == CircleFromTypes.Diameter)
+                        Distance = temp * 2.0;
+                    else
+                        Distance = temp;
+                }
+
+                base.LineDistanceType = value;
+
+                UpdateFeedbackWithGeoCircle();
+            }
+        }
 
         internal override void OnNewMapPointEvent(object obj)
         {
@@ -398,11 +422,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Private Functions
 
-        internal override void CreateMapElement()
+        /// <summary>
+        /// Overrides TabBaseViewModel CreateMapElement
+        /// </summary>
+        internal override IGeometry CreateMapElement()
         {
             base.CreateMapElement();
-            CreateCircle();
+            var geom = CreateCircle();
             Reset(false);
+
+            return geom;
         }
 
         public override bool CanCreateElement
@@ -419,20 +448,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             TravelTime = 0;
             TravelRate = 0;
         }
+
         /// <summary>
-        /// Create geodetic circle
+        /// Create a geodetic circle
         /// </summary>
-        private void CreateCircle()
+        private IGeometry CreateCircle()
         {
             if (Point1 == null && Point2 == null)
             {
-                return;
+                return null;
             }
 
             var polyLine = new Polyline() as IPolyline;
             polyLine.SpatialReference = Point1.SpatialReference;
             var ptCol = polyLine as IPointCollection;
-            ptCol.AddPoint(Point1); 
+            ptCol.AddPoint(Point1);
             ptCol.AddPoint(Point2);
 
             UpdateDistance(polyLine as IGeometry);
@@ -442,20 +472,51 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var construct = new Polyline() as IConstructGeodetic;
                 if (construct != null)
                 {
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByDeviation, 0.0001);
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                     //var color = new RgbColorClass() { Red = 255 } as IColor;
                     this.AddGraphicToMap(construct as IGeometry);
-                    Point2 = null; 
+
+                    //Construct a polygon from geodesic polyline
+                    var newPoly = this.PolylineToPolygon((IPolyline)construct);
+                    if (newPoly != null)
+                    {
+                        //Get centroid of polygon
+                        var area = newPoly as IArea;
+
+                        // Ensure we use the correct distance, dependent on whether we are in Radius or Diameter mode
+                        string distanceLabel;
+                        if (circleType == CircleFromTypes.Radius)
+                        {
+                            distanceLabel = Math.Round(Distance, 2).ToString("N2");
+                        }
+                        else
+                        {
+                            distanceLabel = Math.Round((Distance * 2), 2).ToString("N2");
+                        }
+
+                        //Add text using centroid point
+                        //Use circleType to ensure our label contains either Radius or Diameter dependent on mode
+                        DistanceTypes dtVal = (DistanceTypes)LineDistanceType; //Get line distance type
+                        this.AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}",
+                            circleType,
+                            distanceLabel,
+                            dtVal.ToString()));
+
+
+                    }
+
+                    Point2 = null;
                     HasPoint2 = false;
                     ResetFeedback();
                 }
+                return construct as IGeometry;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                return null;
             }
         }
-
         #endregion
     }
 }

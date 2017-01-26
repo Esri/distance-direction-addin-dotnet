@@ -50,11 +50,14 @@ namespace DistanceAndDirectionLibrary
         [LocalizableDescription(@"EnumMeters", typeof(Resources))]
         Meters = 3,
 
+        [LocalizableDescription(@"EnumMiles", typeof(Resources))]
+        Miles = 4,
+        
         [LocalizableDescription(@"EnumNauticalMile", typeof(Resources))]
-        NauticalMile = 4,
+        NauticalMile = 5,
 
-        [LocalizableDescription(@"EnumSurveyFoot", typeof(Resources))]
-        SurveyFoot = 5
+        [LocalizableDescription(@"EnumYards", typeof(Resources))]
+        Yards = 6
     }
 
     public enum RateTimeTypes : int
@@ -134,7 +137,8 @@ namespace DistanceAndDirectionLibrary
         Line = 1,
         Circle  = 2,
         Ellipse = 3,
-        RangeRing = 4
+        RangeRing = 4,
+        Point = 5
     }
 
     public enum GeomType : int
@@ -161,8 +165,8 @@ namespace DistanceAndDirectionLibrary
         [LocalizableDescription(@"EnumCTDMS", typeof(Resources))]
         DMS = 3,
         
-        [LocalizableDescription(@"EnumCTGARS", typeof(Resources))]
-        GARS = 4,
+        //[LocalizableDescription(@"EnumCTGARS", typeof(Resources))]
+        //GARS = 4,
 
         [LocalizableDescription(@"EnumCTMGRS", typeof(Resources))]
         MGRS = 5,

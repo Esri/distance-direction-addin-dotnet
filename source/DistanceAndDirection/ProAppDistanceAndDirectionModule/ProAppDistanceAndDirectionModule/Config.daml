@@ -1,4 +1,4 @@
-﻿<ArcGIS defaultAssembly="ProAppDistanceAndDirectionModule.dll" defaultNamespace="ProAppDistanceAndDirectionModule" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
+﻿<ArcGIS defaultAssembly="DistanceAndDirection.dll" defaultNamespace="ProAppDistanceAndDirectionModule" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
   <AddInInfo id="{32a3d6f6-fabb-4a17-bf18-8b1ebf42bfaf}" version="1.0" desktopVersion="1.2.5023">
     <Name>Distance and Direction</Name>
     <Description>Create Lines, Circles, Ellipses and Range Rings</Description>
@@ -11,27 +11,23 @@
                     Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
   </AddInInfo>
   <modules>
-    <insertModule id="ProAppDistanceAndDirectionModule_Module" className="DistanceAndDirectionModule" autoLoad="false" caption="Distance And Direction">
-      <!-- uncomment to have the control hosted on a separate tab-->
-      <tabs>
-        <!--<tab id="ProAppDistanceAndDirectionModule_Tab1" caption="New Tab">
-          <group refID="ProAppDistanceAndDirectionModule_Group1"/>
-        </tab>-->
-      </tabs>
+    <insertModule id="ProAppDistanceAndDirectionModule_Module" className="DistanceAndDirectionModule" autoLoad="false" caption="Distance and Direction">
       <groups>
         <!-- comment this out if you have no controls on the Addin tab to avoid
               an empty group-->
-        <group id="ProAppDistanceAndDirectionModule_Group1" caption="Distance and Direction" appearsOnAddInTab="true">
+        <group id="DistanceAndDirection_Group" caption="Distance and Direction" appearsOnAddInTab="true">
           <!-- host controls within groups -->
           <button refID="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" size="large" />
-          <button refID="ProAppDistanceAndDirectionModule_PropertiesButton" size="large" />
-          <tool refID="ProAppDistanceAndDirectionModule_SketchTool" size="large" />
+          <!--<button refID="ProAppDistanceAndDirectionModule_PropertiesButton" size="large" />
+          <tool refID="ProAppDistanceAndDirectionModule_SketchTool" size="large" />-->
         </group>
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" caption="Show" className="DistanceAndDirectionDockpane_ShowButton" loadOnClick="true" smallImage="Images\GenericButtonPurple16.png" largeImage="Images\GenericButtonPurple32.png">
-          <tooltip heading="Show Dockpane">Show Distance and Direction Dockpane<disabledText /></tooltip>
+        <button id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" caption="Distance and Direction" className="DistanceAndDirectionDockpane_ShowButton" loadOnClick="true" smallImage="Images\distance-direction-16.png" largeImage="Images\distance-direction-32.png">
+          <tooltip heading="Distance and Direction">
+            Interactively create geodetic circles, ellipses, range rings, and distance calculations based on time and rate. Created graphics can be saved to feature classes, shapefiles, and KMZ files.<disabledText />
+          </tooltip>
         </button>
         <button id="ProAppDistanceAndDirectionModule_PropertiesButton" caption="Properties" className="PropertiesButton" loadOnClick="true" smallImage="Images\GenericButtonBlue16.png" largeImage="Images\GenericButtonBlue32.png">
           <tooltip heading="Distance and Direction Properties">Edit Properties<disabledText /></tooltip>
@@ -41,7 +37,7 @@
         </tool>
       </controls>
       <dockPanes>
-        <dockPane id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane" caption="DistanceAndDirectionDockpane " className="DistanceAndDirectionDockpaneViewModel" dock="group" dockWith="esri_core_contentsDockPane">
+        <dockPane id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane" caption="Distance and Direction" className="DistanceAndDirectionDockpaneViewModel" dock="group" dockWith="esri_core_contentsDockPane">
           <content className="DistanceAndDirectionDockpaneView" />
         </dockPane>
       </dockPanes>
