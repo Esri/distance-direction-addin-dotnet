@@ -129,7 +129,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return azimuth; }
             set
             {
-                if (value < 0.0)
+                if (value < 0.0 || value > 360)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
                 azimuth = value;
