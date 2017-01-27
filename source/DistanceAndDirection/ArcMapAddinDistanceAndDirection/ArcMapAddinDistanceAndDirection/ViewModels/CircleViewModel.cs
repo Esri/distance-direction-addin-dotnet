@@ -142,7 +142,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 if (value < 0.0)
+                {
+                    UpdateFeedbackWithGeoCircle();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                }
 
                 travelTime = value;
 
