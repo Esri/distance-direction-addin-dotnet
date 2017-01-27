@@ -104,7 +104,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
-                minorAxisDistance = value;
+                minorAxisDistance = TrimPrecision(value);
 
                 UpdateFeedbackWithEllipse();
 
@@ -162,7 +162,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
-                majorAxisDistance = value;
+                majorAxisDistance = TrimPrecision(value);
 
                 Point2 = UpdateFeedback(Point1, MajorAxisDistance);
 
@@ -312,8 +312,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var polyline = CreateGeodeticLine(Point1, point);
                 // get major distance from polyline
                 MajorAxisDistance = GetGeodeticLengthFromPolyline(polyline);
+
                 // update bearing
-                Azimuth = GetAzimuth(polyline);
+                Azimuth = Math.Round(GetAzimuth(polyline), 2);
                 // update feedback
                 UpdateFeedbackWithEllipse(false);
             }
