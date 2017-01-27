@@ -109,7 +109,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
-                distance = value;
+                distance = TrimPrecision(value);
                 RaisePropertyChanged(() => Distance);
 
                 if(LineFromType == LineFromTypes.BearingAndDistance)
@@ -318,12 +318,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             if (LineAzimuthType == AzimuthTypes.Degrees)
             {
-                return bearing;
+                return Math.Round(bearing, 2);
             }
 
             if (LineAzimuthType == AzimuthTypes.Mils)
             {
-                return bearing * 17.777777778;
+                return Math.Round(bearing * 17.777777778, 2);
             }
 
             return 0.0;
