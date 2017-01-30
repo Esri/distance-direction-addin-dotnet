@@ -54,6 +54,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Mediator.Register(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, OnNewMapPointEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
 
             // Get Current tool
             CurrentTool = FrameworkApplication.CurrentTool;
@@ -787,6 +788,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return;
 
             IsActiveTab = (obj == this);
+        }
+
+        /// <summary>
+        /// Handler for the escape key press event
+        /// Helps cancel operation when escape key is pressed
+        /// </summary>
+        /// <param name="obj">always null</param>
+        private void OnKeypressEscape(object obj)
+        {
+            if (FrameworkApplication.CurrentTool != null)
+            {
+                Reset(true);
+            }
         }
 
         internal double ConvertFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
