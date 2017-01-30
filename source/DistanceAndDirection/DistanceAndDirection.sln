@@ -9,13 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProAppDistanceAndDirectionM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistanceAndDirectionLibrary", "DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj", "{23854FB8-98F1-443B-82FB-21718D39EF94}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{CC434F8F-6164-4A24-8609-6020CEFE0793}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcMapAddinDistanceAndDirection.Tests", "ArcMapAddinDistanceAndDirection.Tests\ArcMapAddinDistanceAndDirection.Tests.csproj", "{7C0196B2-7EDE-43E6-AF92-374602D1DB07}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProAppDistanceAndDirectionModule.Tests", "ProAppDistanceAndDirectionModule.Tests\ProAppDistanceAndDirectionModule.Tests.csproj", "{8DBE05CE-8026-4631-8E8A-BFC54DACD23B}"
