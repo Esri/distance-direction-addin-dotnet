@@ -244,7 +244,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-                    AddGraphicToMap(geom);   
+                    // Hold onto the attributes in case user saves graphics to file later
+                    RangeAttributes rangeAttributes = new RangeAttributes(Point1, numberOfRings, radius, numberOfRadials);
+
+                    AddGraphicToMap(geom, rangeAttributes);
                 }
 
                 return geom;
@@ -277,7 +280,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
 
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
                 // Reset formatted string
                 Point1Formatted = string.Empty;
@@ -291,7 +294,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     HasPoint1 = true;
 
                     ClearTempGraphics();
-                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
                     // Reset formatted string
                     Point1Formatted = string.Empty;
@@ -395,8 +398,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
             ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
-            AddGraphicToMap(geom, ColorFactory.GreyRGB, true);
+            AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+            AddGraphicToMap(geom, ColorFactory.GreyRGB, null, true);
         }
     }
 }

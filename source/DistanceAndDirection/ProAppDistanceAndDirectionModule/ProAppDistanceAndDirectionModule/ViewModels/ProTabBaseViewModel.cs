@@ -30,6 +30,7 @@ using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
+using ProAppDistanceAndDirectionModule.ViewModels;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -262,7 +263,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     HasPoint1 = true;
                     Point1 = point;
 
-                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
                     if (Point2 != null)
                     {
@@ -429,12 +430,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #endregion
 
-        internal async void AddGraphicToMap(Geometry geom, bool IsTempGraphic = false, double size = 1.0)
+        internal async void AddGraphicToMap(Geometry geom, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
             // default color Red
-            await AddGraphicToMap(geom, ColorFactory.RedRGB, IsTempGraphic, size);
+            await AddGraphicToMap(geom, ColorFactory.RedRGB, p, IsTempGraphic, size);
         }
-        internal async Task AddGraphicToMap(Geometry geom, CIMColor color, bool IsTempGraphic = false, double size = 1.0)
+        internal async Task AddGraphicToMap(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
             if (geom == null || MapView.Active == null)
                 return;
@@ -474,7 +475,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     var gt = GetGraphicType();
 
-                    GraphicsList.Add(new Graphic(gt, disposable, geom, this, IsTempGraphic));
+                    GraphicsList.Add(new Graphic(gt, disposable, geom, this, p, IsTempGraphic));
 
                     RaisePropertyChanged(() => HasMapGraphics);
                 });
@@ -611,7 +612,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
                 // lets try feedback
                 //CreateFeedback(point, av);
@@ -864,8 +865,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             ClearTempGraphics();
             Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, lu, type);
-            await AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
-            await AddGraphicToMap(newline, ColorFactory.GreyRGB, true);
+            await AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+            await AddGraphicToMap(newline, ColorFactory.GreyRGB, null, true);
         }
 
 

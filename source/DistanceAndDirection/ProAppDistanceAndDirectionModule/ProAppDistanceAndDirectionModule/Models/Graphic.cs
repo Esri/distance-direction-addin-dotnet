@@ -25,7 +25,7 @@ namespace ProAppDistanceAndDirectionModule.Models
 {
     public class Graphic
     {
-        public Graphic(GraphicTypes _graphicType, IDisposable _disposable, Geometry _geometry, ProTabBaseViewModel _viewModel, bool _isTemp = false)
+        public Graphic(GraphicTypes _graphicType, IDisposable _disposable, Geometry _geometry, ProTabBaseViewModel _viewModel, ProGraphicAttributes _p, bool _isTemp = false)
         {
             GraphicType = _graphicType;
             //UniqueId = _uniqueid;
@@ -33,7 +33,10 @@ namespace ProAppDistanceAndDirectionModule.Models
             Geometry = _geometry;
             IsTemp = _isTemp;
             ViewModel = _viewModel;
+            p = _p;
         }
+
+       public ProGraphicAttributes p {get; set;}
 
         // properties   
 

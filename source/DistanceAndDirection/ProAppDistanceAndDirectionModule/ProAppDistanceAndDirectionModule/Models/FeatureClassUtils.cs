@@ -155,9 +155,39 @@ namespace ProAppDistanceAndDirectionModule.Models
                                     pb.HasZ = false;
                                     rowBuffer[shapeIndex] = pb.ToGeometry();
                                     isLine = true;
+
+                                    // Add attributes
+                                    rowBuffer[definition.FindField("Distance")] = (((LineAttributes)graphic.p).GetAttributes()).Item3;
+                                    rowBuffer[definition.FindField("Angle")] = (((LineAttributes)graphic.p).GetAttributes()).Item4;
                                 }
                                 else if (graphic.Geometry is Polygon)
                                     rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
+                                    
+                                    // Add attributes
+                                    string graphicsType = graphic.p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
+                                    switch (graphicsType)
+                                    {
+                                        case "CircleAttributes":
+                                            {
+                                                rowBuffer[definition.FindField("Distance")] = (((CircleAttributes)graphic.p).GetAttributes()).Item2;
+                                                rowBuffer[definition.FindField("DistanceType")] = (((CircleAttributes)graphic.p).GetAttributes()).Item3;
+                                                break;
+                                            }
+                                        case "EllipseAttributes":
+                                            {
+                                                rowBuffer[definition.FindField("Minor")] = (((EllipseAttributes)graphic.p).GetAttributes()).Item2;
+                                                rowBuffer[definition.FindField("Major")] = (((EllipseAttributes)graphic.p).GetAttributes()).Item3;
+                                                rowBuffer[definition.FindField("Orient")] = (((EllipseAttributes)graphic.p).GetAttributes()).Item4;
+                                                break;
+                                            }
+                                        case "RangeAttributes":
+                                            {
+                                                rowBuffer[definition.FindField("Rings")] = (((RangeAttributes)graphic.p).GetAttributes()).Item2;
+                                                rowBuffer[definition.FindField("Distance")] = (((RangeAttributes)graphic.p).GetAttributes()).Item3;
+                                                rowBuffer[definition.FindField("Radials")] = (((RangeAttributes)graphic.p).GetAttributes()).Item4;
+                                                break;
+                                            }
+                                    }
 
                                 Row row = table.CreateRow(rowBuffer);
                             }
@@ -192,6 +222,15 @@ namespace ProAppDistanceAndDirectionModule.Models
                 if (rowBuffer != null)
                     rowBuffer.Dispose();
             }
+        }
+
+        private static IReadOnlyList<string> makeValueArray (string featureClass, string fieldName, string fieldType)
+        {
+            List<object> arguments = new List<object>();
+            arguments.Add(featureClass);
+            arguments.Add(fieldName);
+            arguments.Add(fieldType);
+            return Geoprocessing.MakeValueArray(arguments.ToArray());
         }
 
         /// <summary>
@@ -233,6 +272,39 @@ namespace ProAppDistanceAndDirectionModule.Models
 
                 var valueArray = Geoprocessing.MakeValueArray(arguments.ToArray());
                 IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", valueArray);
+
+                // Add additional fields based on type of graphic
+                string featureClass = connection + "/" + dataset;
+                string graphicsType = graphicsList[0].p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
+                switch (graphicsType)
+                {
+                    case "LineAttributes":
+                        {
+                            IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
+                            IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
+                            break;
+                        }
+                    case "CircleAttributes":
+                        {
+                            IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
+                            IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistanceType", "TEXT"));
+                            break;
+                        }
+                    case "EllipseAttributes":
+                        {
+                            IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Minor", "DOUBLE"));
+                            IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Major", "DOUBLE"));
+                            IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Orient", "DOUBLE"));
+                            break;
+                        }
+                    case "RangeAttributes":
+                        {
+                            IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Rings", "SHORT"));
+                            IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
+                            IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Radials", "SHORT"));
+                            break;
+                        }
+                }
 
                 await CreateFeatures(graphicsList);
 

@@ -115,6 +115,7 @@
     <Compile Include="PropertiesButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SketchTool.cs" />
+    <Compile Include="ViewModels\ProGraphicAttributes.cs" />
     <Compile Include="ViewModels\ProCircleViewModel.cs" />
     <Compile Include="ViewModels\ProEllipseViewModel.cs" />
     <Compile Include="ViewModels\ProLinesViewModel.cs" />

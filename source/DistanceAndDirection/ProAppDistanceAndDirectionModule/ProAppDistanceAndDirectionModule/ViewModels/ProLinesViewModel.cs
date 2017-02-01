@@ -342,7 +342,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                await AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                await AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                 return;
             }
 
@@ -394,7 +394,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
                 Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, lu, curveType);
-                AddGraphicToMap(newline);
+
+                // Hold onto the attributes in case user saves graphics to file later
+                LineAttributes lineAttributes = new LineAttributes(Point1, Point2, distance, (double)azimuth);
+
+                AddGraphicToMap(newline, (ProGraphicAttributes)lineAttributes);
                 ResetPoints();
 
                 return newline as Geometry;
