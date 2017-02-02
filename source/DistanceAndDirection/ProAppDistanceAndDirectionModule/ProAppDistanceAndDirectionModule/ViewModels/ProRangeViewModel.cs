@@ -196,9 +196,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }).Result;
                     Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, CurveType.Loxodrome);
                     if (newline != null)
-                        
-                        AddGraphicToMap(newline);
-
+                    {
+                        // Hold onto the attributes in case user saves graphics to file later
+                        RangeAttributes rangeAttributes = new RangeAttributes(Point1, NumberOfRings, Distance, NumberOfRadials);
+                        AddGraphicToMap(newline, rangeAttributes);
+                    }
 
                     azimuth += interval;
                 }
@@ -378,7 +380,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-            AddGraphicToMap(geom);
+            // Hold onto the attributes in case user saves graphics to file later
+            RangeAttributes rangeAttributes = new RangeAttributes(Point1, NumberOfRings, Distance, NumberOfRadials);
+            AddGraphicToMap(geom, rangeAttributes);
         }
 
         private void UpdateFeedbackWithGeoCircle()
@@ -398,8 +402,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
             ClearTempGraphics();
+
+            // Hold onto the attributes in case user saves graphics to file later
+            RangeAttributes rangeAttributes = new RangeAttributes(Point1, NumberOfRings, Distance, NumberOfRadials);
             AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
-            AddGraphicToMap(geom, ColorFactory.GreyRGB, null, true);
+            AddGraphicToMap(geom, ColorFactory.GreyRGB, rangeAttributes, true);
         }
     }
 }

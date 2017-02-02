@@ -358,9 +358,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
 
                 // Hold onto the attributes in case user saves graphics to file later
-                EllipseAttributes ellipseAttributes = new EllipseAttributes(Point1, minorAxis, majorAxisDistance, param.AxisDirection);
+                //EllipseAttributes ellipseAttributes = new EllipseAttributes(Point1, minorAxis, majorAxisDistance, para.AxisDirection);
 
+                // Point
                 AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                // Ellipse
                 AddGraphicToMap(geom, ColorFactory.GreyRGB, null, true);
             }
             catch(Exception ex)
@@ -521,7 +523,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-                AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 });
+                // Hold onto the attributes in case user saves graphics to file later
+                EllipseAttributes ellipseAttributes = new EllipseAttributes(Point1, MinorAxisDistance, MajorAxisDistance, param.AxisDirection);
+
+                AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 }, ellipseAttributes);
 
                 return geom as Geometry;
             }
