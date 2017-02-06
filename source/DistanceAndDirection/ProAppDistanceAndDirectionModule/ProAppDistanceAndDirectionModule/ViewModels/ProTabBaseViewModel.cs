@@ -797,9 +797,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <param name="obj">always null</param>
         private void OnKeypressEscape(object obj)
         {
-            if (FrameworkApplication.CurrentTool != null)
+            if (isActiveTab)
             {
-                Reset(true);
+                if (FrameworkApplication.CurrentTool != null)
+                {
+                    // User has activated the Map Point tool but not created a point
+                    // Or User has previously finished creating a graphic
+                    // Either way, assume they want to disable the Map Point tool
+                    if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint2))
+                    {
+                        Reset(true);
+                        IsToolActive = false;
+                        return;
+                    }
+
+                    // User has activated Map Point tool and created a point but not completed the graphic
+                    // Assume they want to cancel any graphic creation in progress 
+                    // but still keep the Map Point tool active
+                    if (IsToolActive && HasPoint1 && !HasPoint2)
+                    {
+                        Reset(false);
+                        return;
+                    }
+                }
             }
         }
 
