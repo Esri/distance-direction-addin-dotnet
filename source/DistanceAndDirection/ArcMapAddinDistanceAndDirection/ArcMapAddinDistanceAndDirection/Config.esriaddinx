@@ -2,7 +2,7 @@
   <Name>Distance and Direction</Name>
   <AddInID>{3e1d78f8-72a5-4463-ad11-0524a5913c9d}</AddInID>
   <Description>Create Lines, Circles, Ellipses and Range Rings</Description>
-  <Version>1.0</Version>
+  <Version>2.0</Version>
   <Image>Images\ArcMapAddinDistanceAndDirection.png</Image>
   <Author>Esri</Author>
   <Company>Esri</Company>
