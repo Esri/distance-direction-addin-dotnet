@@ -1,11 +1,11 @@
 ﻿<ArcGIS defaultAssembly="DistanceAndDirection.dll" defaultNamespace="ProAppDistanceAndDirectionModule" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
-  <AddInInfo id="{32a3d6f6-fabb-4a17-bf18-8b1ebf42bfaf}" version="1.0" desktopVersion="1.2.5023">
+  <AddInInfo id="{32a3d6f6-fabb-4a17-bf18-8b1ebf42bfaf}" version="2.0" desktopVersion="1.4">
     <Name>Distance and Direction</Name>
     <Description>Create Lines, Circles, Ellipses and Range Rings</Description>
     <Image>Images\AddinDesktop32.png</Image>
     <Author>Esri</Author>
     <Company>Esri</Company>
-    <Date>3/30/2016 10:44:50 AM, 2016</Date>
+    <Date>01/20/2017</Date>
     <Subject>Framework</Subject>
     <!-- Note subject can be one or more of these topics:
                     Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
