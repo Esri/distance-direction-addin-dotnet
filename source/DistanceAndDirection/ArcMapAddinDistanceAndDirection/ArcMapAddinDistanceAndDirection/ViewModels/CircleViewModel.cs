@@ -142,7 +142,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 if (value < 0.0)
+                {
+                    UpdateFeedbackWithGeoCircle();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                }
 
                 travelTime = value;
 
@@ -305,6 +308,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
+                    ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
@@ -403,7 +407,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private void UpdateFeedbackWithGeoCircle()
         {
-            if (Point1 == null || Distance <= 0.0)
+            if (Point1 == null)
                 return;
 
             var construct = new Polyline() as IConstructGeodetic;
