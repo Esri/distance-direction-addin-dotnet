@@ -614,7 +614,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             RemoveGraphics(gc, true);
 
-            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            av.PartialRefresh(esriViewDrawPhase.esriViewAll, null, null);
             RaisePropertyChanged(() => HasMapGraphics);
         }
        
