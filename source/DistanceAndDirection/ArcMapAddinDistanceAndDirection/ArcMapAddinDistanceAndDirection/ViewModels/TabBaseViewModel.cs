@@ -1162,6 +1162,36 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             return result;
         }
 
+        // Overload for calling from another class where lineDistanceType is not available
+        protected double TrimPrecision(double inputDistance)
+        {
+            return TrimPrecision(inputDistance, lineDistanceType);
+        }
+
+        // Remove superfluous precision with
+        protected double TrimPrecision(double inputDistance, DistanceTypes lineDistanceType_param)
+        {
+            double returnDistance = 0;
+            // For smaller units assume no fraction is required
+            // For larger units provide ten thousandth i.e. 4 decimal places, probably more than sufficient
+            switch (lineDistanceType_param)
+            {
+                case DistanceTypes.Kilometers:
+                case DistanceTypes.Miles:
+                case DistanceTypes.NauticalMile:
+                    returnDistance = Math.Round(inputDistance, 4);
+                    break;
+                case DistanceTypes.Meters:
+                case DistanceTypes.Feet:
+                case DistanceTypes.Yards:
+                    returnDistance = Math.Round(inputDistance, 0);
+                    break;
+                default:
+                break;
+            }
+            return returnDistance;
+        }
+
         private esriUnits GetEsriUnit(DistanceTypes distanceType)
         {
             esriUnits unit = esriUnits.esriMeters;
@@ -1233,6 +1263,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             return geodeticLength;
         }
+
         /// <summary>
         /// Gets the distance/lenght of a polyline
         /// </summary>
@@ -1244,8 +1275,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (polyline == null)
                 return;
 
-            Distance = GetGeodeticLengthFromPolyline(polyline);
+            double rawDistance = GetGeodeticLengthFromPolyline(polyline);
+            // Round the superfluous precision appropriately to unit
+            Distance = TrimPrecision(rawDistance, lineDistanceType);
         }
+
         /// <summary>
         /// Handler for the mouse move event
         /// When the mouse moves accross the map, IPoints are returned to aid in updating feedback to user

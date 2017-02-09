@@ -20,6 +20,7 @@ using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary.Helpers;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System.Reactive.Subjects;
+using System.Windows.Input;
 
 namespace ProAppDistanceAndDirectionModule
 {
@@ -47,6 +48,16 @@ namespace ProAppDistanceAndDirectionModule
 
         }
         Subject<MapViewMouseEventArgs> mouseSubject = new Subject<MapViewMouseEventArgs>();
+
+        // If the user presses Escape cancel the sketch
+        protected override void OnToolKeyDown(MapViewKeyEventArgs k)
+        {
+            if (k.Key == Key.Escape)
+            {
+                k.Handled = true;
+                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, null);
+            }
+        }
 
         protected override Task<bool> OnSketchCompleteAsync(Geometry geometry)
         {
