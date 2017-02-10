@@ -166,17 +166,33 @@ namespace ProAppDistanceAndDirectionModule.Models
                                         {
                                             case "LineAttributes":
                                                 {
-                                                    // Add attributes
-                                                    rowBuffer[definition.FindField("Distance")] = (((LineAttributes)graphic.p).GetAttributes()).Item3;
-                                                    rowBuffer[definition.FindField("Angle")] = (((LineAttributes)graphic.p).GetAttributes()).Item4;
-                                                    break;
+                                                    try
+                                                    {
+                                                        // Add attributes
+                                                        rowBuffer[definition.FindField("Distance")] = ((LineAttributes)graphic.p)._distance;
+                                                        rowBuffer[definition.FindField("Angle")] = ((LineAttributes)graphic.p).angle;
+                                                        break;
+                                                    }
+                                                    // Catch exception likely due to missing fields
+                                                    // Just skip attempting to write to fields
+                                                    catch
+                                                    {
+                                                        break;
+                                                    }
                                                 }
                                             case "RangeAttributes":
                                                 {
-                                                    rowBuffer[definition.FindField("Rings")] = (((RangeAttributes)graphic.p).GetAttributes()).Item2;
-                                                    rowBuffer[definition.FindField("Distance")] = (((RangeAttributes)graphic.p).GetAttributes()).Item3;
-                                                    rowBuffer[definition.FindField("Radials")] = (((RangeAttributes)graphic.p).GetAttributes()).Item4;
-                                                    break;
+                                                    try
+                                                    {
+                                                        rowBuffer[definition.FindField("Rings")] = ((RangeAttributes)graphic.p).numRings;
+                                                        rowBuffer[definition.FindField("Distance")] = ((RangeAttributes)graphic.p).distance;
+                                                        rowBuffer[definition.FindField("Radials")] = ((RangeAttributes)graphic.p).numRadials;
+                                                        break;
+                                                    }
+                                                    catch
+                                                    {
+                                                        break;
+                                                    }
                                                 }
                                         }
                                     }
@@ -194,25 +210,36 @@ namespace ProAppDistanceAndDirectionModule.Models
                                         {
                                             case "CircleAttributes":
                                                 {
-                                                    rowBuffer[definition.FindField("Distance")] = (((CircleAttributes)graphic.p).GetAttributes()).Item2;
-
-                                                    string circleType = "Radius";
-                                                    if ((int)(((CircleAttributes)graphic.p).GetAttributes()).Item3 == 2)
+                                                    try
                                                     {
-                                                        circleType = "Diameter";
-                                                    }
+                                                        rowBuffer[definition.FindField("Distance")] = ((CircleAttributes)graphic.p).distance;
 
-                                                    rowBuffer[definition.FindField("DistType")] = circleType;
-                                                    break;
+                                                        string circleType = "Radius";
+                                                        if ((int)((CircleAttributes)graphic.p).circleFromTypes == 2)
+                                                        {
+                                                            circleType = "Diameter";
+                                                        }
+
+                                                        rowBuffer[definition.FindField("DistType")] = circleType;
+                                                        break;
+                                                    }
+                                                    catch
+                                                    {
+                                                        break;
+                                                    }
                                                 }
                                             case "EllipseAttributes":
+                                                try
                                                 {
-                                                    rowBuffer[definition.FindField("Minor")] = (((EllipseAttributes)graphic.p).GetAttributes()).Item2;
-                                                    rowBuffer[definition.FindField("Major")] = (((EllipseAttributes)graphic.p).GetAttributes()).Item3;
-                                                    rowBuffer[definition.FindField("Angle")] = (((EllipseAttributes)graphic.p).GetAttributes()).Item4;
+                                                    rowBuffer[definition.FindField("Minor")] = ((EllipseAttributes)graphic.p).minorAxis;
+                                                    rowBuffer[definition.FindField("Major")] = ((EllipseAttributes)graphic.p).majorAxis;
+                                                    rowBuffer[definition.FindField("Angle")] = ((EllipseAttributes)graphic.p).angle;
                                                     break;
                                                 }
-
+                                                catch
+                                                {
+                                                    break;
+                                                }
                                         }
                                     }
                                 }

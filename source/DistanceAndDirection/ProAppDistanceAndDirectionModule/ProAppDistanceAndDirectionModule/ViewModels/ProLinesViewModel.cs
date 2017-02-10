@@ -396,7 +396,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, lu, curveType);
 
                 // Hold onto the attributes in case user saves graphics to file later
-                LineAttributes lineAttributes = new LineAttributes(Point1, Point2, distance, (double)azimuth);
+                LineAttributes lineAttributes = new LineAttributes(){mapPoint1 = Point1, mapPoint2 = Point2, _distance = distance, angle = (double)azimuth};
 
                 AddGraphicToMap(newline, (ProGraphicAttributes)lineAttributes);
                 ResetPoints();

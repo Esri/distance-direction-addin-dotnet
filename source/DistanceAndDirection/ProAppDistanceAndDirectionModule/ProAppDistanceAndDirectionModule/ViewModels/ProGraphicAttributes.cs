@@ -14,62 +14,33 @@ namespace ProAppDistanceAndDirectionModule
 
     public class LineAttributes : ProGraphicAttributes
     {
-        Tuple<MapPoint, MapPoint, double, double> attributes;
-
-        public LineAttributes(MapPoint startPt, MapPoint endPt, double distance, double angle)
-        {
-            attributes = new Tuple<MapPoint, MapPoint, double, double>(startPt, endPt, distance, angle);
-        }
-
-        public Tuple<MapPoint,  MapPoint, double, double> GetAttributes()
-        {
-            return attributes;
-        }
+        public MapPoint mapPoint1 { get; set; }
+        public MapPoint mapPoint2 { get; set; }
+        public double _distance { get; set; }
+        public double angle { get; set; }
     }
     
     public class CircleAttributes : ProGraphicAttributes
     {
-        Tuple<MapPoint, Double, CircleFromTypes> attributes;
-
-        public CircleAttributes(MapPoint centerPt, double distance, CircleFromTypes circleFromTypes)
-        {
-            attributes = new Tuple<MapPoint, double, CircleFromTypes>(centerPt, distance, circleFromTypes);
-        }
-
-        public Tuple<MapPoint, Double, CircleFromTypes> GetAttributes()
-        {
-            return attributes;
-        }
+        public MapPoint mapPoint { get; set; }
+        public Double distance { get; set; }
+        public CircleFromTypes circleFromTypes { get; set; }
     }
 
     public class EllipseAttributes : ProGraphicAttributes
     {
-        Tuple<MapPoint, double, double, double> attributes;
-
-        public EllipseAttributes(MapPoint centerPt, double minorX, double majorX, double orientX)
-        {
-            attributes = new Tuple<MapPoint, double, double, double>(centerPt, minorX, majorX, orientX);
-        }
-
-        public Tuple<MapPoint, double, double, double> GetAttributes()
-        {
-            return attributes;
-        }
+        public MapPoint mapPoint { get; set; }
+        public double majorAxis{ get; set; }
+        public double minorAxis { get; set; }
+        public double angle { get; set; }
     }
 
     public class RangeAttributes : ProGraphicAttributes
     {
-        Tuple<MapPoint, int, double, int> attributes;
-
-        public RangeAttributes(MapPoint centerPt, int rings, double distance, int radials)
-        {
-            attributes = new Tuple<MapPoint, int, double, int>(centerPt, rings, distance, radials);
-        }
-
-        public Tuple<MapPoint, int, double, int> GetAttributes()
-        {
-            return attributes;
-        }
+        public MapPoint mapPoint { get; set; }
+        public int numRings { get; set; }
+        public double distance { get; set; }
+        public int numRadials { get; set; }
     }
 
 }

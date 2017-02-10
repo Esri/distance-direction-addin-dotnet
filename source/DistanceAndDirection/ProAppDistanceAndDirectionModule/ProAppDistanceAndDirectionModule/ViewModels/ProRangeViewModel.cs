@@ -198,7 +198,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (newline != null)
                     {
                         // Hold onto the attributes in case user saves graphics to file later
-                        RangeAttributes rangeAttributes = new RangeAttributes(Point1, NumberOfRings, Distance, NumberOfRadials);
+                        RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials };
                         AddGraphicToMap(newline, rangeAttributes);
                     }
 
@@ -247,7 +247,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                     // Hold onto the attributes in case user saves graphics to file later
-                    RangeAttributes rangeAttributes = new RangeAttributes(Point1, numberOfRings, radius, numberOfRadials);
+                    RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = numberOfRings, distance = radius, numRadials = numberOfRadials };
 
                     AddGraphicToMap(geom, rangeAttributes);
                 }
@@ -381,7 +381,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
             // Hold onto the attributes in case user saves graphics to file later
-            RangeAttributes rangeAttributes = new RangeAttributes(Point1, NumberOfRings, Distance, NumberOfRadials);
+            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials };
+
             AddGraphicToMap(geom, rangeAttributes);
         }
 
@@ -404,7 +405,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             ClearTempGraphics();
 
             // Hold onto the attributes in case user saves graphics to file later
-            RangeAttributes rangeAttributes = new RangeAttributes(Point1, NumberOfRings, Distance, NumberOfRadials);
+            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials };
+
             AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
             AddGraphicToMap(geom, ColorFactory.GreyRGB, rangeAttributes, true);
         }

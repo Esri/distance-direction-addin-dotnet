@@ -532,8 +532,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
 
             // Hold onto the attributes in case user saves graphics to file later
-            CircleAttributes circleAttributes = new CircleAttributes(Point1, Distance, CircleType);
-            
+            //CircleAttributes circleAttributes = new CircleAttributes(Point1, Distance, CircleType);
+            CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = Distance, circleFromTypes = CircleType };
             AddGraphicToMap(geom, color, (ProGraphicAttributes)circleAttributes, IsTempGraphic: isFeedback);
 
             return geom as Geometry;
