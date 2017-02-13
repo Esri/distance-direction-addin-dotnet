@@ -83,6 +83,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
+        internal bool HasPoint3 = false;
         internal INewLineFeedback feedback = null;
         internal FeatureClassUtils fcUtils = new FeatureClassUtils();
         internal KMLUtils kmlUtils = new KMLUtils();
@@ -746,6 +747,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
+                
                 Point1Formatted = string.Empty;
 
                 var color = new RgbColorClass() { Green = 255 } as IColor;
@@ -768,6 +770,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 CreateMapElement();
                 ResetPoints();
+            }
+
+            if (!HasPoint3)
+            {
+                HasPoint3 = true;
             }
         }
 
@@ -901,7 +908,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         internal virtual void ResetPoints()
         {
-            HasPoint1 = HasPoint2 = false;
+            HasPoint1 = HasPoint2 = HasPoint3 = false;
         }
 
         /// <summary>
@@ -950,7 +957,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         // User has activated the Map Point tool but not created a point
                         // Or User has previously finished creating a graphic
                         // Either way, assume they want to disable the Map Point tool
-                        if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint2))
+                        if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint3))
                         {
                             Reset(true);
                             IsToolActive = false;
@@ -960,7 +967,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         // User has activated Map Point tool and created a point but not completed the graphic
                         // Assume they want to cancel any graphic creation in progress 
                         // but still keep the Map Point tool active
-                        if (IsToolActive && HasPoint1 && !HasPoint2)
+                        if (IsToolActive && HasPoint1 && !HasPoint3)
                         {
                             Reset(false);
                             return;
