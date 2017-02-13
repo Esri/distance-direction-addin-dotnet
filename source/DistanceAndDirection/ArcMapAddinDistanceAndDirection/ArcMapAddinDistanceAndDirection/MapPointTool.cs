@@ -103,6 +103,20 @@ namespace ArcMapAddinDistanceAndDirection
             Mediator.NotifyColleagues(Constants.MOUSE_DOUBLE_CLICK, null);
         }
 
+        protected override bool OnDeactivate()
+        {
+            return true;   
+        }
+
+        // If the user presses Escape cancel the sketch
+        protected override void OnKeyDown(KeyEventArgs k)
+        {
+            if (k.KeyCode == Keys.Escape)
+            {
+                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, null);
+            }
+        }
+
     }
 
 }
