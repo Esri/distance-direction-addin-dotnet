@@ -359,6 +359,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.Reset(toolReset);
 
             NumberOfRadials = 0;
+            NumberOfRings = 10;
         }
 
         private void ConstructGeoCircle()
