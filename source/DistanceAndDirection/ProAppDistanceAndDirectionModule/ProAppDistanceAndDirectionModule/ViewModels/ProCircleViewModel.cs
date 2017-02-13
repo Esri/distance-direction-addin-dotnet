@@ -320,7 +320,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 ClearTempGraphics();
                 if (HasPoint1)
-                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
@@ -528,9 +528,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 color = ColorFactory.GreyRGB;
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
             }
-            AddGraphicToMap(geom, color, IsTempGraphic: isFeedback);
+
+            // Hold onto the attributes in case user saves graphics to file later
+            //CircleAttributes circleAttributes = new CircleAttributes(Point1, Distance, CircleType);
+            CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = Distance, circleFromTypes = CircleType };
+            AddGraphicToMap(geom, color, (ProGraphicAttributes)circleAttributes, IsTempGraphic: isFeedback);
 
             return geom as Geometry;
         }

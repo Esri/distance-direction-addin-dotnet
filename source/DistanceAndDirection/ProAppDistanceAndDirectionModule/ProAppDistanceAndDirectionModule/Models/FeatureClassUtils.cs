@@ -126,7 +126,7 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// </summary>
         /// <param name="graphicsList">List of graphics to add to table</param>
         /// <returns></returns>
-        private static async Task CreateFeatures(List<Graphic> graphicsList)
+        private static async Task CreateFeatures(List<Graphic> graphicsList, bool isKML)
         {
             RowBuffer rowBuffer = null;
             bool isLine = false;
@@ -144,7 +144,8 @@ namespace ProAppDistanceAndDirectionModule.Models
                         {
                             TableDefinition definition = table.GetDefinition();
                             int shapeIndex = definition.FindField("Shape");
-                                
+
+                            string graphicsType;
                             foreach (Graphic graphic in graphicsList)
                             {
                                 rowBuffer = table.CreateRowBuffer();
@@ -155,9 +156,93 @@ namespace ProAppDistanceAndDirectionModule.Models
                                     pb.HasZ = false;
                                     rowBuffer[shapeIndex] = pb.ToGeometry();
                                     isLine = true;
+
+                                    // Only add attributes for Esri format
+                                    if (!isKML)
+                                    {
+                                        // Add attributes
+                                        graphicsType = graphic.p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
+                                        switch (graphicsType)
+                                        {
+                                            case "LineAttributes":
+                                                {
+                                                    try
+                                                    {
+                                                        // Add attributes
+                                                        rowBuffer[definition.FindField("Distance")] = ((LineAttributes)graphic.p)._distance;
+                                                        rowBuffer[definition.FindField("Angle")] = ((LineAttributes)graphic.p).angle;
+                                                        break;
+                                                    }
+                                                    // Catch exception likely due to missing fields
+                                                    // Just skip attempting to write to fields
+                                                    catch
+                                                    {
+                                                        break;
+                                                    }
+                                                }
+                                            case "RangeAttributes":
+                                                {
+                                                    try
+                                                    {
+                                                        rowBuffer[definition.FindField("Rings")] = ((RangeAttributes)graphic.p).numRings;
+                                                        rowBuffer[definition.FindField("Distance")] = ((RangeAttributes)graphic.p).distance;
+                                                        rowBuffer[definition.FindField("Radials")] = ((RangeAttributes)graphic.p).numRadials;
+                                                        break;
+                                                    }
+                                                    catch
+                                                    {
+                                                        break;
+                                                    }
+                                                }
+                                        }
+                                    }
                                 }
                                 else if (graphic.Geometry is Polygon)
+                                {
                                     rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
+
+                                    // Only add attributes for Esri format
+                                    if (!isKML)
+                                    {
+                                        // Add attributes
+                                        graphicsType = graphic.p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
+                                        switch (graphicsType)
+                                        {
+                                            case "CircleAttributes":
+                                                {
+                                                    try
+                                                    {
+                                                        rowBuffer[definition.FindField("Distance")] = ((CircleAttributes)graphic.p).distance;
+
+                                                        string circleType = "Radius";
+                                                        if ((int)((CircleAttributes)graphic.p).circleFromTypes == 2)
+                                                        {
+                                                            circleType = "Diameter";
+                                                        }
+
+                                                        rowBuffer[definition.FindField("DistType")] = circleType;
+                                                        break;
+                                                    }
+                                                    catch
+                                                    {
+                                                        break;
+                                                    }
+                                                }
+                                            case "EllipseAttributes":
+                                                try
+                                                {
+                                                    rowBuffer[definition.FindField("Minor")] = ((EllipseAttributes)graphic.p).minorAxis;
+                                                    rowBuffer[definition.FindField("Major")] = ((EllipseAttributes)graphic.p).majorAxis;
+                                                    rowBuffer[definition.FindField("Angle")] = ((EllipseAttributes)graphic.p).angle;
+                                                    break;
+                                                }
+                                                catch
+                                                {
+                                                    break;
+                                                }
+                                        }
+                                    }
+                                }
 
                                 Row row = table.CreateRow(rowBuffer);
                             }
@@ -192,6 +277,15 @@ namespace ProAppDistanceAndDirectionModule.Models
                 if (rowBuffer != null)
                     rowBuffer.Dispose();
             }
+        }
+
+        private static IReadOnlyList<string> makeValueArray (string featureClass, string fieldName, string fieldType)
+        {
+            List<object> arguments = new List<object>();
+            arguments.Add(featureClass);
+            arguments.Add(fieldName);
+            arguments.Add(fieldType);
+            return Geoprocessing.MakeValueArray(arguments.ToArray());
         }
 
         /// <summary>
@@ -234,7 +328,43 @@ namespace ProAppDistanceAndDirectionModule.Models
                 var valueArray = Geoprocessing.MakeValueArray(arguments.ToArray());
                 IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", valueArray);
 
-                await CreateFeatures(graphicsList);
+                if (!isKML)
+                {
+                    // Add additional fields based on type of graphic
+                    string featureClass = connection + "/" + dataset;
+                    string graphicsType = graphicsList[0].p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
+                    switch (graphicsType)
+                    {
+                        case "LineAttributes":
+                            {
+                                IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
+                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
+                                break;
+                            }
+                        case "CircleAttributes":
+                            {
+                                IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
+                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistType", "TEXT"));
+                                break;
+                            }
+                        case "EllipseAttributes":
+                            {
+                                IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Minor", "DOUBLE"));
+                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Major", "DOUBLE"));
+                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
+                                break;
+                            }
+                        case "RangeAttributes":
+                            {
+                                IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Rings", "LONG"));
+                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
+                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Radials", "LONG"));
+                                break;
+                            }
+                    }
+                }
+
+                await CreateFeatures(graphicsList, isKML);
 
                 if (isKML)
                 {                
