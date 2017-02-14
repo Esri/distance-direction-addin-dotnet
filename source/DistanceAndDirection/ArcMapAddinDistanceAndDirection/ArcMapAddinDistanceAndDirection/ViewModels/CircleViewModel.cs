@@ -89,6 +89,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
 
+                // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => TimeUnit);
                 RaisePropertyChanged(() => TravelTime);
                 RaisePropertyChanged(() => TravelRate);
@@ -177,8 +178,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 // we need to make sure we are in the same units as the Distance property before setting
                 UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
                 RaisePropertyChanged(() => TravelTime);
-                
-                // Force an update of this in order to clear error message in bound WPF control
+
+                // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => TravelRate);
                 RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
@@ -228,7 +229,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
                 RaisePropertyChanged(() => TravelRate);
 
-                // Force an update of this in order to clear error message in bound WPF control
+                // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => TravelTime);
                 RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
@@ -313,6 +314,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
 
+                // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TravelTime);
                 RaisePropertyChanged(() => TravelRate);
