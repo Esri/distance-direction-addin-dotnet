@@ -137,11 +137,11 @@
                                                                        Path=.}" />
                             </TextBox.InputBindings>
                         </TextBox>
-                        <ComboBox 
+                        <ComboBox Validation.ErrorTemplate="{StaticResource errorTemplate}"
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource timeData}}"
-                                  SelectedItem="{Binding Path=TimeUnit,
-                                                         Mode=TwoWay}">
+                                  SelectedItem="{Binding Path=TimeUnit,Mode=TwoWay, ValidatesOnExceptions=True}"
+                                >
                             <ComboBox.InputBindings>
                                     <KeyBinding Key="Enter"
                                     Command="{Binding EnterKeyCommand}"
@@ -173,10 +173,11 @@
                             </TextBox.InputBindings>
                         </TextBox>
                         <ComboBox x:Name="cmbRateType"
+                                  Validation.ErrorTemplate="{StaticResource errorTemplate}"
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource rateTimeData}}"
                                   SelectedItem="{Binding Path=RateTimeUnit,
-                                                         Mode=TwoWay}">
+                                                         Mode=TwoWay,  ValidatesOnExceptions=True}" >
                             <ComboBox.InputBindings>
                                 <KeyBinding Key="Enter"
                                     Command="{Binding EnterKeyCommand}"
