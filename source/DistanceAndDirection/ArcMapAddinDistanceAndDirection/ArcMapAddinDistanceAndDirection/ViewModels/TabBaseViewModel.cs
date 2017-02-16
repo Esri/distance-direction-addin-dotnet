@@ -20,6 +20,9 @@ using System.Windows.Controls;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
+using System.Timers;
+using System.Text;
 
 // Esri
 using ESRI.ArcGIS.esriSystem;
@@ -44,6 +47,31 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
     /// </summary>
     public class TabBaseViewModel : BaseViewModel
     {
+        // Interop support for CheckMousePosition
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+        }
+
+        public struct RECT
+        {
+            public int left;
+            public int top;
+            public int right;
+            public int bottom;
+        }
+
+        [DllImport("user32.dll", SetLastError = true)]
+        static extern bool GetWindowRect(IntPtr hWnd, ref RECT lpRect);
+
+        [DllImport("User32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool GetCursorPos(ref POINT p);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetForegroundWindow();
+
         public const System.String MAP_TOOL_NAME = "Esri_ArcMapAddinDistanceAndDirection_MapPointTool";
 
         public TabBaseViewModel()
@@ -72,6 +100,22 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => Point2Formatted);
             });
 
+            // Kick off monitoring of mouse position via a timer
+            System.Timers.Timer mouseCheckTimer = new System.Timers.Timer();
+            mouseCheckTimer.Elapsed += new ElapsedEventHandler(CheckMousePosition);
+            // 5 times a second seems a good compromise
+            mouseCheckTimer.Interval = 200;
+            mouseCheckTimer.Enabled = true;
+
+            // Set all of these up once to save processing on each tick
+            arcmap_hWnd_IntPtr = new IntPtr(ArcMap.Application.hWnd);
+            POINT p = new POINT();
+            mxDoc = ArcMap.Application.Document as IMxDocument;
+            iActiveView = mxDoc.FocusMap as IActiveView;
+            iMxApplication3 = ArcMap.Application as IMxApplication3;
+            iScreenDisplay_hWnd_InPtr = new IntPtr((iMxApplication3.Display as IAppDisplay).hWnd);
+            mapRect = new RECT();
+
         }
 
         PropertyObserver<DistanceAndDirectionConfig> configObserver;
@@ -90,6 +134,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         internal SaveFileDialog sfDlg = null;
 
         //public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig(); 
+
+        // Support for checking mouse position
+        // Make these up front to save processing on each timer tick
+        private IntPtr arcmap_hWnd_IntPtr;
+        private POINT point;
+        private IMxDocument mxDoc;
+        private IActiveView iActiveView;
+        private IMxApplication3 iMxApplication3;
+        private IntPtr iScreenDisplay_hWnd_InPtr;
+        private RECT mapRect;
+        private bool exitHandled = true;
 
         public bool HasMapGraphics
         {
@@ -1509,6 +1564,74 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
+        }
+
+        /// <summary>
+        /// Method is called on timer tick
+        /// Clears Center Point field the first time that the mouse is found to have left the map window
+        /// </summary>
+        private void CheckMousePosition(object source, ElapsedEventArgs e)
+        {
+            // Test if ArcMap is foregrounded i.e. has focus
+            if (arcmap_hWnd_IntPtr == GetForegroundWindow())
+            {
+                // Get the location of the cursor in Windows OS coordinates
+                // Get the location of the map window in Windows OS coordinates
+                // Test whether the cursor is within the map window
+
+                // Cursor location
+                GetCursorPos(ref point);
+
+                // Map window location
+                GetWindowRect(iScreenDisplay_hWnd_InPtr, ref mapRect);
+
+                // When mouse cursor enters map window
+                if (((point.X > mapRect.left && point.X < mapRect.right) && (point.Y > mapRect.top && point.Y < mapRect.bottom)))
+                {
+                    // Record cursor entering map window
+                    exitHandled = false;
+                }
+                // Map cursor outside map window
+                else
+                {
+                    if (isActiveTab)
+                    {
+                        // When exitHandled == false this is the first tick in which cursor is found to have exited map window
+                        if (!exitHandled)
+                        {
+                            // We handle exit by clearing out the value just once, in order that manual update
+                            // with keyboard is not cleared by mistake
+                            exitHandled = true;
+
+                            // Handle differences in fields across tabs
+                            if (this is LinesViewModel)
+                            {
+                                // No first point created, clear field when mouse cursor leaves map window
+                                if (!HasPoint1)
+                                {
+                                    Point1 = null;
+                                    return;
+                                }
+                                // First point created but no second point created, clear second point field when mouse cursor leaves map window
+                                if (HasPoint1 && !HasPoint2)
+                                {
+                                    Point2 = null;
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                // No first point created, clear field when mouse cursor leaves map window
+                                if (!HasPoint1)
+                                {
+                                    Point1 = null;
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         #endregion Private Functions
 
