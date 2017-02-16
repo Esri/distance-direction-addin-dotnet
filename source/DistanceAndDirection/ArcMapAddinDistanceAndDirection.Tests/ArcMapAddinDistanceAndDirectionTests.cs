@@ -171,6 +171,84 @@ namespace ArcMapAddinDistanceAndDirection.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException5()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TimeUnit = TimeUnits.Hours;
+            circleVM.RateTimeUnit = RateTimeTypes.MetersHour;
+            circleVM.TravelTime = 1;
+            circleVM.TravelRate = 20000000;
+            circleVM.RateUnit = DistanceTypes.Miles;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException6()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TimeUnit = TimeUnits.Seconds;
+            circleVM.RateTimeUnit = RateTimeTypes.MetersSec;
+            circleVM.TravelTime = 1;
+            circleVM.TravelRate = 20000000;
+            circleVM.TimeUnit = TimeUnits.Hours;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException7()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TimeUnit = TimeUnits.Hours;
+            circleVM.RateTimeUnit = RateTimeTypes.MetersHour;
+            circleVM.TravelTime = 1;
+            circleVM.TravelRate = 20000001;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException8()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TimeUnit = TimeUnits.Hours;
+            circleVM.RateTimeUnit = RateTimeTypes.MetersHour;
+            circleVM.TravelTime = 2;
+            circleVM.TravelRate = 10000001;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException9()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.Point1Formatted = "0 0";
+            circleVM.DistanceString = "20000001";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException10()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.Point1Formatted = "0 181";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException11()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.Point1Formatted = "91 0";
+        }
+
+        [TestMethod]
         public void CircleViewModel()
         {
             var circleVM = new CircleViewModel();
