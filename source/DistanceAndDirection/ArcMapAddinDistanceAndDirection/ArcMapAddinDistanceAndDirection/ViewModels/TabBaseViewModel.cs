@@ -199,15 +199,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     var color = new RgbColorClass() { Green = 255 } as IColor;
                     AddGraphicToMap(Point1, color, true);
                     // lets try feedback
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    var av = mxdoc.FocusMap as IActiveView;
-                    point.Project(mxdoc.FocusMap.SpatialReference);
-                    CreateFeedback(point, av);
-                    feedback.Start(point);
-                    if(Point2 != null)
+                    // Avoid null reference exception during automated testing
+                    if (ArcMap.Application != null)
                     {
-                        UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
-                        FeedbackMoveTo(Point2);
+                        var mxdoc = ArcMap.Application.Document as IMxDocument;
+                        var av = mxdoc.FocusMap as IActiveView;
+                        point.Project(mxdoc.FocusMap.SpatialReference);
+                        CreateFeedback(point, av);
+                        feedback.Start(point);
+                        if (Point2 != null)
+                        {
+                            UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
+                            FeedbackMoveTo(Point2);
+                        }
                     }
                 }
                 else 
@@ -604,6 +608,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         internal void ClearTempGraphics()
         {
+            // Indicates we are running an automated test and as such we do not want to
+            // proceed and generate a NullReferenceException
+            if (ArcMap.Application == null)
+                return;
+
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             if (mxdoc == null)
                 return;
@@ -1239,7 +1248,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         protected double TrimPrecision(double inputDistance, DistanceTypes lineDistanceType_param)
         {
             double returnDistance = 0;
-            // For smaller units assume no fraction is required
+            // For smaller units assume a tenth is sufficient
             // For larger units provide ten thousandth i.e. 4 decimal places, probably more than sufficient
             switch (lineDistanceType_param)
             {
@@ -1251,7 +1260,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 case DistanceTypes.Meters:
                 case DistanceTypes.Feet:
                 case DistanceTypes.Yards:
-                    returnDistance = Math.Round(inputDistance, 0);
+                    returnDistance = Math.Round(inputDistance, 1);
                     break;
                 default:
                 break;
