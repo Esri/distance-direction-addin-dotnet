@@ -35,6 +35,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Properties
 
+        private double DistanceLimit = 20000000;
+
         private bool isInteractive = false;
         public bool IsInteractive 
         {
@@ -71,6 +73,59 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 maxDistance = 0.0;
                 if (IsInteractive)
                     NumberOfRings = 0;
+            }
+        }
+
+        DistanceTypes lineDistanceType = DistanceTypes.Meters;
+        /// <summary>
+        /// Property for the distance type
+        /// </summary>
+        public override DistanceTypes LineDistanceType
+        {
+            get { return lineDistanceType; }
+            set
+            {
+                lineDistanceType = value;
+
+                double distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, Distance);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+
+                UpdateFeedback();
+                RaisePropertyChanged(() => Distance);
+                RaisePropertyChanged(() => DistanceString);
+            }
+        }
+
+        double distance = 0.0;
+        /// <summary>
+        /// Property for the distance/length
+        /// </summary>
+        public override double Distance
+        {
+            get { return distance; }
+            set
+            {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
+                distance = value;
+
+                // Prevent graphical glitches from excessively high inputs
+                double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, value);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+
+                DistanceString = distance.ToString("G");
+                RaisePropertyChanged(() => Distance);
+                RaisePropertyChanged(() => DistanceString);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 

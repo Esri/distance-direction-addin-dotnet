@@ -441,7 +441,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
-                UpdateFeedbackWithGeoCircle();
+                // Avoid null reference exception during automated testing
+                if (ArcMap.Application != null)
+                {
+                    UpdateFeedbackWithGeoCircle();
+                }
             }
         }
 
