@@ -35,6 +35,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Properties
 
+        public double MajorAxisLimit = 20000000;
+
         public IPoint CenterPoint { get; set; }
         public ISymbol FeedbackSymbol { get; set; }
 
@@ -103,6 +105,23 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if (value > MajorAxisLimit)
+                {
+                    // Despite being too large we still need to set this in order that we can
+                    // avoid drawing preview if necessary when minorAxisDistance is varied
+                    minorAxisDistance = TrimPrecision(value);
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+                if (majorAxisDistance > MajorAxisLimit)
+                {
+                    // Despite being too large we still need to set this in order that we can
+                    // avoid drawing preview if necessary when minorAxisDistance is varied
+                    minorAxisDistance = TrimPrecision(value);
+                    ClearTempGraphics();
+                    return;
+                }
+                
 
                 minorAxisDistance = TrimPrecision(value);
 
@@ -162,6 +181,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
+                double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, value);
+                if (distanceInMeters > MajorAxisLimit)
+                {
+                    // Despite being too large we still need to set this in order that we can
+                    // avoid drawing preview if necessary when minorAxisDistance is varied
+                    majorAxisDistance = TrimPrecision(value);
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+
                 majorAxisDistance = TrimPrecision(value);
 
                 Point2 = UpdateFeedback(Point1, MajorAxisDistance);
@@ -170,6 +199,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 RaisePropertyChanged(() => MajorAxisDistance);
                 RaisePropertyChanged(() => MajorAxisDistanceString);
+
+                // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -214,6 +246,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if (AzimuthType == AzimuthTypes.Degrees && value > 360.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
@@ -274,6 +308,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         #endregion Commands
 
         #region Overriden Functions
+
+        public override DistanceTypes LineDistanceType
+        {
+            get
+            {
+                return base.LineDistanceType;
+            }
+            set
+            {
+                // Prevent graphical glitches from excessively high inputs
+                base.LineDistanceType = value;
+                double distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, MajorAxisDistance);
+                if (distanceInMeters > MajorAxisLimit)
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+            }
+        }
 
         /// <summary>
         /// Overrides TabBaseViewModel CreateMapElement
