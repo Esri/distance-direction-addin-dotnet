@@ -345,6 +345,24 @@ namespace ArcMapAddinDistanceAndDirection.Tests
 
             ellipseVM.Azimuth = -1;
         }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void EllipseViewModel_ThrowsException7()
+        {
+            var ellipseVM = new EllipseViewModel();
+
+            ellipseVM.Distance = ellipseVM.MajorAxisLimit + 1;
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void EllipseViewModel_ThrowsException8()
+        {
+            var ellipseVM = new EllipseViewModel();
+
+            ellipseVM.LineDistanceType = DistanceTypes.Meters;
+            ellipseVM.Distance = ellipseVM.MajorAxisLimit;
+            ellipseVM.LineDistanceType = DistanceTypes.Miles;
+        }
 
         #endregion Ellipse View Model
 

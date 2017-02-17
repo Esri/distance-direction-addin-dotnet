@@ -35,7 +35,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Properties
 
-        private double MajorAxisLimit = 20000000;
+        public double MajorAxisLimit = 20000000;
 
         public IPoint CenterPoint { get; set; }
         public ISymbol FeedbackSymbol { get; set; }
