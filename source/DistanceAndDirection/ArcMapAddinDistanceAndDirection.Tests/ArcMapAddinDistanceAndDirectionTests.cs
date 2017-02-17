@@ -34,7 +34,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             bool blnBoundToRuntime = ESRI.ArcGIS.RuntimeManager.Bind(ESRI.ArcGIS.ProductCode.EngineOrDesktop);
             Assert.IsTrue(blnBoundToRuntime, "Not bound to runtime");
             IAoInitialize aoInitialize = new AoInitializeClass();
-            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeBasic);
+            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeStandard);
         }
 
         #region Lines View Model
@@ -91,6 +91,15 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             lineVM.Azimuth = -1;
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void LinesViewModel_ThrowsException7()
+        {
+            var lineVM = new LinesViewModel();
+
+            lineVM.Azimuth = 361;
+        }
+
 
         [TestMethod]
         public void LineViewModel()
@@ -130,7 +139,17 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             Assert.AreEqual(50.5, lineVM.Distance);
             lineVM.LineDistanceType = DistanceAndDirectionLibrary.DistanceTypes.Miles;
             Assert.AreEqual(50.5, lineVM.Distance);
+
+            // Check TrimPrecision is trimming correctly according to LineDistanceType
+            lineVM.LineDistanceType = DistanceTypes.Kilometers;
+            lineVM.Distance = 1.012345;
+            Assert.AreEqual(1.0123, lineVM.Distance);
+
+            lineVM.LineDistanceType = DistanceTypes.Meters;
+            lineVM.Distance = 1.12;
+            Assert.AreEqual(1.1, lineVM.Distance);
         }
+
 
         #endregion Lines View Model
 
@@ -184,6 +203,13 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             circleVM.Point1 = new Point() { X = -119.8, Y = 34.4 };
 
             Assert.AreEqual(circleVM.Point1Formatted, "34.4 -119.8");
+
+            // Check that Distance is not converted when LineDistanceType is changed
+            // #260
+            circleVM.LineDistanceType = DistanceTypes.Meters;
+            circleVM.Distance = 1000.0;
+            circleVM.LineDistanceType = DistanceTypes.Kilometers;
+            Assert.AreEqual(circleVM.Distance, 1000.0);
         }
 
         #endregion Circle View Model
