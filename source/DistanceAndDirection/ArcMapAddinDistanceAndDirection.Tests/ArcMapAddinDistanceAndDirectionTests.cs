@@ -377,7 +377,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
         {
             var ellipseVM = new EllipseViewModel();
 
-            ellipseVM.Distance = ellipseVM.MajorAxisLimit + 1;
+            ellipseVM.MajorAxisDistance = ellipseVM.MajorAxisLimit + 1;
         }
         [TestMethod]
         [ExpectedException(typeof(ArgumentException))]
@@ -386,7 +386,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             var ellipseVM = new EllipseViewModel();
 
             ellipseVM.LineDistanceType = DistanceTypes.Meters;
-            ellipseVM.Distance = ellipseVM.MajorAxisLimit;
+            ellipseVM.MajorAxisDistance = ellipseVM.MajorAxisLimit;
             ellipseVM.LineDistanceType = DistanceTypes.Miles;
         }
 
@@ -424,6 +424,26 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             var rangeVM = new RangeViewModel();
 
             rangeVM.DistanceString = "esri";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RangeViewModel_ThrowsException5()
+        {
+            var rangeVM = new RangeViewModel();
+
+            rangeVM.Distance = 20000001;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RangeViewModel_ThrowsException6()
+        {
+            var rangeVM = new RangeViewModel();
+
+            rangeVM.LineDistanceType = DistanceTypes.Meters;
+            rangeVM.Distance = 20000000;
+            rangeVM.LineDistanceType = DistanceTypes.Miles;
         }
 
         [TestMethod]
