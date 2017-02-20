@@ -77,9 +77,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                 {
                     if (value == CircleFromTypes.Diameter)
-                        Distance /= 2.0;
-                    else
-                        Distance *= 2.0;
+                        DistanceString = (base.Distance * 2.0).ToString("G");
                 }
 
                 // reset distance
@@ -106,6 +104,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     return;
                 }
+                timeUnit = value;
 
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
@@ -261,10 +260,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType, bool belowLimit)
         {
-            if(CircleType == CircleFromTypes.Diameter)
-                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance) * 2.0;
-            else
-                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
+            Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
 
             if (belowLimit)
             {
