@@ -114,6 +114,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
+                    if(HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -200,6 +203,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                 {
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
@@ -221,6 +227,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     UpdateFeedbackWithGeoCircle();
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
                 }
 
@@ -233,6 +242,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -285,6 +297,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                 {
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
@@ -314,6 +329,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     RaisePropertyChanged(() => TravelRateString);
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -346,6 +364,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 base.LineDistanceType = value;
+
+                double distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, Distance);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
             }
         }
 
@@ -386,7 +414,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 rateUnit = value;
 
                 // Prevent graphical glitches from excessively high inputs
-                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                double distanceInMeters = ConvertFromTo(rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    RaisePropertyChanged(() => TravelTimeString);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
 
@@ -416,6 +454,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -484,8 +525,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return;
                 }
 
-                base.DistanceString = value;
-
                 // divide the manual input by 2
                 double d = 0.0;
                 if (double.TryParse(value, out d))
@@ -505,18 +544,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     Distance = d;
 
-                    UpdateFeedbackWithGeoCircle();
-                    if (CircleType == CircleFromTypes.Diameter)
-                        d /= 2.0;
-
-                    Distance = d;
+                    double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
+                    if (distanceInMeters > DistanceLimit)
+                    {
+                        ClearTempGraphics();
+                        if (HasPoint1)
+                            // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                            AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    }
 
                     UpdateFeedbackWithGeoCircle();
                 }
                 else
                 {
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
+
+                // Trigger update to clear exception highlighting if necessary
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 

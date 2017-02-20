@@ -457,8 +457,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 // lets avoid an infinite loop here
-                if (string.Equals(base.DistanceString, value))
-                    return;
+                if (CircleType == CircleFromTypes.Diameter)
+                {
+                    if (string.Equals(base.DistanceString, (Convert.ToDouble(value) * 2.0).ToString()))
+                        return;
+                }
+                else
+                {
+                    if (string.Equals(base.DistanceString, value))
+                        return;
+                }
 
                 // divide the manual input by 2
                 double d = 0.0;
