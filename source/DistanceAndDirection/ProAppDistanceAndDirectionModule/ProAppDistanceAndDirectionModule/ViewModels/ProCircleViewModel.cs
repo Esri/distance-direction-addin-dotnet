@@ -51,6 +51,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Properties
 
+        private double DistanceLimit = 20000000;
+
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
         /// Type of circle property
@@ -65,9 +67,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 circleType = value;
 
+                // Prevent graphical glitches from excessively high inputs
+                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                
                 if (IsDistanceCalcExpanded)
                 {
-                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
                 }
                 else
                 {
@@ -102,11 +107,23 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
                 }
 
-                timeUnit = value;
+                // Prevent graphical glitches from excessively high inputs
+                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    RaisePropertyChanged(() => TravelTimeString);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
 
-                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
 
+                // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
+                RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => TravelTimeString);
             }
         }
 
@@ -158,6 +175,36 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        string travelTimeString;
+        /// <summary>
+        /// String of time display
+        /// </summary>
+        public string TravelTimeString
+        {
+            get
+            {
+                return TravelTime.ToString("G");
+            }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(travelTimeString, value))
+                    return;
+
+                // divide the manual input by 2
+                double t = 0.0;
+                if (double.TryParse(value, out t))
+                {
+                    TravelTime = t;
+                }
+                else
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+            }
+        }
+
         double travelTime = 0.0;
         /// <summary>
         /// Property for time display
@@ -171,24 +218,76 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 if (value < 0.0)
+                {
+                    UpdateFeedbackWithGeoCircle();
+                    ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                }
 
                 travelTime = value;
 
-                // we need to make sure we are in the same units as the Distance property before setting
-                UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit);
+                // Prevent graphical glitches from excessively high inputs
+                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    RaisePropertyChanged(() => TravelTimeString);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
 
-                RaisePropertyChanged(() => TravelTime);
+                // we need to make sure we are in the same units as the Distance property before setting
+                UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
+
+                // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => RateTimeUnit);
+                RaisePropertyChanged(() => TimeUnit);
+                RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => TravelTimeString);
             }
         }
 
-        private void UpdateDistance(double distance, DistanceTypes fromDistanceType)
+        private void UpdateDistance(double distance, DistanceTypes fromDistanceType, bool belowLimit)
         {
             if(CircleType == CircleFromTypes.Diameter)
                 Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance) * 2.0;
             else
                 Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
-            UpdateFeedbackWithGeoCircle();
+
+            if (belowLimit)
+            {
+                UpdateFeedbackWithGeoCircle();
+            }
+        }
+
+        string travelRateString;
+        /// <summary>
+        /// String of rate display
+        /// </summary>
+        public string TravelRateString
+        {
+            get
+            {
+                return TravelRate.ToString("G");
+            }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(travelRateString, value))
+                    return;
+
+                // divide the manual input by 2
+                double t = 0.0;
+                if (double.TryParse(value, out t))
+                {
+                    TravelRate = t;
+                }
+                else
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+            }
         }
 
         double travelRate = 0.0;
@@ -208,9 +307,23 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 travelRate = value;
 
-                UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit);
+                // Prevent graphical glitches from excessively high inputs
+                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    RaisePropertyChanged(() => TravelRateString);
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
 
-                RaisePropertyChanged(() => TravelRate);
+                UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
+                RaisePropertyChanged(() => TravelRateString);
+
+                // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => RateTimeUnit);
+                RaisePropertyChanged(() => TimeUnit);
             }
         }
 
@@ -272,7 +385,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 rateUnit = value;
 
-                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
+                // Prevent graphical glitches from excessively high inputs
+                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
 
                 RaisePropertyChanged(() => RateUnit);
             }
@@ -293,9 +409,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 rateTimeUnit = value;
 
-                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
+                // Prevent graphical glitches from excessively high inputs
+                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    RaisePropertyChanged(() => TravelTimeString);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
 
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
+
+                // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => RateTimeUnit);
+                RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => TravelRateString);
             }
         }
 
@@ -422,9 +551,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             base.OnNewMapPointEvent(obj);
 
+            // Prevent graphical glitches from excessively high inputs
+            double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+
             if (IsDistanceCalcExpanded)
             {
-                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
             }
         }
 
