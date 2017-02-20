@@ -124,9 +124,7 @@
                                    Text="{x:Static prop:Resources.LabelTime}" />
                         <TextBox 
                                  Margin="3,3,0,0"
-                                 Text="{Binding Path=TravelTime,
-                                                FallbackValue=0,
-                                                Mode=Default,
+                                 Text="{Binding Path=TravelTimeString,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">
@@ -159,9 +157,7 @@
                                    Text="{x:Static prop:Resources.LabelRate}" />
                         <TextBox 
                                  Margin="3,3,0,0"
-                                 Text="{Binding Path=TravelRate,
-                                                Mode=Default,
-                                                FallbackValue=0,
+                                 Text="{Binding Path=TravelRateString,
                                                 UpdateSourceTrigger=PropertyChanged,
                                                 ValidatesOnExceptions=True}"
                                  Validation.ErrorTemplate="{StaticResource errorTemplate}">

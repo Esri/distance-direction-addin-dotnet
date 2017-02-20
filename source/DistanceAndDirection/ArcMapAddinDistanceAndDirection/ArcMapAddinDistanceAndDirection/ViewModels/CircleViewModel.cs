@@ -81,7 +81,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
@@ -90,9 +90,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
 
                 // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
-                RaisePropertyChanged(() => TravelTime);
-                RaisePropertyChanged(() => TravelRate);
+                RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => TravelTimeString);
             }
         }
 
@@ -144,6 +145,36 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        string travelTimeString;
+        /// <summary>
+        /// String of time display
+        /// </summary>
+        public string TravelTimeString
+        {
+            get
+            {
+                return TravelTime.ToString("G");
+            }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(travelTimeString, value))
+                    return;
+
+                // divide the manual input by 2
+                double t = 0.0;
+                if (double.TryParse(value, out t))
+                {
+                    TravelTime = t;
+                }
+                else
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+            }
+        }
+
         double travelTime = 0.0;
         /// <summary>
         /// Property for time display
@@ -169,7 +200,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
@@ -177,12 +208,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // we need to make sure we are in the same units as the Distance property before setting
                 UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
-                RaisePropertyChanged(() => TravelTime);
 
                 // Trigger validation to clear error messages as necessary
-                RaisePropertyChanged(() => TravelRate);
                 RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
+                RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => TravelTimeString);
             }
         }
 
@@ -193,6 +224,36 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (belowLimit)
             {
                 UpdateFeedbackWithGeoCircle();
+            }
+        }
+
+        string travelRateString;
+        /// <summary>
+        /// String of rate display
+        /// </summary>
+        public string TravelRateString
+        {
+            get
+            {
+                return TravelRate.ToString("G");
+            }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(travelRateString, value))
+                    return;
+
+                // divide the manual input by 2
+                double t = 0.0;
+                if (double.TryParse(value, out t))
+                {
+                    TravelRate = t;
+                }
+                else
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
             }
         }
 
@@ -221,16 +282,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (distanceInMeters > DistanceLimit)
                 {
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
-                    RaisePropertyChanged(() => TravelRate);
+                    RaisePropertyChanged(() => TravelRateString);
                     ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
                 UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
-                RaisePropertyChanged(() => TravelRate);
+                RaisePropertyChanged(() => TravelRateString);
 
                 // Trigger validation to clear error messages as necessary
-                RaisePropertyChanged(() => TravelTime);
+                RaisePropertyChanged(() => TravelTimeString);
                 RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
             }
@@ -275,7 +336,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
@@ -306,7 +367,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
@@ -316,8 +377,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => RateTimeUnit);
-                RaisePropertyChanged(() => TravelTime);
-                RaisePropertyChanged(() => TravelRate);
+                RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => TravelRateString);
             }
         }
 
@@ -468,7 +529,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
