@@ -53,6 +53,38 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 circleType = value;
 
+                if (!isDistanceCalcExpanded)
+                {
+                    // We have to explicitly redo the graphics here because otherwise DistanceString has not changed
+                    // and thus no graphics update will be triggered
+                    double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
+                    if (distanceInMeters > DistanceLimit)
+                    {
+                        ClearTempGraphics();
+                        if (HasPoint1)
+                            // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    }
+                    // Avoid null reference exception during automated testing
+                    if (ArcMap.Application != null)
+                    {
+                        UpdateFeedbackWithGeoCircle();
+                    }
+                }
+                else
+                {
+                    // We just want to update the value in the Radius / Diameter field
+                    if (circleType == CircleFromTypes.Radius)
+                    {
+                        Distance = Distance / 2;
+                    }
+                    else
+                    {
+                        Distance = Distance * 2;
+                    }
+                }
+
                 // reset distance
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
@@ -97,6 +129,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => TimeUnit);
                 RaisePropertyChanged(() => TravelRateString);
                 RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -226,15 +259,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => TimeUnit);
                 RaisePropertyChanged(() => TravelRateString);
                 RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType, bool belowLimit)
         {
-            if (CircleType == CircleFromTypes.Diameter)
-                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance) * 2.0;
-            else
-                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
+            Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
 
             if (belowLimit)
             {
@@ -318,6 +349,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => TravelTimeString);
                 RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -407,8 +439,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => RateTimeUnit);
+                RaisePropertyChanged(() => TimeUnit);
                 RaisePropertyChanged(() => TravelTimeString);
                 RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -439,42 +473,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
         /// <summary>
-        /// Distance is always the radius
         /// Update DistanceString for user
-        /// Do nothing for Radius mode, double the radius for Diameter mode
         /// </summary>
         public override string DistanceString
         {
             get
             {
-                if (CircleType == CircleFromTypes.Diameter)
-                {
-                    return (Distance * 2.0).ToString("G");
-                }
-
                 return base.DistanceString;
             }
             set
             {
                 // lets avoid an infinite loop here
-                if (CircleType == CircleFromTypes.Diameter)
-                {
-                    if (string.Equals(base.DistanceString, (Convert.ToDouble(value) * 2.0).ToString()))
-                        return;
-                }
-                else
-                {
-                    if (string.Equals(base.DistanceString, value))
-                        return;
-                }
-
+                if (string.Equals(base.DistanceString, value))
+                    return;
+                
                 // divide the manual input by 2
                 double d = 0.0;
                 if (double.TryParse(value, out d))
                 { 
-                    if (CircleType == CircleFromTypes.Diameter)
-                        d /= 2.0;
-
+                    
                     Distance = d;
 
                     double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
@@ -534,10 +551,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     var before = base.LineDistanceType;
                     var temp = ConvertFromTo(before, value, Distance);
-                    if (CircleType == CircleFromTypes.Diameter)
-                        Distance = temp * 2.0;
-                    else
-                        Distance = temp;
+                    Distance = temp;
                 }
 
                 base.LineDistanceType = value;
@@ -632,9 +646,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 ClearTempGraphics();
                 if (HasPoint1)
+                {
                     // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                     AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
-                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                }
+
+                // Handle Radius/Diameter combobox
+                double radiusDistance = Distance;
+                if (circleType == CircleFromTypes.Diameter)
+                {
+                    radiusDistance = Distance / 2;
+                }
+
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radiusDistance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
                 var color = new RgbColorClass() as IColor;
                 this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
@@ -682,6 +706,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return null;
             }
 
+            // This section including UpdateDistance serves to handle Diameter appropriately
             var polyLine = new Polyline() as IPolyline;
             polyLine.SpatialReference = Point1.SpatialReference;
             var ptCol = polyLine as IPointCollection;
@@ -706,26 +731,91 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         //Get centroid of polygon
                         var area = newPoly as IArea;
 
-                        // Ensure we use the correct distance, dependent on whether we are in Radius or Diameter mode
-                        string distanceLabel;
-                        if (circleType == CircleFromTypes.Radius)
+                        
+                        string unitLabel = "";
+                        int roundingFactor = 0;
+                        // If Distance Calculator is in use, use the unit from the Rate combobox
+                        // to label the circle
+                        if (IsDistanceCalcExpanded)
                         {
-                            distanceLabel = Math.Round(Distance, 2).ToString("N2");
+                            // Select appropriate label and number of decimal places
+                            switch (RateUnit)
+                            {
+                                case DistanceTypes.Feet:
+                                case DistanceTypes.Meters:
+                                case DistanceTypes.Yards:
+                                    unitLabel = RateUnit.ToString();
+                                    roundingFactor = 2;
+                                    break;
+                                case DistanceTypes.Miles:
+                                case DistanceTypes.Kilometers:
+                                    unitLabel = RateUnit.ToString();
+                                    roundingFactor = 6;
+                                    break;
+                                case DistanceTypes.NauticalMile:
+                                    unitLabel = "Nautical Miles";
+                                    roundingFactor = 6;
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        // Else Distance Calculator not in use, use the unit from the Radius / Diameter combobox
+                        // to label the circle
+                        else
+                        {
+                            // Select appropriate number of decimal places
+                            switch (LineDistanceType)
+                            {
+                                case DistanceTypes.Feet:
+                                case DistanceTypes.Meters:
+                                case DistanceTypes.Yards:
+                                    unitLabel = RateUnit.ToString();
+                                    roundingFactor = 1;
+                                    break;
+                                case DistanceTypes.Miles:
+                                case DistanceTypes.Kilometers:
+                                    unitLabel = RateUnit.ToString();
+                                    roundingFactor = 4;
+                                    break;
+                                case DistanceTypes.NauticalMile:
+                                    unitLabel = "Nautical Miles";
+                                    roundingFactor = 4;
+                                    break;
+                                default:
+                                    break;
+                            }
+
+                            DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
+                            unitLabel = dtVal.ToString();
+                        }
+
+                        double convertedDistance = Distance;
+                        // Distance is storing radius not diameter, so we have to double it to get the correct value
+                        // for the label
+                        if (circleType == CircleFromTypes.Diameter)
+                        {
+                            convertedDistance *= 2;
+                        }
+
+                        string distanceLabel ="";
+                        // Use the unit from Rate combobox if Distance Calculator is expanded
+                        if (IsDistanceCalcExpanded)
+                        {
+                            convertedDistance = ConvertFromTo(LineDistanceType, RateUnit, convertedDistance);
+                            distanceLabel = (TrimPrecision(convertedDistance, RateUnit, true)).ToString("N"+roundingFactor.ToString());
                         }
                         else
                         {
-                            distanceLabel = Math.Round((Distance * 2), 2).ToString("N2");
+                            distanceLabel = (TrimPrecision(convertedDistance, LineDistanceType, false)).ToString("N" + roundingFactor.ToString());
                         }
 
                         //Add text using centroid point
                         //Use circleType to ensure our label contains either Radius or Diameter dependent on mode
-                        DistanceTypes dtVal = (DistanceTypes)LineDistanceType; //Get line distance type
                         this.AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}",
                             circleType,
                             distanceLabel,
-                            dtVal.ToString()));
-
-
+                            unitLabel));
                     }
 
                     Point2 = null;

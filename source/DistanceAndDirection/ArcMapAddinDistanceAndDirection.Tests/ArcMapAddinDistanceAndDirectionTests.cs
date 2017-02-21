@@ -290,7 +290,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             Assert.AreEqual(circleVM.Distance, 1000.0);
 
             circleVM.CircleType = CircleFromTypes.Diameter;
-            Assert.AreEqual(circleVM.DistanceString, "2000");
+            Assert.AreEqual(circleVM.DistanceString, "1000");
         }
 
         #endregion Circle View Model

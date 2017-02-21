@@ -1239,14 +1239,26 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         }
 
         // Overload for calling from another class where lineDistanceType is not available
-        protected double TrimPrecision(double inputDistance)
+        protected double TrimPrecision(double inputDistance, bool lax)
         {
-            return TrimPrecision(inputDistance, lineDistanceType);
+            return TrimPrecision(inputDistance, lineDistanceType, lax);
         }
 
-        // Remove superfluous precision with
-        protected double TrimPrecision(double inputDistance, DistanceTypes lineDistanceType_param)
+        // Remove superfluous precision
+        protected double TrimPrecision(double inputDistance, DistanceTypes lineDistanceType_param, bool lax)
         {
+            int largeUnitRoundingFactor = 4;
+            int smallUnitRoundingFactor = 1;
+            
+            // We have a less strict mode for trimming precision for the case that the user
+            // has Distance Calculator expanded and thus might have a large unit selected
+            // - otherwise we can trim label down to e.g. 0.00 Miles
+            if (lax)
+            {
+                largeUnitRoundingFactor = 6;
+                smallUnitRoundingFactor = 2;    
+            }
+
             double returnDistance = 0;
             // For smaller units assume a tenth is sufficient
             // For larger units provide ten thousandth i.e. 4 decimal places, probably more than sufficient
@@ -1255,12 +1267,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 case DistanceTypes.Kilometers:
                 case DistanceTypes.Miles:
                 case DistanceTypes.NauticalMile:
-                    returnDistance = Math.Round(inputDistance, 4);
+                    returnDistance = Math.Round(inputDistance, largeUnitRoundingFactor);
                     break;
                 case DistanceTypes.Meters:
                 case DistanceTypes.Feet:
                 case DistanceTypes.Yards:
-                    returnDistance = Math.Round(inputDistance, 1);
+                    returnDistance = Math.Round(inputDistance, smallUnitRoundingFactor);
                     break;
                 default:
                 break;
@@ -1353,7 +1365,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             double rawDistance = GetGeodeticLengthFromPolyline(polyline);
             // Round the superfluous precision appropriately to unit
-            Distance = TrimPrecision(rawDistance, lineDistanceType);
+            Distance = TrimPrecision(rawDistance, lineDistanceType, false);
         }
 
         /// <summary>

@@ -109,7 +109,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     // Despite being too large we still need to set this in order that we can
                     // avoid drawing preview if necessary when minorAxisDistance is varied
-                    minorAxisDistance = TrimPrecision(value);
+                    minorAxisDistance = TrimPrecision(value, false);
                     ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
@@ -117,13 +117,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     // Despite being too large we still need to set this in order that we can
                     // avoid drawing preview if necessary when minorAxisDistance is varied
-                    minorAxisDistance = TrimPrecision(value);
+                    minorAxisDistance = TrimPrecision(value, false);
                     ClearTempGraphics();
                     return;
                 }
                 
 
-                minorAxisDistance = TrimPrecision(value);
+                minorAxisDistance = TrimPrecision(value, false);
 
                 UpdateFeedbackWithEllipse();
 
@@ -186,12 +186,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     // Despite being too large we still need to set this in order that we can
                     // avoid drawing preview if necessary when minorAxisDistance is varied
-                    majorAxisDistance = TrimPrecision(value);
+                    majorAxisDistance = TrimPrecision(value, false);
                     ClearTempGraphics();
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
-                majorAxisDistance = TrimPrecision(value);
+                majorAxisDistance = TrimPrecision(value, false);
 
                 Point2 = UpdateFeedback(Point1, MajorAxisDistance);
 
