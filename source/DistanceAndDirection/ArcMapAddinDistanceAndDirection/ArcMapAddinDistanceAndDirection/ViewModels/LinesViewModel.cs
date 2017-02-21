@@ -109,7 +109,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
-                distance = TrimPrecision(value);
+                distance = TrimPrecision(value, false);
                 RaisePropertyChanged(() => Distance);
 
                 if(LineFromType == LineFromTypes.BearingAndDistance)

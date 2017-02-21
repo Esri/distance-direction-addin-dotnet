@@ -129,6 +129,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => TimeUnit);
                 RaisePropertyChanged(() => TravelRateString);
                 RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -258,6 +259,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => TimeUnit);
                 RaisePropertyChanged(() => TravelRateString);
                 RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -347,6 +349,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => TravelTimeString);
                 RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -436,8 +439,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => RateTimeUnit);
+                RaisePropertyChanged(() => TimeUnit);
                 RaisePropertyChanged(() => TravelTimeString);
                 RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -726,24 +731,30 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         //Get centroid of polygon
                         var area = newPoly as IArea;
 
+                        
                         string unitLabel = "";
+                        int roundingFactor = 0;
                         // If Distance Calculator is in use, use the unit from the Rate combobox
                         // to label the circle
                         if (IsDistanceCalcExpanded)
                         {
                             // Select appropriate label and number of decimal places
-                            int roundingFactor = 0;
                             switch (RateUnit)
                             {
                                 case DistanceTypes.Feet:
-                                case DistanceTypes.Kilometers:
                                 case DistanceTypes.Meters:
-                                case DistanceTypes.Miles:
                                 case DistanceTypes.Yards:
                                     unitLabel = RateUnit.ToString();
+                                    roundingFactor = 2;
+                                    break;
+                                case DistanceTypes.Miles:
+                                case DistanceTypes.Kilometers:
+                                    unitLabel = RateUnit.ToString();
+                                    roundingFactor = 6;
                                     break;
                                 case DistanceTypes.NauticalMile:
                                     unitLabel = "Nautical Miles";
+                                    roundingFactor = 6;
                                     break;
                                 default:
                                     break;
@@ -753,6 +764,28 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         // to label the circle
                         else
                         {
+                            // Select appropriate number of decimal places
+                            switch (LineDistanceType)
+                            {
+                                case DistanceTypes.Feet:
+                                case DistanceTypes.Meters:
+                                case DistanceTypes.Yards:
+                                    unitLabel = RateUnit.ToString();
+                                    roundingFactor = 1;
+                                    break;
+                                case DistanceTypes.Miles:
+                                case DistanceTypes.Kilometers:
+                                    unitLabel = RateUnit.ToString();
+                                    roundingFactor = 4;
+                                    break;
+                                case DistanceTypes.NauticalMile:
+                                    unitLabel = "Nautical Miles";
+                                    roundingFactor = 4;
+                                    break;
+                                default:
+                                    break;
+                            }
+
                             DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
                             unitLabel = dtVal.ToString();
                         }
@@ -765,7 +798,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                             convertedDistance *= 2;
                         }
 
-                        string distanceLabel = (TrimPrecision(convertedDistance)).ToString("N2");
+                        string distanceLabel ="";
+                        // Use the unit from Rate combobox if Distance Calculator is expanded
+                        if (IsDistanceCalcExpanded)
+                        {
+                            convertedDistance = ConvertFromTo(LineDistanceType, RateUnit, convertedDistance);
+                            distanceLabel = (TrimPrecision(convertedDistance, RateUnit, true)).ToString("N"+roundingFactor.ToString());
+                        }
+                        else
+                        {
+                            distanceLabel = (TrimPrecision(convertedDistance, LineDistanceType, false)).ToString("N" + roundingFactor.ToString());
+                        }
 
                         //Add text using centroid point
                         //Use circleType to ensure our label contains either Radius or Diameter dependent on mode
