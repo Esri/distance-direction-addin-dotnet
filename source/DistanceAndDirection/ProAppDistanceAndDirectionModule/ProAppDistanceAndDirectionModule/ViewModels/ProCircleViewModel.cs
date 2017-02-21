@@ -59,6 +59,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public CircleFromTypes CircleType
         {
+
             get { return circleType; }
             set
             {
@@ -67,8 +68,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 circleType = value;
 
-                // Prevent graphical glitches from excessively high inputs
-                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
                 
                 if (IsDistanceCalcExpanded)
                 {
@@ -94,8 +99,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public TimeUnits TimeUnit
         {
-            get
-            {
+            
+            get {
                 return timeUnit;
             }
             set
@@ -105,9 +110,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
                 }
                 timeUnit = value;
+                
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
 
-                // Prevent graphical glitches from excessively high inputs
-                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -183,6 +193,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public string TravelTimeString
         {
+           
+
+            
             get
             {
                 return TravelTime.ToString("G");
@@ -216,6 +229,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public double TravelTime
         {
+            
             get
             {
                 return travelTime;
@@ -233,9 +247,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 travelTime = value;
-
-                // Prevent graphical glitches from excessively high inputs
-                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -256,6 +274,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 RaisePropertyChanged(() => TravelRateString);
                 RaisePropertyChanged(() => TravelTimeString);
             }
+
         }
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType, bool belowLimit)
@@ -274,6 +293,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public string TravelRateString
         {
+            
             get
             {
                 return TravelRate.ToString("G");
@@ -307,6 +327,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public double TravelRate
         {
+            
             get
             {
                 return travelRate;
@@ -318,8 +339,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 travelRate = value;
 
-                // Prevent graphical glitches from excessively high inputs
-                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
                 if (distanceInMeters > DistanceLimit)
                 {
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
@@ -361,7 +386,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 base.LineDistanceType = value;
 
-                double distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, Distance);
+                double distanceInMeters = Distance;
+                if (value != DistanceTypes.Meters)
+                {
+                    distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, Distance);
+                }
                 if (distanceInMeters > DistanceLimit)
                 {
                     ClearTempGraphics();
@@ -409,8 +438,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 rateUnit = value;
 
-                // Prevent graphical glitches from excessively high inputs
-                double distanceInMeters = ConvertFromTo(rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (rateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -443,8 +476,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 rateTimeUnit = value;
 
-                // Prevent graphical glitches from excessively high inputs
-                double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -540,7 +577,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     Distance = d;
 
-                    double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
+                    double distanceInMeters = Distance;
+                    if (RateUnit != DistanceTypes.Meters)
+                    {
+                        distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, Distance);
+                    }
                     if (distanceInMeters > DistanceLimit)
                     {
                         ClearTempGraphics();
@@ -597,8 +638,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             base.OnNewMapPointEvent(obj);
 
-            // Prevent graphical glitches from excessively high inputs
-            double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+            double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+            if (RateUnit != DistanceTypes.Meters)
+            {
+                // Prevent graphical glitches from excessively high inputs
+                distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+            }
 
             if (IsDistanceCalcExpanded)
             {
@@ -682,6 +727,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private Geometry CreateCircle(bool isFeedback)
         {
+            
             if (Point1 == null || double.IsNaN(Distance) || Distance <= 0.0)
             {
                 return null;

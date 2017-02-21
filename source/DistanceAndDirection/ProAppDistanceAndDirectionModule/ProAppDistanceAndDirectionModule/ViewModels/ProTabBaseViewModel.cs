@@ -904,7 +904,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             await AddGraphicToMap(newline, ColorFactory.GreyRGB, null, true);
         }
 
-
         internal LinearUnit GetLinearUnit(DistanceTypes dtype)
         {
             LinearUnit result = LinearUnit.Meters;
