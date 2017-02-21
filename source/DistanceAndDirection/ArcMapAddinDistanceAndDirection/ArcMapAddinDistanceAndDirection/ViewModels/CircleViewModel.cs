@@ -81,18 +81,22 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
 
                 // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
-                RaisePropertyChanged(() => TravelTime);
-                RaisePropertyChanged(() => TravelRate);
+                RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => TravelTimeString);
             }
         }
 
@@ -144,6 +148,39 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        string travelTimeString;
+        /// <summary>
+        /// String of time display
+        /// </summary>
+        public string TravelTimeString
+        {
+            get
+            {
+                return TravelTime.ToString("G");
+            }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(travelTimeString, value))
+                    return;
+
+                // divide the manual input by 2
+                double t = 0.0;
+                if (double.TryParse(value, out t))
+                {
+                    TravelTime = t;
+                }
+                else
+                {
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+            }
+        }
+
         double travelTime = 0.0;
         /// <summary>
         /// Property for time display
@@ -160,6 +197,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     UpdateFeedbackWithGeoCircle();
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
                 }
 
@@ -169,30 +209,69 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
                 // we need to make sure we are in the same units as the Distance property before setting
                 UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
-                RaisePropertyChanged(() => TravelTime);
 
                 // Trigger validation to clear error messages as necessary
-                RaisePropertyChanged(() => TravelRate);
                 RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
+                RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => TravelTimeString);
             }
         }
 
         private void UpdateDistance(double distance, DistanceTypes fromDistanceType, bool belowLimit)
         {
-            Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
+            if (CircleType == CircleFromTypes.Diameter)
+                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance) * 2.0;
+            else
+                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
 
             if (belowLimit)
             {
                 UpdateFeedbackWithGeoCircle();
+            }
+        }
+
+        string travelRateString;
+        /// <summary>
+        /// String of rate display
+        /// </summary>
+        public string TravelRateString
+        {
+            get
+            {
+                return TravelRate.ToString("G");
+            }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(travelRateString, value))
+                    return;
+
+                // divide the manual input by 2
+                double t = 0.0;
+                if (double.TryParse(value, out t))
+                {
+                    TravelRate = t;
+                }
+                else
+                {
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
             }
         }
 
@@ -211,6 +290,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (value < 0.0)
                 {
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
                 }
 
@@ -221,16 +303,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (distanceInMeters > DistanceLimit)
                 {
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
-                    RaisePropertyChanged(() => TravelRate);
+                    RaisePropertyChanged(() => TravelRateString);
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
                 UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
-                RaisePropertyChanged(() => TravelRate);
+                RaisePropertyChanged(() => TravelRateString);
 
                 // Trigger validation to clear error messages as necessary
-                RaisePropertyChanged(() => TravelTime);
+                RaisePropertyChanged(() => TravelTimeString);
                 RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
             }
@@ -275,9 +360,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -306,9 +394,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -316,8 +407,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => RateTimeUnit);
-                RaisePropertyChanged(() => TravelTime);
-                RaisePropertyChanged(() => TravelRate);
+                RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => TravelRateString);
             }
         }
 
@@ -366,8 +457,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             set
             {
                 // lets avoid an infinite loop here
-                if (string.Equals(base.DistanceString, value))
-                    return;
+                if (CircleType == CircleFromTypes.Diameter)
+                {
+                    if (string.Equals(base.DistanceString, (Convert.ToDouble(value) * 2.0).ToString()))
+                        return;
+                }
+                else
+                {
+                    if (string.Equals(base.DistanceString, value))
+                        return;
+                }
 
                 // divide the manual input by 2
                 double d = 0.0;
@@ -383,6 +482,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     if (distanceInMeters > DistanceLimit)
                     {
                         ClearTempGraphics();
+                        if (HasPoint1)
+                            // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                     }
 
@@ -391,8 +493,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 else
                 {
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
+
+                // Trigger update to clear exception highlighting if necessary
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -438,6 +546,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (distanceInMeters > DistanceLimit)
                 {
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -468,9 +579,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTime);
+                    RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -517,7 +631,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (construct != null)
             {
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                if (HasPoint1)
+                    // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
                 var color = new RgbColorClass() as IColor;

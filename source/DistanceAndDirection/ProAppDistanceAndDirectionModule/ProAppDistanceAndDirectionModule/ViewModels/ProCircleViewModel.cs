@@ -51,12 +51,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Properties
 
+        private double DistanceLimit = 20000000;
+
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
         /// Type of circle property
         /// </summary>
         public CircleFromTypes CircleType
         {
+
             get { return circleType; }
             set
             {
@@ -65,16 +68,21 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 circleType = value;
 
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
+                
                 if (IsDistanceCalcExpanded)
                 {
-                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
                 }
                 else
                 {
                     if (value == CircleFromTypes.Diameter)
-                        Distance /= 2.0;
-                    else
-                        Distance *= 2.0;
+                        DistanceString = (base.Distance * 2.0).ToString("G");
                 }
 
                 // reset distance
@@ -91,8 +99,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public TimeUnits TimeUnit
         {
-            get
-            {
+            
+            get {
                 return timeUnit;
             }
             set
@@ -101,12 +109,33 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     return;
                 }
-
                 timeUnit = value;
+                
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
 
-                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    RaisePropertyChanged(() => TravelTimeString);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    ClearTempGraphics();
+                    if(HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
 
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
+
+                // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => RateTimeUnit);
                 RaisePropertyChanged(() => TimeUnit);
+                RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => TravelTimeString);
             }
         }
 
@@ -158,12 +187,49 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        string travelTimeString;
+        /// <summary>
+        /// String of time display
+        /// </summary>
+        public string TravelTimeString
+        {
+           
+
+            
+            get
+            {
+                return TravelTime.ToString("G");
+            }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(travelTimeString, value))
+                    return;
+
+                // divide the manual input by 2
+                double t = 0.0;
+                if (double.TryParse(value, out t))
+                {
+                    TravelTime = t;
+                }
+                else
+                {
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+            }
+        }
+
         double travelTime = 0.0;
         /// <summary>
         /// Property for time display
         /// </summary>
         public double TravelTime
         {
+            
             get
             {
                 return travelTime;
@@ -171,24 +237,88 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 if (value < 0.0)
+                {
+                    UpdateFeedbackWithGeoCircle();
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                }
 
                 travelTime = value;
+                
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
+                if (distanceInMeters > DistanceLimit)
+                {
+                    RaisePropertyChanged(() => TravelTimeString);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
 
                 // we need to make sure we are in the same units as the Distance property before setting
-                UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit);
+                UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
 
-                RaisePropertyChanged(() => TravelTime);
+                // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => RateTimeUnit);
+                RaisePropertyChanged(() => TimeUnit);
+                RaisePropertyChanged(() => TravelRateString);
+                RaisePropertyChanged(() => TravelTimeString);
+            }
+
+        }
+
+        private void UpdateDistance(double distance, DistanceTypes fromDistanceType, bool belowLimit)
+        {
+            Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
+
+            if (belowLimit)
+            {
+                UpdateFeedbackWithGeoCircle();
             }
         }
 
-        private void UpdateDistance(double distance, DistanceTypes fromDistanceType)
+        string travelRateString;
+        /// <summary>
+        /// String of rate display
+        /// </summary>
+        public string TravelRateString
         {
-            if(CircleType == CircleFromTypes.Diameter)
-                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance) * 2.0;
-            else
-                Distance = ConvertFromTo(fromDistanceType, LineDistanceType, distance);
-            UpdateFeedbackWithGeoCircle();
+            
+            get
+            {
+                return TravelRate.ToString("G");
+            }
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(travelRateString, value))
+                    return;
+
+                // divide the manual input by 2
+                double t = 0.0;
+                if (double.TryParse(value, out t))
+                {
+                    TravelRate = t;
+                }
+                else
+                {
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+            }
         }
 
         double travelRate = 0.0;
@@ -197,6 +327,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public double TravelRate
         {
+            
             get
             {
                 return travelRate;
@@ -208,9 +339,30 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 travelRate = value;
 
-                UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit);
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
+                if (distanceInMeters > DistanceLimit)
+                {
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    RaisePropertyChanged(() => TravelRateString);
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
 
-                RaisePropertyChanged(() => TravelRate);
+                UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
+                RaisePropertyChanged(() => TravelRateString);
+
+                // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => RateTimeUnit);
+                RaisePropertyChanged(() => TimeUnit);
             }
         }
 
@@ -233,6 +385,20 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 base.LineDistanceType = value;
+
+                double distanceInMeters = Distance;
+                if (value != DistanceTypes.Meters)
+                {
+                    distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, Distance);
+                }
+                if (distanceInMeters > DistanceLimit)
+                {
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
             }
         }
 
@@ -272,7 +438,24 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 rateUnit = value;
 
-                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (rateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
+                if (distanceInMeters > DistanceLimit)
+                {
+                    RaisePropertyChanged(() => TravelTimeString);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
 
                 RaisePropertyChanged(() => RateUnit);
             }
@@ -293,9 +476,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 rateTimeUnit = value;
 
-                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
+                double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+                if (RateUnit != DistanceTypes.Meters)
+                {
+                    // Prevent graphical glitches from excessively high inputs
+                    distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                }
+                if (distanceInMeters > DistanceLimit)
+                {
+                    RaisePropertyChanged(() => TravelTimeString);
+                    UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
 
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
+
+                // Trigger validation to clear error messages as necessary
                 RaisePropertyChanged(() => RateTimeUnit);
+                RaisePropertyChanged(() => TravelTimeString);
+                RaisePropertyChanged(() => TravelRateString);
             }
         }
 
@@ -355,8 +558,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return;
                 }
 
-                base.DistanceString = value;
-
                 // divide the manual input by 2
                 double d = 0.0;
                 if (double.TryParse(value, out d))
@@ -376,18 +577,33 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     Distance = d;
 
-                    UpdateFeedbackWithGeoCircle();
-                    if (CircleType == CircleFromTypes.Diameter)
-                        d /= 2.0;
-
-                    Distance = d;
+                    double distanceInMeters = Distance;
+                    if (RateUnit != DistanceTypes.Meters)
+                    {
+                        distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, Distance);
+                    }
+                    if (distanceInMeters > DistanceLimit)
+                    {
+                        ClearTempGraphics();
+                        if (HasPoint1)
+                            // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                            AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    }
 
                     UpdateFeedbackWithGeoCircle();
                 }
                 else
                 {
+                    ClearTempGraphics();
+                    if (HasPoint1)
+                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                        AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
+
+                // Trigger update to clear exception highlighting if necessary
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -422,9 +638,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             base.OnNewMapPointEvent(obj);
 
+            double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
+            if (RateUnit != DistanceTypes.Meters)
+            {
+                // Prevent graphical glitches from excessively high inputs
+                distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+            }
+
             if (IsDistanceCalcExpanded)
             {
-                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit);
+                UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
             }
         }
 
@@ -504,6 +727,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private Geometry CreateCircle(bool isFeedback)
         {
+            
             if (Point1 == null || double.IsNaN(Distance) || Distance <= 0.0)
             {
                 return null;

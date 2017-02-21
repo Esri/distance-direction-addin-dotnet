@@ -288,6 +288,9 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             circleVM.Distance = 1000.0;
             circleVM.LineDistanceType = DistanceTypes.Kilometers;
             Assert.AreEqual(circleVM.Distance, 1000.0);
+
+            circleVM.CircleType = CircleFromTypes.Diameter;
+            Assert.AreEqual(circleVM.DistanceString, "2000");
         }
 
         #endregion Circle View Model
