@@ -53,21 +53,36 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 circleType = value;
 
-                // We have to explicitly redo the graphics here because otherwise DistanceString has not changed
-                // and thus no graphics update will be triggered
-                double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
-                if (distanceInMeters > DistanceLimit)
+                if (!isDistanceCalcExpanded)
                 {
-                    ClearTempGraphics();
-                    if (HasPoint1)
-                        // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    // We have to explicitly redo the graphics here because otherwise DistanceString has not changed
+                    // and thus no graphics update will be triggered
+                    double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
+                    if (distanceInMeters > DistanceLimit)
+                    {
+                        ClearTempGraphics();
+                        if (HasPoint1)
+                            // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    }
+                    // Avoid null reference exception during automated testing
+                    if (ArcMap.Application != null)
+                    {
+                        UpdateFeedbackWithGeoCircle();
+                    }
                 }
-                // Avoid null reference exception during automated testing
-                if (ArcMap.Application != null)
+                else
                 {
-                    UpdateFeedbackWithGeoCircle();
+                    // We just want to update the value in the Radius / Diameter field
+                    if (circleType == CircleFromTypes.Radius)
+                    {
+                        Distance = Distance / 2;
+                    }
+                    else
+                    {
+                        Distance = Distance * 2;
+                    }
                 }
 
                 // reset distance
