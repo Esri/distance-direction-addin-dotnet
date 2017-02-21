@@ -34,7 +34,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             bool blnBoundToRuntime = ESRI.ArcGIS.RuntimeManager.Bind(ESRI.ArcGIS.ProductCode.EngineOrDesktop);
             Assert.IsTrue(blnBoundToRuntime, "Not bound to runtime");
             IAoInitialize aoInitialize = new AoInitializeClass();
-            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeBasic);
+            aoInitialize.Initialize(esriLicenseProductCode.esriLicenseProductCodeStandard);
         }
 
         #region Lines View Model
@@ -290,7 +290,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             Assert.AreEqual(circleVM.Distance, 1000.0);
 
             circleVM.CircleType = CircleFromTypes.Diameter;
-            Assert.AreEqual(circleVM.DistanceString, "2000");
+            Assert.AreEqual(circleVM.DistanceString, "1000");
         }
 
         #endregion Circle View Model
