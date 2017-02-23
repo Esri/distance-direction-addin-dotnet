@@ -757,8 +757,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 
-                Point1Formatted = string.Empty;
-
                 var color = new RgbColorClass() { Green = 255 } as IColor;
                 AddGraphicToMap(Point1, color, true);
 
