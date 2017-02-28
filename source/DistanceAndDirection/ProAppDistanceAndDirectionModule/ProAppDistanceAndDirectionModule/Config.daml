@@ -25,7 +25,7 @@
       <controls>
         <!-- add your controls here -->
         <button id="ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane_ShowButton" caption="Distance and Direction" className="DistanceAndDirectionDockpane_ShowButton" loadOnClick="true" smallImage="Images\distance-direction-16.png" largeImage="Images\distance-direction-32.png">
-          <tooltip heading="Distance and Direction">
+          <tooltip heading="My Distance and Direction Tools">
             Interactively create geodetic circles, ellipses, range rings, and distance calculations based on time and rate. Created graphics can be saved to feature classes, shapefiles, and KMZ files.<disabledText />
           </tooltip>
         </button>
