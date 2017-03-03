@@ -745,16 +745,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                                 case DistanceTypes.Meters:
                                 case DistanceTypes.Yards:
                                     unitLabel = RateUnit.ToString();
-                                    roundingFactor = 2;
+                                    roundingFactor = 0;
                                     break;
                                 case DistanceTypes.Miles:
                                 case DistanceTypes.Kilometers:
                                     unitLabel = RateUnit.ToString();
-                                    roundingFactor = 6;
+                                    roundingFactor = 2;
                                     break;
                                 case DistanceTypes.NauticalMile:
                                     unitLabel = "Nautical Miles";
-                                    roundingFactor = 6;
+                                    roundingFactor = 2;
                                     break;
                                 default:
                                     break;
@@ -771,16 +771,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                                 case DistanceTypes.Meters:
                                 case DistanceTypes.Yards:
                                     unitLabel = RateUnit.ToString();
-                                    roundingFactor = 1;
+                                    roundingFactor = 0;
                                     break;
                                 case DistanceTypes.Miles:
                                 case DistanceTypes.Kilometers:
                                     unitLabel = RateUnit.ToString();
-                                    roundingFactor = 4;
+                                    roundingFactor = 2;
                                     break;
                                 case DistanceTypes.NauticalMile:
                                     unitLabel = "Nautical Miles";
-                                    roundingFactor = 4;
+                                    roundingFactor = 2;
                                     break;
                                 default:
                                     break;
@@ -793,17 +793,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         double convertedDistance = Distance;
                         // Distance is storing radius not diameter, so we have to double it to get the correct value
                         // for the label
-                        if (circleType == CircleFromTypes.Diameter)
+                        // Only use Diameter when Distance Calculator is not in use
+                        if (IsDistanceCalcExpanded && circleType == CircleFromTypes.Diameter)
                         {
                             convertedDistance *= 2;
                         }
 
+                        string circleTypeLabel = circleType.ToString();
                         string distanceLabel ="";
                         // Use the unit from Rate combobox if Distance Calculator is expanded
                         if (IsDistanceCalcExpanded)
                         {
                             convertedDistance = ConvertFromTo(LineDistanceType, RateUnit, convertedDistance);
                             distanceLabel = (TrimPrecision(convertedDistance, RateUnit, true)).ToString("N"+roundingFactor.ToString());
+                            // Always label with radius when Distance Calculator is expanded
+                            circleTypeLabel = "Radius";
                         }
                         else
                         {
@@ -811,9 +815,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         }
 
                         //Add text using centroid point
-                        //Use circleType to ensure our label contains either Radius or Diameter dependent on mode
                         this.AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}",
-                            circleType,
+                            circleTypeLabel,
                             distanceLabel,
                             unitLabel));
                     }
