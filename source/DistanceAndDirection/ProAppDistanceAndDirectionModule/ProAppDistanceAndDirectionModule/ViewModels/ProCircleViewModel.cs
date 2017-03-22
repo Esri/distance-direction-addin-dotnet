@@ -578,9 +578,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     Distance = d;
 
                     double distanceInMeters = Distance;
-                    if (RateUnit != DistanceTypes.Meters)
+                    if (LineDistanceType != DistanceTypes.Meters)
                     {
-                        distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, Distance);
+                        distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
                     }
                     if (distanceInMeters > DistanceLimit)
                     {
