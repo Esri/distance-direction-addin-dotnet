@@ -1050,7 +1050,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             textEle.Text = text;
             var elem = textEle as IElement;
             elem.Geometry = geom;
-
+            
             var eprop = elem as IElementProperties;
             eprop.Name = Guid.NewGuid().ToString();
 
@@ -1071,6 +1071,51 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             RaisePropertyChanged(() => HasMapGraphics);
         }
 
+        internal void AddTextToMap(IGeometry geom, string text, double angle, AzimuthTypes azimuthType)
+        {
+            var mxDoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxDoc.FocusMap as IActiveView;
+            var gc = av as IGraphicsContainer;
+            double bearing = 0.0;
+            if(azimuthType == AzimuthTypes.Mils)
+            {
+                bearing = angle * 0.05625;
+            }
+            else
+            {
+                bearing = angle;
+            }
+            double rotate = 360 - (bearing + 270.0) % 360;
+            if (rotate > 90 && rotate <= 270)
+                rotate = rotate - 180;
+            var textEle = new TextElement() as ITextElement;
+            textEle.Text = text;
+            ITextSymbol tsym = new TextSymbol();
+            
+            tsym.Angle = rotate;
+            textEle.Symbol = tsym;
+            var elem = textEle as IElement;
+            elem.Geometry = geom;
+
+            var eprop = elem as IElementProperties;
+            eprop.Name = Guid.NewGuid().ToString();
+
+            if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
+                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, false));
+            else if (this is LinesViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, false));
+            else if (this is CircleViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, false));
+            else if (this is EllipseViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, false));
+            else if (this is RangeViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, false));
+
+            gc.AddElement(elem, 0);
+            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+
+            RaisePropertyChanged(() => HasMapGraphics);
+        }
         /// <summary>
         /// Adds a graphic element to the map graphics container
         /// </summary>
