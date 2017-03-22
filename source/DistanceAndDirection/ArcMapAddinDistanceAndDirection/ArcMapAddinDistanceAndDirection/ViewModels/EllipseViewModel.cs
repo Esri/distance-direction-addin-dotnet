@@ -645,20 +645,39 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         //Add text using centroid point                        
                         DistanceTypes dtVal = (DistanceTypes)LineDistanceType; //Get line distance type                                                    
                         AzimuthTypes atVal = (AzimuthTypes)AzimuthType; //Get azimuth type
+                        EllipseTypes ellipseType = EllipseType;
+
                         if (area != null)
                         {
-                            AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
-                                "Major Axis",
-                                Math.Round(majorAxisDistance,2),
-                                dtVal.ToString(),
-                                Environment.NewLine,
-                                "Minor Axis",
-                                Math.Round(minorAxisDistance,2),
-                                dtVal.ToString(),
-                                Environment.NewLine,
-                                "Orientation Angle",
-                                Math.Round(azimuth,2),
-                                atVal.ToString()));
+                            if(ellipseType == EllipseTypes.Semi)
+                            {
+                                AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
+                                    "Major Axis",
+                                    Math.Round(majorAxisDistance, 2),
+                                    dtVal.ToString(),
+                                    Environment.NewLine,
+                                    "Minor Axis",
+                                    Math.Round(minorAxisDistance, 2),
+                                    dtVal.ToString(),
+                                    Environment.NewLine,
+                                    "Orientation Angle",
+                                    Math.Round(azimuth, 2),
+                                    atVal.ToString()));
+                            }
+                            else{
+                                AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
+                                    "Major Axis",
+                                    Math.Round(majorAxisDistance*2, 2),
+                                    dtVal.ToString(),
+                                    Environment.NewLine,
+                                    "Minor Axis",
+                                    Math.Round(minorAxisDistance*2, 2),
+                                    dtVal.ToString(),
+                                    Environment.NewLine,
+                                    "Orientation Angle",
+                                    Math.Round(azimuth, 2),
+                                    atVal.ToString()));
+                            }
                         }
                     }
                 }
