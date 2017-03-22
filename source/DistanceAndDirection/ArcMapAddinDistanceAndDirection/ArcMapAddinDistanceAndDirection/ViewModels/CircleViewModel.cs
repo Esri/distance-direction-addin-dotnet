@@ -794,7 +794,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         // Distance is storing radius not diameter, so we have to double it to get the correct value
                         // for the label
                         // Only use Diameter when Distance Calculator is not in use
-                        if (IsDistanceCalcExpanded && circleType == CircleFromTypes.Diameter)
+                        if (!IsDistanceCalcExpanded && circleType == CircleFromTypes.Diameter)
                         {
                             convertedDistance *= 2;
                         }
