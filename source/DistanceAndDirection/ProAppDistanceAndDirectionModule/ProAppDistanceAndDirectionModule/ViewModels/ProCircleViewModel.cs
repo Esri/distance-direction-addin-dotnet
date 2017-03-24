@@ -565,8 +565,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (CircleType == CircleFromTypes.Diameter)
                     {
                         if (Distance == d)
-                            return;   
-                        //return;
+                            return;  
                     }
                     else
                     {
@@ -582,7 +581,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     Distance = dist;
 
-                    //double distanceInMeters = Distance;
                     double distanceInMeters = dist;
                     if (LineDistanceType != DistanceTypes.Meters)
                     {
@@ -609,7 +607,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 // Trigger update to clear exception highlighting if necessary
-                RaisePropertyChanged(() => LineDistanceType);  
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
