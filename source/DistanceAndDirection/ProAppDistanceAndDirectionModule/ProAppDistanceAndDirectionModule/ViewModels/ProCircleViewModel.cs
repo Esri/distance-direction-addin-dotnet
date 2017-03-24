@@ -564,20 +564,24 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     if (CircleType == CircleFromTypes.Diameter)
                     {
-                            return;
+                        if (Distance == d)
+                            return;  
                     }
                     else
                     {
                         if (Distance == d)
                             return;
                     }
+                    double dist = 0.0;
                     if (CircleType == CircleFromTypes.Diameter)
-                        
-                        d /= 2.0;
 
-                    Distance = d;
+                        dist = d / 2.0;
+                    else
+                        dist = d;
 
-                    double distanceInMeters = Distance;
+                    Distance = dist;
+
+                    double distanceInMeters = dist;
                     if (LineDistanceType != DistanceTypes.Meters)
                     {
                         distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
