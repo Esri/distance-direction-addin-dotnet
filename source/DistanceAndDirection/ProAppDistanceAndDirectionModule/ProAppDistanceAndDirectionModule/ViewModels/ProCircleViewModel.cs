@@ -20,6 +20,7 @@ using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
@@ -54,6 +55,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private double DistanceLimit = 20000000;
         private Boolean EndsWithDecimal = false;
         private Boolean EndsWithComma = false;
+        private String decimalSeparator = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
         /// Type of circle property
@@ -541,41 +543,28 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (CircleType == CircleFromTypes.Diameter)
                 {
                     if (EndsWithDecimal)
-                        return (Distance * 2.0).ToString("G") + ".";
-                    else if(EndsWithComma)
-                        return (Distance * 2.0).ToString("G") + ",";
+                        return (Distance * 2.0).ToString("G") + decimalSeparator;
                     else
                         return (Distance * 2.0).ToString("G");
                 }
                 if (EndsWithDecimal)
-                    return base.DistanceString + ".";
-                else if(EndsWithComma)
-                    return base.DistanceString + ",";
+                    return base.DistanceString + decimalSeparator;
                 else
                     return base.DistanceString;
             }
             set
             {
                 //Handle for decimals
-                if(value.EndsWith("."))
+                if(value.EndsWith(decimalSeparator))
                 {
                     EndsWithDecimal = true;
-                    return;
+                    //return;
                 }
                 else
                 {
                     EndsWithDecimal = false;
                 }
 
-                if (value.EndsWith(","))
-                {
-                    EndsWithComma = true;
-                    return;
-                }
-                else
-                {
-                    EndsWithComma = false;
-                }
 
                 // lets avoid an infinite loop here    
                 if (CircleType == CircleFromTypes.Diameter)
