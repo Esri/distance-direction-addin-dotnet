@@ -53,7 +53,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private double DistanceLimit = 20000000;
         private Boolean EndsWithDecimal = false;
-
+        private Boolean EndsWithComma = false;
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
         /// Type of circle property
@@ -542,11 +542,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     if (EndsWithDecimal)
                         return (Distance * 2.0).ToString("G") + ".";
+                    else if(EndsWithComma)
+                        return (Distance * 2.0).ToString("G") + ",";
                     else
                         return (Distance * 2.0).ToString("G");
                 }
                 if (EndsWithDecimal)
                     return base.DistanceString + ".";
+                else if(EndsWithComma)
+                    return base.DistanceString + ",";
                 else
                     return base.DistanceString;
             }
@@ -562,6 +566,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     EndsWithDecimal = false;
                 }
+
+                if (value.EndsWith(","))
+                {
+                    EndsWithComma = true;
+                    return;
+                }
+                else
+                {
+                    EndsWithComma = false;
+                }
+
                 // lets avoid an infinite loop here    
                 if (CircleType == CircleFromTypes.Diameter)
                 {
