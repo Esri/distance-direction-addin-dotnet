@@ -558,7 +558,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if(value.EndsWith(decimalSeparator))
                 {
                     EndsWithDecimal = true;
-                    //return;
                 }
                 else
                 {
