@@ -71,6 +71,31 @@ namespace ProAppDistanceAndDirectionModule.Tests
             circleVM.Distance = 1000.0;
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ProCircleViewModel_ThrowsException5()
+        {
+            var circleVM = new ProCircleViewModel();
+            circleVM.DistanceString = "1000.3.4";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ProCircleViewModel_ExceedsLimit()
+        {
+            var circleVM = new ProCircleViewModel();
+            circleVM.DistanceString = "20000001";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ProCircleViewModel_ExceedsLimit2()
+        {
+            var circleVM = new ProCircleViewModel();
+            DistanceAndDirectionLibrary.CircleFromTypes diam = DistanceAndDirectionLibrary.CircleFromTypes.Diameter;
+            circleVM.CircleType = diam;
+            circleVM.DistanceString = "20000001";
+        }
         #endregion Circle View Model
 
         #region Ellipse View Model

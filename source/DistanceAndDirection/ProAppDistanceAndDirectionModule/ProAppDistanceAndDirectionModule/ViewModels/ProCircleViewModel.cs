@@ -552,7 +552,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             set
             {
-                // lets avoid an infinite loop here
+                //Handle for decimals
                 if(value.EndsWith("."))
                 {
                     EndsWithDecimal = true;
@@ -562,7 +562,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     EndsWithDecimal = false;
                 }
-                    
+                // lets avoid an infinite loop here    
                 if (CircleType == CircleFromTypes.Diameter)
                 {
                     if (string.Equals(base.DistanceString, (Convert.ToDouble(value)*2.0).ToString()))
