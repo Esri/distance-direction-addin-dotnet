@@ -20,6 +20,7 @@ using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
@@ -52,7 +53,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         #region Properties
 
         private double DistanceLimit = 20000000;
-
+        private Boolean EndsWithDecimal = false;
+        private String decimalSeparator = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
         /// Type of circle property
@@ -537,16 +539,57 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
+                String dString = "";
                 if (CircleType == CircleFromTypes.Diameter)
                 {
-                    return (Distance * 2.0).ToString("G");
-                }
+                    if (EndsWithDecimal)
+                    {
+                        dString = (Distance * 2.0).ToString("G");
+                        if (dString.Contains(decimalSeparator))
+                        {
+                            int indexOfDecimal = dString.IndexOf(decimalSeparator);
 
-                return base.DistanceString;
+                            return dString.Substring(0,indexOfDecimal+1);
+                        }
+                        else
+                            return dString + decimalSeparator;
+                    }
+                    else
+                        return (Distance * 2.0).ToString("G");
+                    
+                }
+                else
+                {
+                    if (EndsWithDecimal)
+                    {
+                        dString = (Distance).ToString("G");
+                        if (dString.Contains(decimalSeparator))
+                        {
+                            int indexOfDecimal = dString.IndexOf(decimalSeparator);
+                            return dString.Substring(0, indexOfDecimal + 1);
+                        }
+                        else
+                            return dString + decimalSeparator;
+                    }
+                    else
+                        return Distance.ToString("G");
+                }
             }
             set
             {
-                // lets avoid an infinite loop here
+                //Handle for decimals
+                if(value.EndsWith(decimalSeparator))
+                {
+                    EndsWithDecimal = true;
+                    return;
+                }
+                else
+                {
+                    EndsWithDecimal = false;
+                }
+
+
+                // lets avoid an infinite loop here    
                 if (CircleType == CircleFromTypes.Diameter)
                 {
                     if (string.Equals(base.DistanceString, (Convert.ToDouble(value)*2.0).ToString()))
@@ -562,6 +605,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double d = 0.0;
                 if (double.TryParse(value, out d))
                 {
+                    
                     if (CircleType == CircleFromTypes.Diameter)
                     {
                         if (Distance == d)
