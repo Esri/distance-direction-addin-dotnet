@@ -54,7 +54,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private double DistanceLimit = 20000000;
         private Boolean EndsWithDecimal = false;
-        private Boolean EndsWithComma = false;
         private String decimalSeparator = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
         CircleFromTypes circleType = CircleFromTypes.Radius;
         /// <summary>
@@ -540,17 +539,41 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
+                String dString = "";
                 if (CircleType == CircleFromTypes.Diameter)
                 {
                     if (EndsWithDecimal)
-                        return (Distance * 2.0).ToString("G") + decimalSeparator;
+                    {
+                        dString = (Distance * 2.0).ToString("G");
+                        if (dString.Contains(decimalSeparator))
+                        {
+                            int indexOfDecimal = dString.IndexOf(decimalSeparator);
+
+                            return dString.Substring(0,indexOfDecimal+1);
+                        }
+                        else
+                            return dString + decimalSeparator;
+                    }
                     else
                         return (Distance * 2.0).ToString("G");
+                    
                 }
-                if (EndsWithDecimal)
-                    return base.DistanceString + decimalSeparator;
                 else
-                    return base.DistanceString;
+                {
+                    if (EndsWithDecimal)
+                    {
+                        dString = (Distance).ToString("G");
+                        if (dString.Contains(decimalSeparator))
+                        {
+                            int indexOfDecimal = dString.IndexOf(decimalSeparator);
+                            return dString.Substring(0, indexOfDecimal + 1);
+                        }
+                        else
+                            return dString + decimalSeparator;
+                    }
+                    else
+                        return Distance.ToString("G");
+                }
             }
             set
             {
