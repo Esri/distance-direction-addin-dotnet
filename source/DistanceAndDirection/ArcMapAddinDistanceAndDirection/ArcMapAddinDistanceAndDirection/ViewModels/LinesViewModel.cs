@@ -433,7 +433,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             else
             {
-                if (Point1 != null && HasPoint1)
+                if ((Point1 != null) && HasPoint1 && (Distance > 0.0))
                 {
                     if (feedback == null)
                     {
@@ -451,7 +451,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                     var line = construct as IPolyline;
 
-                    if (line.ToPoint != null)
+                    if ((line != null) && (line.ToPoint != null))
                     {
                         FeedbackMoveTo(line.ToPoint);
                         Point2 = line.ToPoint;
