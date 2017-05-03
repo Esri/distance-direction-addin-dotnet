@@ -264,13 +264,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     radius += Distance;
                     var polyLine = new Polyline() as IPolyline;
                     polyLine.SpatialReference = Point1.SpatialReference;
+                    const double DENSIFY_ANGLE_IN_DEGREES = 5.0;
                     construct = polyLine as IConstructGeodetic;
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.001);
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, 
+                        esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
                     AddGraphicToMap(construct as IGeometry);
 
                     // Use negative radius to get the location for the distance label
+                    // TODO: someone explain why we need to construct this circle twice, and what -radius means (top of circle or something)?
                     DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.001);
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, 
+                        esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
                     this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}", radius.ToString(), dtVal.ToString()));
                 }
 
