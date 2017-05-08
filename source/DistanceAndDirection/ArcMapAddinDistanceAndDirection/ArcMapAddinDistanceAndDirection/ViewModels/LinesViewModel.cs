@@ -129,28 +129,29 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return azimuth; }
             set
             {
-                if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
-                if (value > 360 && LineAzimuthType == AzimuthTypes.Degrees)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                if ((value != null) && (value >= 0.0) && (value <= 360))
+                    azimuth = value;
+                else
+                    azimuth = null;
 
-                azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
-
-                if (!azimuth.HasValue)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
                 if (LineFromType == LineFromTypes.BearingAndDistance)
                 {
-                    // update feedback
                     UpdateFeedback();
                 }
+
+                if ((value == null) || (value < 0.0))
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if (value > 360 && LineAzimuthType == AzimuthTypes.Degrees)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
                 AzimuthString = azimuth.Value.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }
         string azimuthString = string.Empty;
+
         public string AzimuthString 
         {
             get { return azimuthString; } 
