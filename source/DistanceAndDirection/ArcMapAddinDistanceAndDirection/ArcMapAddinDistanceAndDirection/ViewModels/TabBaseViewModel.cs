@@ -183,6 +183,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    point1 = null;
                     point1Formatted = string.Empty;
                     RaisePropertyChanged(() => Point1Formatted);
                     return;
@@ -254,6 +255,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    point2 = null;
                     point2Formatted = string.Empty;
                     RaisePropertyChanged(() => Point2Formatted);
                     return;

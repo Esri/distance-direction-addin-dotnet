@@ -251,6 +251,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    point1 = null;
                     point1Formatted = string.Empty;
                     RaisePropertyChanged(() => Point1Formatted);
                     return;
@@ -312,10 +313,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    point2 = null;
                     point2Formatted = string.Empty;
                     RaisePropertyChanged(() => Point2Formatted);
                     return;
                 }
+
                 // try to convert string to a MapPoint
                 var point = GetMapPointFromString(value);
                 if (point != null)
@@ -953,6 +956,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal MapPoint GetMapPointFromString(string coordinate)
         {
             MapPoint point = null;
+
+            if (string.IsNullOrWhiteSpace(coordinate) || coordinate.Length < 3) // basic check
+                return null;
 
             // future use if order of GetValues is not acceptable
             //var listOfTypes = new List<GeoCoordinateType>(new GeoCoordinateType[] {
