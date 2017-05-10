@@ -572,7 +572,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                             return dString + decimalSeparator;
                     }
                     else
-                        return Distance.ToString("G");
+                        return Distance.ToString("D");
                 }
             }
             set
