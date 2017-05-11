@@ -81,7 +81,7 @@
                              Text="{Binding Path=Point1Formatted,
                                             UpdateSourceTrigger=PropertyChanged,
                                             ValidatesOnExceptions=True}"
-                             Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                             Validation.ErrorTemplate="{StaticResource errorTemplate}" PreviewKeyDown="TextBox_KeyDown">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter"
                                         Command="{Binding EnterKeyCommand}"
@@ -107,7 +107,7 @@
                          Text="{Binding Path=Point2Formatted,
                                         UpdateSourceTrigger=PropertyChanged,
                                         ValidatesOnExceptions=True}"
-                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                         Validation.ErrorTemplate="{StaticResource errorTemplate}" PreviewKeyDown="TextBox_KeyDown">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter"
                                     Command="{Binding EnterKeyCommand}"

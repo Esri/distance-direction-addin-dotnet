@@ -90,7 +90,7 @@
                                             UpdateSourceTrigger=PropertyChanged,
                                             ValidatesOnExceptions=True}"
                              ToolTip="{x:Static prop:Resources.LabelCenterPoint}"
-                             Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                             Validation.ErrorTemplate="{StaticResource errorTemplate}" PreviewKeyDown="TextBox_KeyDown">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter"
                                         Command="{Binding EnterKeyCommand}"

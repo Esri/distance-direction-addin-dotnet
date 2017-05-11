@@ -56,6 +56,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
             // Get Current tool
             CurrentTool = FrameworkApplication.CurrentTool;
@@ -829,6 +830,20 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return;
                     }
                 }
+            }
+        }
+
+        /// <summary>
+        /// Handler for when key is manually pressed in a Point Text Box
+        /// </summary>
+        /// <param name="obj">always null</param>
+        private void OnPointTextBoxKeyDown(object obj)
+        {
+            if (isActiveTab)
+            {
+                // deactivate the map point tool when a point is manually entered
+                if (IsToolActive)
+                    IsToolActive = false;
             }
         }
 
