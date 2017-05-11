@@ -251,7 +251,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    point1 = null;
+                    if (!IsToolActive)
+                        point1 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point1Formatted = string.Empty;
                     RaisePropertyChanged(() => Point1Formatted);
                     return;
@@ -313,7 +315,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    point2 = null;
+                    if (!IsToolActive) 
+                        point2 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point2Formatted = string.Empty;
                     RaisePropertyChanged(() => Point2Formatted);
                     return;
