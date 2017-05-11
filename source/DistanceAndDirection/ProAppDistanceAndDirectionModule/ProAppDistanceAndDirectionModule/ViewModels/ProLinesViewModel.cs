@@ -218,13 +218,21 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get { return azimuth; }
             set
             {
-                if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if ((value != null) && (value >= 0.0) && (value <= 360))
+                    azimuth = value;
+                else
+                    azimuth = null;
 
-                azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
 
-                if (!azimuth.HasValue)
+                if (LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    UpdateFeedback();
+                }
+
+                if ((value == null) || (value < 0.0))
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if (value > 360 && LineAzimuthType == AzimuthTypes.Degrees)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
                 AzimuthString = azimuth.Value.ToString("G");
@@ -289,6 +297,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 if (segment != null)
                     await UpdateFeedbackWithGeoLine(segment, curveType, lu);
+            }
+            else
+            {
+                ClearTempGraphics(); // if not, or no longer, valid clear 
             }
         }
 
