@@ -883,6 +883,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal double GetGeodesicDistance(MapPoint p1, MapPoint p2)
         {
+            if ((p1 == null) || (p2 == null))
+                return 0.0;
+
             var meters = GeometryEngine.GeodesicDistance(p1, p2);
             // convert to current linear unit
             return ConvertFromTo(DistanceTypes.Meters, LineDistanceType, meters);

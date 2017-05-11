@@ -189,10 +189,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 var segment = QueuedTask.Run(() =>
                 {
-                    return LineBuilder.CreateLineSegment(Point1, Point2);
+                    try
+                    {
+                        return LineBuilder.CreateLineSegment(Point1, Point2);
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
                 }).Result;
-          
-                
+
+                if (segment == null)
+                    return;
+               
                 UpdateAzimuth(segment.Angle);
 
                 await UpdateFeedbackWithGeoLine(segment, curveType, lu);
@@ -369,8 +378,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // update azimuth from segment
                 var segment = QueuedTask.Run(() =>
                 {
-                    return LineBuilder.CreateLineSegment(Point1, point);
+                    try
+                    {
+                        return LineBuilder.CreateLineSegment(Point1, point);
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
                 }).Result;
+
+                if (segment == null)
+                    return;
 
                 UpdateAzimuth(segment.Angle);
                 await UpdateFeedbackWithGeoLine(segment, curveType, lu);                        
