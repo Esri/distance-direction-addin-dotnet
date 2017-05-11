@@ -21,6 +21,7 @@ using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
+using System.Collections.Generic;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -58,12 +59,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     // We have to explicitly redo the graphics here because otherwise DistanceString has not changed
                     // and thus no graphics update will be triggered
                     double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
+                    IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                    ptAttributes.Add("X", Point1.X);
+                    ptAttributes.Add("Y", Point1.Y);
                     if (distanceInMeters > DistanceLimit)
                     {
                         ClearTempGraphics();
                         if (HasPoint1)
+                        {
                             // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                            AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
+                        }
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                     }
                     // Avoid null reference exception during automated testing
@@ -111,6 +117,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -118,7 +127,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -205,10 +214,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
+                    IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                    ptAttributes.Add("X", Point1.X);
+                    ptAttributes.Add("Y", Point1.Y);
+                   
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
@@ -226,13 +239,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 if (value < 0.0)
                 {
                     UpdateFeedbackWithGeoCircle();
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
                 }
 
@@ -240,6 +256,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -247,7 +264,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -291,6 +308,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // divide the manual input by 2
                 double t = 0.0;
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 if (double.TryParse(value, out t))
                 {
                     TravelRate = t;
@@ -300,7 +320,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
             }
@@ -318,12 +338,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 if (value < 0.0)
                 {
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
                 }
 
@@ -338,7 +361,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -387,7 +410,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 rateUnit = value;
-
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
@@ -397,7 +422,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -424,6 +449,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -431,7 +459,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -464,10 +492,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     Reset(false);
                 }
-
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 ClearTempGraphics();
                 if (HasPoint1)
-                    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
@@ -489,6 +519,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 
                 // divide the manual input by 2
                 double d = 0.0;
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 if (double.TryParse(value, out d))
                 { 
                     
@@ -501,7 +534,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         ClearTempGraphics();
                         if (HasPoint1)
                             // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                            AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                     }
 
@@ -512,7 +545,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes );
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -555,14 +588,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 base.LineDistanceType = value;
-
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 double distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, Distance);
                 if (distanceInMeters > DistanceLimit)
                 {
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -591,6 +626,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -598,7 +636,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                        AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
@@ -642,15 +680,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             var construct = new Polyline() as IConstructGeodetic;
+            IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+            ptAttributes.Add("X", Point1.X);
+            ptAttributes.Add("Y", Point1.Y);
             if (construct != null)
             {
                 ClearTempGraphics();
                 if (HasPoint1)
                 {
                     // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                    AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                 }
-
+                IDictionary<String, Double> circleAttributes = new Dictionary<String, Double>();
+                circleAttributes.Add("Radius", Distance);
+                
                 // Handle Radius/Diameter combobox
                 double radiusDistance = Distance;
                 if (circleType == CircleFromTypes.Diameter)
@@ -661,7 +704,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radiusDistance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
                 var color = new RgbColorClass() as IColor;
-                this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
+                this.AddGraphicToMap( construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
             }
         }
 

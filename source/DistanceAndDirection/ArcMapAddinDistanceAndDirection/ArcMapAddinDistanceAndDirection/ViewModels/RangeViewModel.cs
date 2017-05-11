@@ -23,6 +23,7 @@ using ESRI.ArcGIS.Carto;
 
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
+using System.Collections.Generic;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -309,7 +310,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 ClearTempGraphics();
                 var color = new RgbColorClass() { Green = 255 } as IColor;
-                AddGraphicToMap(Point1, color, true);
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
+                AddGraphicToMap( Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
 
                 // Reset formatted string
                 Point1Formatted = string.Empty;
@@ -324,7 +328,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                     ClearTempGraphics();
                     var color = new RgbColorClass() { Green = 255 } as IColor;
-                    AddGraphicToMap(Point1, color, true);
+                    IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                    ptAttributes.Add("X", Point1.X);
+                    ptAttributes.Add("Y", Point1.Y);
+                    AddGraphicToMap(Point1, color, true, attributes: ptAttributes);
 
                     // Reset formatted string
                     Point1Formatted = string.Empty;
@@ -413,14 +420,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             var construct = new Polyline() as IConstructGeodetic;
+            IDictionary<String, Double> circleAttributes = new Dictionary<String, Double>();
+            circleAttributes.Add("Radius", Distance);
+            
             if (construct != null)
             {
+                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes );
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
                 var color = new RgbColorClass() as IColor;
-                this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
+                this.AddGraphicToMap( construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:circleAttributes);
             }
         }
 
