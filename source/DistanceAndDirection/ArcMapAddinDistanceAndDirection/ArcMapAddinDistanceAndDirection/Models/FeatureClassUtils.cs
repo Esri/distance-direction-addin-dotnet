@@ -145,7 +145,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         DeleteFeatureClass(fWorkspace, fcName);
                     }
 
-                    fc = CreateFeatureClass(fWorkspace, fcName, isGraphicLineOrRangeRing);
+                    fc = CreateFeatureClass(fWorkspace, fcName, graphicsList, isGraphicLineOrRangeRing);
 
                     foreach (Graphic graphic in graphicsList)
                     {
@@ -155,7 +155,12 @@ namespace ArcMapAddinDistanceAndDirection.Models
                             feature.Shape = PolylineToPolygon(graphic.Geometry);
                         else
                             feature.Shape = graphic.Geometry;
-
+                        double dist;
+                        double angle;
+                        graphic.Attributes.TryGetValue("distance", out dist);
+                        graphic.Attributes.TryGetValue("angle", out angle);
+                        feature.set_Value(feature.Fields.FindField("Distance"), dist);
+                        feature.set_Value(feature.Fields.FindField("Angle"), dist);
                         feature.Store();
                     }
                 }
@@ -334,8 +339,9 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <param name="featWorkspace">IFeatureWorkspace</param> 
         /// <param name="name">Name of the featureclass</param> 
         /// <returns>IFeatureClass</returns> 
-        private IFeatureClass CreateFeatureClass(IFeatureWorkspace featWorkspace, string name, bool polyLineFC)
+        private IFeatureClass CreateFeatureClass(IFeatureWorkspace featWorkspace, string name, List<Graphic> graphicsList, bool polyLineFC)
         {
+            string graphicsType = graphicsList[0].GraphicType.ToString();
             IFieldsEdit pFldsEdt = new FieldsClass();
             IFieldEdit pFldEdt = new FieldClass();
 
@@ -360,6 +366,24 @@ namespace ArcMapAddinDistanceAndDirection.Models
             pFldEdt.Type_2 = esriFieldType.esriFieldTypeGeometry;
             pFldEdt.GeometryDef_2 = pGeoDef;
             pFldsEdt.AddField(pFldEdt);
+
+            switch (graphicsType)
+            {
+                case "Line":
+                    {
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "Distance";
+                        pFldEdt.AliasName_2 = "Geodetic Distance";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "Angle";
+                        pFldEdt.AliasName_2 = "Angle";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+                        break;
+                    }
+            }
 
             IFeatureClass pFClass = featWorkspace.CreateFeatureClass(name, pFldsEdt, null, null, esriFeatureType.esriFTSimple, "SHAPE", "");
 
