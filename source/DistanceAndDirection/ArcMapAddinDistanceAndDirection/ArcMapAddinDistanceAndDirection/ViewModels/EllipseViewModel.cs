@@ -396,7 +396,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
             
             ClearTempGraphics();
-            IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+            IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
             ptAttributes.Add("X", Point1.X);
             ptAttributes.Add("Y", Point1.Y);
             AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
@@ -412,12 +412,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             
             ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, minorAxis, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
             var line = ellipticArc as IPolyline;
-            IDictionary<String, Double> ellipseAttributes = new Dictionary<String, Double>();
-            ellipseAttributes.Add("majoraxis", MajorAxisDistance);
-            ellipseAttributes.Add("minoraxis", MinorAxisDistance);
-            ellipseAttributes.Add("azimuth", Azimuth);
+            
             if (line != null)
             {
+                IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
+                ellipseAttributes.Add("majoraxis", MajorAxisDistance);
+                ellipseAttributes.Add("minoraxis", MinorAxisDistance);
+                ellipseAttributes.Add("azimuth", Azimuth);
                 var color = new RgbColor() as IColor;
                 AddGraphicToMap(line as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:ellipseAttributes );
             }
@@ -450,7 +451,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
-                IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
                 ptAttributes.Add("X", Point1.X);
                 ptAttributes.Add("Y", Point1.Y);
                 AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
@@ -645,7 +646,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
-                    AddGraphicToMap(line as IGeometry);
+                    var color = new RgbColorClass() { Red = 255 } as IColor;
+                    IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
+                    ellipseAttributes.Add("majoraxis", MajorAxisDistance);
+                    ellipseAttributes.Add("minoraxis", MinorAxisDistance);
+                    ellipseAttributes.Add("azimuth", Azimuth);
+                    AddGraphicToMap(line as IGeometry, color, attributes:ellipseAttributes);
                     //Convert ellipse polyline to polygon
                     var newPoly = PolylineToPolygon((IPolyline)ellipticArc);
                     if (newPoly != null)

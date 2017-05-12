@@ -216,7 +216,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             HasPoint2 = true;
             IGeometry geo = CreatePolyline();
             IPolyline line = geo as IPolyline;
-            AddGraphicToMap(line);
+            IDictionary<String, Double> lineAttributes = new Dictionary<String, Double>();
+            lineAttributes.Add("distance", Distance);
+            lineAttributes.Add("angle", (double)Azimuth);
+            AddGraphicToMap(line, attributes:lineAttributes);
             ResetPoints();
             ClearTempGraphics();
             base.OnEnterKeyCommand(obj);
@@ -258,12 +261,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     UpdateDistance(construct as IGeometry);
                     UpdateAzimuth(construct as IGeometry);
                 }
-                
-                IDictionary<String, Double> lineAttributes = new Dictionary<String, Double>();
+
+                IDictionary<String, System.Object> lineAttributes = new Dictionary<String, System.Object>();
                 lineAttributes.Add("distance", Distance);
                 lineAttributes.Add("angle", (double)Azimuth);
-                //var color = new RgbColorClass() { Red = 255 } as IColor;
-                AddGraphicToMap(construct as IGeometry);
+                var color = new RgbColorClass() { Red = 255 } as IColor;
+                AddGraphicToMap(construct as IGeometry, color, attributes: lineAttributes);
 
                 if (HasPoint1 && HasPoint2)
                 {
@@ -375,7 +378,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 var color = new RgbColorClass() { Green = 255 } as IColor;
-                System.Collections.Generic.IDictionary<String, Double> ptAttributes = new System.Collections.Generic.Dictionary<String, Double>();
+                System.Collections.Generic.IDictionary<String, System.Object> ptAttributes = new System.Collections.Generic.Dictionary<String, System.Object>();
                 ptAttributes.Add("X", Point1.X);
                 ptAttributes.Add("Y", Point1.Y);
                 this.AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes );

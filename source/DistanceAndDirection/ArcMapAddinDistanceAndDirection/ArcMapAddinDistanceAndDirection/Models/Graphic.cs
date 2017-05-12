@@ -24,7 +24,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
 {
     public class Graphic
     {
-        public Graphic(GraphicTypes _graphicType, string _uniqueid, IGeometry _geometry, TabBaseViewModel _model, bool _isTemp = false, IDictionary<string, double> attributes = null)
+        public Graphic(GraphicTypes _graphicType, string _uniqueid, IGeometry _geometry, TabBaseViewModel _model, bool _isTemp = false, IDictionary<string, System.Object> attributes = null)
         {
             GraphicType = _graphicType;
             UniqueId = _uniqueid;
@@ -63,6 +63,6 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <summary>
         /// Property to set attributes for different geometries
         /// </summary>
-        public IDictionary<string, double> Attributes { get; set; }
+        public IDictionary<string, System.Object> Attributes { get; set; }
     }
 }

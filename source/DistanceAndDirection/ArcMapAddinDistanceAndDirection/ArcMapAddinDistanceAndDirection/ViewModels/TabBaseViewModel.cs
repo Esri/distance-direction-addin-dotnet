@@ -197,7 +197,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     HasPoint1 = true;
                     Point1 = point;
                     var color = new RgbColorClass() { Green = 255 } as IColor;
-                    IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
+                    IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
                     ptAttributes.Add("X", Point1.X);
                     ptAttributes.Add("Y", Point1.Y);
                     AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
@@ -752,9 +752,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             if (point == null)
                 return;
-            IDictionary<String, Double> ptAttributes = new Dictionary<String, Double>();
-            ptAttributes.Add("X", Point1.X);
-            ptAttributes.Add("Y", Point1.Y);
+            
             if (!HasPoint1)
             {
                 // clear temp graphics
@@ -763,6 +761,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 HasPoint1 = true;
                 
                 var color = new RgbColorClass() { Green = 255 } as IColor;
+                IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 AddGraphicToMap( Point1, color, true, attributes: ptAttributes);
 
                 // lets try feedback
@@ -1127,7 +1128,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP, IDictionary<String, Double>attributes = null)
+        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP, IDictionary<String, System.Object>attributes = null)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
@@ -1230,7 +1231,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         /// <param name="geom"></param>
         /// <param name="IsTempGraphic"></param>
-        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false)
+        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false, IDictionary<String, Double>attributes=null)
         {
             var color = new RgbColorClass() { Red = 255 } as IColor;
             AddGraphicToMap(geom, color, IsTempGraphic);

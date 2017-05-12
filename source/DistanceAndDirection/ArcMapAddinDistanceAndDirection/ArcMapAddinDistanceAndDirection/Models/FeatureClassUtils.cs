@@ -149,19 +149,70 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
                     foreach (Graphic graphic in graphicsList)
                     {
+                        if (graphic.Attributes == null)
+                            continue;
                         IFeature feature = fc.CreateFeature();
 
                         if (graphic.GraphicType != GraphicTypes.Line && graphic.GraphicType != GraphicTypes.RangeRing)
                             feature.Shape = PolylineToPolygon(graphic.Geometry);
                         else
                             feature.Shape = graphic.Geometry;
-                        double dist;
-                        double angle;
-                        graphic.Attributes.TryGetValue("distance", out dist);
-                        graphic.Attributes.TryGetValue("angle", out angle);
-                        feature.set_Value(feature.Fields.FindField("Distance"), dist);
-                        feature.set_Value(feature.Fields.FindField("Angle"), dist);
-                        feature.Store();
+                        
+                        switch (graphic.GraphicType.ToString())
+                        {
+                            case "Line":
+                                {
+                                    System.Object dist;
+                                    System.Object angle;
+                                    graphic.Attributes.TryGetValue("distance", out dist);
+                                    graphic.Attributes.TryGetValue("angle", out angle);
+                                    feature.set_Value(feature.Fields.FindField("Distance"), dist);
+                                    feature.set_Value(feature.Fields.FindField("Angle"), angle);
+                                    feature.Store();
+                                    break;
+                                }
+                            case "Circle":
+                                {
+                                    System.Object radius;
+                                    System.Object disttype;
+                                    graphic.Attributes.TryGetValue("radius", out radius);
+                                    graphic.Attributes.TryGetValue("disttype", out disttype);
+                                    feature.set_Value(feature.Fields.FindField("Distance"), radius);
+                                    feature.set_Value(feature.Fields.FindField("DistanceType"), disttype);
+                                    feature.Store();
+                                    break;
+                                }
+                            case "Ellipse":
+                                {
+                                    System.Object majoraxis;
+                                    System.Object minoraxis;
+                                    System.Object angle;
+                                    graphic.Attributes.TryGetValue("majoraxis", out majoraxis);
+                                    graphic.Attributes.TryGetValue("minoraxis", out minoraxis);
+                                    graphic.Attributes.TryGetValue("azimuth", out angle);
+                                    feature.set_Value(feature.Fields.FindField("MajorAxis"), majoraxis);
+                                    feature.set_Value(feature.Fields.FindField("MinorAxis"), minoraxis);
+                                    feature.set_Value(feature.Fields.FindField("Angle"), angle);
+                                    feature.Store();
+                                    break;
+                                }
+                            case "RangeRing":
+                                {
+                                    
+                                    System.Object rings;
+                                    System.Object distance;
+                                    System.Object radials;
+                                    
+                                    graphic.Attributes.TryGetValue("rings", out rings);
+                                    graphic.Attributes.TryGetValue("distance", out distance);
+                                    graphic.Attributes.TryGetValue("radials", out radials);
+                                    feature.set_Value(feature.Fields.FindField("Rings"), rings);
+                                    feature.set_Value(feature.Fields.FindField("Distance"), distance);
+                                    feature.set_Value(feature.Fields.FindField("Radials"), radials);
+                                    feature.Store();
+                                    break;
+                                }
+                        }
                     }
                 }
                 else if (saveAsType == SaveAsType.Shapefile)
@@ -376,11 +427,73 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         pFldEdt.AliasName_2 = "Geodetic Distance";
                         pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
                         pFldsEdt.AddField(pFldEdt);
+                        
                         pFldEdt = new FieldClass();
                         pFldEdt.Name_2 = "Angle";
                         pFldEdt.AliasName_2 = "Angle";
                         pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
                         pFldsEdt.AddField(pFldEdt);
+
+                        break;
+                    }
+                case "Circle":
+                    {
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "Distance";
+                        pFldEdt.AliasName_2 = "Distance";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "DistanceType";
+                        pFldEdt.AliasName_2 = "Distance Type";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeString;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        break;
+                    }
+                case "Ellipse":
+                    {
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "MajorAxis";
+                        pFldEdt.AliasName_2 = "Major Axis";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "MinorAxis";
+                        pFldEdt.AliasName_2 = "Minor Axis";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "Angle";
+                        pFldEdt.AliasName_2 = "Angle";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        break;
+                    }
+                case "RangeRing":
+                    {
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "Rings";
+                        pFldEdt.AliasName_2 = "Rings";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeInteger;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "Distance";
+                        pFldEdt.AliasName_2 = "Distance";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeInteger;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "Radials";
+                        pFldEdt.AliasName_2 = "Radials";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
                         break;
                     }
             }
