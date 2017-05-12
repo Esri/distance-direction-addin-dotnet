@@ -240,8 +240,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
                     rrAttributes.Add("rings", NumberOfRings);
                     rrAttributes.Add("distance", Distance);
+                    rrAttributes.Add("distanceunit", lineDistanceType.ToString());
                     rrAttributes.Add("radials", NumberOfRadials);
-                    
+                    rrAttributes.Add("centerx", Point1.X);
+                    rrAttributes.Add("centery", Point1.Y);
                     construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                     AddGraphicToMap(construct as IGeometry, color, attributes:rrAttributes);
 
@@ -279,7 +281,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
                     rrAttributes.Add("rings", NumberOfRings);
                     rrAttributes.Add("distance", Distance);
+                    rrAttributes.Add("distanceunit", lineDistanceType.ToString());
                     rrAttributes.Add("radials", NumberOfRadials);
+                    rrAttributes.Add("centerx", Point1.X);
+                    rrAttributes.Add("centery", Point1.Y);
                     AddGraphicToMap(construct as IGeometry, color, attributes:rrAttributes);
 
                     // Use negative radius to get the location for the distance label

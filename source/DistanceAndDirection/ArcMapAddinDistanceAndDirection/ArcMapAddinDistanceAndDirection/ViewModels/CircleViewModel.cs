@@ -734,17 +734,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (construct != null)
             {
                 ClearTempGraphics();
+                IDictionary<String, System.Object> circleAttributes = new Dictionary<String, System.Object>();
                 if (HasPoint1)
                 {
                     IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
                     ptAttributes.Add("X", Point1.X);
                     ptAttributes.Add("Y", Point1.Y);
+                    circleAttributes.Add("centerx", Point1.X);
+                    circleAttributes.Add("centery", Point1.Y);
                     // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                     AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                 }
-                IDictionary<String, System.Object> circleAttributes = new Dictionary<String, System.Object>();
+                
                 circleAttributes.Add("radius", Distance);
                 circleAttributes.Add("disttype", CircleType.ToString());
+                
                 // Handle Radius/Diameter combobox
                 double radiusDistance = Distance;
                 if (circleType == CircleFromTypes.Diameter)
@@ -753,6 +757,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radiusDistance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+
                 Point2 = (construct as IPolyline).ToPoint;
                 var color = new RgbColorClass() as IColor;
                 this.AddGraphicToMap( construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
@@ -818,6 +823,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     IDictionary<String, System.Object> circleAttributes = new Dictionary<String, System.Object>();
                     circleAttributes.Add("radius", Distance);
                     circleAttributes.Add("disttype", CircleType.ToString());
+                    circleAttributes.Add("centerx", Point1.X);
+                    circleAttributes.Add("centery", Point1.Y);
+                    circleAttributes.Add("distanceunit", LineDistanceType.ToString());
                     var color = new RgbColorClass() { Red = 255 } as IColor;
                     this.AddGraphicToMap(construct as IGeometry, color, attributes: circleAttributes);
 

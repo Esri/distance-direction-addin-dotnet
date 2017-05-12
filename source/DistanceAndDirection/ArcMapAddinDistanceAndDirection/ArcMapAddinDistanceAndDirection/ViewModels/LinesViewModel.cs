@@ -264,7 +264,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 IDictionary<String, System.Object> lineAttributes = new Dictionary<String, System.Object>();
                 lineAttributes.Add("distance", Distance);
+                lineAttributes.Add("distanceunit", LineDistanceType.ToString());
                 lineAttributes.Add("angle", (double)Azimuth);
+                lineAttributes.Add("angleunit", LineAzimuthType.ToString());
+                lineAttributes.Add("startx", Point1.X);
+                lineAttributes.Add("starty", Point1.Y);
+                lineAttributes.Add("endx", Point2.X);
+                lineAttributes.Add("endy", Point2.Y);
                 var color = new RgbColorClass() { Red = 255 } as IColor;
                 AddGraphicToMap(construct as IGeometry, color, attributes: lineAttributes);
 

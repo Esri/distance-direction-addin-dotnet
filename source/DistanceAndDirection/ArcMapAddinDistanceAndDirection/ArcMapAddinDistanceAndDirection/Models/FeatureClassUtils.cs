@@ -164,10 +164,29 @@ namespace ArcMapAddinDistanceAndDirection.Models
                                 {
                                     System.Object dist;
                                     System.Object angle;
+                                    System.Object angleunit;
+                                    System.Object ox;
+                                    System.Object oy;
+                                    System.Object dx;
+                                    System.Object dy;
+                                    System.Object distunit;
+
                                     graphic.Attributes.TryGetValue("distance", out dist);
+                                    graphic.Attributes.TryGetValue("distanceunit", out distunit);
+                                    graphic.Attributes.TryGetValue("startx", out ox);
+                                    graphic.Attributes.TryGetValue("starty", out oy);
+                                    graphic.Attributes.TryGetValue("endx", out dx);
+                                    graphic.Attributes.TryGetValue("endy", out dy);
                                     graphic.Attributes.TryGetValue("angle", out angle);
+                                    graphic.Attributes.TryGetValue("angleunit", out angleunit);
                                     feature.set_Value(feature.Fields.FindField("Distance"), dist);
+                                    feature.set_Value(feature.Fields.FindField("DistanceUnit"), distunit);
+                                    feature.set_Value(feature.Fields.FindField("OriginX"), ox);
+                                    feature.set_Value(feature.Fields.FindField("OriginY"), oy);
+                                    feature.set_Value(feature.Fields.FindField("DestinationX"), dx);
+                                    feature.set_Value(feature.Fields.FindField("DestinationY"), dy);
                                     feature.set_Value(feature.Fields.FindField("Angle"), angle);
+                                    feature.set_Value(feature.Fields.FindField("AngleUnit"), angleunit);
                                     feature.Store();
                                     break;
                                 }
@@ -175,10 +194,22 @@ namespace ArcMapAddinDistanceAndDirection.Models
                                 {
                                     System.Object radius;
                                     System.Object disttype;
+                                    System.Object distunit;
+                                    System.Object centerx;
+                                    System.Object centery;
+
                                     graphic.Attributes.TryGetValue("radius", out radius);
+                                    graphic.Attributes.TryGetValue("distanceunit", out distunit);
                                     graphic.Attributes.TryGetValue("disttype", out disttype);
+                                    graphic.Attributes.TryGetValue("centerx", out centerx);
+                                    graphic.Attributes.TryGetValue("centery", out centery);
+
                                     feature.set_Value(feature.Fields.FindField("Distance"), radius);
+                                    feature.set_Value(feature.Fields.FindField("DistanceUnit"), distunit);
                                     feature.set_Value(feature.Fields.FindField("DistanceType"), disttype);
+                                    feature.set_Value(feature.Fields.FindField("CenterX"), centerx);
+                                    feature.set_Value(feature.Fields.FindField("CenterY"), centery);
+
                                     feature.Store();
                                     break;
                                 }
@@ -187,12 +218,27 @@ namespace ArcMapAddinDistanceAndDirection.Models
                                     System.Object majoraxis;
                                     System.Object minoraxis;
                                     System.Object angle;
+                                    System.Object distunit;
+                                    System.Object centerx;
+                                    System.Object centery;
+                                    System.Object angleunit;
+
                                     graphic.Attributes.TryGetValue("majoraxis", out majoraxis);
                                     graphic.Attributes.TryGetValue("minoraxis", out minoraxis);
                                     graphic.Attributes.TryGetValue("azimuth", out angle);
+                                    graphic.Attributes.TryGetValue("distanceunit", out distunit);
+                                    graphic.Attributes.TryGetValue("centerx", out centerx);
+                                    graphic.Attributes.TryGetValue("centery", out centery);
+                                    graphic.Attributes.TryGetValue("angleunit", out angleunit);
+
                                     feature.set_Value(feature.Fields.FindField("MajorAxis"), majoraxis);
                                     feature.set_Value(feature.Fields.FindField("MinorAxis"), minoraxis);
+                                    feature.set_Value(feature.Fields.FindField("DistanceUnit"), distunit);
                                     feature.set_Value(feature.Fields.FindField("Angle"), angle);
+                                    feature.set_Value(feature.Fields.FindField("CenterX"), centerx);
+                                    feature.set_Value(feature.Fields.FindField("CenterY"), centery);
+                                    feature.set_Value(feature.Fields.FindField("AngleUnit"), angleunit);
+
                                     feature.Store();
                                     break;
                                 }
@@ -202,13 +248,23 @@ namespace ArcMapAddinDistanceAndDirection.Models
                                     System.Object rings;
                                     System.Object distance;
                                     System.Object radials;
-                                    
+                                    System.Object distunit;
+                                    System.Object centerx;
+                                    System.Object centery;
+
                                     graphic.Attributes.TryGetValue("rings", out rings);
                                     graphic.Attributes.TryGetValue("distance", out distance);
                                     graphic.Attributes.TryGetValue("radials", out radials);
+                                    graphic.Attributes.TryGetValue("distanceunit", out distunit);
+                                    graphic.Attributes.TryGetValue("centerx", out centerx);
+                                    graphic.Attributes.TryGetValue("centery", out centery);
+
                                     feature.set_Value(feature.Fields.FindField("Rings"), rings);
                                     feature.set_Value(feature.Fields.FindField("Distance"), distance);
                                     feature.set_Value(feature.Fields.FindField("Radials"), radials);
+                                    feature.set_Value(feature.Fields.FindField("DistanceUnit"), distunit);
+                                    feature.set_Value(feature.Fields.FindField("CenterX"), centerx);
+                                    feature.set_Value(feature.Fields.FindField("CenterY"), centery);
                                     feature.Store();
                                     break;
                                 }
@@ -427,11 +483,47 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         pFldEdt.AliasName_2 = "Geodetic Distance";
                         pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
                         pFldsEdt.AddField(pFldEdt);
-                        
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "DistanceUnit";
+                        pFldEdt.AliasName_2 = "Distance Unit";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeString;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "OriginX";
+                        pFldEdt.AliasName_2 = "Origin X";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "OriginY";
+                        pFldEdt.AliasName_2 = "Origin Y";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "DestinationX";
+                        pFldEdt.AliasName_2 = "Destination X";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "DestinationY";
+                        pFldEdt.AliasName_2 = "Destination Y";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
                         pFldEdt = new FieldClass();
                         pFldEdt.Name_2 = "Angle";
                         pFldEdt.AliasName_2 = "Angle";
                         pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "AngleUnit";
+                        pFldEdt.AliasName_2 = "Angle Unit";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeString;
                         pFldsEdt.AddField(pFldEdt);
 
                         break;
@@ -445,9 +537,27 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         pFldsEdt.AddField(pFldEdt);
 
                         pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "DistanceUnit";
+                        pFldEdt.AliasName_2 = "Distance Unit";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeString;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
                         pFldEdt.Name_2 = "DistanceType";
                         pFldEdt.AliasName_2 = "Distance Type";
                         pFldEdt.Type_2 = esriFieldType.esriFieldTypeString;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "CenterX";
+                        pFldEdt.AliasName_2 = "Center X";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "CenterY";
+                        pFldEdt.AliasName_2 = "Center Y";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
                         pFldsEdt.AddField(pFldEdt);
 
                         break;
@@ -467,9 +577,33 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         pFldsEdt.AddField(pFldEdt);
 
                         pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "DistanceUnit";
+                        pFldEdt.AliasName_2 = "Distance Unit";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeString;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "CenterX";
+                        pFldEdt.AliasName_2 = "Center X";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "CenterY";
+                        pFldEdt.AliasName_2 = "Center Y";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
                         pFldEdt.Name_2 = "Angle";
                         pFldEdt.AliasName_2 = "Angle";
                         pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "AngleUnit";
+                        pFldEdt.AliasName_2 = "Angle Unit";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeString;
                         pFldsEdt.AddField(pFldEdt);
 
                         break;
@@ -489,8 +623,26 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         pFldsEdt.AddField(pFldEdt);
 
                         pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "DistanceUnit";
+                        pFldEdt.AliasName_2 = "Distance Unit";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeString;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
                         pFldEdt.Name_2 = "Radials";
                         pFldEdt.AliasName_2 = "Radials";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "CenterX";
+                        pFldEdt.AliasName_2 = "Center X";
+                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
+                        pFldsEdt.AddField(pFldEdt);
+
+                        pFldEdt = new FieldClass();
+                        pFldEdt.Name_2 = "CenterY";
+                        pFldEdt.AliasName_2 = "Center Y";
                         pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
                         pFldsEdt.AddField(pFldEdt);
 

@@ -651,6 +651,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ellipseAttributes.Add("majoraxis", MajorAxisDistance);
                     ellipseAttributes.Add("minoraxis", MinorAxisDistance);
                     ellipseAttributes.Add("azimuth", Azimuth);
+                    ellipseAttributes.Add("centerx", Point1.X);
+                    ellipseAttributes.Add("centery", Point1.Y);
+                    ellipseAttributes.Add("distanceunit", LineDistanceType.ToString());
+                    ellipseAttributes.Add("angleunit", AzimuthType.ToString());
                     AddGraphicToMap(line as IGeometry, color, attributes:ellipseAttributes);
                     //Convert ellipse polyline to polygon
                     var newPoly = PolylineToPolygon((IPolyline)ellipticArc);
