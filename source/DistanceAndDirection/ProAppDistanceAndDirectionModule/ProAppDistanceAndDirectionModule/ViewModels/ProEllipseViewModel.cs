@@ -319,8 +319,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // update bearing
                 var segment = QueuedTask.Run(() =>
                 {
-                    return LineBuilder.CreateLineSegment(Point1, point);
+                    try
+                    {
+                        return LineBuilder.CreateLineSegment(Point1, point);
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
                 }).Result;
+
+                if (segment == null)
+                    return;
 
                 UpdateAzimuth(segment.Angle);
             }

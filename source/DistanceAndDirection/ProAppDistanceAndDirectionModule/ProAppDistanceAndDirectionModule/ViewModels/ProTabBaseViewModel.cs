@@ -56,6 +56,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
             // Get Current tool
             CurrentTool = FrameworkApplication.CurrentTool;
@@ -251,6 +252,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    if (!IsToolActive)
+                        point1 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point1Formatted = string.Empty;
                     RaisePropertyChanged(() => Point1Formatted);
                     return;
@@ -312,10 +316,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    if (!IsToolActive) 
+                        point2 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point2Formatted = string.Empty;
                     RaisePropertyChanged(() => Point2Formatted);
                     return;
                 }
+
                 // try to convert string to a MapPoint
                 var point = GetMapPointFromString(value);
                 if (point != null)
@@ -825,6 +833,20 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        /// <summary>
+        /// Handler for when key is manually pressed in a Point Text Box
+        /// </summary>
+        /// <param name="obj">always null</param>
+        private void OnPointTextBoxKeyDown(object obj)
+        {
+            if (isActiveTab)
+            {
+                // deactivate the map point tool when a point is manually entered
+                if (IsToolActive)
+                    IsToolActive = false;
+            }
+        }
+
         internal double ConvertFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
         {
             double result = 0.0;
@@ -876,6 +898,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal double GetGeodesicDistance(MapPoint p1, MapPoint p2)
         {
+            if ((p1 == null) || (p2 == null))
+                return 0.0;
+
             var meters = GeometryEngine.GeodesicDistance(p1, p2);
             // convert to current linear unit
             return ConvertFromTo(DistanceTypes.Meters, LineDistanceType, meters);
@@ -953,6 +978,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal MapPoint GetMapPointFromString(string coordinate)
         {
             MapPoint point = null;
+
+            if (string.IsNullOrWhiteSpace(coordinate) || coordinate.Length < 3) // basic check
+                return null;
 
             // future use if order of GetValues is not acceptable
             //var listOfTypes = new List<GeoCoordinateType>(new GeoCoordinateType[] {

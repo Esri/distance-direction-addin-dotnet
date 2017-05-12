@@ -64,6 +64,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
             Mediator.Register(Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            Mediator.Register(Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
@@ -153,6 +154,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => Point2Formatted);
             }
         }
+
         string point1Formatted = string.Empty;
         /// <summary>
         /// String property for the first IPoint
@@ -183,6 +185,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    if (!IsToolActive)
+                        point1 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point1Formatted = string.Empty;
                     RaisePropertyChanged(() => Point1Formatted);
                     return;
@@ -254,6 +259,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    if (!IsToolActive)
+                        point2 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point2Formatted = string.Empty;
                     RaisePropertyChanged(() => Point2Formatted);
                     return;
@@ -1004,8 +1012,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
             }
         }
-        
 
+        /// <summary>
+        /// Handler for when key is manually pressed in a Point Text Box
+        /// </summary>
+        /// <param name="obj">always null</param>
+        private void OnPointTextBoxKeyDown(object obj)
+        {
+            if (isActiveTab)
+            {
+                // deactivate the map point tool when a point is manually entered
+                if (IsToolActive)
+                    IsToolActive = false;
+            }
+        }
 
         /// <summary>
         /// Converts a polyline into a polygon
