@@ -649,19 +649,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                     AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                    double radiusDistance = Distance;
+
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radiusDistance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                    Point2 = (construct as IPolyline).ToPoint;
+                    var color = new RgbColorClass() as IColor;
+                    this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
                 }
 
                 // Handle Radius/Diameter combobox
-                double radiusDistance = Distance;
-                if (circleType == CircleFromTypes.Diameter)
-                {
-                    radiusDistance = Distance / 2;
-                }
+               // double radiusDistance = Distance;
 
-                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radiusDistance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-                Point2 = (construct as IPolyline).ToPoint;
-                var color = new RgbColorClass() as IColor;
-                this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
+                //construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radiusDistance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+               // Point2 = (construct as IPolyline).ToPoint;
+               // var color = new RgbColorClass() as IColor;
+               // this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
             }
         }
 
