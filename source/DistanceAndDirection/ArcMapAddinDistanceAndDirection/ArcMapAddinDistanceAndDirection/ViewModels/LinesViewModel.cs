@@ -21,6 +21,7 @@ using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
+using System.Collections.Generic;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -215,7 +216,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             HasPoint2 = true;
             IGeometry geo = CreatePolyline();
             IPolyline line = geo as IPolyline;
-            AddGraphicToMap(line);
+            IDictionary<String, Double> lineAttributes = new Dictionary<String, Double>();
+            lineAttributes.Add("distance", Distance);
+            lineAttributes.Add("angle", (double)Azimuth);
+            AddGraphicToMap(line, attributes:lineAttributes);
             ResetPoints();
             ClearTempGraphics();
             base.OnEnterKeyCommand(obj);
@@ -257,10 +261,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     UpdateDistance(construct as IGeometry);
                     UpdateAzimuth(construct as IGeometry);
                 }
-                
 
-                //var color = new RgbColorClass() { Red = 255 } as IColor;
-                AddGraphicToMap(construct as IGeometry);
+                IDictionary<String, System.Object> lineAttributes = new Dictionary<String, System.Object>();
+                lineAttributes.Add("distance", Distance);
+                lineAttributes.Add("distanceunit", LineDistanceType.ToString());
+                lineAttributes.Add("angle", (double)Azimuth);
+                lineAttributes.Add("angleunit", LineAzimuthType.ToString());
+                lineAttributes.Add("startx", Point1.X);
+                lineAttributes.Add("starty", Point1.Y);
+                lineAttributes.Add("endx", Point2.X);
+                lineAttributes.Add("endy", Point2.Y);
+                var color = new RgbColorClass() { Red = 255 } as IColor;
+                AddGraphicToMap(construct as IGeometry, color, attributes: lineAttributes);
 
                 if (HasPoint1 && HasPoint2)
                 {
@@ -372,7 +384,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 var color = new RgbColorClass() { Green = 255 } as IColor;
-                AddGraphicToMap(Point1, color, true);
+                System.Collections.Generic.IDictionary<String, System.Object> ptAttributes = new System.Collections.Generic.Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
+                this.AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes );
                 return;
             }
 

@@ -202,7 +202,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     HasPoint1 = true;
                     Point1 = point;
                     var color = new RgbColorClass() { Green = 255 } as IColor;
-                    AddGraphicToMap(Point1, color, true);
+                    IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                    ptAttributes.Add("X", Point1.X);
+                    ptAttributes.Add("Y", Point1.Y);
+                    AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
                     // lets try feedback
                     // Avoid null reference exception during automated testing
                     if (ArcMap.Application != null)
@@ -757,7 +760,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             if (point == null)
                 return;
-
+            
             if (!HasPoint1)
             {
                 // clear temp graphics
@@ -766,7 +769,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 HasPoint1 = true;
                 
                 var color = new RgbColorClass() { Green = 255 } as IColor;
-                AddGraphicToMap(Point1, color, true);
+                IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
+                AddGraphicToMap( Point1, color, true, attributes: ptAttributes);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -1119,11 +1125,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             var eprop = elem as IElementProperties;
             eprop.Name = Guid.NewGuid().ToString();
-
+            Dictionary<String, Double> attributeMap = new Dictionary<string, double>();
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
                 GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, false));
             else if (this is LinesViewModel)
+            {
                 GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, false));
+            }
             else if (this is CircleViewModel)
                 GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, false));
             else if (this is EllipseViewModel)
@@ -1140,7 +1148,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP)
+        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP, IDictionary<String, System.Object>attributes = null)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
@@ -1220,15 +1228,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             eprop.Name = Guid.NewGuid().ToString();
 
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
-                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
             else if (this is LinesViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
             else if (this is CircleViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
             else if (this is EllipseViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
             else if (this is RangeViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
 
             gc.AddElement(element, 0);
 
@@ -1243,7 +1251,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         /// <param name="geom"></param>
         /// <param name="IsTempGraphic"></param>
-        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false)
+        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false, IDictionary<String, Double>attributes=null)
         {
             var color = new RgbColorClass() { Red = 255 } as IColor;
             AddGraphicToMap(geom, color, IsTempGraphic);

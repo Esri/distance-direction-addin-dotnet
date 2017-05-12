@@ -21,6 +21,7 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
+using System.Collections.Generic;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -395,8 +396,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
             
             ClearTempGraphics();
-
-            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+            IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+            ptAttributes.Add("X", Point1.X);
+            ptAttributes.Add("Y", Point1.Y);
+            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
 
             var ellipticArc = new Polyline() as IConstructGeodetic;
 
@@ -406,13 +409,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             if (minorAxis > MajorAxisDistance)
                 minorAxis = MajorAxisDistance;
-
+            
             ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, minorAxis, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
             var line = ellipticArc as IPolyline;
+            
             if (line != null)
             {
+                IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
+                ellipseAttributes.Add("majoraxis", MajorAxisDistance);
+                ellipseAttributes.Add("minoraxis", MinorAxisDistance);
+                ellipseAttributes.Add("azimuth", Azimuth);
                 var color = new RgbColor() as IColor;
-                AddGraphicToMap(line as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
+                AddGraphicToMap(line as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:ellipseAttributes );
             }
         }
 
@@ -443,7 +451,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
-                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
+                AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
 
             }
             else if (!HasPoint2)
@@ -635,7 +646,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
-                    AddGraphicToMap(line as IGeometry);
+                    var color = new RgbColorClass() { Red = 255 } as IColor;
+                    IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
+                    ellipseAttributes.Add("majoraxis", MajorAxisDistance);
+                    ellipseAttributes.Add("minoraxis", MinorAxisDistance);
+                    ellipseAttributes.Add("azimuth", Azimuth);
+                    ellipseAttributes.Add("centerx", Point1.X);
+                    ellipseAttributes.Add("centery", Point1.Y);
+                    ellipseAttributes.Add("distanceunit", LineDistanceType.ToString());
+                    ellipseAttributes.Add("angleunit", AzimuthType.ToString());
+                    AddGraphicToMap(line as IGeometry, color, attributes:ellipseAttributes);
                     //Convert ellipse polyline to polygon
                     var newPoly = PolylineToPolygon((IPolyline)ellipticArc);
                     if (newPoly != null)
