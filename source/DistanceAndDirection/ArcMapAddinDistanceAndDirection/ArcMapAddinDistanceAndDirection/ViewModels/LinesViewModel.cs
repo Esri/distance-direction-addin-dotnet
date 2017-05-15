@@ -130,7 +130,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return azimuth; }
             set
             {
-                if ((value != null) && (value >= 0.0) /*&& (value <= 360)*/)
+                if ((value != null) && (value >= 0.0))
                     azimuth = value;
                 else
                     azimuth = null;
