@@ -170,7 +170,13 @@ namespace ProAppDistanceAndDirectionModule.Models
                                                     {
                                                         // Add attributes
                                                         rowBuffer[definition.FindField("Distance")] = ((LineAttributes)graphic.p)._distance;
+                                                        rowBuffer[definition.FindField("DistUnit")] = ((LineAttributes)graphic.p).distanceunit;
                                                         rowBuffer[definition.FindField("Angle")] = ((LineAttributes)graphic.p).angle;
+                                                        rowBuffer[definition.FindField("AngleUnit")] = ((LineAttributes)graphic.p).angleunit;
+                                                        rowBuffer[definition.FindField("OriginX")] = ((LineAttributes)graphic.p).originx;
+                                                        rowBuffer[definition.FindField("OriginY")] = ((LineAttributes)graphic.p).originy;
+                                                        rowBuffer[definition.FindField("DestinationX")] = ((LineAttributes)graphic.p).destinationx;
+                                                        rowBuffer[definition.FindField("DestinationY")] = ((LineAttributes)graphic.p).destinationy;
                                                         break;
                                                     }
                                                     // Catch exception likely due to missing fields
@@ -186,7 +192,10 @@ namespace ProAppDistanceAndDirectionModule.Models
                                                     {
                                                         rowBuffer[definition.FindField("Rings")] = ((RangeAttributes)graphic.p).numRings;
                                                         rowBuffer[definition.FindField("Distance")] = ((RangeAttributes)graphic.p).distance;
+                                                        rowBuffer[definition.FindField("DistUnit")] = ((RangeAttributes)graphic.p).distanceunit;
                                                         rowBuffer[definition.FindField("Radials")] = ((RangeAttributes)graphic.p).numRadials;
+                                                        rowBuffer[definition.FindField("CenterX")] = ((RangeAttributes)graphic.p).centerx;
+                                                        rowBuffer[definition.FindField("CenterY")] = ((RangeAttributes)graphic.p).centery;
                                                         break;
                                                     }
                                                     catch
@@ -213,17 +222,13 @@ namespace ProAppDistanceAndDirectionModule.Models
                                                     try
                                                     {
                                                         rowBuffer[definition.FindField("Distance")] = ((CircleAttributes)graphic.p).distance;
-
-                                                        string circleType = "Radius";
-                                                        if ((int)((CircleAttributes)graphic.p).circleFromTypes == 2)
-                                                        {
-                                                            circleType = "Diameter";
-                                                        }
-
-                                                        rowBuffer[definition.FindField("DistType")] = circleType;
+                                                        rowBuffer[definition.FindField("DistUnit")] = ((CircleAttributes)graphic.p).distanceunit;
+                                                        rowBuffer[definition.FindField("DistType")] = ((CircleAttributes)graphic.p).circletype;
+                                                        rowBuffer[definition.FindField("CenterX")] = ((CircleAttributes)graphic.p).centerx;
+                                                        rowBuffer[definition.FindField("CenterY")] = ((CircleAttributes)graphic.p).centery;
                                                         break;
                                                     }
-                                                    catch
+                                                    catch(Exception e)
                                                     {
                                                         break;
                                                     }
@@ -233,7 +238,11 @@ namespace ProAppDistanceAndDirectionModule.Models
                                                 {
                                                     rowBuffer[definition.FindField("Minor")] = ((EllipseAttributes)graphic.p).minorAxis;
                                                     rowBuffer[definition.FindField("Major")] = ((EllipseAttributes)graphic.p).majorAxis;
+                                                    rowBuffer[definition.FindField("DistUnit")] = ((EllipseAttributes)graphic.p).distanceunit;
+                                                    rowBuffer[definition.FindField("CenterX")] = ((EllipseAttributes)graphic.p).centerx;
+                                                    rowBuffer[definition.FindField("CenterY")] = ((EllipseAttributes)graphic.p).centery;
                                                     rowBuffer[definition.FindField("Angle")] = ((EllipseAttributes)graphic.p).angle;
+                                                    rowBuffer[definition.FindField("AngleUnit")] = ((EllipseAttributes)graphic.p).angleunit;
                                                     break;
                                                 }
                                                 catch
@@ -338,27 +347,43 @@ namespace ProAppDistanceAndDirectionModule.Models
                         case "LineAttributes":
                             {
                                 IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
-                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
+                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
+                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "OriginX", "DOUBLE"));
+                                IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "OriginY", "DOUBLE"));
+                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestinationX", "DOUBLE"));
+                                IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestinationY", "DOUBLE"));
+                                IGPResult result8 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
+                                IGPResult result9 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "AngleUnit", "TEXT"));
                                 break;
                             }
                         case "CircleAttributes":
                             {
                                 IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
-                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistType", "TEXT"));
+                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
+                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistType", "TEXT"));
+                                IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterX", "DOUBLE"));
+                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterY", "DOUBLE"));
                                 break;
                             }
                         case "EllipseAttributes":
                             {
                                 IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Minor", "DOUBLE"));
                                 IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Major", "DOUBLE"));
-                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
+                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
+                                IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterX", "DOUBLE"));
+                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterY", "DOUBLE"));
+                                IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
+                                IGPResult result8 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "AngleUnit", "TEXT"));
                                 break;
                             }
                         case "RangeAttributes":
                             {
                                 IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Rings", "LONG"));
                                 IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
-                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Radials", "LONG"));
+                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
+                                IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Radials", "LONG"));
+                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterX", "DOUBLE"));
+                                IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterY", "DOUBLE"));
                                 break;
                             }
                     }

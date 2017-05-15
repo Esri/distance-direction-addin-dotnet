@@ -198,7 +198,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (newline != null)
                     {
                         // Hold onto the attributes in case user saves graphics to file later
-                        RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials };
+                        RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
                         AddGraphicToMap(newline, rangeAttributes);
                     }
 
@@ -247,7 +247,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                     // Hold onto the attributes in case user saves graphics to file later
-                    RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = numberOfRings, distance = radius, numRadials = numberOfRadials };
+                    RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = numberOfRings, distance = radius, numRadials = numberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
 
                     AddGraphicToMap(geom, rangeAttributes);
                 }
@@ -382,7 +382,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
             // Hold onto the attributes in case user saves graphics to file later
-            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials };
+            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
 
             AddGraphicToMap(geom, rangeAttributes);
         }
@@ -406,7 +406,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             ClearTempGraphics();
 
             // Hold onto the attributes in case user saves graphics to file later
-            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials };
+            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString()};
 
             AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
             AddGraphicToMap(geom, ColorFactory.GreyRGB, rangeAttributes, true);

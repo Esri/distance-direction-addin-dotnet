@@ -534,7 +534,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 // Hold onto the attributes in case user saves graphics to file later
-                EllipseAttributes ellipseAttributes = new EllipseAttributes() { mapPoint = Point1, minorAxis = MinorAxisDistance, majorAxis = MajorAxisDistance, angle = param.AxisDirection };
+                EllipseAttributes ellipseAttributes = new EllipseAttributes() { mapPoint = Point1, minorAxis = MinorAxisDistance, majorAxis = MajorAxisDistance, angle = param.AxisDirection, angleunit=AzimuthType.ToString(), centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
 
                 AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 }, ellipseAttributes);
 
