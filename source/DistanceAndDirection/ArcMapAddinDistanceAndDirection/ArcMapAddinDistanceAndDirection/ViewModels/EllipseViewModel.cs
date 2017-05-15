@@ -66,6 +66,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        public override IPoint Point1
+        {
+            get
+            {
+                return base.Point1;
+            }
+            set
+            {
+                base.Point1 = value;
+                UpdateFeedback();
+            }
+        }
         private IPoint point2 = null;
         public override IPoint Point2
         {
