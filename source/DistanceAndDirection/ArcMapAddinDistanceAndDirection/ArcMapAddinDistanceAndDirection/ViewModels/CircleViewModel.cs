@@ -97,7 +97,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => DistanceString);
             }
         }
+        public override IPoint Point1
+        {
+            get
+            {
+                return base.Point1;
+            }
+            set
+            {
+                base.Point1 = value;
 
+                
+
+                UpdateFeedbackWithGeoCircle();
+            }
+        }
         TimeUnits timeUnit = TimeUnits.Minutes;
         /// <summary>
         /// Type of time units
@@ -730,7 +744,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             var construct = new Polyline() as IConstructGeodetic;
-            
+
             if (construct != null)
             {
                 ClearTempGraphics();
@@ -743,25 +757,28 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     circleAttributes.Add("centerx", Point1.X);
                     circleAttributes.Add("centery", Point1.Y);
                     // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                    AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
-                }
-                
-                circleAttributes.Add("radius", Distance);
-                circleAttributes.Add("disttype", CircleType.ToString());
-                
-                // Handle Radius/Diameter combobox
-                double radiusDistance = Distance;
-                if (circleType == CircleFromTypes.Diameter)
-                {
-                    radiusDistance = Distance / 2;
-                }
+                    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
 
-                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radiusDistance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
 
-                Point2 = (construct as IPolyline).ToPoint;
-                var color = new RgbColorClass() as IColor;
-                this.AddGraphicToMap( construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
+                    circleAttributes.Add("radius", Distance);
+                    circleAttributes.Add("disttype", CircleType.ToString());
+
+                    // Handle Radius/Diameter combobox
+                    double radiusDistance = Distance;
+                    if (circleType == CircleFromTypes.Diameter)
+                    {
+                        radiusDistance = Distance / 2;
+                    }
+
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radiusDistance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+
+                    Point2 = (construct as IPolyline).ToPoint;
+                    var color = new RgbColorClass() as IColor;
+                    this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
+                }
             }
+
+
         }
 
         #endregion
