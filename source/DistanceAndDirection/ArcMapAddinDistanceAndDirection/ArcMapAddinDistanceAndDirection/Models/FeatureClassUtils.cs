@@ -361,18 +361,327 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
                     fieldEdit.GeometryDef_2 = geomDef;
                     fieldsEdit.AddField(field);
+                    string graphicsType = graphicsList[0].GraphicType.ToString();
+                    switch(graphicsType)
+                    {
+                        case "Line":
+                            {
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "Distance";
+                                fieldEdit.AliasName_2 = "Geodetic Distance";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "DistUnit";
+                                fieldEdit.AliasName_2 = "Distance Unit";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "OriginX";
+                                fieldEdit.AliasName_2 = "Origin X";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "OriginY";
+                                fieldEdit.AliasName_2 = "Origin Y";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "DestX";
+                                fieldEdit.AliasName_2 = "Dest X";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "DestY";
+                                fieldEdit.AliasName_2 = "Dest Y";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "Angle";
+                                fieldEdit.AliasName_2 = "Angle";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "AngleUnit";
+                                fieldEdit.AliasName_2 = "Angle Unit";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                                fieldsEdit.AddField(field);
+
+                                break;
+                            }
+                        case "Circle":
+                            {
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "Distance";
+                                fieldEdit.AliasName_2 = "Distance";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "DistUnit";
+                                fieldEdit.AliasName_2 = "Distance Unit";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "DistType";
+                                fieldEdit.AliasName_2 = "Distance Type";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "CenterX";
+                                fieldEdit.AliasName_2 = "Center X";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "CenterY";
+                                fieldEdit.AliasName_2 = "Center Y";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                break;
+                            }
+                        case "Ellipse":
+                            {
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "MajAxis";
+                                fieldEdit.AliasName_2 = "Major Axis";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "MinAxis";
+                                fieldEdit.AliasName_2 = "Minor Axis";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "DistUnit";
+                                fieldEdit.AliasName_2 = "Distance Unit";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "CenterX";
+                                fieldEdit.AliasName_2 = "Center X";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "CenterY";
+                                fieldEdit.AliasName_2 = "Center Y";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "Angle";
+                                fieldEdit.AliasName_2 = "Angle";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "AngleUnit";
+                                fieldEdit.AliasName_2 = "Angle Unit";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                                fieldsEdit.AddField(field);
+
+                                break;
+                            }
+                        case "RangeRing":
+                            {
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "Rings";
+                                fieldEdit.AliasName_2 = "Rings";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "Distance";
+                                fieldEdit.AliasName_2 = "Geodetic Distance";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "DistUnit";
+                                fieldEdit.AliasName_2 = "Distance Unit";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeString;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "Radials";
+                                fieldEdit.AliasName_2 = "Radials";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "CenterX";
+                                fieldEdit.AliasName_2 = "Center X";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                field = new FieldClass();
+                                fieldEdit = (IFieldEdit)field;
+                                fieldEdit.Name_2 = "CenterY";
+                                fieldEdit.AliasName_2 = "Center Y";
+                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
+                                fieldsEdit.AddField(field);
+
+                                break;
+                            }
+                    }
 
                     featClass = featureWorkspace.CreateFeatureClass(nameOfShapeFile, fields, null, null, esriFeatureType.esriFTSimple, shapeFieldName, "");
 
                     foreach (Graphic graphic in graphicsList)
                     {
+                        if (graphic.Attributes == null)
+                            continue;
                         IFeature feature = featClass.CreateFeature();
 
                         if (polyLineFC)
                             feature.Shape = graphic.Geometry;
                         else
                             feature.Shape = PolylineToPolygon(graphic.Geometry);
+                        switch (graphic.GraphicType.ToString())
+                        {
+                            case "Line":
+                                {
+                                    System.Object dist;
+                                    System.Object angle;
+                                    System.Object angleunit;
+                                    System.Object ox;
+                                    System.Object oy;
+                                    System.Object dx;
+                                    System.Object dy;
+                                    System.Object distunit;
 
+                                    graphic.Attributes.TryGetValue("distance", out dist);
+                                    graphic.Attributes.TryGetValue("distanceunit", out distunit);
+                                    graphic.Attributes.TryGetValue("startx", out ox);
+                                    graphic.Attributes.TryGetValue("starty", out oy);
+                                    graphic.Attributes.TryGetValue("endx", out dx);
+                                    graphic.Attributes.TryGetValue("endy", out dy);
+                                    graphic.Attributes.TryGetValue("angle", out angle);
+                                    graphic.Attributes.TryGetValue("angleunit", out angleunit);
+                                    feature.set_Value(feature.Fields.FindField("Distance"), dist);
+                                    feature.set_Value(feature.Fields.FindField("DistUnit"), distunit);
+                                    feature.set_Value(feature.Fields.FindField("OriginX"), ox);
+                                    feature.set_Value(feature.Fields.FindField("OriginY"), oy);
+                                    feature.set_Value(feature.Fields.FindField("DestX"), dx);
+                                    feature.set_Value(feature.Fields.FindField("DestY"), dy);
+                                    feature.set_Value(feature.Fields.FindField("Angle"), angle);
+                                    feature.set_Value(feature.Fields.FindField("AngleUnit"), angleunit);
+                                    break;
+                                }
+                            case "Circle":
+                                {
+                                    System.Object radius;
+                                    System.Object disttype;
+                                    System.Object distunit;
+                                    System.Object centerx;
+                                    System.Object centery;
+
+                                    graphic.Attributes.TryGetValue("radius", out radius);
+                                    graphic.Attributes.TryGetValue("distanceunit", out distunit);
+                                    graphic.Attributes.TryGetValue("disttype", out disttype);
+                                    graphic.Attributes.TryGetValue("centerx", out centerx);
+                                    graphic.Attributes.TryGetValue("centery", out centery);
+
+                                    feature.set_Value(feature.Fields.FindField("Distance"), radius);
+                                    feature.set_Value(feature.Fields.FindField("DistUnit"), distunit);
+                                    feature.set_Value(feature.Fields.FindField("DistType"), disttype);
+                                    feature.set_Value(feature.Fields.FindField("CenterX"), centerx);
+                                    feature.set_Value(feature.Fields.FindField("CenterY"), centery);
+
+                                    break;
+                                }
+                            case "Ellipse":
+                                {
+                                    System.Object majoraxis;
+                                    System.Object minoraxis;
+                                    System.Object angle;
+                                    System.Object distunit;
+                                    System.Object centerx;
+                                    System.Object centery;
+                                    System.Object angleunit;
+
+                                    graphic.Attributes.TryGetValue("majoraxis", out majoraxis);
+                                    graphic.Attributes.TryGetValue("minoraxis", out minoraxis);
+                                    graphic.Attributes.TryGetValue("azimuth", out angle);
+                                    graphic.Attributes.TryGetValue("distanceunit", out distunit);
+                                    graphic.Attributes.TryGetValue("centerx", out centerx);
+                                    graphic.Attributes.TryGetValue("centery", out centery);
+                                    graphic.Attributes.TryGetValue("angleunit", out angleunit);
+
+                                    feature.set_Value(feature.Fields.FindField("MajAxis"), majoraxis);
+                                    feature.set_Value(feature.Fields.FindField("MinAxis"), minoraxis);
+                                    feature.set_Value(feature.Fields.FindField("DistUnit"), distunit);
+                                    feature.set_Value(feature.Fields.FindField("Angle"), angle);
+                                    feature.set_Value(feature.Fields.FindField("CenterX"), centerx);
+                                    feature.set_Value(feature.Fields.FindField("CenterY"), centery);
+                                    feature.set_Value(feature.Fields.FindField("AngleUnit"), angleunit);
+                                    break;
+                                }
+                            case "RangeRing":
+                                {
+                                    System.Object rings;
+                                    System.Object distance;
+                                    System.Object radials;
+                                    System.Object distunit;
+                                    System.Object centerx;
+                                    System.Object centery;
+
+                                    graphic.Attributes.TryGetValue("rings", out rings);
+                                    graphic.Attributes.TryGetValue("distance", out distance);
+                                    graphic.Attributes.TryGetValue("radials", out radials);
+                                    graphic.Attributes.TryGetValue("distanceunit", out distunit);
+                                    graphic.Attributes.TryGetValue("centerx", out centerx);
+                                    graphic.Attributes.TryGetValue("centery", out centery);
+
+                                    feature.set_Value(feature.Fields.FindField("Rings"), rings);
+                                    feature.set_Value(feature.Fields.FindField("Distance"), distance);
+                                    feature.set_Value(feature.Fields.FindField("Radials"), radials);
+                                    feature.set_Value(feature.Fields.FindField("DistUnit"), distunit);
+                                    feature.set_Value(feature.Fields.FindField("CenterX"), centerx);
+                                    feature.set_Value(feature.Fields.FindField("CenterY"), centery);
+                                    break;
+                                }
+                        }
                         feature.Store();
                     }
 
