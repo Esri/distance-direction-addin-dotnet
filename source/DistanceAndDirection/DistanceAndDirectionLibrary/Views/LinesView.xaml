@@ -170,18 +170,15 @@
                 </ComboBox>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelAngle}" />
                 <TextBox Margin="3,3,0,0"
-                         Text="{Binding Path=AzimuthString,
-                                        UpdateSourceTrigger=PropertyChanged,
-                                        ValidatesOnExceptions=True}"
+                         Text="{Binding AzimuthString, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}"
                          Validation.ErrorTemplate="{StaticResource errorTemplate}">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter"
-                                    Command="{Binding EnterKeyCommand}"
-                                    CommandParameter="{Binding ElementName=mainControl,
-                                                               Path=.}" />
+                    		Command="{Binding EnterKeyCommand}"
+                    		CommandParameter="{Binding ., ElementName=mainControl}" />
                     </TextBox.InputBindings>
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="{x:Type TextBox}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
                                     <Setter Property="IsEnabled" Value="False" />

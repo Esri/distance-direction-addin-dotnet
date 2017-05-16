@@ -130,7 +130,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return azimuth; }
             set
             {
-                if ((value != null) && (value >= 0.0) && (value <= 360))
+                if ((value != null) && (value >= 0.0))
                     azimuth = value;
                 else
                     azimuth = null;
@@ -144,9 +144,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 if ((value == null) || (value < 0.0))
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
-                if (value > 360 && LineAzimuthType == AzimuthTypes.Degrees)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
-
+                if (LineAzimuthType == AzimuthTypes.Degrees)
+                {
+                    if (value > 360 && LineAzimuthType == AzimuthTypes.Degrees)
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+                else
+                {
+                    if (value > 6400 && LineAzimuthType == AzimuthTypes.Mils)
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+                
                 AzimuthString = azimuth.Value.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
             }
