@@ -232,8 +232,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-                    
-                   
+
+                    TravelTime = 0.0;
                     ClearTempGraphics();
                     if (HasPoint1)
                     {
