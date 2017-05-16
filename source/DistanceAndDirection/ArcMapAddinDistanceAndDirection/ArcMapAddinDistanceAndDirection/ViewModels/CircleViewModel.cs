@@ -243,7 +243,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
                     }
-                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEEnterValue);
                 }
             }
         }
@@ -353,7 +353,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                     }
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEEnterValue);
                 }
             }
         }
