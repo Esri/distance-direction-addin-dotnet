@@ -764,13 +764,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     circleAttributes.Add("disttype", CircleType.ToString());
 
                     // Handle Radius/Diameter combobox
-                    double radiusDistance = Distance;
-                    if (circleType == CircleFromTypes.Diameter)
-                    {
-                        radiusDistance = Distance / 2;
-                    }
+                    
 
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radiusDistance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
 
                     Point2 = (construct as IPolyline).ToPoint;
                     var color = new RgbColorClass() as IColor;
