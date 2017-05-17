@@ -258,10 +258,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
                 esriGeodeticType type = GetEsriGeodeticType();
                 IGeometry geo = Point1;
-                if(LineFromType == LineFromTypes.Points)
+                if (LineFromType == LineFromTypes.Points)
                     construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                 else
-                    construct.ConstructGeodeticLineFromDistance(type, Point1, GetLinearUnit(), Distance, (double)Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation,-1.0);
+                {
+                    Double bearing = 0.0;
+                    if(LineAzimuthType == AzimuthTypes.Mils)
+                    {
+                        bearing = GetAzimuthAsDegrees();
+                    }
+                    else
+                    {
+                        bearing = (double)Azimuth;
+                    }
+                    construct.ConstructGeodeticLineFromDistance(type, Point1, GetLinearUnit(), Distance, bearing, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+                }
                 var mxdoc = ArcMap.Application.Document as IMxDocument;
                 var av = mxdoc.FocusMap as IActiveView;
                 if (LineFromType == LineFromTypes.Points)
