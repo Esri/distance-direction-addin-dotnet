@@ -244,7 +244,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     rrAttributes.Add("radials", NumberOfRadials);
                     rrAttributes.Add("centerx", Point1.X);
                     rrAttributes.Add("centery", Point1.Y);
-                    construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+                    construct.ConstructGeodeticLineFromDistance(esriGeodeticType.esriGeodeticTypeLoxodrome, Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                     AddGraphicToMap(construct as IGeometry, color, attributes:rrAttributes);
 
                     azimuth += interval;
