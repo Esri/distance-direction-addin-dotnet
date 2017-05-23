@@ -158,99 +158,97 @@ namespace ProAppDistanceAndDirectionModule.Models
                                     isLine = true;
 
                                     // Only add attributes for Esri format
-                                    if (!isKML)
-                                    {
-                                        // Add attributes
-                                        graphicsType = graphic.p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
-                                        switch (graphicsType)
-                                        {
-                                            case "LineAttributes":
-                                                {
-                                                    try
-                                                    {
-                                                        // Add attributes
-                                                        rowBuffer[definition.FindField("Distance")] = ((LineAttributes)graphic.p)._distance;
-                                                        rowBuffer[definition.FindField("DistUnit")] = ((LineAttributes)graphic.p).distanceunit;
-                                                        rowBuffer[definition.FindField("Angle")] = ((LineAttributes)graphic.p).angle;
-                                                        rowBuffer[definition.FindField("AngleUnit")] = ((LineAttributes)graphic.p).angleunit;
-                                                        rowBuffer[definition.FindField("OriginX")] = ((LineAttributes)graphic.p).originx;
-                                                        rowBuffer[definition.FindField("OriginY")] = ((LineAttributes)graphic.p).originy;
-                                                        rowBuffer[definition.FindField("DestinationX")] = ((LineAttributes)graphic.p).destinationx;
-                                                        rowBuffer[definition.FindField("DestinationY")] = ((LineAttributes)graphic.p).destinationy;
-                                                        break;
-                                                    }
-                                                    // Catch exception likely due to missing fields
-                                                    // Just skip attempting to write to fields
-                                                    catch
-                                                    {
-                                                        break;
-                                                    }
-                                                }
-                                            case "RangeAttributes":
-                                                {
-                                                    try
-                                                    {
-                                                        rowBuffer[definition.FindField("Rings")] = ((RangeAttributes)graphic.p).numRings;
-                                                        rowBuffer[definition.FindField("Distance")] = ((RangeAttributes)graphic.p).distance;
-                                                        rowBuffer[definition.FindField("DistUnit")] = ((RangeAttributes)graphic.p).distanceunit;
-                                                        rowBuffer[definition.FindField("Radials")] = ((RangeAttributes)graphic.p).numRadials;
-                                                        rowBuffer[definition.FindField("CenterX")] = ((RangeAttributes)graphic.p).centerx;
-                                                        rowBuffer[definition.FindField("CenterY")] = ((RangeAttributes)graphic.p).centery;
-                                                        break;
-                                                    }
-                                                    catch
-                                                    {
-                                                        break;
-                                                    }
-                                                }
-                                        }
-                                    }
-                                }
-                                else if (graphic.Geometry is Polygon)
-                                {
-                                    rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
 
-                                    // Only add attributes for Esri format
-                                    if (!isKML)
+                                    // Add attributes
+                                    graphicsType = graphic.p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
+                                    switch (graphicsType)
                                     {
-                                        // Add attributes
-                                        graphicsType = graphic.p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
-                                        switch (graphicsType)
-                                        {
-                                            case "CircleAttributes":
-                                                {
-                                                    try
-                                                    {
-                                                        rowBuffer[definition.FindField("Distance")] = ((CircleAttributes)graphic.p).distance;
-                                                        rowBuffer[definition.FindField("DistUnit")] = ((CircleAttributes)graphic.p).distanceunit;
-                                                        rowBuffer[definition.FindField("DistType")] = ((CircleAttributes)graphic.p).circletype;
-                                                        rowBuffer[definition.FindField("CenterX")] = ((CircleAttributes)graphic.p).centerx;
-                                                        rowBuffer[definition.FindField("CenterY")] = ((CircleAttributes)graphic.p).centery;
-                                                        break;
-                                                    }
-                                                    catch(Exception e)
-                                                    {
-                                                        break;
-                                                    }
-                                                }
-                                            case "EllipseAttributes":
+                                        case "LineAttributes":
+                                            {
                                                 try
                                                 {
-                                                    rowBuffer[definition.FindField("Minor")] = ((EllipseAttributes)graphic.p).minorAxis;
-                                                    rowBuffer[definition.FindField("Major")] = ((EllipseAttributes)graphic.p).majorAxis;
-                                                    rowBuffer[definition.FindField("DistUnit")] = ((EllipseAttributes)graphic.p).distanceunit;
-                                                    rowBuffer[definition.FindField("CenterX")] = ((EllipseAttributes)graphic.p).centerx;
-                                                    rowBuffer[definition.FindField("CenterY")] = ((EllipseAttributes)graphic.p).centery;
-                                                    rowBuffer[definition.FindField("Angle")] = ((EllipseAttributes)graphic.p).angle;
-                                                    rowBuffer[definition.FindField("AngleUnit")] = ((EllipseAttributes)graphic.p).angleunit;
+                                                    // Add attributes
+                                                    rowBuffer[definition.FindField("Distance")] = ((LineAttributes)graphic.p)._distance;
+                                                    rowBuffer[definition.FindField("DistUnit")] = ((LineAttributes)graphic.p).distanceunit;
+                                                    rowBuffer[definition.FindField("Angle")] = ((LineAttributes)graphic.p).angle;
+                                                    rowBuffer[definition.FindField("AngleUnit")] = ((LineAttributes)graphic.p).angleunit;
+                                                    rowBuffer[definition.FindField("OriginX")] = ((LineAttributes)graphic.p).originx;
+                                                    rowBuffer[definition.FindField("OriginY")] = ((LineAttributes)graphic.p).originy;
+                                                    rowBuffer[definition.FindField("DestX")] = ((LineAttributes)graphic.p).destinationx;
+                                                    rowBuffer[definition.FindField("DestY")] = ((LineAttributes)graphic.p).destinationy;
+                                                    break;
+                                                }
+                                                // Catch exception likely due to missing fields
+                                                // Just skip attempting to write to fields
+                                                catch
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        case "RangeAttributes":
+                                            {
+                                                try
+                                                {
+                                                    rowBuffer[definition.FindField("Rings")] = ((RangeAttributes)graphic.p).numRings;
+                                                    rowBuffer[definition.FindField("Distance")] = ((RangeAttributes)graphic.p).distance;
+                                                    rowBuffer[definition.FindField("DistUnit")] = ((RangeAttributes)graphic.p).distanceunit;
+                                                    rowBuffer[definition.FindField("Radials")] = ((RangeAttributes)graphic.p).numRadials;
+                                                    rowBuffer[definition.FindField("CenterX")] = ((RangeAttributes)graphic.p).centerx;
+                                                    rowBuffer[definition.FindField("CenterY")] = ((RangeAttributes)graphic.p).centery;
                                                     break;
                                                 }
                                                 catch
                                                 {
                                                     break;
                                                 }
-                                        }
+                                            }
                                     }
+
+                                }
+                                else if (graphic.Geometry is Polygon)
+                                {
+                                    rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
+
+                                    // Only add attributes for Esri format
+
+                                    // Add attributes
+                                    graphicsType = graphic.p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
+                                    switch (graphicsType)
+                                    {
+                                        case "CircleAttributes":
+                                            {
+                                                try
+                                                {
+                                                    rowBuffer[definition.FindField("Distance")] = ((CircleAttributes)graphic.p).distance;
+                                                    rowBuffer[definition.FindField("DistUnit")] = ((CircleAttributes)graphic.p).distanceunit;
+                                                    rowBuffer[definition.FindField("DistType")] = ((CircleAttributes)graphic.p).circletype;
+                                                    rowBuffer[definition.FindField("CenterX")] = ((CircleAttributes)graphic.p).centerx;
+                                                    rowBuffer[definition.FindField("CenterY")] = ((CircleAttributes)graphic.p).centery;
+                                                    break;
+                                                }
+                                                catch (Exception e)
+                                                {
+                                                    break;
+                                                }
+                                            }
+                                        case "EllipseAttributes":
+                                            try
+                                            {
+                                                rowBuffer[definition.FindField("Minor")] = ((EllipseAttributes)graphic.p).minorAxis;
+                                                rowBuffer[definition.FindField("Major")] = ((EllipseAttributes)graphic.p).majorAxis;
+                                                rowBuffer[definition.FindField("DistUnit")] = ((EllipseAttributes)graphic.p).distanceunit;
+                                                rowBuffer[definition.FindField("CenterX")] = ((EllipseAttributes)graphic.p).centerx;
+                                                rowBuffer[definition.FindField("CenterY")] = ((EllipseAttributes)graphic.p).centery;
+                                                rowBuffer[definition.FindField("Angle")] = ((EllipseAttributes)graphic.p).angle;
+                                                rowBuffer[definition.FindField("AngleUnit")] = ((EllipseAttributes)graphic.p).angleunit;
+                                                break;
+                                            }
+                                            catch
+                                            {
+                                                break;
+                                            }
+                                    }
+
                                 }
 
                                 Row row = table.CreateRow(rowBuffer);
@@ -337,10 +335,19 @@ namespace ProAppDistanceAndDirectionModule.Models
                 var valueArray = Geoprocessing.MakeValueArray(arguments.ToArray());
                 IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", valueArray);
 
-                if (!isKML)
-                {
+                
                     // Add additional fields based on type of graphic
-                    string featureClass = connection + "/" + dataset;
+                    string nameNoExtension = Path.GetFileNameWithoutExtension(dataset);
+                    string featureClass = "";
+                    if (isKML)
+                    {
+                        featureClass = connection + "/" + nameNoExtension + ".shp";
+                    }
+                    else
+                    {
+                        featureClass = connection + "/" + dataset;
+                    }
+                     
                     string graphicsType = graphicsList[0].p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
                     switch (graphicsType)
                     {
@@ -350,8 +357,8 @@ namespace ProAppDistanceAndDirectionModule.Models
                                 IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
                                 IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "OriginX", "DOUBLE"));
                                 IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "OriginY", "DOUBLE"));
-                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestinationX", "DOUBLE"));
-                                IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestinationY", "DOUBLE"));
+                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestX", "DOUBLE"));
+                                IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestY", "DOUBLE"));
                                 IGPResult result8 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
                                 IGPResult result9 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "AngleUnit", "TEXT"));
                                 break;
@@ -387,7 +394,7 @@ namespace ProAppDistanceAndDirectionModule.Models
                                 break;
                             }
                     }
-                }
+                
 
                 await CreateFeatures(graphicsList, isKML);
 
