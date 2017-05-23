@@ -14,6 +14,7 @@
   *   limitations under the License. 
   ******************************************************************************/
 
+using ArcGIS.Core.Geometry;
 // Esri
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Mapping;
@@ -39,9 +40,20 @@ namespace ProAppDistanceAndDirectionModule.Models
             try
             {   
                 string nameNoExtension = Path.GetFileNameWithoutExtension(datasetName);
- 
+
+                List<object> projArg = new List<object>();
+                var srout = SpatialReferenceBuilder.CreateSpatialReference(4326);
+                string outshp = nameNoExtension + "_proj";
+                string projshpPath = Path.Combine(kmzOutputPath, outshp + ".shp");
+                string shppath = Path.Combine(kmzOutputPath, nameNoExtension + ".shp");
+                projArg.Add(shppath);
+                projArg.Add(projshpPath);
+                projArg.Add(srout);
+                var projvalueArray = Geoprocessing.MakeValueArray(projArg.ToArray());
+                IGPResult projresult = await Geoprocessing.ExecuteToolAsync("Project_management", projvalueArray);
+                
                 List<object> arguments2 = new List<object>();
-                arguments2.Add(nameNoExtension);
+                arguments2.Add(outshp);
                 string fullPath = Path.Combine(kmzOutputPath, datasetName);
                 arguments2.Add(fullPath);
 
