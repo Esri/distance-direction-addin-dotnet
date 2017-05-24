@@ -957,7 +957,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             if (obj == null)
                 return;
-
+            IsToolActive = false;
             IsActiveTab = (obj == this);
         }
 
