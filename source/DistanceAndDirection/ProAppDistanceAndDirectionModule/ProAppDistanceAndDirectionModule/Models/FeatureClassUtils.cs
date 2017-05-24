@@ -408,7 +408,9 @@ namespace ProAppDistanceAndDirectionModule.Models
                     foreach (string extension in extensionNames)
                     {
                         string shapeFile = Path.Combine(connection, datasetNoExtension + extension);
-                        //File.Delete(shapeFile);
+                        string shapefileproj = Path.Combine(connection, datasetNoExtension+ "_proj" + extension);
+                        File.Delete(shapeFile);
+                        File.Delete(shapefileproj);
                     }
                 }
             }

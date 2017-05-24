@@ -21,6 +21,7 @@ using ArcGIS.Desktop.Mapping;
 // System
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -61,9 +62,23 @@ namespace ProAppDistanceAndDirectionModule.Models
                 IGPResult result = await Geoprocessing.ExecuteToolAsync("LayerToKML_conversion", valueArray);
 
                 // Remove the layer from the TOC
-                var layer = MapView.Active.GetSelectedLayers()[0];
-                MapView.Active.Map.RemoveLayer(layer);
-
+                Layer layer1 = null;
+                Layer layer2 = null;
+                ReadOnlyObservableCollection<Layer> layers = MapView.Active.Map.Layers;
+                foreach (Layer layer in layers)
+                {
+                    if(layer.Name==outshp)
+                    {
+                        layer1 = layer;
+                    }
+                    else if(layer.Name==nameNoExtension)
+                    {
+                        layer2 = layer;
+                    }
+                }
+                //var layer = MapView.Active.GetSelectedLayers()[0];
+                MapView.Active.Map.RemoveLayer(layer1);
+                MapView.Active.Map.RemoveLayer(layer2);
             }
             catch(Exception ex)
             {
