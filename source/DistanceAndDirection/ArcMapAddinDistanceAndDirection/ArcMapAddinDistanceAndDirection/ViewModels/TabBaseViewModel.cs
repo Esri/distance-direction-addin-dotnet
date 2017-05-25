@@ -200,13 +200,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     point1Formatted = value;
                     HasPoint1 = true;
-                    try
-                    {
-                        Point1 = point;
-                    }catch(Exception ex)
-                    {
-
-                    }
+                    Point1 = point;
                     var color = new RgbColorClass() { Green = 255 } as IColor;
                     IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
                     ptAttributes.Add("X", Point1.X);
