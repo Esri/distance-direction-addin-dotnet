@@ -740,9 +740,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private void UpdateFeedbackWithGeoCircle()
         {
-            if (Point1 == null)
+            if (Point1 == null || Distance <= 0)
                 return;
-
+         
             var construct = new Polyline() as IConstructGeodetic;
 
             if (construct != null)
@@ -763,11 +763,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     circleAttributes.Add("radius", Distance);
                     circleAttributes.Add("disttype", CircleType.ToString());
 
-                    // Handle Radius/Diameter combobox
-                    
-
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-
+                       
                     Point2 = (construct as IPolyline).ToPoint;
                     var color = new RgbColorClass() as IColor;
                     this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
