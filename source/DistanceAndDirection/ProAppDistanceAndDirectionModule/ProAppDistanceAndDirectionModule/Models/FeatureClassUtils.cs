@@ -316,7 +316,7 @@ namespace ProAppDistanceAndDirectionModule.Models
             try
             {
                 string strGeomType = geomType == GeomType.PolyLine ? "POLYLINE" : "POLYGON";
-
+                
                 List<object> arguments = new List<object>();
                 // store the results in the geodatabase
                 arguments.Add(connection);
@@ -325,93 +325,104 @@ namespace ProAppDistanceAndDirectionModule.Models
                 // type of geometry
                 arguments.Add(strGeomType);
                 // no template
-                arguments.Add("");
+                arguments.Add(null);
                 // no m values
                 arguments.Add("DISABLED");
                 // no z values
                 arguments.Add("DISABLED");
-                arguments.Add(spatialRef);
+                arguments.Add(spatialRef.Wkid.ToString());
+                
+                
+                // store the results in the geodatabase
+                object[] argArray = arguments.ToArray();
+                var valueArray = Geoprocessing.MakeValueArray(argArray);
 
-                var valueArray = Geoprocessing.MakeValueArray(arguments.ToArray());
                 IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", valueArray);
 
-                
-                    // Add additional fields based on type of graphic
-                    string nameNoExtension = Path.GetFileNameWithoutExtension(dataset);
-                    string featureClass = "";
-                    if (isKML)
-                    {
-                        featureClass = connection + "/" + nameNoExtension + ".shp";
-                    }
-                    else
-                    {
-                        featureClass = connection + "/" + dataset;
-                    }
-                     
-                    string graphicsType = graphicsList[0].p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
-                    switch (graphicsType)
-                    {
-                        case "LineAttributes":
-                            {
-                                IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
-                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
-                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "OriginX", "DOUBLE"));
-                                IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "OriginY", "DOUBLE"));
-                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestX", "DOUBLE"));
-                                IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestY", "DOUBLE"));
-                                IGPResult result8 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
-                                IGPResult result9 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "AngleUnit", "TEXT"));
-                                break;
-                            }
-                        case "CircleAttributes":
-                            {
-                                IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
-                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
-                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistType", "TEXT"));
-                                IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterX", "DOUBLE"));
-                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterY", "DOUBLE"));
-                                break;
-                            }
-                        case "EllipseAttributes":
-                            {
-                                IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Minor", "DOUBLE"));
-                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Major", "DOUBLE"));
-                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
-                                IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterX", "DOUBLE"));
-                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterY", "DOUBLE"));
-                                IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
-                                IGPResult result8 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "AngleUnit", "TEXT"));
-                                break;
-                            }
-                        case "RangeAttributes":
-                            {
-                                IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Rings", "LONG"));
-                                IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
-                                IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
-                                IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Radials", "LONG"));
-                                IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterX", "DOUBLE"));
-                                IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterY", "DOUBLE"));
-                                break;
-                            }
-                    }
-                
+
+                // Add additional fields based on type of graphic
+                string nameNoExtension = Path.GetFileNameWithoutExtension(dataset);
+                string featureClass = "";
+                if (isKML)
+                {
+                    featureClass = connection + "/" + nameNoExtension + ".shp";
+                }
+                else
+                {
+                    featureClass = connection + "/" + dataset;
+                }
+
+                string graphicsType = graphicsList[0].p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
+                switch (graphicsType)
+                {
+                    case "LineAttributes":
+                        {
+                            IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
+                            IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
+                            IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "OriginX", "DOUBLE"));
+                            IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "OriginY", "DOUBLE"));
+                            IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestX", "DOUBLE"));
+                            IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DestY", "DOUBLE"));
+                            IGPResult result8 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
+                            IGPResult result9 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "AngleUnit", "TEXT"));
+                            break;
+                        }
+                    case "CircleAttributes":
+                        {
+                            IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
+                            IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
+                            IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistType", "TEXT"));
+                            IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterX", "DOUBLE"));
+                            IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterY", "DOUBLE"));
+                            break;
+                        }
+                    case "EllipseAttributes":
+                        {
+                            IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Minor", "DOUBLE"));
+                            IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Major", "DOUBLE"));
+                            IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
+                            IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterX", "DOUBLE"));
+                            IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterY", "DOUBLE"));
+                            IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Angle", "DOUBLE"));
+                            IGPResult result8 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "AngleUnit", "TEXT"));
+                            break;
+                        }
+                    case "RangeAttributes":
+                        {
+                            IGPResult result2 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Rings", "LONG"));
+                            IGPResult result3 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Distance", "DOUBLE"));
+                            IGPResult result4 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "DistUnit", "TEXT"));
+                            IGPResult result5 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "Radials", "LONG"));
+                            IGPResult result6 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterX", "DOUBLE"));
+                            IGPResult result7 = await Geoprocessing.ExecuteToolAsync("AddField_management", makeValueArray(featureClass, "CenterY", "DOUBLE"));
+                            break;
+                        }
+                }
+
 
                 await CreateFeatures(graphicsList, isKML);
 
                 if (isKML)
-                {                
+                {
                     await KMLUtils.ConvertLayerToKML(connection, dataset, MapView.Active);
 
                     // Delete temporary Shapefile
-                    string[] extensionNames = {".cpg", ".dbf", ".prj", ".shx", ".shp"};
+                    string[] extensionNames = { ".cpg", ".dbf", ".prj", ".shx", ".shp", ".sbn", ".sbx" };
                     string datasetNoExtension = Path.GetFileNameWithoutExtension(dataset);
                     foreach (string extension in extensionNames)
                     {
                         string shapeFile = Path.Combine(connection, datasetNoExtension + extension);
-                        string shapefileproj = Path.Combine(connection, datasetNoExtension+ "_proj" + extension);
-                        File.Delete(shapeFile);
-                        File.Delete(shapefileproj);
+                        string shapefileproj = Path.Combine(connection, datasetNoExtension + "_proj" + extension);
+                        if(File.Exists(shapeFile))
+                            File.Delete(shapeFile);
+                        if (File.Exists(shapefileproj))
+                            File.Delete(shapefileproj);
+                        
                     }
+                    DirectoryInfo dir = new DirectoryInfo(connection);
+                    FileSystemInfo fsi = dir;
+                    fsi.Refresh();
+
                 }
             }
             catch (Exception ex)
