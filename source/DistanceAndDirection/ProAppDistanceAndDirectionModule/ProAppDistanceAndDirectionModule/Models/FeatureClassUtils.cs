@@ -128,6 +128,7 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// <returns></returns>
         private static async Task CreateFeatures(List<Graphic> graphicsList, bool isKML)
         {
+            
             RowBuffer rowBuffer = null;
             bool isLine = false;
                 
@@ -315,6 +316,11 @@ namespace ProAppDistanceAndDirectionModule.Models
         {
             try
             {
+                List<Graphic> list = ClearTempGraphics(graphicsList);
+
+                if ((list == null) || (list.Count == 0))
+                    return;
+
                 string strGeomType = geomType == GeomType.PolyLine ? "POLYLINE" : "POLYGON";
                 
                 List<object> arguments = new List<object>();
@@ -335,9 +341,15 @@ namespace ProAppDistanceAndDirectionModule.Models
                 
                 // store the results in the geodatabase
                 object[] argArray = arguments.ToArray();
-                var valueArray = Geoprocessing.MakeValueArray(argArray);
 
-                IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", valueArray);
+                var environments = Geoprocessing.MakeEnvironmentArray(overwriteoutput: true);
+                //var valueArray = Geoprocessing.MakeValueArray(argArray);
+
+                IGPResult result = await Geoprocessing.ExecuteToolAsync("CreateFeatureclass_management", 
+                    Geoprocessing.MakeValueArray(argArray), 
+                    environments, 
+                    null, 
+                    null);
 
 
                 // Add additional fields based on type of graphic
@@ -351,8 +363,8 @@ namespace ProAppDistanceAndDirectionModule.Models
                 {
                     featureClass = connection + "/" + dataset;
                 }
-
-                string graphicsType = graphicsList[0].p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
+                
+                string graphicsType = list[0].p.GetType().ToString().Replace("ProAppDistanceAndDirectionModule.", "");
                 switch (graphicsType)
                 {
                     case "LineAttributes":
@@ -400,7 +412,7 @@ namespace ProAppDistanceAndDirectionModule.Models
                 }
 
 
-                await CreateFeatures(graphicsList, isKML);
+                await CreateFeatures(list, isKML);
 
                 if (isKML)
                 {
@@ -429,6 +441,21 @@ namespace ProAppDistanceAndDirectionModule.Models
             {
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        private static List<Graphic> ClearTempGraphics(List<Graphic> graphicsList)
+        {
+
+            List<Graphic> list = new List<Graphic>();
+            foreach (var item in graphicsList)
+            {
+                
+                if (!item.IsTemp)
+                {
+                    list.Add(item);
+                }
+            }
+            return list;
         }
     }
 }
