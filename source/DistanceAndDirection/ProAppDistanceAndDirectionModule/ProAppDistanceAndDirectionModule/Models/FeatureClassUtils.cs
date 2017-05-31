@@ -317,6 +317,10 @@ namespace ProAppDistanceAndDirectionModule.Models
             try
             {
                 List<Graphic> list = ClearTempGraphics(graphicsList);
+
+                if ((list == null) || (list.Count == 0))
+                    return;
+
                 string strGeomType = geomType == GeomType.PolyLine ? "POLYLINE" : "POLYGON";
                 
                 List<object> arguments = new List<object>();
