@@ -319,8 +319,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // update bearing
                 var segment = QueuedTask.Run(() =>
                 {
-                    return LineBuilder.CreateLineSegment(Point1, point);
+                    try
+                    {
+                        return LineBuilder.CreateLineSegment(Point1, point);
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
                 }).Result;
+
+                if (segment == null)
+                    return;
 
                 UpdateAzimuth(segment.Angle);
             }
@@ -356,8 +366,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
-                AddGraphicToMap(geom, ColorFactory.GreyRGB, true);
+
+                // Hold onto the attributes in case user saves graphics to file later
+                //EllipseAttributes ellipseAttributes = new EllipseAttributes(Point1, minorAxis, majorAxisDistance, para.AxisDirection);
+
+                // Point
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                // Ellipse
+                AddGraphicToMap(geom, ColorFactory.GreyRGB, null, true);
             }
             catch(Exception ex)
             {
@@ -385,7 +401,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
-                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
             }
             else if (!HasPoint2)
@@ -517,7 +533,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-                AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 });
+                // Hold onto the attributes in case user saves graphics to file later
+                EllipseAttributes ellipseAttributes = new EllipseAttributes() { mapPoint = Point1, minorAxis = MinorAxisDistance, majorAxis = MajorAxisDistance, angle = param.AxisDirection, angleunit=AzimuthType.ToString(), centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
+
+                AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 }, ellipseAttributes);
 
                 return geom as Geometry;
             }

@@ -25,5 +25,10 @@ namespace DistanceAndDirectionLibrary.Views
         {
             InitializeComponent();
         }
+
+        private void Input_Coords_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            DistanceAndDirectionLibrary.Helpers.Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, null);
+        }
     }
 }

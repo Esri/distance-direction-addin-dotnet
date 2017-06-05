@@ -14,12 +14,14 @@
   *   limitations under the License. 
   ******************************************************************************/
 
+using ArcGIS.Core.Geometry;
 // Esri
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Mapping;
 // System
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -39,9 +41,20 @@ namespace ProAppDistanceAndDirectionModule.Models
             try
             {   
                 string nameNoExtension = Path.GetFileNameWithoutExtension(datasetName);
- 
+
+                List<object> projArg = new List<object>();
+                var srout = SpatialReferenceBuilder.CreateSpatialReference(4326);
+                string outshp = nameNoExtension + "_proj";
+                string projshpPath = Path.Combine(kmzOutputPath, outshp + ".shp");
+                string shppath = Path.Combine(kmzOutputPath, nameNoExtension + ".shp");
+                projArg.Add(shppath);
+                projArg.Add(projshpPath);
+                projArg.Add(srout);
+                var projvalueArray = Geoprocessing.MakeValueArray(projArg.ToArray());
+                IGPResult projresult = await Geoprocessing.ExecuteToolAsync("Project_management", projvalueArray);
+                
                 List<object> arguments2 = new List<object>();
-                arguments2.Add(nameNoExtension);
+                arguments2.Add(outshp);
                 string fullPath = Path.Combine(kmzOutputPath, datasetName);
                 arguments2.Add(fullPath);
 
@@ -49,9 +62,23 @@ namespace ProAppDistanceAndDirectionModule.Models
                 IGPResult result = await Geoprocessing.ExecuteToolAsync("LayerToKML_conversion", valueArray);
 
                 // Remove the layer from the TOC
-                var layer = MapView.Active.GetSelectedLayers()[0];
-                MapView.Active.Map.RemoveLayer(layer);
-
+                Layer layer1 = null;
+                Layer layer2 = null;
+                ReadOnlyObservableCollection<Layer> layers = MapView.Active.Map.Layers;
+                foreach (Layer layer in layers)
+                {
+                    if(layer.Name==outshp)
+                    {
+                        layer1 = layer;
+                    }
+                    else if(layer.Name==nameNoExtension)
+                    {
+                        layer2 = layer;
+                    }
+                }
+                //var layer = MapView.Active.GetSelectedLayers()[0];
+                MapView.Active.Map.RemoveLayer(layer1);
+                MapView.Active.Map.RemoveLayer(layer2);
             }
             catch(Exception ex)
             {

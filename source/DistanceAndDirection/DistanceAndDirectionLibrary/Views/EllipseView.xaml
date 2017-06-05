@@ -90,7 +90,7 @@
                                             UpdateSourceTrigger=PropertyChanged,
                                             ValidatesOnExceptions=True}"
                              ToolTip="{x:Static prop:Resources.LabelCenterPoint}"
-                             Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                             Validation.ErrorTemplate="{StaticResource errorTemplate}" PreviewKeyDown="TextBox_KeyDown">
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter"
                                         Command="{Binding EnterKeyCommand}"
@@ -144,11 +144,11 @@
                             </TextBox.InputBindings>
                         </TextBox>
                         <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelAxisUnits}" />
-                        <ComboBox x:Name="cmbAxisUnits"
+                        <ComboBox x:Name="cmbAxisUnits" Validation.ErrorTemplate="{StaticResource errorTemplate}"
                                   Margin="3,3,0,0"
                                   ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
                                   SelectedItem="{Binding Path=LineDistanceType,
-                                                         Mode=TwoWay}">
+                                                         Mode=TwoWay, ValidatesOnExceptions=True}">
                             <ComboBox.InputBindings>
                                 <KeyBinding Key="Enter"
                                             Command="{Binding EnterKeyCommand}"

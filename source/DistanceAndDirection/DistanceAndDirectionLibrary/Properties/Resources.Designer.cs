@@ -61,6 +61,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Enter value.
+        /// </summary>
+        public static string AEEnterValue {
+            get {
+                return ResourceManager.GetString("AEEnterValue", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Invalid coordinate.
         /// </summary>
         public static string AEInvalidCoordinate {

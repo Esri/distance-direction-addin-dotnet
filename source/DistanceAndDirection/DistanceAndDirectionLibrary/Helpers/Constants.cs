@@ -23,5 +23,7 @@ namespace DistanceAndDirectionLibrary
         public const string MOUSE_MOVE_POINT = "MOUSE_MOVE_POINT";
         public const string TAB_ITEM_SELECTED = "TAB_ITEM_SELECTED";
         public const string MOUSE_DOUBLE_CLICK = "MOUSE_DOUBLE_CLICK";
+        public const string KEYPRESS_ESCAPE = "KEYPRESS_ESCAPE";
+        public const string POINT_TEXT_KEYDOWN = "POINT_TEXT_KEYDOWN";
     }
 }

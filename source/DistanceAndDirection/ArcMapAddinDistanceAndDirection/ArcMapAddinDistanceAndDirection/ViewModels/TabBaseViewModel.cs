@@ -63,6 +63,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
             Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+            Mediator.Register(Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            Mediator.Register(Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
@@ -82,6 +84,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
+        internal bool HasPoint3 = false;
         internal INewLineFeedback feedback = null;
         internal FeatureClassUtils fcUtils = new FeatureClassUtils();
         internal KMLUtils kmlUtils = new KMLUtils();
@@ -151,6 +154,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => Point2Formatted);
             }
         }
+
         string point1Formatted = string.Empty;
         /// <summary>
         /// String property for the first IPoint
@@ -181,6 +185,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    if (!IsToolActive)
+                        point1 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point1Formatted = string.Empty;
                     RaisePropertyChanged(() => Point1Formatted);
                     return;
@@ -195,17 +202,24 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     HasPoint1 = true;
                     Point1 = point;
                     var color = new RgbColorClass() { Green = 255 } as IColor;
-                    AddGraphicToMap(Point1, color, true);
+                    IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                    ptAttributes.Add("X", Point1.X);
+                    ptAttributes.Add("Y", Point1.Y);
+                    AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
                     // lets try feedback
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    var av = mxdoc.FocusMap as IActiveView;
-                    point.Project(mxdoc.FocusMap.SpatialReference);
-                    CreateFeedback(point, av);
-                    feedback.Start(point);
-                    if(Point2 != null)
+                    // Avoid null reference exception during automated testing
+                    if (ArcMap.Application != null)
                     {
-                        UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
-                        FeedbackMoveTo(Point2);
+                        var mxdoc = ArcMap.Application.Document as IMxDocument;
+                        var av = mxdoc.FocusMap as IActiveView;
+                        point.Project(mxdoc.FocusMap.SpatialReference);
+                        CreateFeedback(point, av);
+                        feedback.Start(point);
+                        if (Point2 != null)
+                        {
+                            UpdateDistance(GetGeoPolylineFromPoints(Point1, Point2));
+                            FeedbackMoveTo(Point2);
+                        }
                     }
                 }
                 else 
@@ -248,6 +262,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    if (!IsToolActive)
+                        point2 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point2Formatted = string.Empty;
                     RaisePropertyChanged(() => Point2Formatted);
                     return;
@@ -602,6 +619,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         internal void ClearTempGraphics()
         {
+            // Indicates we are running an automated test and as such we do not want to
+            // proceed and generate a NullReferenceException
+            if (ArcMap.Application == null)
+                return;
+
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             if (mxdoc == null)
                 return;
@@ -614,7 +636,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             RemoveGraphics(gc, true);
 
-            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            av.PartialRefresh(esriViewDrawPhase.esriViewAll, null, null);
             RaisePropertyChanged(() => HasMapGraphics);
         }
        
@@ -738,17 +760,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             if (point == null)
                 return;
-
+            
             if (!HasPoint1)
             {
                 // clear temp graphics
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                Point1Formatted = string.Empty;
-
+                
                 var color = new RgbColorClass() { Green = 255 } as IColor;
-                AddGraphicToMap(Point1, color, true);
+                IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
+                AddGraphicToMap( Point1, color, true, attributes: ptAttributes);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -767,6 +791,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 CreateMapElement();
                 ResetPoints();
+            }
+
+            if (!HasPoint3)
+            {
+                HasPoint3 = true;
             }
         }
 
@@ -900,7 +929,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         internal virtual void ResetPoints()
         {
-            HasPoint1 = HasPoint2 = false;
+            HasPoint1 = HasPoint2 = HasPoint3 = false;
         }
 
         /// <summary>
@@ -928,10 +957,81 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             if (obj == null)
                 return;
-
+            IsToolActive = false;
             IsActiveTab = (obj == this);
         }
 
+        /// <summary>
+        /// Handler for the escape key press event
+        /// Helps cancel operation when escape key is pressed
+        /// </summary>
+        /// <param name="obj">always null</param>
+        private void OnKeypressEscape(object obj)
+        {
+            if (isActiveTab)
+            {
+                if (ArcMap.Application.CurrentTool != null)
+                {
+                    // Special handling required for ellipses
+                    if (this is EllipseViewModel)
+                    {   
+                        // User has activated the Map Point tool but not created a point
+                        // Or User has previously finished creating a graphic
+                        // Either way, assume they want to disable the Map Point tool
+                        if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint3))
+                        {
+                            Reset(true);
+                            IsToolActive = false;
+                            return;
+                        }
+
+                        // User has activated Map Point tool and created a point but not completed the graphic
+                        // Assume they want to cancel any graphic creation in progress 
+                        // but still keep the Map Point tool active
+                        if (IsToolActive && HasPoint1 && !HasPoint3)
+                        {
+                            Reset(false);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // User has activated the Map Point tool but not created a point
+                        // Or User has previously finished creating a graphic
+                        // Either way, assume they want to disable the Map Point tool
+                        if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint2))
+                        {
+                            Reset(true);
+                            IsToolActive = false;
+                            return;
+                        }
+
+                        // User has activated Map Point tool and created a point but not completed the graphic
+                        // Assume they want to cancel any graphic creation in progress 
+                        // but still keep the Map Point tool active
+                        if (IsToolActive && HasPoint1 && !HasPoint2)
+                        {
+                            Reset(false);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handler for when key is manually pressed in a Point Text Box
+        /// </summary>
+        /// <param name="obj">always null</param>
+        private void OnPointTextBoxKeyDown(object obj)
+        {
+            if (isActiveTab)
+            {
+                // deactivate the map point tool when a point is manually entered
+                if (IsToolActive)
+                    IsToolActive = false;
+            }
+        }
 
         /// <summary>
         /// Converts a polyline into a polygon
@@ -976,7 +1076,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             textEle.Text = text;
             var elem = textEle as IElement;
             elem.Geometry = geom;
-
+            
             var eprop = elem as IElementProperties;
             eprop.Name = Guid.NewGuid().ToString();
 
@@ -997,11 +1097,58 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             RaisePropertyChanged(() => HasMapGraphics);
         }
 
+        internal void AddTextToMap(IGeometry geom, string text, double angle, AzimuthTypes azimuthType)
+        {
+            var mxDoc = ArcMap.Application.Document as IMxDocument;
+            var av = mxDoc.FocusMap as IActiveView;
+            var gc = av as IGraphicsContainer;
+            double bearing = 0.0;
+            if(azimuthType == AzimuthTypes.Mils)
+            {
+                bearing = angle * 0.05625;
+            }
+            else
+            {
+                bearing = angle;
+            }
+            double rotate = 360 - (bearing + 270.0) % 360;
+            if (rotate > 90 && rotate <= 270)
+                rotate = rotate - 180;
+            var textEle = new TextElement() as ITextElement;
+            textEle.Text = text;
+            ITextSymbol tsym = new TextSymbol();
+            
+            tsym.Angle = rotate;
+            textEle.Symbol = tsym;
+            var elem = textEle as IElement;
+            elem.Geometry = geom;
+
+            var eprop = elem as IElementProperties;
+            eprop.Name = Guid.NewGuid().ToString();
+            Dictionary<String, Double> attributeMap = new Dictionary<string, double>();
+            if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
+                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, false));
+            else if (this is LinesViewModel)
+            {
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, false));
+            }
+            else if (this is CircleViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, false));
+            else if (this is EllipseViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, false));
+            else if (this is RangeViewModel)
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, false));
+
+            gc.AddElement(elem, 0);
+            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+
+            RaisePropertyChanged(() => HasMapGraphics);
+        }
         /// <summary>
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP)
+        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP, IDictionary<String, System.Object>attributes = null)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
@@ -1081,15 +1228,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             eprop.Name = Guid.NewGuid().ToString();
 
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
-                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
             else if (this is LinesViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
             else if (this is CircleViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
             else if (this is EllipseViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.Ellipse, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
             else if (this is RangeViewModel)
-                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, IsTempGraphic));
+                GraphicsList.Add(new Graphic(GraphicTypes.RangeRing, eprop.Name, geom, this, IsTempGraphic, attributes: attributes));
 
             gc.AddElement(element, 0);
 
@@ -1104,7 +1251,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         /// <param name="geom"></param>
         /// <param name="IsTempGraphic"></param>
-        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false)
+        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false, IDictionary<String, Double>attributes=null)
         {
             var color = new RgbColorClass() { Red = 255 } as IColor;
             AddGraphicToMap(geom, color, IsTempGraphic);
@@ -1160,6 +1307,48 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             result = converter.ConvertUnits(input, GetEsriUnit(fromType), GetEsriUnit(toType));
 
             return result;
+        }
+
+        // Overload for calling from another class where lineDistanceType is not available
+        protected double TrimPrecision(double inputDistance, bool lax)
+        {
+            return TrimPrecision(inputDistance, lineDistanceType, lax);
+        }
+
+        // Remove superfluous precision
+        protected double TrimPrecision(double inputDistance, DistanceTypes lineDistanceType_param, bool lax)
+        {
+            int largeUnitRoundingFactor = 4;
+            int smallUnitRoundingFactor = 1;
+            
+            // We have a less strict mode for trimming precision for the case that the user
+            // has Distance Calculator expanded and thus might have a large unit selected
+            // - otherwise we can trim label down to e.g. 0.00 Miles
+            if (lax)
+            {
+                largeUnitRoundingFactor = 6;
+                smallUnitRoundingFactor = 2;    
+            }
+
+            double returnDistance = 0;
+            // For smaller units assume a tenth is sufficient
+            // For larger units provide ten thousandth i.e. 4 decimal places, probably more than sufficient
+            switch (lineDistanceType_param)
+            {
+                case DistanceTypes.Kilometers:
+                case DistanceTypes.Miles:
+                case DistanceTypes.NauticalMile:
+                    returnDistance = Math.Round(inputDistance, largeUnitRoundingFactor);
+                    break;
+                case DistanceTypes.Meters:
+                case DistanceTypes.Feet:
+                case DistanceTypes.Yards:
+                    returnDistance = Math.Round(inputDistance, smallUnitRoundingFactor);
+                    break;
+                default:
+                break;
+            }
+            return returnDistance;
         }
 
         private esriUnits GetEsriUnit(DistanceTypes distanceType)
@@ -1233,6 +1422,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             return geodeticLength;
         }
+
         /// <summary>
         /// Gets the distance/lenght of a polyline
         /// </summary>
@@ -1244,8 +1434,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (polyline == null)
                 return;
 
-            Distance = GetGeodeticLengthFromPolyline(polyline);
+            double rawDistance = GetGeodeticLengthFromPolyline(polyline);
+            // Round the superfluous precision appropriately to unit
+            Distance = TrimPrecision(rawDistance, lineDistanceType, false);
         }
+
         /// <summary>
         /// Handler for the mouse move event
         /// When the mouse moves accross the map, IPoints are returned to aid in updating feedback to user

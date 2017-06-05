@@ -91,6 +91,15 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             lineVM.Azimuth = -1;
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void LinesViewModel_ThrowsException7()
+        {
+            var lineVM = new LinesViewModel();
+
+            lineVM.Azimuth = 361;
+        }
+
 
         [TestMethod]
         public void LineViewModel()
@@ -130,7 +139,17 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             Assert.AreEqual(50.5, lineVM.Distance);
             lineVM.LineDistanceType = DistanceAndDirectionLibrary.DistanceTypes.Miles;
             Assert.AreEqual(50.5, lineVM.Distance);
+
+            // Check TrimPrecision is trimming correctly according to LineDistanceType
+            lineVM.LineDistanceType = DistanceTypes.Kilometers;
+            lineVM.Distance = 1.012345;
+            Assert.AreEqual(1.0123, lineVM.Distance);
+
+            lineVM.LineDistanceType = DistanceTypes.Meters;
+            lineVM.Distance = 1.12;
+            Assert.AreEqual(1.1, lineVM.Distance);
         }
+
 
         #endregion Lines View Model
 
@@ -171,6 +190,84 @@ namespace ArcMapAddinDistanceAndDirection.Tests
         }
 
         [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException5()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TimeUnit = TimeUnits.Hours;
+            circleVM.RateTimeUnit = RateTimeTypes.MetersHour;
+            circleVM.TravelTime = 1;
+            circleVM.TravelRate = 20000000;
+            circleVM.RateUnit = DistanceTypes.Miles;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException6()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TimeUnit = TimeUnits.Seconds;
+            circleVM.RateTimeUnit = RateTimeTypes.MetersSec;
+            circleVM.TravelTime = 1;
+            circleVM.TravelRate = 20000000;
+            circleVM.TimeUnit = TimeUnits.Hours;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException7()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TimeUnit = TimeUnits.Hours;
+            circleVM.RateTimeUnit = RateTimeTypes.MetersHour;
+            circleVM.TravelTime = 1;
+            circleVM.TravelRate = 20000001;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException8()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.TimeUnit = TimeUnits.Hours;
+            circleVM.RateTimeUnit = RateTimeTypes.MetersHour;
+            circleVM.TravelTime = 2;
+            circleVM.TravelRate = 10000001;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException9()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.Point1Formatted = "0 0";
+            circleVM.DistanceString = "20000001";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException10()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.Point1Formatted = "0 181";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void CircleViewModel_ThrowsException11()
+        {
+            var circleVM = new CircleViewModel();
+
+            circleVM.Point1Formatted = "91 0";
+        }
+
+        [TestMethod]
         public void CircleViewModel()
         {
             var circleVM = new CircleViewModel();
@@ -184,6 +281,16 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             circleVM.Point1 = new Point() { X = -119.8, Y = 34.4 };
 
             Assert.AreEqual(circleVM.Point1Formatted, "34.4 -119.8");
+
+            // Check that Distance is not converted when LineDistanceType is changed
+            // #260
+            circleVM.LineDistanceType = DistanceTypes.Meters;
+            circleVM.Distance = 1000.0;
+            circleVM.LineDistanceType = DistanceTypes.Kilometers;
+            Assert.AreEqual(circleVM.Distance, 1000.0);
+
+            circleVM.CircleType = CircleFromTypes.Diameter;
+            Assert.AreEqual(circleVM.DistanceString, "1000");
         }
 
         #endregion Circle View Model
@@ -267,6 +374,24 @@ namespace ArcMapAddinDistanceAndDirection.Tests
 
             ellipseVM.Azimuth = -1;
         }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void EllipseViewModel_ThrowsException7()
+        {
+            var ellipseVM = new EllipseViewModel();
+
+            ellipseVM.MajorAxisDistance = ellipseVM.MajorAxisLimit + 1;
+        }
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void EllipseViewModel_ThrowsException8()
+        {
+            var ellipseVM = new EllipseViewModel();
+
+            ellipseVM.LineDistanceType = DistanceTypes.Meters;
+            ellipseVM.MajorAxisDistance = ellipseVM.MajorAxisLimit;
+            ellipseVM.LineDistanceType = DistanceTypes.Miles;
+        }
 
         #endregion Ellipse View Model
 
@@ -302,6 +427,26 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             var rangeVM = new RangeViewModel();
 
             rangeVM.DistanceString = "esri";
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RangeViewModel_ThrowsException5()
+        {
+            var rangeVM = new RangeViewModel();
+
+            rangeVM.Distance = 20000001;
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RangeViewModel_ThrowsException6()
+        {
+            var rangeVM = new RangeViewModel();
+
+            rangeVM.LineDistanceType = DistanceTypes.Meters;
+            rangeVM.Distance = 20000000;
+            rangeVM.LineDistanceType = DistanceTypes.Miles;
         }
 
         [TestMethod]

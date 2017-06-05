@@ -196,9 +196,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }).Result;
                     Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, CurveType.Loxodrome);
                     if (newline != null)
-                        
-                        AddGraphicToMap(newline);
-
+                    {
+                        // Hold onto the attributes in case user saves graphics to file later
+                        RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
+                        AddGraphicToMap(newline, rangeAttributes);
+                    }
 
                     azimuth += interval;
                 }
@@ -244,7 +246,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-                    AddGraphicToMap(geom);   
+                    // Hold onto the attributes in case user saves graphics to file later
+                    RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = numberOfRings, distance = radius, numRadials = numberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
+
+                    AddGraphicToMap(geom, rangeAttributes);
                 }
 
                 return geom;
@@ -277,7 +282,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
 
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
                 // Reset formatted string
                 Point1Formatted = string.Empty;
@@ -291,7 +296,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     HasPoint1 = true;
 
                     ClearTempGraphics();
-                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
                     // Reset formatted string
                     Point1Formatted = string.Empty;
@@ -354,6 +359,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.Reset(toolReset);
 
             NumberOfRadials = 0;
+            NumberOfRings = 10;
         }
 
         private void ConstructGeoCircle()
@@ -375,7 +381,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-            AddGraphicToMap(geom);
+            // Hold onto the attributes in case user saves graphics to file later
+            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
+
+            AddGraphicToMap(geom, rangeAttributes);
         }
 
         private void UpdateFeedbackWithGeoCircle()
@@ -395,8 +404,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
             ClearTempGraphics();
-            AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
-            AddGraphicToMap(geom, ColorFactory.GreyRGB, true);
+
+            // Hold onto the attributes in case user saves graphics to file later
+            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString()};
+
+            AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+            AddGraphicToMap(geom, ColorFactory.GreyRGB, rangeAttributes, true);
         }
     }
 }

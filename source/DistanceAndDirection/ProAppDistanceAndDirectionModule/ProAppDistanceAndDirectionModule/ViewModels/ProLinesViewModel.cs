@@ -189,10 +189,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 var segment = QueuedTask.Run(() =>
                 {
-                    return LineBuilder.CreateLineSegment(Point1, Point2);
+                    try
+                    {
+                        return LineBuilder.CreateLineSegment(Point1, Point2);
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
                 }).Result;
-          
-                
+
+                if (segment == null)
+                    return;
+               
                 UpdateAzimuth(segment.Angle);
 
                 await UpdateFeedbackWithGeoLine(segment, curveType, lu);
@@ -209,15 +218,35 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get { return azimuth; }
             set
             {
-                if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if ((value != null) && (value >= 0.0))
+                    azimuth = value;
+                else
+                    azimuth = null;
 
-                azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
 
-                if (!azimuth.HasValue)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                if (LineFromType == LineFromTypes.BearingAndDistance)
+                {
+                    UpdateFeedback();
+                }
 
+                if ((value == null) || (value < 0.0))
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
+                if (LineAzimuthType == AzimuthTypes.Degrees)
+                {
+                    if (value > 360)
+                    {
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    }
+                }
+                else
+                {
+                    if (value > 6400)
+                    {
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    }
+                }
                 AzimuthString = azimuth.Value.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
             }
@@ -281,6 +310,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (segment != null)
                     await UpdateFeedbackWithGeoLine(segment, curveType, lu);
             }
+            else
+            {
+                ClearTempGraphics(); // if not, or no longer, valid clear 
+            }
         }
 
         /// <summary>
@@ -342,7 +375,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                await AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                await AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
                 return;
             }
 
@@ -369,8 +402,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // update azimuth from segment
                 var segment = QueuedTask.Run(() =>
                 {
-                    return LineBuilder.CreateLineSegment(Point1, point);
+                    try
+                    {
+                        return LineBuilder.CreateLineSegment(Point1, point);
+                    }
+                    catch (Exception ex)
+                    {
+                        return null;
+                    }
                 }).Result;
+
+                if (segment == null)
+                    return;
 
                 UpdateAzimuth(segment.Angle);
                 await UpdateFeedbackWithGeoLine(segment, curveType, lu);                        
@@ -394,7 +437,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
                 Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, lu, curveType);
-                AddGraphicToMap(newline);
+
+                // Hold onto the attributes in case user saves graphics to file later
+                LineAttributes lineAttributes = new LineAttributes(){mapPoint1 = Point1, mapPoint2 = Point2, _distance = distance, angle = (double)azimuth, angleunit = LineAzimuthType.ToString(), distanceunit = LineDistanceType.ToString(), originx=Point1.X, originy = Point1.Y, destinationx=Point2.X, destinationy=Point2.Y};
+
+                AddGraphicToMap(newline, (ProGraphicAttributes)lineAttributes);
                 ResetPoints();
 
                 return newline as Geometry;

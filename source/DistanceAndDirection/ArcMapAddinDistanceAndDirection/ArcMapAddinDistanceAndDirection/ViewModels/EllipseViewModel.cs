@@ -21,6 +21,7 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
+using System.Collections.Generic;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -34,6 +35,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         }
 
         #region Properties
+
+        public double MajorAxisLimit = 20000000;
 
         public IPoint CenterPoint { get; set; }
         public ISymbol FeedbackSymbol { get; set; }
@@ -63,6 +66,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        public override IPoint Point1
+        {
+            get
+            {
+                return base.Point1;
+            }
+            set
+            {
+                base.Point1 = value;
+                UpdateFeedback();
+            }
+        }
         private IPoint point2 = null;
         public override IPoint Point2
         {
@@ -103,8 +118,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if (value > MajorAxisLimit)
+                {
+                    // Despite being too large we still need to set this in order that we can
+                    // avoid drawing preview if necessary when minorAxisDistance is varied
+                    minorAxisDistance = TrimPrecision(value, false);
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+                if (majorAxisDistance > MajorAxisLimit)
+                {
+                    // Despite being too large we still need to set this in order that we can
+                    // avoid drawing preview if necessary when minorAxisDistance is varied
+                    minorAxisDistance = TrimPrecision(value, false);
+                    ClearTempGraphics();
+                    return;
+                }
+                
 
-                minorAxisDistance = value;
+                minorAxisDistance = TrimPrecision(value, false);
 
                 UpdateFeedbackWithEllipse();
 
@@ -162,7 +194,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
-                majorAxisDistance = value;
+                double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, value);
+                if (distanceInMeters > MajorAxisLimit)
+                {
+                    // Despite being too large we still need to set this in order that we can
+                    // avoid drawing preview if necessary when minorAxisDistance is varied
+                    majorAxisDistance = TrimPrecision(value, false);
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+
+                majorAxisDistance = TrimPrecision(value, false);
 
                 Point2 = UpdateFeedback(Point1, MajorAxisDistance);
 
@@ -170,6 +212,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 RaisePropertyChanged(() => MajorAxisDistance);
                 RaisePropertyChanged(() => MajorAxisDistanceString);
+
+                // Trigger validation to clear error messages as necessary
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -214,6 +259,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if (AzimuthType == AzimuthTypes.Degrees && value > 360.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
@@ -275,6 +322,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Overriden Functions
 
+        public override DistanceTypes LineDistanceType
+        {
+            get
+            {
+                return base.LineDistanceType;
+            }
+            set
+            {
+                // Prevent graphical glitches from excessively high inputs
+                base.LineDistanceType = value;
+                double distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, MajorAxisDistance);
+                if (distanceInMeters > MajorAxisLimit)
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+            }
+        }
+
         /// <summary>
         /// Overrides TabBaseViewModel CreateMapElement
         /// </summary>
@@ -312,8 +378,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var polyline = CreateGeodeticLine(Point1, point);
                 // get major distance from polyline
                 MajorAxisDistance = GetGeodeticLengthFromPolyline(polyline);
+
                 // update bearing
-                Azimuth = GetAzimuth(polyline);
+                Azimuth = Math.Round(GetAzimuth(polyline), 2);
                 // update feedback
                 UpdateFeedbackWithEllipse(false);
             }
@@ -341,8 +408,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
             
             ClearTempGraphics();
-
-            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+            IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+            ptAttributes.Add("X", Point1.X);
+            ptAttributes.Add("Y", Point1.Y);
+            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
 
             var ellipticArc = new Polyline() as IConstructGeodetic;
 
@@ -352,13 +421,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             if (minorAxis > MajorAxisDistance)
                 minorAxis = MajorAxisDistance;
-
+            
             ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, minorAxis, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
             var line = ellipticArc as IPolyline;
+            
             if (line != null)
             {
+                IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
+                ellipseAttributes.Add("majoraxis", MajorAxisDistance);
+                ellipseAttributes.Add("minoraxis", MinorAxisDistance);
+                ellipseAttributes.Add("azimuth", Azimuth);
                 var color = new RgbColor() as IColor;
-                AddGraphicToMap(line as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
+                AddGraphicToMap(line as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:ellipseAttributes );
             }
         }
 
@@ -389,7 +463,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
-                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
+                AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
 
             }
             else if (!HasPoint2)
@@ -581,7 +658,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
-                    AddGraphicToMap(line as IGeometry);
+                    var color = new RgbColorClass() { Red = 255 } as IColor;
+                    IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
+                    ellipseAttributes.Add("majoraxis", MajorAxisDistance);
+                    ellipseAttributes.Add("minoraxis", MinorAxisDistance);
+                    ellipseAttributes.Add("azimuth", Azimuth);
+                    ellipseAttributes.Add("centerx", Point1.X);
+                    ellipseAttributes.Add("centery", Point1.Y);
+                    ellipseAttributes.Add("distanceunit", LineDistanceType.ToString());
+                    ellipseAttributes.Add("angleunit", AzimuthType.ToString());
+                    AddGraphicToMap(line as IGeometry, color, attributes:ellipseAttributes);
                     //Convert ellipse polyline to polygon
                     var newPoly = PolylineToPolygon((IPolyline)ellipticArc);
                     if (newPoly != null)
@@ -591,20 +677,29 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         //Add text using centroid point                        
                         DistanceTypes dtVal = (DistanceTypes)LineDistanceType; //Get line distance type                                                    
                         AzimuthTypes atVal = (AzimuthTypes)AzimuthType; //Get azimuth type
+                        EllipseTypes ellipseType = EllipseType;
+                        double majDist = majorAxisDistance;
+                        double minDist = minorAxisDistance;
+                        if (ellipseType == EllipseTypes.Full)
+                        {
+                            majDist = majorAxisDistance * 2;
+                            minDist = minorAxisDistance * 2;
+                        }
                         if (area != null)
                         {
-                            AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
-                                "Major Axis",
-                                Math.Round(majorAxisDistance,2),
-                                dtVal.ToString(),
-                                Environment.NewLine,
-                                "Minor Axis",
-                                Math.Round(minorAxisDistance,2),
-                                dtVal.ToString(),
-                                Environment.NewLine,
-                                "Orientation Angle",
-                                Math.Round(azimuth,2),
-                                atVal.ToString()));
+                            
+                                AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
+                                    "Major Axis",
+                                    Math.Round(majDist, 2),
+                                    dtVal.ToString(),
+                                    Environment.NewLine,
+                                    "Minor Axis",
+                                    Math.Round(minDist, 2),
+                                    dtVal.ToString(),
+                                    Environment.NewLine,
+                                    "Orientation Angle",
+                                    Math.Round(azimuth, 2),
+                                    atVal.ToString()));
                         }
                     }
                 }

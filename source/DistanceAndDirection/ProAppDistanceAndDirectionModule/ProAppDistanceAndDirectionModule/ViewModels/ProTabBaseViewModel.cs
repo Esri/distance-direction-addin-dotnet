@@ -30,6 +30,7 @@ using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
+using ProAppDistanceAndDirectionModule.ViewModels;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -54,6 +55,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Mediator.Register(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, OnNewMapPointEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
             // Get Current tool
             CurrentTool = FrameworkApplication.CurrentTool;
@@ -155,6 +158,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
+        internal bool HasPoint3 = false;
 
         public bool HasMapGraphics
         {
@@ -248,6 +252,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    if (!IsToolActive)
+                        point1 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point1Formatted = string.Empty;
                     RaisePropertyChanged(() => Point1Formatted);
                     return;
@@ -262,7 +269,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     HasPoint1 = true;
                     Point1 = point;
 
-                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                    AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
                     if (Point2 != null)
                     {
@@ -309,10 +316,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
+                    if (!IsToolActive) 
+                        point2 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+
                     point2Formatted = string.Empty;
                     RaisePropertyChanged(() => Point2Formatted);
                     return;
                 }
+
                 // try to convert string to a MapPoint
                 var point = GetMapPointFromString(value);
                 if (point != null)
@@ -429,12 +440,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #endregion
 
-        internal async void AddGraphicToMap(Geometry geom, bool IsTempGraphic = false, double size = 1.0)
+        internal async void AddGraphicToMap(Geometry geom, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
             // default color Red
-            await AddGraphicToMap(geom, ColorFactory.RedRGB, IsTempGraphic, size);
+            await AddGraphicToMap(geom, ColorFactory.RedRGB, p, IsTempGraphic, size);
         }
-        internal async Task AddGraphicToMap(Geometry geom, CIMColor color, bool IsTempGraphic = false, double size = 1.0)
+        internal async Task AddGraphicToMap(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
             if (geom == null || MapView.Active == null)
                 return;
@@ -474,7 +485,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     var gt = GetGraphicType();
 
-                    GraphicsList.Add(new Graphic(gt, disposable, geom, this, IsTempGraphic));
+                    GraphicsList.Add(new Graphic(gt, disposable, geom, this, p, IsTempGraphic));
 
                     RaisePropertyChanged(() => HasMapGraphics);
                 });
@@ -611,7 +622,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
+                AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
 
                 // lets try feedback
                 //CreateFeedback(point, av);
@@ -789,6 +800,53 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             IsActiveTab = (obj == this);
         }
 
+        /// <summary>
+        /// Handler for the escape key press event
+        /// Helps cancel operation when escape key is pressed
+        /// </summary>
+        /// <param name="obj">always null</param>
+        private void OnKeypressEscape(object obj)
+        {
+            if (isActiveTab)
+            {
+                if (FrameworkApplication.CurrentTool != null)
+                {
+                    // User has activated the Map Point tool but not created a point
+                    // Or User has previously finished creating a graphic
+                    // Either way, assume they want to disable the Map Point tool
+                    if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint3))
+                    {
+                        Reset(true);
+                        IsToolActive = false;
+                        return;
+                    }
+
+                    // User has activated Map Point tool and created a point but not completed the graphic
+                    // Assume they want to cancel any graphic creation in progress 
+                    // but still keep the Map Point tool active
+                    if (IsToolActive && HasPoint1)
+                    {
+                        Reset(false);
+                        return;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handler for when key is manually pressed in a Point Text Box
+        /// </summary>
+        /// <param name="obj">always null</param>
+        private void OnPointTextBoxKeyDown(object obj)
+        {
+            if (isActiveTab)
+            {
+                // deactivate the map point tool when a point is manually entered
+                if (IsToolActive)
+                    IsToolActive = false;
+            }
+        }
+
         internal double ConvertFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
         {
             double result = 0.0;
@@ -840,6 +898,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal double GetGeodesicDistance(MapPoint p1, MapPoint p2)
         {
+            if ((p1 == null) || (p2 == null))
+                return 0.0;
+
             var meters = GeometryEngine.GeodesicDistance(p1, p2);
             // convert to current linear unit
             return ConvertFromTo(DistanceTypes.Meters, LineDistanceType, meters);
@@ -864,10 +925,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             ClearTempGraphics();
             Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, lu, type);
-            await AddGraphicToMap(Point1, ColorFactory.GreenRGB, true, 5.0);
-            await AddGraphicToMap(newline, ColorFactory.GreyRGB, true);
+            await AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+            await AddGraphicToMap(newline, ColorFactory.GreyRGB, null, true);
         }
-
 
         internal LinearUnit GetLinearUnit(DistanceTypes dtype)
         {
@@ -918,6 +978,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal MapPoint GetMapPointFromString(string coordinate)
         {
             MapPoint point = null;
+
+            if (string.IsNullOrWhiteSpace(coordinate) || coordinate.Length < 3) // basic check
+                return null;
 
             // future use if order of GetValues is not acceptable
             //var listOfTypes = new List<GeoCoordinateType>(new GeoCoordinateType[] {

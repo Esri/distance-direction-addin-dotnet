@@ -18,18 +18,20 @@ using ArcMapAddinDistanceAndDirection.ViewModels;
 using DistanceAndDirectionLibrary;
 // Esri
 using ESRI.ArcGIS.Geometry;
+using System.Collections.Generic;
 
 namespace ArcMapAddinDistanceAndDirection.Models
 {
     public class Graphic
     {
-        public Graphic(GraphicTypes _graphicType, string _uniqueid, IGeometry _geometry, TabBaseViewModel _model, bool _isTemp = false)
+        public Graphic(GraphicTypes _graphicType, string _uniqueid, IGeometry _geometry, TabBaseViewModel _model, bool _isTemp = false, IDictionary<string, System.Object> attributes = null)
         {
             GraphicType = _graphicType;
             UniqueId = _uniqueid;
             Geometry = _geometry;
             IsTemp = _isTemp;
             ViewModel = _model;
+            Attributes = attributes;
         }
         
         // properties   
@@ -58,6 +60,9 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// Property to determine what view the graphic was created in
         /// </summary>
         public TabBaseViewModel ViewModel { get; set; }
-        
+        /// <summary>
+        /// Property to set attributes for different geometries
+        /// </summary>
+        public IDictionary<string, System.Object> Attributes { get; set; }
     }
 }

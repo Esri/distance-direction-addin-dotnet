@@ -176,14 +176,14 @@ Anyone and everyone is welcome to contribute. Please see our [guidelines for con
 
 ### Repository Points of Contact
 
-#### Repository Owner: [Joe](https://github.com/jmccausland)
+#### Repository Owner: [Kevin](https://github.com/kgonzago)
 
 * Merge Pull Requests
 * Creates Releases and Tags
 * Manages Milestones
 * Manages and Assigns Issues
 
-#### Secondary: [Lyle](https://github.com/topowright)
+#### Secondary: [Patrick](https://github.com/pHill5136)
 
 * Backup when the Owner is away
 
@@ -205,5 +205,5 @@ limitations under the License.
 
 A copy of the license is available in the repository's [license.txt](license.txt) file.
 
-[](Esri Tags: Military Analyst Defense ArcGIS ArcObjects .NET WPF ArcGISSolutions ArcMap ArcPro Add-In)
-[](Esri Language: C#) 
+[](Esri Tags: Military Analyst Defense ArcGIS ArcObjects .NET WPF ArcGISSolutions ArcMap ArcPro Add-In Military-Tools-for-ArcGIS)
+[](Esri Language: C-Sharp) 

@@ -21,6 +21,7 @@ using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
+using System.Collections.Generic;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -109,7 +110,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
-                distance = value;
+                distance = TrimPrecision(value, false);
                 RaisePropertyChanged(() => Distance);
 
                 if(LineFromType == LineFromTypes.BearingAndDistance)
@@ -129,26 +130,37 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return azimuth; }
             set
             {
-                if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if ((value != null) && (value >= 0.0))
+                    azimuth = value;
+                else
+                    azimuth = null;
 
-                azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
-
-                if (!azimuth.HasValue)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
 
                 if (LineFromType == LineFromTypes.BearingAndDistance)
                 {
-                    // update feedback
                     UpdateFeedback();
                 }
 
+                if ((value == null) || (value < 0.0))
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                if (LineAzimuthType == AzimuthTypes.Degrees)
+                {
+                    if (value > 360 && LineAzimuthType == AzimuthTypes.Degrees)
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+                else
+                {
+                    if (value > 6400 && LineAzimuthType == AzimuthTypes.Mils)
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+                
                 AzimuthString = azimuth.Value.ToString("G");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }
         string azimuthString = string.Empty;
+
         public string AzimuthString 
         {
             get { return azimuthString; } 
@@ -212,7 +224,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             HasPoint2 = true;
             IGeometry geo = CreatePolyline();
             IPolyline line = geo as IPolyline;
-            AddGraphicToMap(line);
+            IDictionary<String, Double> lineAttributes = new Dictionary<String, Double>();
+            lineAttributes.Add("distance", Distance);
+            lineAttributes.Add("angle", (double)Azimuth);
+            AddGraphicToMap(line, attributes:lineAttributes);
             ResetPoints();
             ClearTempGraphics();
             base.OnEnterKeyCommand(obj);
@@ -243,10 +258,21 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
                 esriGeodeticType type = GetEsriGeodeticType();
                 IGeometry geo = Point1;
-                if(LineFromType == LineFromTypes.Points)
+                if (LineFromType == LineFromTypes.Points)
                     construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                 else
-                    construct.ConstructGeodeticLineFromDistance(type, Point1, GetLinearUnit(), Distance, (double)Azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation,-1.0);
+                {
+                    Double bearing = 0.0;
+                    if(LineAzimuthType == AzimuthTypes.Mils)
+                    {
+                        bearing = GetAzimuthAsDegrees();
+                    }
+                    else
+                    {
+                        bearing = (double)Azimuth;
+                    }
+                    construct.ConstructGeodeticLineFromDistance(type, Point1, GetLinearUnit(), Distance, bearing, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+                }
                 var mxdoc = ArcMap.Application.Document as IMxDocument;
                 var av = mxdoc.FocusMap as IActiveView;
                 if (LineFromType == LineFromTypes.Points)
@@ -254,10 +280,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     UpdateDistance(construct as IGeometry);
                     UpdateAzimuth(construct as IGeometry);
                 }
-                
 
-                //var color = new RgbColorClass() { Red = 255 } as IColor;
-                AddGraphicToMap(construct as IGeometry);
+                IDictionary<String, System.Object> lineAttributes = new Dictionary<String, System.Object>();
+                lineAttributes.Add("distance", Distance);
+                lineAttributes.Add("distanceunit", LineDistanceType.ToString());
+                lineAttributes.Add("angle", (double)Azimuth);
+                lineAttributes.Add("angleunit", LineAzimuthType.ToString());
+                lineAttributes.Add("startx", Point1.X);
+                lineAttributes.Add("starty", Point1.Y);
+                lineAttributes.Add("endx", Point2.X);
+                lineAttributes.Add("endy", Point2.Y);
+                var color = new RgbColorClass() { Red = 255 } as IColor;
+                AddGraphicToMap(construct as IGeometry, color, attributes: lineAttributes);
 
                 if (HasPoint1 && HasPoint2)
                 {
@@ -277,7 +311,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         Environment.NewLine,
                         "Angle",
                         Math.Round(azimuth.Value,2),
-                        atVal.ToString()));
+                        atVal.ToString()), (double)Azimuth, LineAzimuthType);
                 }
 
                 ResetPoints();
@@ -318,12 +352,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             if (LineAzimuthType == AzimuthTypes.Degrees)
             {
-                return bearing;
+                return Math.Round(bearing, 2);
             }
 
             if (LineAzimuthType == AzimuthTypes.Mils)
             {
-                return bearing * 17.777777778;
+                return Math.Round(bearing * 17.777777778, 2);
             }
 
             return 0.0;
@@ -369,7 +403,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 Point1 = point;
                 HasPoint1 = true;
                 var color = new RgbColorClass() { Green = 255 } as IColor;
-                AddGraphicToMap(Point1, color, true);
+                System.Collections.Generic.IDictionary<String, System.Object> ptAttributes = new System.Collections.Generic.Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
+                this.AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes );
                 return;
             }
 
@@ -431,7 +468,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             else
             {
-                if (Point1 != null && HasPoint1)
+                if ((Point1 != null) && HasPoint1 && (Distance > 0.0))
                 {
                     if (feedback == null)
                     {
@@ -449,7 +486,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                     var line = construct as IPolyline;
 
-                    if (line.ToPoint != null)
+                    if ((line != null) && (line.ToPoint != null))
                     {
                         FeedbackMoveTo(line.ToPoint);
                         Point2 = line.ToPoint;

@@ -23,6 +23,7 @@ using ESRI.ArcGIS.Carto;
 
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
+using System.Collections.Generic;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -34,6 +35,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         }
 
         #region Properties
+
+        private double DistanceLimit = 20000000;
 
         private bool isInteractive = false;
         public bool IsInteractive 
@@ -71,6 +74,59 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 maxDistance = 0.0;
                 if (IsInteractive)
                     NumberOfRings = 0;
+            }
+        }
+
+        DistanceTypes lineDistanceType = DistanceTypes.Meters;
+        /// <summary>
+        /// Property for the distance type
+        /// </summary>
+        public override DistanceTypes LineDistanceType
+        {
+            get { return lineDistanceType; }
+            set
+            {
+                lineDistanceType = value;
+
+                double distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, Distance);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+
+                UpdateFeedback();
+                RaisePropertyChanged(() => Distance);
+                RaisePropertyChanged(() => DistanceString);
+            }
+        }
+
+        double distance = 0.0;
+        /// <summary>
+        /// Property for the distance/length
+        /// </summary>
+        public override double Distance
+        {
+            get { return distance; }
+            set
+            {
+                if (value < 0.0)
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+
+                distance = value;
+
+                // Prevent graphical glitches from excessively high inputs
+                double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, value);
+                if (distanceInMeters > DistanceLimit)
+                {
+                    ClearTempGraphics();
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                }
+
+                DistanceString = distance.ToString("G");
+                RaisePropertyChanged(() => Distance);
+                RaisePropertyChanged(() => DistanceString);
+                RaisePropertyChanged(() => LineDistanceType);
             }
         }
 
@@ -180,8 +236,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     if (construct == null)
                         continue;
 
-                    construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-                    AddGraphicToMap(construct as IGeometry);
+                    var color = new RgbColorClass() { Red = 255 } as IColor;
+                    IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
+                    rrAttributes.Add("rings", NumberOfRings);
+                    rrAttributes.Add("distance", Distance);
+                    rrAttributes.Add("distanceunit", lineDistanceType.ToString());
+                    rrAttributes.Add("radials", NumberOfRadials);
+                    rrAttributes.Add("centerx", Point1.X);
+                    rrAttributes.Add("centery", Point1.Y);
+                    construct.ConstructGeodeticLineFromDistance(esriGeodeticType.esriGeodeticTypeLoxodrome, Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+                    AddGraphicToMap(construct as IGeometry, color, attributes:rrAttributes);
 
                     azimuth += interval;
                 }
@@ -209,13 +273,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     radius += Distance;
                     var polyLine = new Polyline() as IPolyline;
                     polyLine.SpatialReference = Point1.SpatialReference;
+                    const double DENSIFY_ANGLE_IN_DEGREES = 5.0;
                     construct = polyLine as IConstructGeodetic;
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.001);
-                    AddGraphicToMap(construct as IGeometry);
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, 
+                        esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
+                    var color = new RgbColorClass() { Red = 255 } as IColor;
+                    IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
+                    rrAttributes.Add("rings", NumberOfRings);
+                    rrAttributes.Add("distance", Distance);
+                    rrAttributes.Add("distanceunit", lineDistanceType.ToString());
+                    rrAttributes.Add("radials", NumberOfRadials);
+                    rrAttributes.Add("centerx", Point1.X);
+                    rrAttributes.Add("centery", Point1.Y);
+                    AddGraphicToMap(construct as IGeometry, color, attributes:rrAttributes);
 
                     // Use negative radius to get the location for the distance label
+                    // TODO: someone explain why we need to construct this circle twice, and what -radius means (top of circle or something)?
                     DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.001);
+                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, 
+                        esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
                     this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}", radius.ToString(), dtVal.ToString()));
                 }
 
@@ -250,7 +326,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 ClearTempGraphics();
                 var color = new RgbColorClass() { Green = 255 } as IColor;
-                AddGraphicToMap(Point1, color, true);
+                IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
+                AddGraphicToMap( Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
 
                 // Reset formatted string
                 Point1Formatted = string.Empty;
@@ -265,7 +344,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                     ClearTempGraphics();
                     var color = new RgbColorClass() { Green = 255 } as IColor;
-                    AddGraphicToMap(Point1, color, true);
+                    IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                    ptAttributes.Add("X", Point1.X);
+                    ptAttributes.Add("Y", Point1.Y);
+                    AddGraphicToMap(Point1, color, true, attributes: ptAttributes);
 
                     // Reset formatted string
                     Point1Formatted = string.Empty;
@@ -337,9 +419,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var construct = new Polyline() as IConstructGeodetic;
             if (construct != null)
             {
+                var color = new RgbColorClass() { Red = 255 } as IColor;
+                IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
+                rrAttributes.Add("rings", NumberOfRings);
+                rrAttributes.Add("distance", Distance);
+                rrAttributes.Add("radials", NumberOfRadials);
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
-                this.AddGraphicToMap(construct as IGeometry);
+                this.AddGraphicToMap(construct as IGeometry, color, attributes: rrAttributes);
                 maxDistance = Math.Max(Distance, maxDistance);
 
                 // Use negative Distance to get the location for the distance label
@@ -354,14 +441,24 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             var construct = new Polyline() as IConstructGeodetic;
+            
+            
             if (construct != null)
             {
+                IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true);
+                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes );
+
+                IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
+                rrAttributes.Add("rings", NumberOfRings);
+                rrAttributes.Add("distance", Distance);
+                rrAttributes.Add("radials", NumberOfRadials);
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
                 var color = new RgbColorClass() as IColor;
-                this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen);
+                this.AddGraphicToMap( construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:rrAttributes);
             }
         }
 
