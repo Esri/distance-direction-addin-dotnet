@@ -102,6 +102,8 @@
     <AddInContent Include="Config.daml" />
     <AddInContent Include="Images\AddInDesktop16.png" />
     <AddInContent Include="Images\AddInDesktop32.png" />
+    <AddInContent Include="DarkImages\AddInDesktop16.png" />
+    <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DistanceAndDirectionDockpane.xaml.cs">
@@ -156,19 +158,17 @@
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Images\GenericButtonRed16.png" />
-  </ItemGroup>
-  <ItemGroup>
     <AddInContent Include="Images\GenericButtonRed32.png" />
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Images\DistanceAndDirectionButton16.png" />
-  </ItemGroup>
-  <ItemGroup>
     <AddInContent Include="Images\DistanceAndDirectionButton32.png" />
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Images\distance-direction-16.png" />
     <AddInContent Include="Images\distance-direction-32.png" />
+    <AddInContent Include="DarkImages\distance-direction-16.png" />
+    <AddInContent Include="DarkImages\distance-direction-32.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask AssemblyFile="C:\Program Files\ArcGIS\Pro\bin\proapp-sdk-MSBuild.dll" TaskName="proapp_sdk_MSBuild.PackageAddIn" />
