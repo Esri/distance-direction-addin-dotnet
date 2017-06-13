@@ -70,15 +70,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        public CurveType DeriveCurveType(LineTypes type)
+        public GeodeticCurveType DeriveCurveType(LineTypes type)
         {
-            CurveType curveType = CurveType.Geodesic;
+            GeodeticCurveType curveType = GeodeticCurveType.Geodesic;
             if (type == LineTypes.Geodesic)
-                curveType = CurveType.Geodesic;
+                curveType = GeodeticCurveType.Geodesic;
             else if (type == LineTypes.GreatElliptic)
-                curveType = CurveType.GreatElliptic;
+                curveType = GeodeticCurveType.GreatElliptic;
             else if (type == LineTypes.Loxodrome)
-                curveType = CurveType.Loxodrome;
+                curveType = GeodeticCurveType.Loxodrome;
             return curveType;
         }
 
@@ -180,7 +180,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal override async void UpdateFeedback()
         {
-            CurveType curveType = DeriveCurveType(LineType);
+            GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
             if (LineFromType == LineFromTypes.Points)
             {
@@ -191,7 +191,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     try
                     {
-                        return LineBuilder.CreateLineSegment(Point1, Point2);
+                        var point2proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
+                        return LineBuilder.CreateLineSegment(Point1, (MapPoint)point2proj);
                     }
                     catch (Exception ex)
                     {
@@ -289,7 +290,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
             {
-                CurveType curveType = DeriveCurveType(LineType);
+                GeodeticCurveType curveType = DeriveCurveType(LineType);
                 LinearUnit lu = DeriveUnit(LineDistanceType);
                 // update feedback
                 var segment = QueuedTask.Run(() =>
@@ -298,11 +299,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // get point 2
                     // SDK Bug, GeometryEngine.GeodesicMove seems to not honor the LinearUnit passed in, always does Meters
                     var tempDistance = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
-                    var results = GeometryEngine.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value, GetCurveType());
+                    var results = GeometryEngine.Instance.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value, GetCurveType());
                     foreach (var mp in results)
                         Point2 = mp;
                     if (Point2 != null)
-                        return LineBuilder.CreateLineSegment(Point1, Point2);
+                    {
+                        var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
+                        return LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
+                    }
                     else
                         return null;
                 }).Result;
@@ -375,7 +379,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                await AddGraphicToMap(Point1, ColorFactory.GreenRGB, null, true, 5.0);
+                await AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
                 return;
             }
 
@@ -384,7 +388,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal override async void OnMouseMoveEvent(object obj)
         {
-            CurveType curveType = DeriveCurveType(LineType);
+            GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
             if (!IsActiveTab)
                 return;
@@ -404,7 +408,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     try
                     {
-                        return LineBuilder.CreateLineSegment(Point1, point);
+                        var pointProj = GeometryEngine.Instance.Project(point, Point1.SpatialReference);
+                        return LineBuilder.CreateLineSegment(Point1, (MapPoint)pointProj);
                     }
                     catch (Exception ex)
                     {
@@ -426,17 +431,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (Point1 == null || Point2 == null)
                 return null;
-            CurveType curveType = DeriveCurveType(LineType);
+            GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
             try
             {
                 // create line
                 var polyline = QueuedTask.Run(() =>
                     {
-                        var segment = LineBuilder.CreateLineSegment(Point1, Point2);
+                        var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
+                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
-                Geometry newline = GeometryEngine.GeodeticDensifyByLength(polyline, 0, lu, curveType);
+                Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, curveType);
 
                 // Hold onto the attributes in case user saves graphics to file later
                 LineAttributes lineAttributes = new LineAttributes(){mapPoint1 = Point1, mapPoint2 = Point2, _distance = distance, angle = (double)azimuth, angleunit = LineAzimuthType.ToString(), distanceunit = LineDistanceType.ToString(), originx=Point1.X, originy = Point1.Y, destinationx=Point2.X, destinationy=Point2.Y};

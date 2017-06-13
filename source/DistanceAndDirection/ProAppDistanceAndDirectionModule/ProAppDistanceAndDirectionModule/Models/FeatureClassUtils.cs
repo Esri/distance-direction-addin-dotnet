@@ -260,12 +260,12 @@ namespace ProAppDistanceAndDirectionModule.Models
                         CIMSimpleRenderer currentRenderer = featureLayer.GetRenderer() as CIMSimpleRenderer;
                         CIMSymbolReference sybmol = currentRenderer.Symbol;
 
-                        var outline = SymbolFactory.ConstructStroke(ColorFactory.RedRGB, 1.0, SimpleLineStyle.Solid);
+                        var outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.RedRGB, 1.0, SimpleLineStyle.Solid);
                         CIMSymbol s;
                         if(isLine)
-                            s = SymbolFactory.ConstructLineSymbol(outline);
+                            s = SymbolFactory.Instance.ConstructLineSymbol(outline);
                         else
-                            s = SymbolFactory.ConstructPolygonSymbol(ColorFactory.RedRGB, SimpleFillStyle.Null, outline);
+                            s = SymbolFactory.Instance.ConstructPolygonSymbol(ColorFactory.Instance.RedRGB, SimpleFillStyle.Null, outline);
                         CIMSymbolReference symbolRef = new CIMSymbolReference() { Symbol = s };
                         currentRenderer.Symbol = symbolRef;
 
