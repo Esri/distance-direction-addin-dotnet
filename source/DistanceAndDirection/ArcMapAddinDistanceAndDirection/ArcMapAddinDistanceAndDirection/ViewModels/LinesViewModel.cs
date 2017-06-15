@@ -400,13 +400,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if(LineFromType == LineFromTypes.BearingAndDistance)
             {
                 ClearTempGraphics();
-                Point1 = point;
-                HasPoint1 = true;
                 var color = new RgbColorClass() { Green = 255 } as IColor;
                 System.Collections.Generic.IDictionary<String, System.Object> ptAttributes = new System.Collections.Generic.Dictionary<String, System.Object>();
-                ptAttributes.Add("X", Point1.X);
-                ptAttributes.Add("Y", Point1.Y);
-                this.AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes );
+                ptAttributes.Add("X", point.X);
+                ptAttributes.Add("Y", point.Y);
+                this.AddGraphicToMap(point, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes );
+                Point1 = point;
+                HasPoint1 = true;
                 return;
             }
 
