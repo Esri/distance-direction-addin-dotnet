@@ -30,7 +30,7 @@
         </ObjectDataProvider.MethodParameters>
     </ObjectDataProvider>
     <!-- store here your styles -->
-    <Style TargetType="ComboBox">
+    <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
             <Setter Property="ItemTemplate">
                 <Setter.Value>
                     <DataTemplate>
@@ -42,7 +42,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    <Style x:Key="buttonProperties" TargetType="Button">
+    <Style x:Key="buttonProperties" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
         <Setter Property="Content">
             <Setter.Value>
                 <Image Source="/DistanceAndDirectionLibrary;component/Images/GeoprocessingEnvironmentSettings16.png" Width="18" Height="18" />
@@ -51,5 +51,13 @@
         <Setter Property="Command" Value="{Binding EditPropertiesDialogCommand}" />
         <Setter Property="ToolTip" Value="{x:Static prop:Resources.TooltipEditProperties}" />
     </Style>
-
+    <Style x:Key="textboxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+        <Setter Property="IsEnabled" Value="True" />
+        <Style.Triggers>
+            <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                <Setter Property="IsEnabled" Value="False" />
+            </DataTrigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="textblockStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}"/>
 </ResourceDictionary>
