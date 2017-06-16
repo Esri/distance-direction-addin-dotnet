@@ -121,6 +121,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     ResetFeedback();
                 }
+                UpdateFeedback();
             }
         }
 
