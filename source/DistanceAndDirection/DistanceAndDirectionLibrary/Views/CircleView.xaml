@@ -39,11 +39,11 @@
                           ItemsSource="{Binding Source={StaticResource circleFromData}}"
                           SelectedItem="{Binding Path=CircleType,
                                                  Mode=TwoWay}" >
-                    <ComboBox.ItemContainerStyle>
+                    <!--<ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="Foreground" Value="Black" />
                         </Style>
-                    </ComboBox.ItemContainerStyle>
+                    </ComboBox.ItemContainerStyle>-->
                 </ComboBox>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelCenterPoint}" />
                 <Grid>
@@ -89,7 +89,7 @@
                                                                Path=.}" />
                     </TextBox.InputBindings>
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsDistanceCalcExpanded}" Value="False">
                                     <Setter Property="IsEnabled" Value="True" />
@@ -106,22 +106,31 @@
                           Margin="3,3,0,0"
                           ItemsSource="{Binding Source={StaticResource lineDistanceData}}"
                           SelectedItem="{Binding Path=LineDistanceType,
-                                                 Mode=TwoWay, ValidatesOnExceptions=True}" >
-                    <ComboBox.ItemContainerStyle>
-                        <Style TargetType="ComboBoxItem">
-                            <Setter Property="Foreground" Value="Black" />
-                        </Style>
-                    </ComboBox.ItemContainerStyle>
+                                               Mode=TwoWay, ValidatesOnExceptions=True}" >
+
+                    <!--<ComboBox.Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}"/>
+                    </ComboBox.Style>-->
+                       
+                            
+                     
+                    
                 </ComboBox>
                 <Expander Margin="0,3,0,0"
                           Header="{x:Static prop:Resources.LabelDistanceCalculator}"
                           IsExpanded="{Binding IsDistanceCalcExpanded,
                                                Mode=OneWayToSource}">
+                    
+                    
                     <StackPanel>
 
-                        <TextBlock 
+                        <Label
                                    Margin="3,3,0,0"
-                                   Text="{x:Static prop:Resources.LabelTime}" />
+                                   Content="{x:Static prop:Resources.LabelTime}" >
+                            
+                        </Label>
+
+
                         <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelTimeString,
@@ -146,15 +155,10 @@
                                     CommandParameter="{Binding ElementName=mainControl,
                                                                Path=.}" />
                             </ComboBox.InputBindings>
-                            <ComboBox.ItemContainerStyle>
-                                <Style TargetType="ComboBoxItem">
-                                    <Setter Property="Foreground" Value="Black" />
-                                </Style>
-                            </ComboBox.ItemContainerStyle>
                         </ComboBox>
-                        <TextBlock 
+                        <Label
                                    Margin="3,3,0,0"
-                                   Text="{x:Static prop:Resources.LabelRate}" />
+                                   Content="{x:Static prop:Resources.LabelRate}" />
                         <TextBox 
                                  Margin="3,3,0,0"
                                  Text="{Binding Path=TravelRateString,
@@ -180,13 +184,14 @@
                                     CommandParameter="{Binding ElementName=mainControl,
                                                                Path=.}" />
                             </ComboBox.InputBindings>
-                            <ComboBox.ItemContainerStyle>
+                            <!--<ComboBox.ItemContainerStyle>
                                 <Style TargetType="ComboBoxItem">
                                     <Setter Property="Foreground" Value="Black" />
                                 </Style>
-                            </ComboBox.ItemContainerStyle>
+                            </ComboBox.ItemContainerStyle>-->
                         </ComboBox>
                     </StackPanel>
+                   
                 </Expander>
                 <StackPanel Margin="3,3,0,0"
                             HorizontalAlignment="Right"

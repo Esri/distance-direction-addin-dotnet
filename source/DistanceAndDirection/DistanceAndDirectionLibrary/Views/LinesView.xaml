@@ -48,11 +48,11 @@
                           SelectedItem="{Binding Path=LineType,
                                                  Mode=TwoWay}"
                           Visibility="{Binding LineTypeComboVisibility}">
-                    <ComboBox.ItemContainerStyle>
+                    <!--<ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="Foreground" Value="Black" />
                         </Style>
-                    </ComboBox.ItemContainerStyle>
+                    </ComboBox.ItemContainerStyle>-->
                     </ComboBox>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelFrom}" />
                 <ComboBox x:Name="cmbLineFromType"
@@ -61,11 +61,11 @@
                           ItemsSource="{Binding Source={StaticResource lineFromData}}"
                           SelectedItem="{Binding Path=LineFromType,
                                                  Mode=TwoWay}" >
-                    <ComboBox.ItemContainerStyle>
+                    <!--<ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="Foreground" Value="Black" />
                         </Style>
-                    </ComboBox.ItemContainerStyle>
+                    </ComboBox.ItemContainerStyle>-->
                 </ComboBox>
                 <TextBlock Grid.Row="1"
                            Margin="3,3,0,0"
@@ -115,7 +115,7 @@
                                                                Path=.}" />
                     </TextBox.InputBindings>
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
                                     <Setter Property="IsEnabled" Value="True" />
@@ -140,7 +140,7 @@
                                                                Path=.}" />
                     </TextBox.InputBindings>
                     <TextBox.Style>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
                                     <Setter Property="IsEnabled" Value="False" />
@@ -162,11 +162,11 @@
                 			Command="{Binding EnterKeyCommand}"
                 			CommandParameter="{Binding ., ElementName=mainControl}" />
                     </ComboBox.InputBindings>
-                    <ComboBox.ItemContainerStyle>
+                    <!--<ComboBox.ItemContainerStyle>
                         <Style TargetType="{x:Type ComboBoxItem}">
                             <Setter Property="Foreground" Value="Black" />
                         </Style>
-                    </ComboBox.ItemContainerStyle>
+                    </ComboBox.ItemContainerStyle>-->
                 </ComboBox>
                 <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelAngle}" />
                 <TextBox Margin="3,3,0,0"
@@ -178,7 +178,7 @@
                     		CommandParameter="{Binding ., ElementName=mainControl}" />
                     </TextBox.InputBindings>
                     <TextBox.Style>
-                        <Style TargetType="{x:Type TextBox}">
+                        <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
                                     <Setter Property="IsEnabled" Value="False" />
@@ -202,11 +202,11 @@
                                     CommandParameter="{Binding ElementName=mainControl,
                                                                Path=.}" />
                     </ComboBox.InputBindings>
-                    <ComboBox.ItemContainerStyle>
+                    <!--<ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="Foreground" Value="Black" />
                         </Style>
-                    </ComboBox.ItemContainerStyle>
+                    </ComboBox.ItemContainerStyle>-->
                 </ComboBox>
                 <StackPanel Margin="3,3,0,0"
                             HorizontalAlignment="Right"

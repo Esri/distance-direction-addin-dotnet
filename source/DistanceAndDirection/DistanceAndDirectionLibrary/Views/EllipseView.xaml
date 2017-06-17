@@ -66,11 +66,11 @@
                           ItemsSource="{Binding Source={StaticResource ellipseTypes}}"
                           SelectedItem="{Binding Path=EllipseType,
                                                  Mode=TwoWay}" >
-                    <ComboBox.ItemContainerStyle>
+                    <!--<ComboBox.ItemContainerStyle>
                         <Style TargetType="ComboBoxItem">
                             <Setter Property="Foreground" Value="Black" />
                         </Style>
-                    </ComboBox.ItemContainerStyle>
+                    </ComboBox.ItemContainerStyle>-->
                 </ComboBox>
                 <TextBlock Grid.Row="2"
                            Grid.ColumnSpan="3"
@@ -155,11 +155,11 @@
                                             CommandParameter="{Binding ElementName=mainControl,
                                                                        Path=.}" />
                             </ComboBox.InputBindings>
-                            <ComboBox.ItemContainerStyle>
+                            <!--<ComboBox.ItemContainerStyle>
                                 <Style TargetType="ComboBoxItem">
                                     <Setter Property="Foreground" Value="Black" />
                                 </Style>
-                            </ComboBox.ItemContainerStyle>
+                            </ComboBox.ItemContainerStyle>-->
                         </ComboBox>
                     </StackPanel>
                 </GroupBox>
@@ -195,11 +195,11 @@
                                             CommandParameter="{Binding ElementName=mainControl,
                                                                        Path=.}" />
                             </ComboBox.InputBindings>
-                            <ComboBox.ItemContainerStyle>
+                            <!--<ComboBox.ItemContainerStyle>
                                 <Style TargetType="ComboBoxItem">
                                     <Setter Property="Foreground" Value="Black" />
                                 </Style>
-                            </ComboBox.ItemContainerStyle>
+                            </ComboBox.ItemContainerStyle>-->
                         </ComboBox>
                     </StackPanel>
                 </GroupBox>
