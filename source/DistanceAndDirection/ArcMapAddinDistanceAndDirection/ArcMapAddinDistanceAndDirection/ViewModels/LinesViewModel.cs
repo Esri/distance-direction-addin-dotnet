@@ -405,8 +405,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 ptAttributes.Add("X", point.X);
                 ptAttributes.Add("Y", point.Y);
                 this.AddGraphicToMap(point, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes );
-                Point1 = point;
                 HasPoint1 = true;
+                Point1 = point;
                 return;
             }
 

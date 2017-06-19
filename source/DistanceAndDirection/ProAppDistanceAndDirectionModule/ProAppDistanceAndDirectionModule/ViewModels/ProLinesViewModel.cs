@@ -378,8 +378,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (LineFromType == LineFromTypes.BearingAndDistance)
             {
                 ClearTempGraphics();
-                Point1 = point;
                 HasPoint1 = true;
+                Point1 = point;
                 await AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
                 return;
             }
