@@ -63,7 +63,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
             Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
-            //Mediator.Register(Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            Mediator.Register(Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
             Mediator.Register(Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
@@ -966,58 +966,58 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Helps cancel operation when escape key is pressed
         /// </summary>
         /// <param name="obj">always null</param>
-        //private void OnKeypressEscape(object obj)
-        //{
-        //    if (isActiveTab)
-        //    {
-        //        if (ArcMap.Application.CurrentTool != null)
-        //        {
-        //            // Special handling required for ellipses
-        //            if (this is EllipseViewModel)
-        //            {   
-        //                // User has activated the Map Point tool but not created a point
-        //                // Or User has previously finished creating a graphic
-        //                // Either way, assume they want to disable the Map Point tool
-        //                if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint3))
-        //                {
-        //                    Reset(true);
-        //                    IsToolActive = false;
-        //                    return;
-        //                }
+        private void OnKeypressEscape(object obj)
+        {
+            if (isActiveTab)
+            {
+                if (ArcMap.Application.CurrentTool != null)
+                {
+                    // Special handling required for ellipses
+                    if (this is EllipseViewModel)
+                    {
+                        // User has activated the Map Point tool but not created a point
+                        // Or User has previously finished creating a graphic
+                        // Either way, assume they want to disable the Map Point tool
+                        if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint3))
+                        {
+                            Reset(true);
+                            IsToolActive = false;
+                            return;
+                        }
 
-        //                // User has activated Map Point tool and created a point but not completed the graphic
-        //                // Assume they want to cancel any graphic creation in progress 
-        //                // but still keep the Map Point tool active
-        //                if (IsToolActive && HasPoint1 && !HasPoint3)
-        //                {
-        //                    Reset(false);
-        //                    return;
-        //                }
-        //            }
-        //            else
-        //            {
-        //                // User has activated the Map Point tool but not created a point
-        //                // Or User has previously finished creating a graphic
-        //                // Either way, assume they want to disable the Map Point tool
-        //                if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint2))
-        //                {
-        //                    Reset(true);
-        //                    IsToolActive = false;
-        //                    return;
-        //                }
+                        // User has activated Map Point tool and created a point but not completed the graphic
+                        // Assume they want to cancel any graphic creation in progress 
+                        // but still keep the Map Point tool active
+                        if (IsToolActive && HasPoint1 && !HasPoint3)
+                        {
+                            Reset(false);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        // User has activated the Map Point tool but not created a point
+                        // Or User has previously finished creating a graphic
+                        // Either way, assume they want to disable the Map Point tool
+                        if ((IsToolActive && !HasPoint1) || (IsToolActive && HasPoint2))
+                        {
+                            Reset(true);
+                            IsToolActive = false;
+                            return;
+                        }
 
-        //                // User has activated Map Point tool and created a point but not completed the graphic
-        //                // Assume they want to cancel any graphic creation in progress 
-        //                // but still keep the Map Point tool active
-        //                if (IsToolActive && HasPoint1 && !HasPoint2)
-        //                {
-        //                    Reset(false);
-        //                    return;
-        //                }
-        //            }
-        //        }
-        //    }
-        //}
+                        // User has activated Map Point tool and created a point but not completed the graphic
+                        // Assume they want to cancel any graphic creation in progress 
+                        // but still keep the Map Point tool active
+                        if (IsToolActive && HasPoint1 && !HasPoint2)
+                        {
+                            Reset(false);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// Handler for when key is manually pressed in a Point Text Box
