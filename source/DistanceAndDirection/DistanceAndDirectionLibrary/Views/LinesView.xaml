@@ -142,10 +142,16 @@
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
+                                <!--<DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
                                     <Setter Property="IsEnabled" Value="False" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.BearingAndDistance}">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>-->
+                                <DataTrigger Binding="{Binding DistanceBearingReady}" Value="False">
+                                    <Setter Property="IsEnabled" Value="False" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding DistanceBearingReady}" Value="True">
                                     <Setter Property="IsEnabled" Value="True" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -180,12 +186,36 @@
                     <TextBox.Style>
                         <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Type TextBox}}">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
+                                <!--<DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}">
                                     <Setter Property="IsEnabled" Value="False" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.BearingAndDistance}">
                                     <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>-->
+
+                                <DataTrigger Binding="{Binding DistanceBearingReady}" Value="False">
+                                    <Setter Property="IsEnabled" Value="False" />
                                 </DataTrigger>
+                                <DataTrigger Binding="{Binding DistanceBearingReady}" Value="True">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                                
+                                <!--<MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        --><!--<Condition Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.Points}"/>--><!--  
+                                        <Condition Binding="{Binding Path=HasPoint1}" Value="false" />
+                                    </MultiDataTrigger.Conditions>
+                                    
+                                    <Setter Property="IsEnabled" Value="False" />
+                               </MultiDataTrigger>
+                                <MultiDataTrigger>
+                                    <MultiDataTrigger.Conditions>
+                                        --><!--<Condition Binding="{Binding LineFromType}" Value="{x:Static local:LineFromTypes.BearingAndDistance}"/>--><!--
+                                        <Condition Binding="{Binding Path=HasPoint1}" Value="true"/>
+                                    </MultiDataTrigger.Conditions>
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </MultiDataTrigger>-->
+                                
                             </Style.Triggers>
                         </Style>
                     </TextBox.Style>

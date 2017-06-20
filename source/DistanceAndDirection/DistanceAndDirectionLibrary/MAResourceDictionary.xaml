@@ -42,7 +42,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-    <Style x:Key="buttonProperties" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+    <Style x:Key="buttonProperties" TargetType="Button">
         <Setter Property="Content">
             <Setter.Value>
                 <Image Source="/DistanceAndDirectionLibrary;component/Images/GeoprocessingEnvironmentSettings16.png" Width="18" Height="18" />

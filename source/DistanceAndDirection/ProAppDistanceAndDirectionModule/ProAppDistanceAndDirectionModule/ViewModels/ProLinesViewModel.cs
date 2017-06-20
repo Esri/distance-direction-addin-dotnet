@@ -55,6 +55,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 // stop feedback when from type changes
                 ResetFeedback();
+                Reset(false);
+                RaisePropertyChanged(() => DistanceBearingReady);
             }
         }
 
@@ -122,6 +124,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     ResetFeedback();
                 }
                 UpdateFeedback();
+                RaisePropertyChanged(() => DistanceBearingReady);
             }
         }
 
@@ -529,6 +532,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             catch (Exception ex)
             {
                 Console.WriteLine(ex);
+            }
+        }
+
+        public bool DistanceBearingReady
+        {
+
+            get
+            {
+                if (LineFromType == LineFromTypes.BearingAndDistance && Point1 != null)
+                    return true;
+                else
+                    return false;
             }
         }
 

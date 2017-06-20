@@ -22,6 +22,7 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -50,6 +51,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // stop feedback when from type changes
                 ResetFeedback();
+                Reset(false);
+                RaisePropertyChanged(() => DistanceBearingReady);
             }
         }
 
@@ -81,6 +84,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 UpdateFeedback();
+                RaisePropertyChanged(() => DistanceBearingReady);
             }
         }
 
@@ -406,6 +410,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 ptAttributes.Add("Y", point.Y);
                 this.AddGraphicToMap(point, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes );
                 HasPoint1 = true;
+                
                 Point1 = point;
                 return;
             }
@@ -510,6 +515,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             base.Reset(toolReset);
 
             Azimuth = 0.0;
+        }
+
+        
+        public bool DistanceBearingReady
+        {
+            
+            get
+            {
+                if (LineFromType == LineFromTypes.BearingAndDistance && Point1 != null)
+                    return true;
+                else 
+                    return false;
+            }
         }
 
     }
