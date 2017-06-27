@@ -413,7 +413,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                if (ArcMap.Application.CurrentTool != null)
+                if ((ArcMap.Application != null) && (ArcMap.Application.CurrentTool != null))
                     return ArcMap.Application.CurrentTool.Name == MAP_TOOL_NAME;
 
                 return false;
