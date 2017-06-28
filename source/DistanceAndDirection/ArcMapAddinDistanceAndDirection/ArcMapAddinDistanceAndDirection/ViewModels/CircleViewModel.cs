@@ -831,7 +831,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                     IDictionary<String, System.Object> circleAttributes = new Dictionary<String, System.Object>();
-                    circleAttributes.Add("radius", Distance);
+                    double dist = 0.0;
+                    if (CircleType == CircleFromTypes.Diameter)
+                        dist = Distance * 2;
+                    else
+                        dist = Distance;
+
+                    circleAttributes.Add("radius", dist);
                     circleAttributes.Add("disttype", CircleType.ToString());
                     circleAttributes.Add("centerx", Point1.X);
                     circleAttributes.Add("centery", Point1.Y);
