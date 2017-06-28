@@ -806,12 +806,23 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             // Hold onto the attributes in case user saves graphics to file later
             //CircleAttributes circleAttributes = new CircleAttributes(Point1, Distance, CircleType);
             double dist = 0.0;
+            DistanceTypes distunit;
             if (CircleType == CircleFromTypes.Diameter)
                 dist = Distance * 2;
             else
                 dist = Distance;
+           
+                if (IsDistanceCalcExpanded)
+                {
+                    dist = ConvertFromTo(LineDistanceType, RateUnit, Distance);
+                    distunit = RateUnit;
+                }
+                else
+                {
+                    distunit = LineDistanceType;
+                }
 
-            CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = dist, circleFromTypes = CircleType, circletype=CircleType.ToString(), centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString()};
+            CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = dist, circleFromTypes = CircleType, circletype=CircleType.ToString(), centerx=Point1.X, centery=Point1.Y, distanceunit=distunit.ToString()};
             AddGraphicToMap(geom, color, (ProGraphicAttributes)circleAttributes, IsTempGraphic: isFeedback);
 
             return geom as Geometry;
