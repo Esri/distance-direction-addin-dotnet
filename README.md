@@ -9,7 +9,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 * Creates geodesy lines, circles, ellipses and range rings.
 * Inputs can be entered manually or via a known coordinate.
 * Features can be exported to a file geodatabase, shapefile, or KML.
-* Addin for ArcMap 10.3.1
+* Addin for ArcMap and ArcGIS Pro 
 
 ## Sections
 
@@ -25,22 +25,23 @@ The add-in provides the ability to create geodesic features such as lines, circl
 
 ### Developers 
 
-* Visual Studio 2013
-* ArcGIS Desktop SDK for .NET 10.3.1
+* Visual Studio 2015
+* ArcGIS Desktop SDK for .NET 10.3.1+
 	* [ArcGIS Desktop for .NET Requirements](https://desktop.arcgis.com/en/desktop/latest/get-started/system-requirements/arcobjects-sdk-system-requirements.htm)
+* ArcGIS Pro 2.0+ SDK
 
 ### ArcGIS for Desktop Users
 
 * [ArcGIS Desktop 10.3.1](http://desktop.arcgis.com/en/arcmap/10.3/get-started/system-requirements/arcgis-desktop-system-requirements.htm)
+* ArcGIS Pro 2.0+
 
 ## Instructions
 
-###New to Github
+### New to Github
 
-* [New to Github? Get started here.](http://htmlpreview.github.com/?https://github.com/Esri/esri.github.com/blob/master/help/esri-getting-to-know-github.html)
+* [New to Github? Get started here.](https://github.com/Esri/esri.github.com/blob/master/help/esri-getting-to-know-github.html)
 
 ### Working with the Add-In
-
 ## Development Environment 
 
 * Building
@@ -60,7 +61,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 * Running the add-in
 	* To run from a stand-alone deployment
 		* ArcMap
-			* Install the add-in from the latest Release on Github (https://github.com/Esri/distance-direction-addin-dotnet/releases)
+			* Install the add-in from the [latest Release](http://solutions.arcgis.com/defense/help/distance-direction)
 			* Add the add-in command to a toolbar via menu option 
 				* **Customize** -> **Customize mode**
 				* Select **Commands** Tab
@@ -69,7 +70,7 @@ The add-in provides the ability to create geodesic features such as lines, circl
 				* Close customize mode
 				* Open tool by clicking the **Show Distance and Direction** command you just added
 				* Dockable *Distance and Direction* tool appears
-				* If you add this to a toolbar that you contstantly use the add-in will stay. To remove the add-in delete your [Normal.MXT](https://geonet.esri.com/thread/78692) file
+				* If you add this to a toolbar that you continually use the add-in will stay. To remove the add-in delete your [Normal.MXT](https://geonet.esri.com/thread/78692) file
 				
 ## Workflows
 
@@ -161,6 +162,11 @@ The add-in provides the ability to create geodesic features such as lines, circl
 
 ## Resources
 
+* [ArcGIS for Defense Distance and Direction Component](http://solutions.arcgis.com/defense/help/distance-direction/)
+* [Military Tools for ArcGIS](https://esri.github.io/military-tools-desktop-addins/)
+* [Military Tools for ArcGIS Solutions Pages](http://solutions.arcgis.com/defense/help/military-tools/)
+* [ArcGIS for Defense Solutions Website](http://solutions.arcgis.com/defense)
+* [ArcGIS for Defense Downloads](http://appsforms.esri.com/products/download/#ArcGIS_for_Defense)
 * [ArcGIS 10.3 Help](http://resources.arcgis.com/en/help/)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
 * ![Twitter](https://g.twimg.com/twitter-bird-16x16.png)[@EsriDefense](http://twitter.com/EsriDefense)
@@ -189,7 +195,7 @@ Anyone and everyone is welcome to contribute. Please see our [guidelines for con
 
 ## Licensing
 
-Copyright 2016 Esri
+Copyright 2016-2017 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
