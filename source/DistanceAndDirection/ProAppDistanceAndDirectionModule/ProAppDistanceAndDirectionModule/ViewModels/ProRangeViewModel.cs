@@ -199,7 +199,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (newline != null)
                     {
                         // Hold onto the attributes in case user saves graphics to file later
-                        RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
+                        RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = radialLength, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
                         AddGraphicToMap(newline, rangeAttributes);
                     }
 
