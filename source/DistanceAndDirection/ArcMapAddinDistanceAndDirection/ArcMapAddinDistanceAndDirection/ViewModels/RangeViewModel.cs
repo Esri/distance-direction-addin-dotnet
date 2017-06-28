@@ -424,6 +424,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 rrAttributes.Add("rings", NumberOfRings);
                 rrAttributes.Add("distance", Distance);
                 rrAttributes.Add("radials", NumberOfRadials);
+                rrAttributes.Add("centerx", Point1.X);
+                rrAttributes.Add("centery", Point1.Y);
+                rrAttributes.Add("distanceunit", lineDistanceType.ToString());
+
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
                 this.AddGraphicToMap(construct as IGeometry, color, attributes: rrAttributes);
