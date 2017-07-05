@@ -22,6 +22,7 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -50,6 +51,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // stop feedback when from type changes
                 ResetFeedback();
+                Reset(false);
+                RaisePropertyChanged(() => DistanceBearingReady);
             }
         }
 
@@ -81,6 +84,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 UpdateFeedback();
+                RaisePropertyChanged(() => DistanceBearingReady);
             }
         }
 
@@ -400,13 +404,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if(LineFromType == LineFromTypes.BearingAndDistance)
             {
                 ClearTempGraphics();
-                Point1 = point;
-                HasPoint1 = true;
                 var color = new RgbColorClass() { Green = 255 } as IColor;
                 System.Collections.Generic.IDictionary<String, System.Object> ptAttributes = new System.Collections.Generic.Dictionary<String, System.Object>();
-                ptAttributes.Add("X", Point1.X);
-                ptAttributes.Add("Y", Point1.Y);
-                this.AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes );
+                ptAttributes.Add("X", point.X);
+                ptAttributes.Add("Y", point.Y);
+                this.AddGraphicToMap(point, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes );
+                HasPoint1 = true;
+                
+                Point1 = point;
                 return;
             }
 
@@ -510,6 +515,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             base.Reset(toolReset);
 
             Azimuth = 0.0;
+        }
+
+        
+        public bool DistanceBearingReady
+        {
+            
+            get
+            {
+                if (LineFromType == LineFromTypes.BearingAndDistance && Point1 != null)
+                    return true;
+                else 
+                    return false;
+            }
         }
 
     }

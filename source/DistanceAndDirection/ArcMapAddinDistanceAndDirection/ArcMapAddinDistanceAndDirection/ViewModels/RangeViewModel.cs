@@ -239,7 +239,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     var color = new RgbColorClass() { Red = 255 } as IColor;
                     IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
                     rrAttributes.Add("rings", NumberOfRings);
-                    rrAttributes.Add("distance", Distance);
+                    rrAttributes.Add("distance", radialLength);
                     rrAttributes.Add("distanceunit", lineDistanceType.ToString());
                     rrAttributes.Add("radials", NumberOfRadials);
                     rrAttributes.Add("centerx", Point1.X);
@@ -280,7 +280,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     var color = new RgbColorClass() { Red = 255 } as IColor;
                     IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
                     rrAttributes.Add("rings", NumberOfRings);
-                    rrAttributes.Add("distance", Distance);
+                    rrAttributes.Add("distance", radius);
                     rrAttributes.Add("distanceunit", lineDistanceType.ToString());
                     rrAttributes.Add("radials", NumberOfRadials);
                     rrAttributes.Add("centerx", Point1.X);
@@ -424,6 +424,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 rrAttributes.Add("rings", NumberOfRings);
                 rrAttributes.Add("distance", Distance);
                 rrAttributes.Add("radials", NumberOfRadials);
+                rrAttributes.Add("centerx", Point1.X);
+                rrAttributes.Add("centery", Point1.Y);
+                rrAttributes.Add("distanceunit", lineDistanceType.ToString());
+
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
                 this.AddGraphicToMap(construct as IGeometry, color, attributes: rrAttributes);
@@ -431,7 +435,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Use negative Distance to get the location for the distance label
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-                this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}{2}", Math.Round(Distance, 2).ToString(), GetLinearUnit().Name, "s"));
+                this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}", Math.Round(Distance, 2).ToString(), lineDistanceType.ToString()));
             }
         }
 

@@ -413,7 +413,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                if (ArcMap.Application.CurrentTool != null)
+                if ((ArcMap.Application != null) && (ArcMap.Application.CurrentTool != null))
                     return ArcMap.Application.CurrentTool.Name == MAP_TOOL_NAME;
 
                 return false;
@@ -974,7 +974,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     // Special handling required for ellipses
                     if (this is EllipseViewModel)
-                    {   
+                    {
                         // User has activated the Map Point tool but not created a point
                         // Or User has previously finished creating a graphic
                         // Either way, assume they want to disable the Map Point tool

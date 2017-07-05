@@ -831,15 +831,22 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                     IDictionary<String, System.Object> circleAttributes = new Dictionary<String, System.Object>();
-                    circleAttributes.Add("radius", Distance);
-                    circleAttributes.Add("disttype", CircleType.ToString());
-                    circleAttributes.Add("centerx", Point1.X);
-                    circleAttributes.Add("centery", Point1.Y);
-                    circleAttributes.Add("distanceunit", LineDistanceType.ToString());
-                    var color = new RgbColorClass() { Red = 255 } as IColor;
-                    this.AddGraphicToMap(construct as IGeometry, color, attributes: circleAttributes);
+                    double dist = 0.0;
+                    if (CircleType == CircleFromTypes.Diameter)
+                        dist = Distance * 2;
+                    else
+                        dist = Distance;
+
+                    //circleAttributes.Add("radius", dist);
+                    //circleAttributes.Add("disttype", CircleType.ToString());
+                    //circleAttributes.Add("centerx", Point1.X);
+                    //circleAttributes.Add("centery", Point1.Y);
+                    //circleAttributes.Add("distanceunit", LineDistanceType.ToString());
+                    //var color = new RgbColorClass() { Red = 255 } as IColor;
+                    //this.AddGraphicToMap(construct as IGeometry, color, attributes: circleAttributes);
 
                     //Construct a polygon from geodesic polyline
+
                     var newPoly = this.PolylineToPolygon((IPolyline)construct);
                     if (newPoly != null)
                     {
@@ -928,14 +935,23 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         {
                             distanceLabel = (TrimPrecision(convertedDistance, LineDistanceType, false)).ToString("N" + roundingFactor.ToString());
                         }
-
+                        dist = convertedDistance;
                         //Add text using centroid point
                         this.AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}",
                             circleTypeLabel,
                             distanceLabel,
                             unitLabel));
                     }
-
+                    circleAttributes.Add("radius", dist);
+                    circleAttributes.Add("disttype", CircleType.ToString());
+                    circleAttributes.Add("centerx", Point1.X);
+                    circleAttributes.Add("centery", Point1.Y);
+                    if(IsDistanceCalcExpanded)
+                        circleAttributes.Add("distanceunit", RateUnit.ToString());
+                    else
+                        circleAttributes.Add("distanceunit", LineDistanceType.ToString());
+                    var color = new RgbColorClass() { Red = 255 } as IColor;
+                    this.AddGraphicToMap(construct as IGeometry, color, attributes: circleAttributes);
                     Point2 = null;
                     HasPoint2 = false;
                     ResetFeedback();
