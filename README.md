@@ -1,6 +1,6 @@
 # distance-direction
 
-The Distance and Direction component provides the ability to create geodesic features such as lines, circles, ellipses and range rings.  Features can be exported to a file geodatabase, shapefile, or KML.
+The Distance and Direction component provides the ability to create geodesic features such as lines, circles, ellipses and range rings.
 
 ![Image of Distance and Direction](DistanceAndDirection.jpg) 
 
@@ -8,7 +8,6 @@ The Distance and Direction component provides the ability to create geodesic fea
 
 * Creates geodesy lines, circles, ellipses and range rings.
 * Inputs can be entered manually or via a known coordinate.
-* Features can be exported to a file geodatabase, shapefile, or KML.
 * Add-ins for ArcMap and ArcGIS Pro 
 * Widget for Web Appbuilder for ArcGIS
 
@@ -32,7 +31,7 @@ Follow the links below to select the desired development/deployment environment.
 
 ### Widget for Web Appbuilder for ArcGIS
 
-[Instructions for the Widget for Web Appbuilder for ArcGIS are here.](./source/widget)
+[Instructions for the Widget for Web Appbuilder for ArcGIS are here.](./source/widget/DistanceAndDirection)
 
 ## Resources
 
@@ -41,7 +40,6 @@ Follow the links below to select the desired development/deployment environment.
 * [Military Tools for ArcGIS Solutions Pages](http://solutions.arcgis.com/defense/help/military-tools/)
 * [ArcGIS for Defense Solutions Website](http://solutions.arcgis.com/defense)
 * [ArcGIS for Defense Downloads](http://appsforms.esri.com/products/download/#ArcGIS_for_Defense)
-* [ArcGIS 10.3 Help](http://resources.arcgis.com/en/help/)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
 * ![Twitter](https://g.twimg.com/twitter-bird-16x16.png)[@EsriDefense](http://twitter.com/EsriDefense)
 * [ArcGIS Solutions Website](http://solutions.arcgis.com/military/)
