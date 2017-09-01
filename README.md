@@ -1,4 +1,4 @@
-# distance-direction
+# Distance and Direction
 
 The Distance and Direction component provides the ability to create geodesic features such as lines, circles, ellipses and range rings.
 
@@ -13,6 +13,7 @@ The Distance and Direction component provides the ability to create geodesic fea
 
 ## Sections
 
+* [Requirements](#requirements)
 * [Instructions](#instructions)
 * [Resources](#resources)
 * [New to Github?](#new-to-github)
@@ -20,6 +21,27 @@ The Distance and Direction component provides the ability to create geodesic fea
 * [Contributing](#contributing)
 * [Repository Points of Contact](#repository-points-of-contact)
 * [Licensing](#licensing)
+
+## Requirements
+
+### Run Requirements
+
+* Add-Ins for ArcGIS for Desktop
+    * ArcMap 10.3.1+
+    * ArcGIS Pro 2.0+
+* Widget for Web Appbuilder for ArcGIS
+    * Web Appbuilder for ArcGIS 2.2+
+
+### Build Requirements 
+
+* Add-Ins for ArcGIS for Desktop
+    * Visual Studio 2015
+    * ArcGIS for Desktop 
+        * ArcMap 10.3.1+
+        * ArcGIS Pro 2.0+
+    * ArcGIS Desktop SDK for .NET 10.3.1+
+        * [ArcGIS Desktop for .NET Requirements](https://desktop.arcgis.com/en/desktop/latest/get-started/system-requirements/arcobjects-sdk-system-requirements.htm)
+    * [ArcGIS Pro SDK](http://pro.arcgis.com/en/pro-app/sdk/) 2.0+
 
 ## Instructions
 

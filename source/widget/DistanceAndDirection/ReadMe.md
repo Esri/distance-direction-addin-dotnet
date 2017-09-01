@@ -32,10 +32,6 @@ To deploy a widget, copy the folder of the desired deployment widget to the stem
 For more resources on developing, modifying, and deploying widgets please visit the
 [Web AppBuilder for ArcGIS Documentation](https://developers.arcgis.com/web-appbuilder)
 
-## General Help
-
-  * [New to Github? Get started here.](http://htmlpreview.github.com/?https://github.com/Esri/esri.github.com/blob/master/help/esri-getting-to-know-github.html)
-
 ## Resources
 
   * [Web AppBuilder API](https://developers.arcgis.com/web-appbuilder/api-reference/css-framework.htm)
