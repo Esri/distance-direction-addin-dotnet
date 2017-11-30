@@ -144,11 +144,12 @@
   display: none;
 }
 
+.jimu-widget-DistanceAndDirection .jimu-tab3 .tab-item-td {
+    border-bottom: 0px;
+}
+
 .jimu-widget-DistanceAndDirection .jimu-tab3 .tab-item-td.jimu-state-active {
-    border-bottom: 0px solid #24B5CC;
-    border-top: 2px solid #24B5CC;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
+    border: 1px solid #24B5CC;
     background-color: transparent !important;
 }
 
