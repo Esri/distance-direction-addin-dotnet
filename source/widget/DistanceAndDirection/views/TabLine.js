@@ -33,6 +33,7 @@ define([
   'dijit/TooltipDialog',
   'dijit/popup',
   'jimu/dijit/Message',
+  'jimu/LayerInfos/LayerInfos',
   'esri/layers/FeatureLayer',
   'esri/layers/LabelClass',
   'esri/tasks/FeatureSet',
@@ -71,6 +72,7 @@ define([
   DijitTooltipDialog,
   DijitPopup,
   Message,
+  jimuLayerInfos,
   EsriFeatureLayer,
   EsriLabelClass,
   EsriFeatureSet,
@@ -124,7 +126,20 @@ define([
 
       this._labelSym = new EsriTextSymbol(this.labelSymbol);
 
-      this.map.addLayer(this.getLayer());      
+      this.map.addLayer(this.getLayer());
+
+      //must ensure the layer is loaded before we can access it to turn on the labels
+      if(this._gl.loaded){
+        var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Line Graphics');
+        featureLayerInfo.showLabels();
+        featureLayerInfo.enablePopup();
+      } else {
+        this._gl.on("load", dojoLang.hitch(this, function () {
+          var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Line Graphics');
+          featureLayerInfo.showLabels();
+          featureLayerInfo.enablePopup();
+        }));
+      }      
 
       this.coordToolStart = new CoordInput({appConfig: this.appConfig}, this.startPointCoordsLine);
       
@@ -171,14 +186,20 @@ define([
       if (!this._gl) {
         var layerDefinition = {
           'geometryType': 'esriGeometryPolyline',
-          'fields': [{
+          'objectIdField': 'ObjectID',
+          'fields': [
+            {
+              "name": "ObjectID",
+              "alias": "ObjectID",
+              "type": "esriFieldTypeOID"
+            },{
             'name': 'GeoLength',
             'type': 'esriFieldTypeString',
-            'alias': 'GeoLength'
-          }, {
+            'alias': 'Length'
+            },{
             'name': 'LineAngle',
             'type': 'esriFieldTypeString',
-            'alias': 'LineAngle'
+            'alias': 'Angle'
           }]
         };
 
@@ -192,9 +213,10 @@ define([
           layerDefinition: layerDefinition,
           featureSet: new EsriFeatureSet()
         };
-
+        
         this._gl = new EsriFeatureLayer(featureCollection, {
           id: 'Distance & Direction - Line Graphics',
+          outFields: ["*"],
           showLabels: true
         });
 
