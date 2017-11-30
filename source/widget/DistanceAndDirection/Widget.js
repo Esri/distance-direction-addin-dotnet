@@ -19,10 +19,12 @@ define([
   'dojo/aspect',
   'dojo/topic',
   'dojo/on',
+  'dojo/dom-style',
   'dijit/_WidgetsInTemplateMixin',
   'dijit/registry',
   'jimu/BaseWidget',
   'jimu/dijit/TabContainer3',
+  'dijit/layout/ContentPane',
   './views/TabLine',
   './views/TabCircle',
   './views/TabEllipse',
@@ -32,10 +34,12 @@ define([
   dojoAspect,
   dojoTopic,
   dojoOn,
+  domStyle,
   dijitWidgetsInTemplate,
   dijitRegistry,
   jimuBaseWidget,
   JimuTabContainer3,
+  ContentPane,
   TabLine,
   TabCircle,
   TabEllipse,
@@ -286,6 +290,11 @@ define([
             
             var tabContainer1 = dijitRegistry.byId('DDTabContainer');
             
+            // create an empty spacer tab so that we can control the width of the other tabs
+            var pane = new ContentPane({ title:"", href:""});            
+            tabContainer1.addTab(pane);
+            
+            // set width of other tabs to 60px and hide the spacer tab
             this.setTabWidths(tabContainer1);
     
             dojoAspect.after(tabContainer1, "selectTab", function() {
@@ -297,6 +306,9 @@ define([
           for(var i = 0; i < tabContainer.tabTr.cells.length - 1; i++) {
             tabContainer.tabTr.cells[i].width = '60px';
           }
+          domStyle.set(tabContainer.tabTr.cells[tabContainer.tabTr.cells.length - 1], {
+            "display": 'inline-block'
+          });          
         }
     });
     return clz;
