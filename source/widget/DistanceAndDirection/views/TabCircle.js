@@ -34,6 +34,7 @@ define([
   'dijit/TooltipDialog',
   'dijit/popup',
   'jimu/dijit/Message',
+  'jimu/LayerInfos/LayerInfos',
   'esri/layers/FeatureLayer',
   'esri/symbols/SimpleFillSymbol',
   'esri/symbols/SimpleMarkerSymbol',
@@ -73,6 +74,7 @@ define([
   DijitTooltipDialog,
   DijitPopup,
   Message,
+  jimuLayerInfos,
   EsriFeatureLayer,
   EsriSimpleFillSymbol,
   EsriSimpleMarkerSymbol,
@@ -119,6 +121,19 @@ define([
       this._labelSym = new EsriTextSymbol(this.labelSymbol);
 
       this.map.addLayer(this.getLayer());
+
+      //must ensure the layer is loaded before we can access it to turn on the labels
+      if(this._gl.loaded){
+        var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Circle Graphics');
+        featureLayerInfo.showLabels();
+        featureLayerInfo.enablePopup();
+      } else {
+        this._gl.on("load", dojoLang.hitch(this, function () {
+          var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Circle Graphics');
+          featureLayerInfo.showLabels();
+          featureLayerInfo.enablePopup();
+        }));
+      }
       
       this.coordTool = new CoordInput({appConfig: this.appConfig}, this.startPointCoords);
       
@@ -152,7 +167,13 @@ define([
         var layerDefinition = {
           'id': 'circleLayer',
           'geometryType': 'esriGeometryPolygon',
-          'fields': [{
+          'objectIdField': 'ObjectID',
+          'fields': [
+            {
+              "name": "ObjectID",
+              "alias": "ObjectID",
+              "type": "esriFieldTypeOID"
+            },{
               'name': 'Label',
               'type': 'esriFieldTypeString',
               'alias': 'Label'
@@ -170,7 +191,8 @@ define([
 
           this._gl = new EsriFeatureLayer(featureCollection, { 
             id: 'Distance & Direction - Circle Graphics',
-            showLabels: true
+            showLabels: true,
+            outFields: ["*"]
           });
 
           this._gl.setLabelingInfo([lblClass]);

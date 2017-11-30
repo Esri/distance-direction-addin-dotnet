@@ -34,6 +34,7 @@ define([
   'dijit/_WidgetsInTemplateMixin',
   'dijit/popup',
   'jimu/dijit/Message',
+  'jimu/LayerInfos/LayerInfos',
   'esri/layers/FeatureLayer',
   'esri/layers/LabelClass',
   'esri/symbols/SimpleMarkerSymbol',
@@ -71,6 +72,7 @@ define([
   dijitWidgetsInTemplate,
   DijitPopup,
   Message,
+  jimuLayerInfos,
   EsriFeatureLayer,
   EsriLabelClass,
   EsriSimpleMarkerSymbol,
@@ -114,6 +116,19 @@ define([
 
       this.map.addLayer(this.getLayer());
       
+      //must ensure the layer is loaded before we can access it to turn on the labels
+      if(this._gl.loaded){
+        var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Ellipse Graphics');
+        featureLayerInfo.showLabels();
+        featureLayerInfo.enablePopup();
+      } else {
+        this._gl.on("load", dojoLang.hitch(this, function () {
+          var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Ellipse Graphics');
+          featureLayerInfo.showLabels();
+          featureLayerInfo.enablePopup();
+        }));
+      }
+      
       this.coordTool = new CoordInput({appConfig: this.appConfig}, this.startPointCoords);
       
       this.coordTool.inputCoordinate.formatType = 'DD';
@@ -156,14 +171,20 @@ define([
                 'latestWkid': 102100
             }},
           'geometryType': 'esriGeometryPolygon',
-          'fields': [{
+          'objectIdField': 'ObjectID',
+          'fields': [
+            {
+              "name": "ObjectID",
+              "alias": "ObjectID",
+              "type": "esriFieldTypeOID"
+            },{
               'name': 'MAJOR',
               'type': 'esriFieldTypeText',
-              'alias': 'Major'
+              'alias': 'Major Axis'
             }, {
                 'name': 'MINOR',
                 'type': 'esriFieldTypeText',
-                'alias': 'Minor'
+                'alias': 'Minor Axis'
             }, {
                 'name': 'ORIENTATION_ANGLE',
                 'type': 'esriFieldTypeText',
@@ -184,7 +205,7 @@ define([
         };
 
         this._gl = new EsriFeatureLayer(featureCollection, {
-          id:'Distance & Direction Widget - Ellipse Graphics',
+          id:'Distance & Direction - Ellipse Graphics',
           showLabels: true
         });
 
