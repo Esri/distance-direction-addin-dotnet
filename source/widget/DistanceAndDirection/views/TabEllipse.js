@@ -34,6 +34,7 @@ define([
   'dijit/_WidgetsInTemplateMixin',
   'dijit/popup',
   'jimu/dijit/Message',
+  'jimu/LayerInfos/LayerInfos',
   'esri/layers/FeatureLayer',
   'esri/layers/LabelClass',
   'esri/symbols/SimpleMarkerSymbol',
@@ -71,6 +72,7 @@ define([
   dijitWidgetsInTemplate,
   DijitPopup,
   Message,
+  jimuLayerInfos,
   EsriFeatureLayer,
   EsriLabelClass,
   EsriSimpleMarkerSymbol,
@@ -113,6 +115,17 @@ define([
       this._ellipseSym = new EsriSimpleFillSymbol(this.ellipseSymbol);
 
       this.map.addLayer(this.getLayer());
+      
+      //must ensure the layer is loaded before we can access it to turn on the labels
+      if(this._gl.loaded){
+        var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Ellipse Graphics');
+        featureLayerInfo.showLabels();
+      } else {
+        this._gl.on("load", dojoLang.hitch(this, function () {
+          var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Ellipse Graphics');
+          featureLayerInfo.showLabels();
+        }));
+      }
       
       this.coordTool = new CoordInput({appConfig: this.appConfig}, this.startPointCoords);
       
@@ -184,7 +197,7 @@ define([
         };
 
         this._gl = new EsriFeatureLayer(featureCollection, {
-          id:'Distance & Direction Widget - Ellipse Graphics',
+          id:'Distance & Direction - Ellipse Graphics',
           showLabels: true
         });
 
