@@ -32,6 +32,7 @@ define([
   'dijit/TooltipDialog',
   'dijit/popup',
   'jimu/dijit/Message',
+  'jimu/LayerInfos/LayerInfos',
   'dijit/_WidgetsInTemplateMixin',
   'dojo/text!../templates/TabRange.html',
   'esri/geometry/Circle',
@@ -69,6 +70,7 @@ define([
   DijitTooltipDialog,
   DijitPopup,
   Message,
+  jimuLayerInfos,
   dijitWidgetsInTemplate,
   templateStr,
   EsriCircle,
@@ -118,6 +120,17 @@ define([
       this._labelSym = new EsriTextSymbol(this.labelSymbol);
 
       this.map.addLayer(this.getLayer());
+      
+      //must ensure the layer is loaded before we can access it to turn on the labels
+      if(this._gl.loaded){
+        var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Range Graphics');
+        featureLayerInfo.showLabels();
+      } else {
+        this._gl.on("load", dojoLang.hitch(this, function () {
+          var featureLayerInfo = jimuLayerInfos.getInstanceSync().getLayerInfoById('Distance & Direction - Range Graphics');
+          featureLayerInfo.showLabels();
+        }));
+      }
 
       this.coordTool = new CoordInput({appConfig: this.appConfig}, this.rangeCenter);
       
