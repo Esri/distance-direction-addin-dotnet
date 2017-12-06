@@ -22,7 +22,8 @@ namespace ArcMapAddinDistanceAndDirection
         {
             set
             {
-                ArcMap.Application = value;
+                if (value != null)
+                    ArcMap.Application = value;
             }
         }
 
