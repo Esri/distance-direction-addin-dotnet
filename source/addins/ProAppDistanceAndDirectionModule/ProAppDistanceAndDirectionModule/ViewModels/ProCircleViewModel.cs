@@ -539,6 +539,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
+                if (Distance == 0.0) // Crash in ToString(format) below if 0.0
+                    return "0.0";
+
                 String dString = "";
                 if (CircleType == CircleFromTypes.Diameter)
                 {
