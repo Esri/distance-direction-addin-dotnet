@@ -50,6 +50,7 @@
         </Setter>
         <Setter Property="Command" Value="{Binding EditPropertiesDialogCommand}" />
         <Setter Property="ToolTip" Value="{x:Static prop:Resources.TooltipEditProperties}" />
+        <Setter Property="Background" Value="Transparent" />
     </Style>
     <Style x:Key="textboxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
         <Setter Property="IsEnabled" Value="True" />
