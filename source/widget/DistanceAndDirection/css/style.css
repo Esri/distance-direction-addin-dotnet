@@ -161,6 +161,15 @@
     color: #c0c0c0 !important;
 }
 
+.jimu-widget-DistanceAndDirection .jimu-simple-table .head-section {
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid #eef2f5;
+}
+
+.jimu-widget-DistanceAndDirection .jimu-simple-table .simple-table-title {
+    color: #000;
+}
+
 /****** Dart Theme Overrides ******/
 
 .DartTheme .jimu-widget-DistanceAndDirection  .dijitSelectDisabled,
@@ -257,6 +266,14 @@
     color: #7b7b7b !important;
 }
 
+.DartTheme .jimu-simple-table .simple-table-row .editable-div, .jimu-simple-table .simple-table-row .normal-text-div {
+    color: #FFFFFF !important;
+}
+
+.DartTheme .jimu-simple-table .simple-table-row .editable-input {
+    color: #000000 !important;
+    background-color: rgba(255, 255, 255, 0.1);
+}
 
 .jimu-tab>.control>.tab.jimu-state-selected{
   border-bottom: 1px solid #ccc !important;
@@ -266,5 +283,4 @@
     background-color: transparent !important;
     font-size: 12px;
 }
-
 
