@@ -831,29 +831,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                     IDictionary<String, System.Object> circleAttributes = new Dictionary<String, System.Object>();
-                    double dist = 0.0;
+                    double radiusOrDiameterDistance = 0.0;
                     if (CircleType == CircleFromTypes.Diameter)
-                        dist = Distance * 2;
+                        radiusOrDiameterDistance = Distance * 2;
                     else
-                        dist = Distance;
-
-                    //circleAttributes.Add("radius", dist);
-                    //circleAttributes.Add("disttype", CircleType.ToString());
-                    //circleAttributes.Add("centerx", Point1.X);
-                    //circleAttributes.Add("centery", Point1.Y);
-                    //circleAttributes.Add("distanceunit", LineDistanceType.ToString());
-                    //var color = new RgbColorClass() { Red = 255 } as IColor;
-                    //this.AddGraphicToMap(construct as IGeometry, color, attributes: circleAttributes);
+                        radiusOrDiameterDistance = Distance;
 
                     //Construct a polygon from geodesic polyline
-
                     var newPoly = this.PolylineToPolygon((IPolyline)construct);
                     if (newPoly != null)
                     {
                         //Get centroid of polygon
                         var area = newPoly as IArea;
-
-                        
+                     
                         string unitLabel = "";
                         int roundingFactor = 0;
                         // If Distance Calculator is in use, use the unit from the Rate combobox
@@ -912,37 +902,31 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                             unitLabel = dtVal.ToString();
                         }
 
-                        double convertedDistance = Distance;
-                        // Distance is storing radius not diameter, so we have to double it to get the correct value
-                        // for the label
-                        // Only use Diameter when Distance Calculator is not in use
-                        if (!IsDistanceCalcExpanded && circleType == CircleFromTypes.Diameter)
-                        {
-                            convertedDistance *= 2;
-                        }
-
                         string circleTypeLabel = circleType.ToString();
                         string distanceLabel ="";
                         // Use the unit from Rate combobox if Distance Calculator is expanded
                         if (IsDistanceCalcExpanded)
                         {
-                            convertedDistance = ConvertFromTo(LineDistanceType, RateUnit, convertedDistance);
-                            distanceLabel = (TrimPrecision(convertedDistance, RateUnit, true)).ToString("N"+roundingFactor.ToString());
-                            // Always label with radius when Distance Calculator is expanded
-                            circleTypeLabel = "Radius";
+                            radiusOrDiameterDistance = ConvertFromTo(LineDistanceType, RateUnit, radiusOrDiameterDistance);
+                            distanceLabel = (TrimPrecision(radiusOrDiameterDistance, RateUnit, true)).ToString("N"+roundingFactor.ToString());
                         }
                         else
                         {
-                            distanceLabel = (TrimPrecision(convertedDistance, LineDistanceType, false)).ToString("N" + roundingFactor.ToString());
+                            distanceLabel = (TrimPrecision(radiusOrDiameterDistance, LineDistanceType, false)).ToString("N" + roundingFactor.ToString());
                         }
-                        dist = convertedDistance;
+
                         //Add text using centroid point
                         this.AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}",
                             circleTypeLabel,
                             distanceLabel,
                             unitLabel));
                     }
-                    circleAttributes.Add("radius", dist);
+
+                    double radiusDistance = radiusOrDiameterDistance;
+                    if (CircleType == CircleFromTypes.Diameter)
+                        radiusDistance = radiusOrDiameterDistance / 2;
+
+                    circleAttributes.Add("radius", radiusDistance);
                     circleAttributes.Add("disttype", CircleType.ToString());
                     circleAttributes.Add("centerx", Point1.X);
                     circleAttributes.Add("centery", Point1.Y);
