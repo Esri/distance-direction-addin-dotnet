@@ -306,6 +306,35 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             Assert.AreEqual(circleVM.DistanceString, "1000");
         }
 
+        [TestMethod]
+        public void CircleViewModel_IsDistanceCalcExpanded()
+        {
+            var circleVM = new CircleViewModel();
+
+            // test points
+            circleVM.Point1 = new Point() { X = -119.8, Y = 34.4 };
+
+            Assert.AreEqual(circleVM.Point1Formatted, "34.4 -119.8");
+
+            circleVM.LineDistanceType = DistanceTypes.Miles;
+            circleVM.IsDistanceCalcExpanded = true;
+
+            circleVM.TravelRate = 10;
+            circleVM.RateTimeUnit = RateTimeTypes.MilesHour;
+
+            circleVM.TravelTime = 5;
+            circleVM.TimeUnit = TimeUnits.Hours;
+
+            // verify rate calculated correctly
+            circleVM.CircleType = CircleFromTypes.Radius;
+            Assert.AreEqual(circleVM.Distance, 50.0);
+            Assert.AreEqual(circleVM.DistanceString, "50");
+
+            // verify that the distances double when the circle type changes
+            circleVM.CircleType = CircleFromTypes.Diameter;
+            Assert.AreEqual(circleVM.Distance, 100.0);
+            Assert.AreEqual(circleVM.DistanceString, "100");
+        }
         #endregion Circle View Model
 
         #region Ellipse View Model
