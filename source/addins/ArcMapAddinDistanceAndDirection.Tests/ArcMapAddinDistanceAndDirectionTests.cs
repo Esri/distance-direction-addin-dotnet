@@ -268,6 +268,13 @@ namespace ArcMapAddinDistanceAndDirection.Tests
         }
 
         [TestMethod]
+        public void CircleViewModel_GuarenteedFail()
+        {
+            // Create a Guarenteed Failure condition to test testing framework
+            Assert.IsTrue(false);
+        }
+
+        [TestMethod]
         public void CircleViewModel()
         {
             var circleVM = new CircleViewModel();
