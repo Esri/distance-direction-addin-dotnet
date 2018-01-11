@@ -483,6 +483,9 @@ define([
       this.currentLengthUnit = this.lengthUnitDD.get('value');
       var currentCreateCircleFrom = this.creationType.get('value');
       this.dt.set('lengthUnit', this.currentLengthUnit);
+      if(this.distCalcControl.get('open')) {
+        this.distanceInputDidChange();
+      }
     },
 
     /*
