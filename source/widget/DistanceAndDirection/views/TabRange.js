@@ -460,7 +460,7 @@ define([
           return isNaN(data.value);          
         }));
       }
-      return !invalidValue.includes(true);
+      return invalidValue.indexOf(true) === -1;
     },
 
     /*
