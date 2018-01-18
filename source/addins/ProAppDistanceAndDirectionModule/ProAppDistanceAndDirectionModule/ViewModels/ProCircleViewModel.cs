@@ -539,49 +539,36 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                if (Distance == 0.0) // Crash in ToString(format) below if 0.0
-                    return "0.0";
+                if (Distance == 0.0)
+                    return "0";
 
                 String dString = "";
                 if (CircleType == CircleFromTypes.Diameter)
-                {
-                    if (EndsWithDecimal)
-                    {
-                        dString = (Distance * 2.0).ToString("G");
-                        if (dString.Contains(decimalSeparator))
-                        {
-                            int indexOfDecimal = dString.IndexOf(decimalSeparator);
-
-                            return dString.Substring(0,indexOfDecimal+1);
-                        }
-                        else
-                            return dString + decimalSeparator;
-                    }
-                    else
-                        return (Distance * 2.0).ToString("G");
-                    
-                }
+                    dString = (Distance * 2.0).ToString("G");
                 else
+                    dString = (Distance).ToString("G");
+
+                if (EndsWithDecimal)
                 {
-                    if (EndsWithDecimal)
-                    {
-                        dString = (Distance).ToString("G");
-                        if (dString.Contains(decimalSeparator))
-                        {
-                            int indexOfDecimal = dString.IndexOf(decimalSeparator);
-                            return dString.Substring(0, indexOfDecimal + 1);
-                        }
-                        else
-                            return dString + decimalSeparator;
-                    }
+                    int indexOfDecimal = dString.IndexOf(decimalSeparator);
+                    bool containsDecimal = indexOfDecimal >= 0;
+
+                    if (containsDecimal)
+                        return dString.Substring(0, indexOfDecimal + 1);
                     else
-                        return Distance.ToString("D");
+                        return dString + decimalSeparator;
                 }
+
+                return dString;
             }
             set
             {
+                // lets avoid an infinite loop here
+                if (string.Equals(base.DistanceString, value))
+                    return;
+
                 //Handle for decimals
-                if(value.EndsWith(decimalSeparator))
+                if (value.EndsWith(decimalSeparator))
                 {
                     EndsWithDecimal = true;
                     return;
@@ -589,19 +576,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                 {
                     EndsWithDecimal = false;
-                }
-
-
-                // lets avoid an infinite loop here    
-                if (CircleType == CircleFromTypes.Diameter)
-                {
-                    if (string.Equals(base.DistanceString, (Convert.ToDouble(value)*2.0).ToString()))
-                        return;
-                }
-                else
-                {
-                    if (string.Equals(base.DistanceString, value))
-                        return;
                 }
 
                 // divide the manual input by 2
