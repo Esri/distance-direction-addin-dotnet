@@ -360,6 +360,9 @@
   <data name="LabelTime" xml:space="preserve">
     <value>Time</value>
   </data>
+  <data name="MsgOutOfAOI" xml:space="preserve">
+    <value>Point is out of bounds</value>
+  </data>
   <data name="TitleEditProperties" xml:space="preserve">
     <value>Edit Properties</value>
   </data>
