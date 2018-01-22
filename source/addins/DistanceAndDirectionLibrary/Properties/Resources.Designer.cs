@@ -790,6 +790,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Point is out of bounds.
+        /// </summary>
+        public static string MsgOutOfAOI {
+            get {
+                return ResourceManager.GetString("MsgOutOfAOI", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Properties.
         /// </summary>
         public static string TitleEditProperties {

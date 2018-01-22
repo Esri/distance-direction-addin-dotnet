@@ -162,7 +162,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         public string Point1Formatted
         {
-            get 
+            get
             {
                 // return a formatted first point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point1Formatted))
@@ -194,7 +194,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 // try to convert string to an IPoint
                 var point = GetPointFromString(value);
-                if(point != null)
+                if (point != null)
                 {
                     // clear temp graphics
                     ClearTempGraphics();
@@ -222,7 +222,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         }
                     }
                 }
-                else 
+                else
                 {
                     // invalid coordinate, reset and throw exception
                     Point1 = null;
@@ -350,11 +350,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return distance; }
             set
             {
-                if ( value < 0.0 )
+                if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
                 distance = value;
-                DistanceString = distance.ToString("G"); 
+                DistanceString = distance.ToString("G");
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
             }
@@ -425,7 +425,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     OnActivateTool(null);
                 else
                     if (ArcMap.Application.CurrentTool != null)
-                        ArcMap.Application.CurrentTool = null;
+                    ArcMap.Application.CurrentTool = null;
 
                 RaisePropertyChanged(() => IsToolActive);
             }
@@ -440,7 +440,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         public RelayCommand EnterKeyCommand { get; set; }
         public RelayCommand EditPropertiesDialogCommand { get; set; }
 
-        
+
         #endregion
 
         /// <summary>
@@ -475,10 +475,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             RemoveGraphics(gc, false);
-            
+
             //gc.DeleteAllElements();
             //av.Refresh();
-			av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
+            av.PartialRefresh(esriViewDrawPhase.esriViewGraphics, null, null);
 
             RaisePropertyChanged(() => HasMapGraphics);
         }
@@ -492,7 +492,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var dlg = new GRSaveAsFormatView();
             dlg.DataContext = new SaveAsFormatViewModel();
             var vm = dlg.DataContext as SaveAsFormatViewModel;
-            
+
             if (dlg.ShowDialog() == true)
             {
                 IFeatureClass fc = null;
@@ -548,7 +548,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                             // delete the temporary shapefile
                             fcUtils.DeleteShapeFile(tempShapeFile);
-                        } 
+                        }
                     }
                 }
 
@@ -556,7 +556,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     AddFeatureLayerToMap(fc);
                 }
-            }       
+            }
         }
 
         /// <summary>
@@ -584,7 +584,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 geoLayer.Renderer = (IFeatureRenderer)pSimpleRenderer;
             }
-            
+
             geoLayer.Name = fc.AliasName;
 
             ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
@@ -602,10 +602,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 sfDlg.Filter = "KMZ File (*.kmz)|*.kmz";
                 sfDlg.OverwritePrompt = true;
                 sfDlg.Title = "Choose location to create KMZ file";
-                
+
             }
             sfDlg.FileName = "";
-                
+
             if (sfDlg.ShowDialog() == DialogResult.OK)
             {
                 return sfDlg.FileName;
@@ -639,7 +639,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             av.PartialRefresh(esriViewDrawPhase.esriViewAll, null, null);
             RaisePropertyChanged(() => HasMapGraphics);
         }
-       
+
         /// <summary>
         /// Method used to remove graphics from the graphics container
         /// Elements are tagged with a GUID on the IElementProperties.Name property
@@ -667,8 +667,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         {
                             elementList.Add(element);
                             removedGraphics.Add(graphic);
-                        }     
-                            
+                        }
+
                         break;
                     }
                 }
@@ -758,21 +758,27 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var av = mxdoc.FocusMap as IActiveView;
             var point = obj as IPoint;
 
+            if (!IsValidPoint(point))
+            {
+                MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI);
+                return;
+            }
+
             if (point == null)
                 return;
-            
+
             if (!HasPoint1)
             {
                 // clear temp graphics
                 ClearTempGraphics();
                 Point1 = point;
                 HasPoint1 = true;
-                
+
                 var color = new RgbColorClass() { Green = 255 } as IColor;
                 IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
                 ptAttributes.Add("X", Point1.X);
                 ptAttributes.Add("Y", Point1.Y);
-                AddGraphicToMap( Point1, color, true, attributes: ptAttributes);
+                AddGraphicToMap(Point1, color, true, attributes: ptAttributes);
 
                 // lets try feedback
                 CreateFeedback(point, av);
@@ -852,6 +858,83 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             av.Extent = env;
             av.Refresh();
+        }
+
+        /// <summary>
+        /// Method to check to see point is withing the map area of interest
+        /// </summary>
+        /// <param name="point">IPoint to validate</param>
+        /// <returns></returns>
+        internal bool IsValidPoint(IPoint point)
+        {
+            if (ArcMap.Document != null && ArcMap.Document.FocusMap != null)
+            {
+                return IsPointWithinExtent(point, UnionAllLayerExtents(ArcMap.Document.FocusMap));
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Method used to check to see if a point is contained by an envelope
+        /// </summary>
+        /// <param name="point">IPoint</param>
+        /// <param name="env">IEnvelope</param>
+        /// <returns></returns>
+        internal bool IsPointWithinExtent(IPoint point, IEnvelope env)
+        {
+            var relationOp = env as IRelationalOperator;
+
+            if (relationOp == null)
+                return false;
+
+            return relationOp.Contains(point);
+        }
+
+        /// <summary>
+        /// returns ILayer if found in the map layer collection
+        /// </summary>
+        /// <param name="map">IMap</param>
+        /// <param name="name">string name of layer</param>
+        /// <returns></returns>
+        internal ILayer GetLayerFromMapByName(IMap map, string name)
+        {
+            var layers = map.get_Layers();
+            var layer = layers.Next();
+
+            while (layer != null)
+            {
+                if (layer.Name == name)
+                    return layer;
+
+                layer = layers.Next();
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Unions all extents 
+        /// </summary>
+        /// <param name="map"></param>
+        /// <returns>envelope</returns>
+        internal IEnvelope UnionAllLayerExtents(IMap map)
+        {
+            var layers = map.get_Layers();
+            var layer = layers.Next();
+
+            var geomBag = new GeometryBagClass();
+            geomBag.SpatialReference = map.SpatialReference;
+
+            var geomColl = geomBag as IGeometryCollection;
+            object MissingType = Type.Missing;
+
+            while (layer != null)
+            {
+                geomColl.AddGeometry(layer.AreaOfInterest, ref MissingType, ref MissingType);
+                layer = layers.Next();
+            }
+
+            return geomBag.Envelope;
         }
 
         /// <summary>
@@ -1076,7 +1159,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             textEle.Text = text;
             var elem = textEle as IElement;
             elem.Geometry = geom;
-            
+
             var eprop = elem as IElementProperties;
             eprop.Name = Guid.NewGuid().ToString();
 
@@ -1103,7 +1186,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var av = mxDoc.FocusMap as IActiveView;
             var gc = av as IGraphicsContainer;
             double bearing = 0.0;
-            if(azimuthType == AzimuthTypes.Mils)
+            if (azimuthType == AzimuthTypes.Mils)
             {
                 bearing = angle * 0.05625;
             }
@@ -1117,7 +1200,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var textEle = new TextElement() as ITextElement;
             textEle.Text = text;
             ITextSymbol tsym = new TextSymbol();
-            
+
             tsym.Angle = rotate;
             textEle.Symbol = tsym;
             var elem = textEle as IElement;
@@ -1148,7 +1231,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP, IDictionary<String, System.Object>attributes = null)
+        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP, IDictionary<String, System.Object> attributes = null)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
@@ -1157,7 +1240,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             geom.Project(ArcMap.Document.FocusMap.SpatialReference);
 
-            if(geom.GeometryType == esriGeometryType.esriGeometryPoint)
+            if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
             {
                 // Marker symbols
                 var simpleMarkerSymbol = new SimpleMarkerSymbol() as ISimpleMarkerSymbol;
@@ -1171,7 +1254,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 markerElement.Symbol = simpleMarkerSymbol;
                 element = markerElement as IElement;
             }
-            else if(geom.GeometryType == esriGeometryType.esriGeometryPolyline)
+            else if (geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
                 // create graphic then add to map
                 ILineSymbol lineSymbol;
@@ -1181,7 +1264,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                     ISimpleLineDecorationElement simpleLineDecorationElement = new SimpleLineDecorationElementClass();
                     simpleLineDecorationElement.AddPosition(1);
-                    simpleLineDecorationElement.MarkerSymbol = new ArrowMarkerSymbolClass() {
+                    simpleLineDecorationElement.MarkerSymbol = new ArrowMarkerSymbolClass()
+                    {
                         Color = color,
                         Size = 6,
                         Length = 8,
@@ -1217,7 +1301,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             IClone clone = geom as IClone;
-            element.Geometry = clone as IGeometry;       
+            element.Geometry = clone as IGeometry;
 
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             var av = mxdoc.FocusMap as IActiveView;
@@ -1251,7 +1335,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         /// <param name="geom"></param>
         /// <param name="IsTempGraphic"></param>
-        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false, IDictionary<String, Double>attributes=null)
+        internal void AddGraphicToMap(IGeometry geom, bool IsTempGraphic = false, IDictionary<String, Double> attributes = null)
         {
             var color = new RgbColorClass() { Red = 255 } as IColor;
             AddGraphicToMap(geom, color, IsTempGraphic);
@@ -1264,7 +1348,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         internal ILinearUnit GetLinearUnit()
         {
             int unitType = (int)esriSRUnitType.esriSRUnit_Meter;
-             if (srf3 == null)
+            if (srf3 == null)
             {
                 Type srType = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
                 srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
@@ -1320,14 +1404,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             int largeUnitRoundingFactor = 4;
             int smallUnitRoundingFactor = 1;
-            
+
             // We have a less strict mode for trimming precision for the case that the user
             // has Distance Calculator expanded and thus might have a large unit selected
             // - otherwise we can trim label down to e.g. 0.00 Miles
             if (lax)
             {
                 largeUnitRoundingFactor = 6;
-                smallUnitRoundingFactor = 2;    
+                smallUnitRoundingFactor = 2;
             }
 
             double returnDistance = 0;
@@ -1346,7 +1430,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     returnDistance = Math.Round(inputDistance, smallUnitRoundingFactor);
                     break;
                 default:
-                break;
+                    break;
             }
             return returnDistance;
         }
@@ -1355,7 +1439,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             esriUnits unit = esriUnits.esriMeters;
 
-            switch(distanceType)
+            switch (distanceType)
             {
                 case DistanceTypes.Feet:
                     unit = esriUnits.esriFeet;
@@ -1541,15 +1625,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeCENTER, coordinate); return point; } catch { }
             try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeLL, coordinate); return point; } catch { }
             try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_Automatic); return point; } catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewStyle); return point; } catch { } 
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewWith180InZone01); return point; } catch { } 
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewStyle); return point; } catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewWith180InZone01); return point; } catch { }
             try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldStyle); return point; } catch { }
             try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldWith180InZone01); return point; } catch { }
             try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_USNG); return point; } catch { }
             try { cn.PutCoordsFromUSNG(coordinate); return point; } catch { }
             try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces, coordinate); return point; } catch { }
             try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
-            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces|esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces | esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
             try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMNoOptions, coordinate); return point; } catch { }
             try { cn.PutCoordsFromGeoRef(coordinate); return point; } catch { }
 
