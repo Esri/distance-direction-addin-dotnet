@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcMapAddinDistanceAndDirection", "ArcMapAddinDistanceAndDirection\ArcMapAddinDistanceAndDirection\ArcMapAddinDistanceAndDirection.csproj", "{C37767BB-18E6-4743-A5EC-1D7F2B38F487}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArcMapAddinDistanceAndDirection.Tests", "ArcMapAddinDistanceAndDirection.Tests\ArcMapAddinDistanceAndDirection.Tests.csproj", "{7C0196B2-7EDE-43E6-AF92-374602D1DB07}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProAppDistanceAndDirectionModule.Tests", "ProAppDistanceAndDirectionModule.Tests\ProAppDistanceAndDirectionModule.Tests.csproj", "{8DBE05CE-8026-4631-8E8A-BFC54DACD23B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoordinateConversionLibrary", "..\..\..\coordinate-conversion-addin-dotnet\source\CoordinateConversion\CoordinateConversionLibrary\CoordinateConversionLibrary.csproj", "{67FFDFAE-F8EC-45AA-A3F9-6109BCF5BBF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{8DBE05CE-8026-4631-8E8A-BFC54DACD23B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8DBE05CE-8026-4631-8E8A-BFC54DACD23B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8DBE05CE-8026-4631-8E8A-BFC54DACD23B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67FFDFAE-F8EC-45AA-A3F9-6109BCF5BBF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67FFDFAE-F8EC-45AA-A3F9-6109BCF5BBF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67FFDFAE-F8EC-45AA-A3F9-6109BCF5BBF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67FFDFAE-F8EC-45AA-A3F9-6109BCF5BBF4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
