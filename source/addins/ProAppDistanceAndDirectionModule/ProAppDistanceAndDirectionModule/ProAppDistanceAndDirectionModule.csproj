@@ -111,6 +111,7 @@
     </Compile>
     <Compile Include="DistanceAndDirectionDockpaneViewModel.cs" />
     <Compile Include="DistanceAndDirectionModule.cs" />
+    <Compile Include="Models\CoordinateConversionUtils.cs" />
     <Compile Include="Models\FeatureClassUtils.cs" />
     <Compile Include="Models\Graphic.cs" />
     <Compile Include="Models\KMLUtils.cs" />
@@ -151,6 +152,10 @@
     <AddInContent Include="Images\GenericButtonBlue32.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\coordinate-conversion-addin-dotnet\source\CoordinateConversion\CoordinateConversionLibrary\CoordinateConversionLibrary.csproj">
+      <Project>{67ffdfae-f8ec-45aa-a3f9-6109bcf5bbf4}</Project>
+      <Name>CoordinateConversionLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj">
       <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
       <Name>DistanceAndDirectionLibrary</Name>
