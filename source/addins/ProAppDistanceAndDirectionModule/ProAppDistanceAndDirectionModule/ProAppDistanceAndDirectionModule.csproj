@@ -111,7 +111,6 @@
     </Compile>
     <Compile Include="DistanceAndDirectionDockpaneViewModel.cs" />
     <Compile Include="DistanceAndDirectionModule.cs" />
-    <Compile Include="Models\CoordinateConversionUtils.cs" />
     <Compile Include="Models\FeatureClassUtils.cs" />
     <Compile Include="Models\Graphic.cs" />
     <Compile Include="Models\KMLUtils.cs" />
