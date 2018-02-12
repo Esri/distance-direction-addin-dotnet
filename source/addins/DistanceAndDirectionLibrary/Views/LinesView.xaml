@@ -95,7 +95,8 @@
                     <ToggleButton Grid.Column="2"
                                   Margin="3,3,0,0"
                                   IsChecked="{Binding IsToolActive}"
-                                  ToolTip="{x:Static prop:Resources.TooltipMapPointTool}">
+                                  ToolTip="{x:Static prop:Resources.TooltipMapPointTool}"
+                                  Style="{StaticResource TransparentToggleButtonStyle}" >
                         <Image Width="18"
                                Height="18"
                                Source="/DistanceAndDirectionLibrary;component/Images/Add_Point.png" />

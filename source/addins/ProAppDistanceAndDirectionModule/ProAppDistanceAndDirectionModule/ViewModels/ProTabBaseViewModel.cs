@@ -36,7 +36,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 {
     public class ProTabBaseViewModel : BaseViewModel
     {
-        public const System.String MAP_TOOL_NAME = "ProAppDistanceAndDirectionModule_SketchTool";
+        public string MAP_TOOL_NAME = SketchTool.ToolId;
 
         public ProTabBaseViewModel()
         {
@@ -58,8 +58,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Mediator.Register(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
-            // Get Current tool
-            CurrentTool = FrameworkApplication.CurrentTool;
+            // Pro Events
+            ArcGIS.Desktop.Framework.Events.ActiveToolChangedEvent.Subscribe(OnActiveToolChanged);
 
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
@@ -116,34 +116,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        public string CurrentTool
-        {
-            get; set;
-        }
+        /// <summary>
+        /// save last active tool used, so we can set back to this 
+        /// </summary>
+        private string lastActiveToolName;
 
+        private bool isToolActive = false;
         public virtual bool IsToolActive
         {
             get
             {
-                if (FrameworkApplication.CurrentTool != null)
-                    return FrameworkApplication.CurrentTool == MAP_TOOL_NAME;
-
-                return false;
+                return isToolActive;
             }
 
             set
             {
-                if (value)
+                isToolActive = value;
+                if (isToolActive)
                 {
-                    CurrentTool = FrameworkApplication.CurrentTool;
                     FrameworkApplication.SetCurrentToolAsync(MAP_TOOL_NAME);
                 }
                 else
                 {
-                    if (FrameworkApplication.CurrentTool != null)
-                    {
-                        DeactivateTool(MAP_TOOL_NAME);
-                    }
+                    DeactivateTool(MAP_TOOL_NAME);
                 }
 
                 RaisePropertyChanged(() => IsToolActive);
@@ -440,6 +435,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #endregion
 
+        private void OnActiveToolChanged(ArcGIS.Desktop.Framework.Events.ToolEventArgs args)
+        {
+            string currentActiveToolName = args.CurrentID;
+
+            if (currentActiveToolName != MAP_TOOL_NAME)
+            {
+                lastActiveToolName = currentActiveToolName;
+                IsToolActive = false;
+            }
+        }
+
         internal async void AddGraphicToMap(Geometry geom, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
             // default color Red
@@ -655,7 +661,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (FrameworkApplication.CurrentTool != null &&
                 FrameworkApplication.CurrentTool.Equals(toolname))
             {
-                FrameworkApplication.SetCurrentToolAsync(CurrentTool);
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    FrameworkApplication.SetCurrentToolAsync(lastActiveToolName);
+                });
             }
         }
 

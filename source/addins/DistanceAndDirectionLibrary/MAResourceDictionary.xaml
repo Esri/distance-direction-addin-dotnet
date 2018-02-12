@@ -91,4 +91,14 @@
             </Trigger>
         </Style.Triggers>
     </Style>
+    <Style x:Key="TransparentToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+        <Setter Property="Opacity" Value="0.5"/>
+        <Setter Property="Background" Value="Transparent"/>
+        <Style.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+                <Setter Property="Opacity" Value="1.0"/>
+                <Setter Property="Background" Value="Transparent"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
 </ResourceDictionary>
