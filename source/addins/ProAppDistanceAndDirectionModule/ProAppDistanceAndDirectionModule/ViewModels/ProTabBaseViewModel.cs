@@ -31,6 +31,8 @@ using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
 using ProAppDistanceAndDirectionModule.ViewModels;
+using CoordinateConversionLibrary.Models;
+using CoordinateConversionLibrary.Helpers;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -52,16 +54,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             EditPropertiesDialogCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnEditPropertiesDialog());
 
             // Mediator
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, OnNewMapPointEvent);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, OnNewMapPointEvent);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
             // Pro Events
             ArcGIS.Desktop.Framework.Events.ActiveToolChangedEvent.Subscribe(OnActiveToolChanged);
 
-            configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
+            configObserver = new DistanceAndDirectionLibrary.Helpers.PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
             {
                 RaisePropertyChanged(() => Point1Formatted);
@@ -72,7 +74,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal const int VertexCount = 99;
 
-        PropertyObserver<DistanceAndDirectionConfig> configObserver;
+        DistanceAndDirectionLibrary.Helpers.PropertyObserver<DistanceAndDirectionConfig> configObserver;
 
         #region Commands
 
@@ -229,12 +231,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // return a formatted first point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point1Formatted))
                 {
-                    if (Point1 == null)
-                        return string.Empty;
-
-                    // only format if the Point1 data was generated from a mouse click
-
-                    return GetFormattedPoint(Point1);
+                    if (Point1 != null)
+                    {
+                        // only format if the Point1 data was generated from a mouse click
+                        string outFormattedString = string.Empty;
+                        CoordinateType ccType = ConversionUtils.GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
+                        if (ccType != CoordinateType.Unknown)
+                            return outFormattedString;
+                    }
+                    return string.Empty;
                 }
                 else
                 {
@@ -294,12 +299,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // return a formatted second point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point2Formatted))
                 {
-                    if (Point2 == null)
-                        return string.Empty;
-
-                    // only format if the Point2 data was generated from a mouse click
-
-                    return GetFormattedPoint(Point2);
+                    if (Point2 != null)
+                    {
+                        // only format if the Point1 data was generated from a mouse click
+                        string outFormattedString = string.Empty;
+                        CoordinateType ccType = ConversionUtils.GetCoordinateString(GetFormattedPoint(Point2), out outFormattedString);
+                        if (ccType != CoordinateType.Unknown)
+                            return outFormattedString;
+                    }
+                    return string.Empty;
                 }
                 else
                 {
