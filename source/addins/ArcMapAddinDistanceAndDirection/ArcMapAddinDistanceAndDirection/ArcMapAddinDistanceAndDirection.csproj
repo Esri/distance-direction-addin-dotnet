@@ -211,6 +211,10 @@
     <AddInContent Include="Images\MapPointTool.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\coordinate-conversion-addin-dotnet\source\CoordinateConversion\CoordinateConversionLibrary\CoordinateConversionLibrary.csproj">
+      <Project>{67FFDFAE-F8EC-45AA-A3F9-6109BCF5BBF4}</Project>
+      <Name>CoordinateConversionLibrary</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj">
       <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
       <Name>DistanceAndDirectionLibrary</Name>

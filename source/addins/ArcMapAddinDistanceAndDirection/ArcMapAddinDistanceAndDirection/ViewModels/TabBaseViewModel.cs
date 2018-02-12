@@ -35,7 +35,8 @@ using DistanceAndDirectionLibrary.ViewModels;
 using ArcMapAddinDistanceAndDirection.Models;
 using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary.Views;
-
+using CoordinateConversionLibrary.Models;
+using CoordinateConversionLibrary.Helpers;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -53,20 +54,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             LineDistanceType = DistanceTypes.Meters;
 
             //commands
-            SaveAsCommand = new RelayCommand(OnSaveAs);
-            ClearGraphicsCommand = new RelayCommand(OnClearGraphics);
-            ActivateToolCommand = new RelayCommand(OnActivateTool);
-            EnterKeyCommand = new RelayCommand(OnEnterKeyCommand);
-            EditPropertiesDialogCommand = new RelayCommand(OnEditPropertiesDialogCommand);
+            SaveAsCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnSaveAs);
+            ClearGraphicsCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnClearGraphics);
+            ActivateToolCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnActivateTool);
+            EnterKeyCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnEnterKeyCommand);
+            EditPropertiesDialogCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnEditPropertiesDialogCommand);
 
             // Mediator
-            Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
-            Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
-            Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
-            Mediator.Register(Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
-            Mediator.Register(Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
-            configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
+            configObserver = new DistanceAndDirectionLibrary.Helpers.PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
             {
                 RaisePropertyChanged(() => Point1Formatted);
@@ -75,7 +76,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         }
 
-        PropertyObserver<DistanceAndDirectionConfig> configObserver;
+        DistanceAndDirectionLibrary.Helpers.PropertyObserver<DistanceAndDirectionConfig> configObserver;
 
         #region Properties
 
@@ -167,12 +168,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 // return a formatted first point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point1Formatted))
                 {
-                    if (Point1 == null)
-                        return string.Empty;
-
-                    // only format if the Point1 data was generated from a mouse click
-
-                    return GetFormattedPoint(Point1);
+                    if (Point1 != null)
+                    {
+                        // only format if the Point1 data was generated from a mouse click
+                        string outFormattedString = string.Empty;
+                        CoordinateType ccType = ConversionUtils.GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
+                        if (ccType != CoordinateType.Unknown)
+                            return outFormattedString;
+                    }
+                    return string.Empty;
                 }
                 else
                 {
@@ -245,12 +249,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 // return a formatted second point depending on how it was entered, manually or via map point tool
                 if (string.IsNullOrWhiteSpace(point2Formatted))
                 {
-                    if (Point2 == null)
-                        return string.Empty;
-
-                    // only format if the Point2 data was generated from a mouse click
-
-                    return GetFormattedPoint(Point2);
+                    if (Point1 != null)
+                    {
+                        // only format if the Point1 data was generated from a mouse click
+                        string outFormattedString = string.Empty;
+                        CoordinateType ccType = ConversionUtils.GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
+                        if (ccType != CoordinateType.Unknown)
+                            return outFormattedString;
+                    }
+                    return string.Empty;
                 }
                 else
                 {
@@ -434,11 +441,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         #region Commands
 
-        public RelayCommand SaveAsCommand { get; set; }
-        public RelayCommand ClearGraphicsCommand { get; set; }
-        public RelayCommand ActivateToolCommand { get; set; }
-        public RelayCommand EnterKeyCommand { get; set; }
-        public RelayCommand EditPropertiesDialogCommand { get; set; }
+        public DistanceAndDirectionLibrary.Helpers.RelayCommand SaveAsCommand { get; set; }
+        public DistanceAndDirectionLibrary.Helpers.RelayCommand ClearGraphicsCommand { get; set; }
+        public DistanceAndDirectionLibrary.Helpers.RelayCommand ActivateToolCommand { get; set; }
+        public DistanceAndDirectionLibrary.Helpers.RelayCommand EnterKeyCommand { get; set; }
+        public DistanceAndDirectionLibrary.Helpers.RelayCommand EditPropertiesDialogCommand { get; set; }
 
 
         #endregion
