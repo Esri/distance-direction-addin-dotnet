@@ -49,6 +49,12 @@ namespace ProAppDistanceAndDirectionModule
         }
         Subject<MapViewMouseEventArgs> mouseSubject = new Subject<MapViewMouseEventArgs>();
 
+        public static string ToolId
+        {
+            // Important: this must match the Tool ID used in the DAML
+            get { return "ProAppDistanceAndDirectionModule_SketchTool"; }
+        }
+
         // If the user presses Escape cancel the sketch
         protected override void OnToolKeyDown(MapViewKeyEventArgs k)
         {
