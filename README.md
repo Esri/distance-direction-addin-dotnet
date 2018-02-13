@@ -37,7 +37,7 @@ The Distance and Direction component provides the ability to create geodesic fea
 ##### Obtain the Dependent Repositories
 
 * Clone this repository
-* Clone each of the following component repository *to the same root folder location* 
+* Clone the following component repository *to the same root folder location* 
 	* [coordinate-conversion-addin-dotnet](https://github.com/Esri/coordinate-conversion-addin-dotnet)
 * Your local folder structure should now look like:
 
