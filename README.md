@@ -34,6 +34,21 @@ The Distance and Direction component provides the ability to create geodesic fea
 
 ### Build Requirements 
 
+##### Obtain the Dependent Repositories
+
+* Clone this repository
+* Clone the following component repository *to the same root folder location* 
+	* [coordinate-conversion-addin-dotnet](https://github.com/Esri/coordinate-conversion-addin-dotnet)
+* Your local folder structure should now look like:
+
+```
+{Github Clone Location}
++---coordinate-conversion-addin-dotnet
++---distance-direction-addin-dotnet
+```
+
+##### Product Requirements
+
 * Add-Ins for ArcGIS for Desktop
     * Visual Studio 2015
     * ArcGIS for Desktop 
@@ -42,6 +57,7 @@ The Distance and Direction component provides the ability to create geodesic fea
     * ArcGIS Desktop SDK for .NET 10.3.1+
         * [ArcGIS Desktop for .NET Requirements](https://desktop.arcgis.com/en/desktop/latest/get-started/system-requirements/arcobjects-sdk-system-requirements.htm)
     * [ArcGIS Pro SDK](http://pro.arcgis.com/en/pro-app/sdk/) 2.0+
+* Web Appbuilder for ArcGIS Widget
 
 ## Instructions
 

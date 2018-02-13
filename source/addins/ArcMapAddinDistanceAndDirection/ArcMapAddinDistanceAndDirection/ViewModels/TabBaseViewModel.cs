@@ -35,8 +35,6 @@ using DistanceAndDirectionLibrary.ViewModels;
 using ArcMapAddinDistanceAndDirection.Models;
 using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary.Views;
-using CoordinateConversionLibrary.Models;
-using CoordinateConversionLibrary.Helpers;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -54,20 +52,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             LineDistanceType = DistanceTypes.Meters;
 
             //commands
-            SaveAsCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnSaveAs);
-            ClearGraphicsCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnClearGraphics);
-            ActivateToolCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnActivateTool);
-            EnterKeyCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnEnterKeyCommand);
-            EditPropertiesDialogCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnEditPropertiesDialogCommand);
+            SaveAsCommand = new RelayCommand(OnSaveAs);
+            ClearGraphicsCommand = new RelayCommand(OnClearGraphics);
+            ActivateToolCommand = new RelayCommand(OnActivateTool);
+            EnterKeyCommand = new RelayCommand(OnEnterKeyCommand);
+            EditPropertiesDialogCommand = new RelayCommand(OnEditPropertiesDialogCommand);
 
             // Mediator
-            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
-            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
-            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
-            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
-            DistanceAndDirectionLibrary.Helpers.Mediator.Register(Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
+            Mediator.Register(Constants.NEW_MAP_POINT, OnNewMapPointEvent);
+            Mediator.Register(Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
+            Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+            Mediator.Register(Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            Mediator.Register(Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
-            configObserver = new DistanceAndDirectionLibrary.Helpers.PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
+            configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
             {
                 RaisePropertyChanged(() => Point1Formatted);
@@ -76,7 +74,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         }
 
-        DistanceAndDirectionLibrary.Helpers.PropertyObserver<DistanceAndDirectionConfig> configObserver;
+        PropertyObserver<DistanceAndDirectionConfig> configObserver;
 
         #region Properties
 
@@ -172,8 +170,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     {
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
-                        CoordinateType ccType = ConversionUtils.GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
-                        if (ccType != CoordinateType.Unknown)
+                        CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
+                        if (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown)
                             return outFormattedString;
                     }
                     return string.Empty;
@@ -197,7 +195,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     return;
                 }
                 // try to convert string to an IPoint
-                var point = GetPointFromString(value);
+                string outFormattedString = string.Empty;
+                CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(value, out outFormattedString);
+                IPoint point = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null;
                 if (point != null)
                 {
                     // clear temp graphics
@@ -253,8 +253,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     {
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
-                        CoordinateType ccType = ConversionUtils.GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
-                        if (ccType != CoordinateType.Unknown)
+                        CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
+                        if (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown)
                             return outFormattedString;
                     }
                     return string.Empty;
@@ -277,7 +277,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     return;
                 }
                 // try to convert string to an IPoint
-                var point = GetPointFromString(value);
+                string outFormattedString = string.Empty;
+                CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(value, out outFormattedString);
+                IPoint point = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null;
                 if (point != null)
                 {
                     point2Formatted = value;
