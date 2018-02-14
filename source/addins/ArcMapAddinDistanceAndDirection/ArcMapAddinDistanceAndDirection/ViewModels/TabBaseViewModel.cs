@@ -548,7 +548,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     {
                         string kmlName = System.IO.Path.GetFileName(path);
                         string folderName = System.IO.Path.GetDirectoryName(path);
-                        string tempShapeFile = folderName + "\\tmpShapefile.shp";
+                        string tempShapeFile = folderName + 
+                            System.IO.Path.DirectorySeparatorChar 
+                            + "tmpShapefile.shp";
                         IFeatureClass tempFc = fcUtils.CreateFCOutput(tempShapeFile, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
 
                         if (tempFc != null)
