@@ -988,6 +988,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
             }
             return result;
@@ -1148,7 +1149,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
             }
         }

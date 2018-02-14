@@ -92,7 +92,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        private bool HasPoint3 = false;
         private IPoint point3 = null;
         public IPoint Point3
         {
@@ -557,7 +556,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                System.Diagnostics.Debug.WriteLine(ex);
             }
         }
 
@@ -707,7 +706,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
             }
         }

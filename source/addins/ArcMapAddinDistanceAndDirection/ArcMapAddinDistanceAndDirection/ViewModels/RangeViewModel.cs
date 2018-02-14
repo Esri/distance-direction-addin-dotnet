@@ -252,7 +252,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex);
+                System.Diagnostics.Debug.WriteLine(ex);
             }
         }
 
@@ -299,7 +299,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex);
+                System.Diagnostics.Debug.WriteLine(ex);
                 return null;
             }
         }

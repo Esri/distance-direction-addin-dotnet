@@ -208,7 +208,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                System.Diagnostics.Debug.WriteLine(ex);
             }
         }
         private double GetAzimuthAsRadians(double azimuth)
@@ -257,7 +257,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                System.Diagnostics.Debug.WriteLine(ex);
                 return null;
             }
         }

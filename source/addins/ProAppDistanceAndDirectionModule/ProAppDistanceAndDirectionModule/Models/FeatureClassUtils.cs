@@ -117,7 +117,7 @@ namespace ProAppDistanceAndDirectionModule.Models
             }
             catch (Exception ex)
             {
-
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
         }
 
@@ -227,8 +227,9 @@ namespace ProAppDistanceAndDirectionModule.Models
                                                     rowBuffer[definition.FindField("CenterY")] = ((CircleAttributes)graphic.p).centery;
                                                     break;
                                                 }
-                                                catch (Exception e)
+                                                catch (Exception ex)
                                                 {
+                                                    System.Diagnostics.Debug.WriteLine(ex.Message);
                                                     break;
                                                 }
                                             }
@@ -277,7 +278,7 @@ namespace ProAppDistanceAndDirectionModule.Models
             }
             catch (GeodatabaseException exObj)
             {
-                Console.WriteLine(exObj);
+                System.Diagnostics.Debug.WriteLine(exObj);
                 throw;
             }
             finally

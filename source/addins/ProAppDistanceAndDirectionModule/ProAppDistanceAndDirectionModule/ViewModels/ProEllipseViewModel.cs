@@ -78,7 +78,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        private bool HasPoint3 = false;
         private MapPoint point3 = null;
         public MapPoint Point3
         {
@@ -326,6 +325,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }
                     catch (Exception ex)
                     {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
                         return null;
                     }
                 }).Result;
@@ -378,7 +378,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             catch(Exception ex)
             {
-                Console.WriteLine(ex);
+                System.Diagnostics.Debug.WriteLine(ex);
             }
         }
 
@@ -465,7 +465,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                System.Diagnostics.Debug.WriteLine(ex);
             }
         }
 
@@ -543,7 +543,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
             }
         }

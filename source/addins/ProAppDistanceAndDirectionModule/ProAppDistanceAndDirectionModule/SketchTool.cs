@@ -74,7 +74,7 @@ namespace ProAppDistanceAndDirectionModule
             }
             catch(Exception ex)
             {
-                // do nothing
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
 
             return base.OnSketchCompleteAsync(geometry);
@@ -89,7 +89,7 @@ namespace ProAppDistanceAndDirectionModule
             }
             catch(Exception ex)
             {
-                // do nothing
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
             base.OnToolMouseMove(e);
         }
@@ -106,7 +106,7 @@ namespace ProAppDistanceAndDirectionModule
             }
             catch(Exception ex)
             {
-
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
             base.OnToolDoubleClick(e);
         }
