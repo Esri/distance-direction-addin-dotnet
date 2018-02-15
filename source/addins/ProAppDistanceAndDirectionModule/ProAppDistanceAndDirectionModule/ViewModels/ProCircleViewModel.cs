@@ -189,25 +189,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        string travelTimeString;
         /// <summary>
         /// String of time display
         /// </summary>
         public string TravelTimeString
         {
-           
-
-            
             get
             {
                 return TravelTime.ToString("G");
             }
             set
             {
-                // lets avoid an infinite loop here
-                if (string.Equals(travelTimeString, value))
-                    return;
-
                 // divide the manual input by 2
                 double t = 0.0;
                 if (double.TryParse(value, out t))
@@ -289,23 +281,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        string travelRateString;
         /// <summary>
         /// String of rate display
         /// </summary>
         public string TravelRateString
-        {
-            
+        {  
             get
             {
                 return TravelRate.ToString("G");
             }
             set
             {
-                // lets avoid an infinite loop here
-                if (string.Equals(travelRateString, value))
-                    return;
-
                 // divide the manual input by 2
                 double t = 0.0;
                 if (double.TryParse(value, out t))

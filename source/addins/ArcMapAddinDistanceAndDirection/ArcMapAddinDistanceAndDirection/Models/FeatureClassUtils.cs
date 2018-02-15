@@ -76,7 +76,8 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 IGxObject ipGxObject = m_ipSaveAsGxDialog.FinalLocation;
                 string nameString = m_ipSaveAsGxDialog.Name;
                 bool replacingObject = m_ipSaveAsGxDialog.ReplacingObject;
-                string path = m_ipSaveAsGxDialog.FinalLocation.FullName + "\\" + m_ipSaveAsGxDialog.Name;
+                string path = m_ipSaveAsGxDialog.FinalLocation.FullName + 
+                    System.IO.Path.DirectorySeparatorChar + m_ipSaveAsGxDialog.Name;
                 IGxObject ipSelectedObject = m_ipSaveAsGxDialog.InternalCatalog.SelectedObject;
 
                 // user selected an existing featureclass
@@ -95,7 +96,8 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     {
                         if (System.Windows.Forms.MessageBox.Show("You've selected a feature class that already exists. Do you wish to replace it?", "Overwrite Feature Class", System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
                         {
-                            return m_ipSaveAsGxDialog.FinalLocation.FullName + "\\" + m_ipSaveAsGxDialog.Name;
+                            return m_ipSaveAsGxDialog.FinalLocation.FullName + 
+                                System.IO.Path.DirectorySeparatorChar + m_ipSaveAsGxDialog.Name;
                         }
 
                         if (m_ipSaveAsGxDialog.DoModalSave(iParentWindow) == false)
@@ -110,7 +112,8 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         }
                     }
 
-                    return m_ipSaveAsGxDialog.FinalLocation.FullName + "\\" + m_ipSaveAsGxDialog.Name;
+                    return m_ipSaveAsGxDialog.FinalLocation.FullName + 
+                        System.IO.Path.DirectorySeparatorChar + m_ipSaveAsGxDialog.Name;
                 }
                 else
                     return path;
@@ -285,6 +288,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 return fc;
             }
         }
@@ -323,7 +327,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <returns>Created featureclass</returns>
         private IFeatureClass ExportToShapefile(string fileNamePath, List<Graphic> graphicsList, ISpatialReference ipSpatialRef, bool polyLineFC)
         {
-            int index = fileNamePath.LastIndexOf('\\');
+            int index = fileNamePath.LastIndexOf(System.IO.Path.DirectorySeparatorChar);
             string folder = fileNamePath.Substring(0, index);
             string nameOfShapeFile = fileNamePath.Substring(index + 1);
             string shapeFieldName = "Shape";
@@ -698,6 +702,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 }
                 catch (Exception ex)
                 {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
                     return featClass;
                 }
             }

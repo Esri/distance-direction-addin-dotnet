@@ -430,7 +430,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Property for the type of geodesy line
         /// </summary>
-        public LineTypes LineType { get; set; }
+        public virtual LineTypes LineType { get; set; }
 
         /// <summary>
         /// Property used to test if there is enough info to create a line map element
@@ -459,9 +459,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal async void AddGraphicToMap(Geometry geom, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
             // default color Red
-            await AddGraphicToMap(geom, ColorFactory.Instance.RedRGB, p, IsTempGraphic, size);
+            await AddGraphicToMapAsync(geom, ColorFactory.Instance.RedRGB, p, IsTempGraphic, size);
         }
-        internal async Task AddGraphicToMap(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
+
+        internal void AddGraphicToMap(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
+        {
+            QueuedTask.Run(async () =>
+            {
+                await AddGraphicToMapAsync(geom, color, p, IsTempGraphic, size);
+            }); 
+        }
+
+        internal async Task AddGraphicToMapAsync(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
             if (geom == null || MapView.Active == null)
                 return;
@@ -587,7 +596,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Calls CreateMapElement
         /// </summary>
         /// <param name="obj"></param>
-        internal virtual void OnEnterKeyCommand(object obj)
+        internal virtual async void OnEnterKeyCommand(object obj)
         {
             var depends = obj as System.Windows.DependencyObject;
 
@@ -602,7 +611,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (geom != null)
             {
-                ZoomToExtent(geom.Extent);
+                await ZoomToExtent(geom.Extent);
             }
         }
 
@@ -761,7 +770,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             catch(Exception ex)
             {
-                // do nothing
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
             return result;
         }
@@ -927,6 +936,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return ConvertFromTo(DistanceTypes.Meters, LineDistanceType, meters);
             }catch(Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 return Double.NaN;
             }
         }
@@ -950,8 +960,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             ClearTempGraphics();
             Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, type);
-            await AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-            await AddGraphicToMap(newline, ColorFactory.Instance.GreyRGB, null, true);
+            await AddGraphicToMapAsync(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
+            await AddGraphicToMapAsync(newline, ColorFactory.Instance.GreyRGB, null, true);
         }
 
         internal LinearUnit GetLinearUnit(DistanceTypes dtype)
@@ -1032,7 +1042,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 catch (Exception ex)
                 {
-                    // do nothing
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
                 }
 
                 if (point != null)
@@ -1048,7 +1058,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             catch(Exception ex)
             {
-                // do nothing
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
 
             if(point == null)
@@ -1071,7 +1081,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        // do nothing
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
                     }
                 }
             }
@@ -1143,7 +1153,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }
                     catch (Exception ex)
                     {
-
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
                     }
                 }
             }

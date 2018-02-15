@@ -208,7 +208,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        string travelTimeString;
         /// <summary>
         /// String of time display
         /// </summary>
@@ -220,10 +219,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
-                // lets avoid an infinite loop here
-                if (string.Equals(travelTimeString, value))
-                    return;
-
                 // divide the manual input by 2
                 double t = 0.0;
                 if (double.TryParse(value, out t))
@@ -232,7 +227,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-
                     TravelTime = 0.0;
                     ClearTempGraphics();
                     if (HasPoint1)
@@ -243,7 +237,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
                     }
-                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEEnterValue);
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEEnterValue);
                 }
             }
         }
@@ -319,7 +313,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
-        string travelRateString;
         /// <summary>
         /// String of rate display
         /// </summary>
@@ -331,10 +324,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
-                // lets avoid an infinite loop here
-                if (string.Equals(travelRateString, value))
-                    return;
-
                 // divide the manual input by 2
                 double t = 0.0;
                 
@@ -944,7 +933,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
             }
         }

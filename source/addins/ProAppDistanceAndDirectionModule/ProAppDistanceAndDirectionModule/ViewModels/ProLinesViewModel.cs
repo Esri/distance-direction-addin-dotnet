@@ -61,7 +61,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         }
 
         LineTypes lineType = LineTypes.Geodesic;
-        public LineTypes LineType
+        public override LineTypes LineType
         {
             get { return lineType;  }
             set
@@ -200,6 +200,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }
                     catch (Exception ex)
                     {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
                         return null;
                     }
                 }).Result;
@@ -383,7 +384,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 HasPoint1 = true;
                 Point1 = point;
-                await AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
+                await AddGraphicToMapAsync(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
                 return;
             }
 
@@ -417,6 +418,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }
                     catch (Exception ex)
                     {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
                         return null;
                     }
                 }).Result;
@@ -459,6 +461,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             catch(Exception ex)
             {
                 // do nothing
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
             }
         }
@@ -531,7 +534,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                System.Diagnostics.Debug.WriteLine(ex);
             }
         }
 
