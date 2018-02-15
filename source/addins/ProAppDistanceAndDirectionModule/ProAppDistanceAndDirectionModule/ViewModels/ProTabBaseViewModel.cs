@@ -464,10 +464,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal void AddGraphicToMap(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
-            // This behavior is expected
-            #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
-            AddGraphicToMapAsync(geom, color, p, IsTempGraphic, size);
-            #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            QueuedTask.Run(async () =>
+            {
+                await AddGraphicToMapAsync(geom, color, p, IsTempGraphic, size);
+            }); 
         }
 
         internal async Task AddGraphicToMapAsync(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
