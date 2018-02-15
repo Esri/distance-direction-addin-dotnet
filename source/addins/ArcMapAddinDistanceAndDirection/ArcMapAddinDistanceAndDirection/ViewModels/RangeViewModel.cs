@@ -295,7 +295,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}", radius.ToString(), dtVal.ToString()));
                 }
 
-                return construct as IGeometry;
+                return (IGeometry)construct;
             }
             catch(Exception ex)
             {
