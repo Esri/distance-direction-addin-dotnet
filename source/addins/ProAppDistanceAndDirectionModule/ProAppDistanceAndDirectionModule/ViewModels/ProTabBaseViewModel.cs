@@ -233,8 +233,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
                         CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
-                        if (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown)
-                            return outFormattedString;
+                        return outFormattedString;
                     }
                     return string.Empty;
                 }
@@ -303,8 +302,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
                         CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(GetFormattedPoint(Point2), out outFormattedString);
-                        if (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown)
-                            return outFormattedString;
+                        return outFormattedString;
                     }
                     return string.Empty;
                 }
