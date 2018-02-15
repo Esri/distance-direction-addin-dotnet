@@ -259,9 +259,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
                 }
 
+                if (srf3 == null)
+                    return null;
+
                 var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
                 esriGeodeticType type = GetEsriGeodeticType();
-                IGeometry geo = Point1;
                 if (LineFromType == LineFromTypes.Points)
                     construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                 else
@@ -278,7 +280,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     construct.ConstructGeodeticLineFromDistance(type, Point1, GetLinearUnit(), Distance, bearing, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                 }
                 var mxdoc = ArcMap.Application.Document as IMxDocument;
-                var av = mxdoc.FocusMap as IActiveView;
                 if (LineFromType == LineFromTypes.Points)
                 {
                     UpdateDistance(construct as IGeometry);

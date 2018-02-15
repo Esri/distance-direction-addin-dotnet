@@ -324,6 +324,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <param name="fileNamePath">Path to shapefile</param>
         /// <param name="graphicsList">List of graphics for selected tab</param>
         /// <param name="ipSpatialRef">Spatial Reference being used</param>
+        /// <param name="polyLineFC">Is Polyline FC</param>
         /// <returns>Created featureclass</returns>
         private IFeatureClass ExportToShapefile(string fileNamePath, List<Graphic> graphicsList, ISpatialReference ipSpatialRef, bool polyLineFC)
         {
@@ -347,13 +348,13 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     fieldsEdit = (IFieldsEdit)fields;
                     IField field = null;
                     IFieldEdit fieldEdit = null;
-                    field = new FieldClass();///###########
+                    field = new FieldClass(); 
                     fieldEdit = (IFieldEdit)field;
                     fieldEdit.Name_2 = "Shape";
                     fieldEdit.Type_2 = (esriFieldType.esriFieldTypeGeometry);
                     IGeometryDef geomDef = null;
                     IGeometryDefEdit geomDefEdit = null;
-                    geomDef = new GeometryDefClass();///#########
+                    geomDef = new GeometryDefClass();
                     geomDefEdit = (IGeometryDefEdit)geomDef;
 
                     if (polyLineFC)
@@ -759,6 +760,8 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// </summary> 
         /// <param name="featWorkspace">IFeatureWorkspace</param> 
         /// <param name="name">Name of the featureclass</param> 
+        /// <param name="graphicsList">Graphics List</param> 
+        /// <param name="polyLineFC">Is Polyline FC</param> 
         /// <returns>IFeatureClass</returns> 
         private IFeatureClass CreateFeatureClass(IFeatureWorkspace featWorkspace, string name, List<Graphic> graphicsList, bool polyLineFC)
         {

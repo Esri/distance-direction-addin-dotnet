@@ -32,7 +32,6 @@ namespace ArcMapAddinDistanceAndDirection.Models
             try
             {
                 string kmzName = System.IO.Path.GetFileName(kmzOutputPath);
-                string folderName = System.IO.Path.GetDirectoryName(kmzOutputPath);
 
                 IGeoProcessor2 gp = new GeoProcessorClass();
                 IVariantArray parameters = new VarArrayClass();

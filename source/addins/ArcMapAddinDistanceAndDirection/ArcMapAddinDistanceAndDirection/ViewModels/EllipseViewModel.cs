@@ -60,7 +60,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return azimuthType; }
             set
             {
-                var before = azimuthType;
                 azimuthType = value;
                 Azimuth = Azimuth;
             }
@@ -451,7 +450,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             var mxdoc = ArcMap.Application.Document as IMxDocument;
-            var av = mxdoc.FocusMap as IActiveView;
             var point = obj as IPoint;
 
             if (point == null)
@@ -466,7 +464,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 ptAttributes.Add("X", Point1.X);
                 ptAttributes.Add("Y", Point1.Y);
                 AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
-
             }
             else if (!HasPoint2)
             {

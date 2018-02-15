@@ -181,7 +181,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         var mpList = new List<MapPoint>() { Point1 };
                         // get point 2
                         
-                        var results = GeometryEngine.Instance.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
+                        var results = GeometryEngine.Instance.GeodeticMove(mpList, 
+                            MapView.Active.Map.SpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
+
                         // update feedback
                         //UpdateFeedback();
                         foreach (var mp in results)
