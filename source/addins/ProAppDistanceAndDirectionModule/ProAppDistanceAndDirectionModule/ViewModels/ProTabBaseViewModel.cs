@@ -554,7 +554,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             foreach (var item in GraphicsList)
             {
-                Graphic graphic = item as Graphic;
+                Graphic graphic = (Graphic)item;
                 if (graphic != null && graphic.ViewModel == this)
                 {
                     item.Disposable.Dispose();
@@ -1094,7 +1094,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             var dlg = new ProSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
-            var vm = dlg.DataContext as ProSaveAsFormatViewModel;
+            var vm = (ProSaveAsFormatViewModel)dlg.DataContext;
             GeomType geomType = GeomType.Polygon;
 
             if (dlg.ShowDialog() == true)

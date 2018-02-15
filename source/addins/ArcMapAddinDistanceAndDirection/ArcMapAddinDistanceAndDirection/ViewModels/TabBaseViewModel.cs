@@ -500,7 +500,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             var dlg = new GRSaveAsFormatView();
             dlg.DataContext = new SaveAsFormatViewModel();
-            var vm = dlg.DataContext as SaveAsFormatViewModel;
+            var vm =  (SaveAsFormatViewModel)dlg.DataContext;
 
             if (dlg.ShowDialog() == true)
             {
@@ -579,7 +579,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
             outputFeatureLayer.FeatureClass = fc;
 
-            IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
+            IGeoFeatureLayer geoLayer = (IGeoFeatureLayer)outputFeatureLayer;
 
             if (geoLayer.FeatureClass.ShapeType != esriGeometryType.esriGeometryPolyline)
             {
@@ -936,7 +936,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var geomBag = new GeometryBagClass();
             geomBag.SpatialReference = map.SpatialReference;
 
-            var geomColl = geomBag as IGeometryCollection;
+            var geomColl = (IGeometryCollection)geomBag;
             object MissingType = Type.Missing;
 
             while (layer != null)
@@ -1305,7 +1305,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 var le = new LineElementClass() as ILineElement;
-                element = le as IElement;
+                element = (IElement)le;
                 le.Symbol = lineSymbol;
             }
 

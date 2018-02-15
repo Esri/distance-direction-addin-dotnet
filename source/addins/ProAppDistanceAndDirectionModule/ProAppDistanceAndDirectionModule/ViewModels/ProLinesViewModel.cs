@@ -456,7 +456,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 AddGraphicToMap(newline, (ProGraphicAttributes)lineAttributes);
                 ResetPoints();
 
-                return newline as Geometry;
+                return (Geometry)newline;
             }
             catch(Exception ex)
             {

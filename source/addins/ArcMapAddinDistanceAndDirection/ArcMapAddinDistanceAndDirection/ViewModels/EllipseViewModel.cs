@@ -430,7 +430,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 ellipseAttributes.Add("minoraxis", MinorAxisDistance);
                 ellipseAttributes.Add("azimuth", Azimuth);
                 var color = new RgbColor() as IColor;
-                AddGraphicToMap(line as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:ellipseAttributes );
+                AddGraphicToMap((IGeometry)line, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:ellipseAttributes );
             }
         }
 
@@ -624,7 +624,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     minorPolyline.SpatialReference = Point1.SpatialReference;
                     minorPolyline.FromPoint = Point1;
                     minorPolyline.ToPoint = Point3;
-                    construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), fromPoint, GetLinearUnit(), distance, GetAzimuth(minorPolyline as IGeometry),
+                    construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), fromPoint, GetLinearUnit(), distance, GetAzimuth((IGeometry)minorPolyline),
                         esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                 }
             }
@@ -663,7 +663,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ellipseAttributes.Add("centery", Point1.Y);
                     ellipseAttributes.Add("distanceunit", LineDistanceType.ToString());
                     ellipseAttributes.Add("angleunit", AzimuthType.ToString());
-                    AddGraphicToMap(line as IGeometry, color, attributes:ellipseAttributes);
+                    AddGraphicToMap((IGeometry)line, color, attributes:ellipseAttributes);
                     //Convert ellipse polyline to polygon
                     var newPoly = PolylineToPolygon((IPolyline)ellipticArc);
                     if (newPoly != null)
@@ -699,7 +699,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         }
                     }
                 }
-                return line as IGeometry;
+                return (IGeometry)line;
             }
             catch (Exception ex)
             {

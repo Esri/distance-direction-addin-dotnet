@@ -193,7 +193,7 @@ namespace DistanceAndDirectionLibrary.Helpers
             MemberExpression memberExpression;
             if (lambda.Body is UnaryExpression)
             {
-                var unaryExpression = lambda.Body as UnaryExpression;
+                var unaryExpression = (UnaryExpression)lambda.Body;
                 memberExpression = unaryExpression.Operand as MemberExpression;
             }
             else

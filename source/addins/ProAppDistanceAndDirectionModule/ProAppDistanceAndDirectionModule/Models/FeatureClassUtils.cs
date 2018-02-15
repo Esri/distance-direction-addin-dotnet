@@ -156,7 +156,7 @@ namespace ProAppDistanceAndDirectionModule.Models
 
                                 if (graphic.Geometry is Polyline)
                                 {
-                                    PolylineBuilder pb = new PolylineBuilder(graphic.Geometry as Polyline);
+                                    PolylineBuilder pb = new PolylineBuilder((Polyline)graphic.Geometry);
                                     pb.HasZ = false;
                                     rowBuffer[shapeIndex] = pb.ToGeometry();
                                     isLine = true;
@@ -211,7 +211,7 @@ namespace ProAppDistanceAndDirectionModule.Models
                                 }
                                 else if (graphic.Geometry is Polygon)
                                 {
-                                    rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
+                                    rowBuffer[shapeIndex] = new PolygonBuilder((Polygon)graphic.Geometry).ToGeometry();
 
                                     // Only add attributes for Esri format
 

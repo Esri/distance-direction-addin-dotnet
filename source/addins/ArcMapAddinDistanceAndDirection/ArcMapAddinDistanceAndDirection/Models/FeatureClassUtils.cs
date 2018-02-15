@@ -983,8 +983,8 @@ namespace ArcMapAddinDistanceAndDirection.Models
             IPolygon polygon = new PolygonClass();
             Polyline polyLine = geom as Polyline;
 
-            ISegmentCollection polygonSegs = polygon as ISegmentCollection;
-            ISegmentCollection polylineSegs = polyLine as ISegmentCollection;
+            ISegmentCollection polygonSegs = (ISegmentCollection)polygon;
+            ISegmentCollection polylineSegs = (ISegmentCollection)polyLine;
 
             for (int i = 0; i < polylineSegs.SegmentCount; i++)
             {
