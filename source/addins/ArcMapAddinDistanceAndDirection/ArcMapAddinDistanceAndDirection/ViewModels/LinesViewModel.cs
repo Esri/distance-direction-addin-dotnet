@@ -462,7 +462,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         internal override void UpdateFeedback()
         {
-            if ((ArcMap.Application == null) || (ArcMap.Application.Document == null))
+            if ((ArcMap.Application == null) || (ArcMap.Document == null))
                 return;
 
             // for now lets stick with only updating feedback here with Bearing and Distance case
@@ -480,11 +480,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     if (feedback == null)
                     {
-                        var mxdoc = ArcMap.Application.Document as IMxDocument;
-                        if (mxdoc == null)
+                        if (ArcMap.Document == null)
                             return;
 
-                        CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
+                        CreateFeedback(Point1, ArcMap.Document.FocusMap as IActiveView);
                         feedback.Start(Point1);
                     }
 

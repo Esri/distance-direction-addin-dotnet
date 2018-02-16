@@ -209,13 +209,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ptAttributes.Add("X", Point1.X);
                     ptAttributes.Add("Y", Point1.Y);
                     AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
+
                     // lets try feedback
                     // Avoid null reference exception during automated testing
-                    if (ArcMap.Application != null)
+                    if ((ArcMap.Application != null) && (ArcMap.Document != null))
                     {
-                        var mxdoc = ArcMap.Application.Document as IMxDocument;
-                        var av = mxdoc.FocusMap as IActiveView;
-                        point.Project(mxdoc.FocusMap.SpatialReference);
+                        var av = ArcMap.Document.FocusMap as IActiveView;
+                        if (av == null)
+                            return;
+
+                        point.Project(ArcMap.Document.FocusMap.SpatialReference);
                         CreateFeedback(point, av);
                         feedback.Start(point);
                         if (Point2 != null)
@@ -283,9 +286,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     point2Formatted = value;
                     //HasPoint2 = true;
                     Point2 = point;
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    var av = mxdoc.FocusMap as IActiveView;
-                    Point2.Project(mxdoc.FocusMap.SpatialReference);
+
+                    if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null))
+                        return;
+
+                    var av = ArcMap.Document.FocusMap as IActiveView;
+                    if (av == null)
+                        return;
+
+                    Point2.Project(ArcMap.Document.FocusMap.SpatialReference);
 
                     if (HasPoint1)
                     {
@@ -574,6 +583,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="fc">IFeatureClass</param>
         private void AddFeatureLayerToMap(IFeatureClass fc)
         {
+            if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null))
+                return;
+
             IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
             outputFeatureLayer.FeatureClass = fc;
 
@@ -597,6 +609,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             geoLayer.Name = fc.AliasName;
 
             ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
+
             map.AddLayer((ILayer)outputFeatureLayer);
         }
 
@@ -760,11 +773,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj">IPoint</param>
         internal virtual void OnNewMapPointEvent(object obj)
         {
-            if (!IsActiveTab)
+            if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null) 
+                || !IsActiveTab)
                 return;
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            var av = mxdoc.FocusMap as IActiveView;
             var point = obj as IPoint;
 
             if (!IsValidPoint(point))
@@ -790,6 +802,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 AddGraphicToMap(Point1, color, true, attributes: ptAttributes);
 
                 // lets try feedback
+                IActiveView av = ArcMap.Document.FocusMap as IActiveView;
                 CreateFeedback(point, av);
                 feedback.Start(point);
             }
@@ -881,7 +894,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <returns></returns>
         internal bool IsValidPoint(IPoint point)
         {
-            if (ArcMap.Document != null && ArcMap.Document.FocusMap != null)
+            if ((point != null) && (ArcMap.Document != null) && 
+                (ArcMap.Document.FocusMap != null))
             {
                 return IsPointWithinExtent(point, UnionAllLayerExtents(ArcMap.Document.FocusMap));
             }
@@ -1396,6 +1410,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
             }
 
+            if (srf3 == null)
+                return new LinearUnitClass();
+
             switch (LineDistanceType)
             {
                 case DistanceTypes.Feet:
@@ -1541,6 +1558,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return 0.0;
 
             var polycurvegeo = polyline as IPolycurveGeodetic;
+            if (polycurvegeo == null)
+                return 0.0;
 
             var geodeticType = GetEsriGeodeticType();
             var linearUnit = GetLinearUnit();
@@ -1638,6 +1657,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var displayFB = (IDisplayFeedback)feedback;
             displayFB.Display = av.ScreenDisplay;
         }
+ 
         /// <summary>
         /// Method used to convert a string to a known coordinate
         /// Assumes WGS84 for now
@@ -1651,13 +1671,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             System.Object obj = Activator.CreateInstance(t);
             ISpatialReferenceFactory srFact = obj as ISpatialReferenceFactory;
 
-            // Use the enumeration to create an instance of the predefined object.
+            if (srFact == null)
+                return null;
 
+            // Use the enumeration to create an instance of the predefined object
             IGeographicCoordinateSystem geographicCS =
                 srFact.CreateGeographicCoordinateSystem((int)
                 esriSRGeoCSType.esriSRGeoCS_WGS1984);
 
-            var point = new Point() as IPoint;
+            var point = (IPoint)new Point();
+
             point.SpatialReference = geographicCS;
             var cn = point as IConversionNotation;
 
@@ -1719,6 +1742,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             return null;
         }
+
         /// <summary>
         /// Method to use when you need to move a feedback line to a point
         /// This forces a new point to be used, sometimes this method projects the point to a different spatial reference

@@ -107,8 +107,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 base.Point1 = value;
 
-                
-
                 UpdateFeedbackWithGeoCircle();
             }
         }
@@ -800,9 +798,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
 
             // This section including UpdateDistance serves to handle Diameter appropriately
-            var polyLine = new Polyline() as IPolyline;
+            var polyLine = (IPolyline)new Polyline();
             polyLine.SpatialReference = Point1.SpatialReference;
-            var ptCol = polyLine as IPointCollection;
+            var ptCol = (IPointCollection)polyLine;
             ptCol.AddPoint(Point1);
             ptCol.AddPoint(Point2);
 
@@ -810,7 +808,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             try
             {
-                var construct = new Polyline() as IConstructGeodetic;
+                var construct = (IConstructGeodetic)new Polyline();
                 if (construct != null)
                 {
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
@@ -826,7 +824,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     if (newPoly != null)
                     {
                         //Get centroid of polygon
-                        var area = newPoly as IArea;
+                        var area = (IArea)newPoly;
                      
                         string unitLabel = "";
                         int roundingFactor = 0;

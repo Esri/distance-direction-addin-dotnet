@@ -446,12 +446,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         internal override void OnNewMapPointEvent(object obj)
         {
-            if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null) ||
-                !IsActiveTab)
-                return;
-
-            var mxdoc = ArcMap.Document as IMxDocument;
-            if (mxdoc == null)
+            if (!IsActiveTab)
                 return;
 
             var point = obj as IPoint;
@@ -515,9 +510,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (feedback == null)
                 {
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    CreateFeedback(centerPoint, mxdoc.FocusMap as IActiveView);
-                    feedback.Start(centerPoint);
+                    if ((ArcMap.Document != null) && (ArcMap.Document.FocusMap != null))
+                    {
+                        CreateFeedback(centerPoint, ArcMap.Document.FocusMap as IActiveView);
+                        feedback.Start(centerPoint);
+                    }
                 }
 
                 // now get second point from distance and bearing

@@ -303,7 +303,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 IWorkspaceFactory workspaceFactory = new ShapefileWorkspaceFactory();
                 IWorkspace workspace = workspaceFactory.OpenFromFile(folderName, 0);
                 IFeatureWorkspace fWorkspace = (IFeatureWorkspace)workspace;
-                IDataset ipDs = fWorkspace.OpenFeatureClass(fcName) as IDataset;
+                IDataset ipDs = (IDataset)fWorkspace.OpenFeatureClass(fcName);
                 ipDs.Delete();
 
                 File.Delete(shapeFilePath);
@@ -342,6 +342,9 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     workspaceFactory = new ShapefileWorkspaceFactoryClass();
                     IWorkspace workspace = workspaceFactory.OpenFromFile(folder, 0);
                     IFeatureWorkspace featureWorkspace = workspace as IFeatureWorkspace;
+                    if (featureWorkspace == null)
+                        return null;
+
                     IFields fields = null;
                     IFieldsEdit fieldsEdit = null;
                     fields = new Fields();
@@ -752,7 +755,9 @@ namespace ArcMapAddinDistanceAndDirection.Models
         private void DeleteFeatureClass(IFeatureWorkspace fWorkspace, string fcName)
         {
             IDataset ipDs = fWorkspace.OpenFeatureClass(fcName) as IDataset;
-            ipDs.Delete();
+
+            if (ipDs != null)
+                ipDs.Delete();
         }
 
         /// <summary> 

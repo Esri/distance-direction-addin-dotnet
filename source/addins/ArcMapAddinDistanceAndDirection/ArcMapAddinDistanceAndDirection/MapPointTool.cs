@@ -49,7 +49,10 @@ namespace ArcMapAddinDistanceAndDirection
             this.Cursor = Cursors.Cross;
             snapUID.Value = "{E07B4C52-C894-4558-B8D4-D4050018D1DA}";
             m_SnappingEnv = ArcMap.Application.FindExtensionByCLSID(snapUID) as ISnappingEnvironment;
-            m_Snapper = m_SnappingEnv.PointSnapper;
+
+            if (m_SnappingEnv !=  null)
+                m_Snapper = m_SnappingEnv.PointSnapper;
+
             m_SnappingFeedback = new SnappingFeedbackClass();
             m_SnappingFeedback.Initialize(ArcMap.Application, m_SnappingEnv, true);
         }

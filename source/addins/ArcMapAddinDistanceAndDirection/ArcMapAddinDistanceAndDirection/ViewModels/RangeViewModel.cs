@@ -416,7 +416,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private void ConstructGeoCircle()
         {
-            var construct = new Polyline() as IConstructGeodetic;
+            var construct = (IConstructGeodetic)new Polyline();
             if (construct != null)
             {
                 var color = new RgbColorClass() { Red = 255 } as IColor;
@@ -429,7 +429,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 rrAttributes.Add("distanceunit", lineDistanceType.ToString());
 
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-                Point2 = (construct as IPolyline).ToPoint;
+                Point2 = ((IPolyline)construct).ToPoint;
                 this.AddGraphicToMap(construct as IGeometry, color, attributes: rrAttributes);
                 maxDistance = Math.Max(Distance, maxDistance);
 
@@ -444,9 +444,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (Point1 == null || Distance <= 0.0)
                 return;
 
-            var construct = new Polyline() as IConstructGeodetic;
-            
-            
+            var construct = (IConstructGeodetic)new Polyline();
+                 
             if (construct != null)
             {
                 IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
