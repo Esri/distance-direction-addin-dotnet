@@ -446,12 +446,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         internal override void OnNewMapPointEvent(object obj)
         {
-            if (!IsActiveTab)
+            if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null) ||
+                !IsActiveTab)
                 return;
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            var point = obj as IPoint;
+            var mxdoc = ArcMap.Document as IMxDocument;
+            if (mxdoc == null)
+                return;
 
+            var point = obj as IPoint;
             if (point == null)
                 return;
 
@@ -607,7 +610,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private IPolyline CreateGeodeticLine(IPoint fromPoint, IPoint toPoint, double distance = 0.0)
         {
-            var construct = new Polyline() as IConstructGeodetic;
+            var construct = (IConstructGeodetic)new Polyline();
             if (construct == null)
             {
                 return null;
@@ -620,7 +623,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-                    var minorPolyline = new Polyline() as IPolyline;
+                    var minorPolyline = (IPolyline)new Polyline();
                     minorPolyline.SpatialReference = Point1.SpatialReference;
                     minorPolyline.FromPoint = Point1;
                     minorPolyline.ToPoint = Point3;
@@ -628,7 +631,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                return null;
+            }
 
             return construct as IPolyline;
         }
@@ -640,7 +647,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             try
             {
-                var ellipticArc = new Polyline() as IConstructGeodetic;
+                var ellipticArc = (IConstructGeodetic)new Polyline();
+
                 double bearing;
                 if (AzimuthType==AzimuthTypes.Mils)
                 {
@@ -650,11 +658,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     bearing = Azimuth;
                 }
+
                 ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, bearing, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
-                    var color = new RgbColorClass() { Red = 255 } as IColor;
+                    var color = (IColor)new RgbColorClass() { Red = 255 };
+
                     IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
                     ellipseAttributes.Add("majoraxis", MajorAxisDistance);
                     ellipseAttributes.Add("minoraxis", MinorAxisDistance);
@@ -663,7 +673,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ellipseAttributes.Add("centery", Point1.Y);
                     ellipseAttributes.Add("distanceunit", LineDistanceType.ToString());
                     ellipseAttributes.Add("angleunit", AzimuthType.ToString());
+
                     AddGraphicToMap((IGeometry)line, color, attributes:ellipseAttributes);
+
                     //Convert ellipse polyline to polygon
                     var newPoly = PolylineToPolygon((IPolyline)ellipticArc);
                     if (newPoly != null)
@@ -682,20 +694,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                             minDist = minorAxisDistance * 2;
                         }
                         if (area != null)
-                        {
-                            
-                                AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
-                                    "Major Axis",
-                                    Math.Round(majDist, 2),
-                                    dtVal.ToString(),
-                                    Environment.NewLine,
-                                    "Minor Axis",
-                                    Math.Round(minDist, 2),
-                                    dtVal.ToString(),
-                                    Environment.NewLine,
-                                    "Orientation Angle",
-                                    Math.Round(azimuth, 2),
-                                    atVal.ToString()));
+                        {                  
+                            AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
+                                "Major Axis",
+                                Math.Round(majDist, 2),
+                                dtVal.ToString(),
+                                Environment.NewLine,
+                                "Minor Axis",
+                                Math.Round(minDist, 2),
+                                dtVal.ToString(),
+                                Environment.NewLine,
+                                "Orientation Angle",
+                                Math.Round(azimuth, 2),
+                                atVal.ToString()));
                         }
                     }
                 }

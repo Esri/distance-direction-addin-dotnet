@@ -52,11 +52,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return selectedTab; }
             set
             {
-                if (selectedTab == value)
+                if ((selectedTab == null) || (selectedTab == value))
                     return;
 
                 selectedTab = value;
                 var tabItem = selectedTab as TabItem;
+
+                if (tabItem == null)
+                    return;
+
                 Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
             }
         }

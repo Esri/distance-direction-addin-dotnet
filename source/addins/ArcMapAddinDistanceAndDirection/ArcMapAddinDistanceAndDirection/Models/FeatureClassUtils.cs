@@ -983,6 +983,9 @@ namespace ArcMapAddinDistanceAndDirection.Models
             IPolygon polygon = new PolygonClass();
             Polyline polyLine = geom as Polyline;
 
+            if (polyLine == null)
+                return null;
+
             ISegmentCollection polygonSegs = (ISegmentCollection)polygon;
             ISegmentCollection polylineSegs = (ISegmentCollection)polyLine;
 
@@ -995,7 +998,6 @@ namespace ArcMapAddinDistanceAndDirection.Models
             polygon.SimplifyPreserveFromTo();
 
             return polygon;
-
         }
     } 
 }

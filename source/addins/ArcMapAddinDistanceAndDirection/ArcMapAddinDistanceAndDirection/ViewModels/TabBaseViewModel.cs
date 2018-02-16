@@ -851,11 +851,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private void ZoomToExtent(IGeometry geom)
         {
-            if (geom == null || ArcMap.Application.Document == null)
+            if (geom == null || ArcMap.Document == null)
                 return;
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            var mxdoc = ArcMap.Document as IMxDocument;
+            if (mxdoc == null)
+                return;
+
             var av = mxdoc.FocusMap as IActiveView;
+            if (av == null)
+                return;
 
             IEnvelope env = geom.Envelope;
 
@@ -1135,15 +1140,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             try
             {
-                var geomCol = new Polygon() as IGeometryCollection;
-                var polylineGeoms = line as IGeometryCollection;
+                var geomCol = (IGeometryCollection)new Polygon();
+                var polylineGeoms = (IGeometryCollection)line;
                 for (var i = 0; i < polylineGeoms.GeometryCount; i++)
                 {
-                    var ringSegs = new RingClass() as ISegmentCollection;
+                    var ringSegs = (ISegmentCollection)new RingClass();
                     ringSegs.AddSegmentCollection((ISegmentCollection)polylineGeoms.Geometry[i]);
                     geomCol.AddGeometry((IGeometry)ringSegs);
                 }
-                var newPoly = geomCol as IPolygon;
+                var newPoly = (IPolygon)geomCol;
                 newPoly.SimplifyPreserveFromTo();
                 return newPoly;
             }
@@ -1161,16 +1166,26 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="text">string</param>
         internal void AddTextToMap(IGeometry geom, string text)
         {
+            if ((ArcMap.Application == null) || (ArcMap.Application.Document == null))
+                return;
+
             var mxDoc = ArcMap.Application.Document as IMxDocument;
+
+            if ((mxDoc == null) || (mxDoc.FocusMap == null))
+                return;
+
             var av = mxDoc.FocusMap as IActiveView;
             var gc = av as IGraphicsContainer;
 
-            var textEle = new TextElement() as ITextElement;
+            if (gc == null)
+                return;
+
+            var textEle = (ITextElement)new TextElement();
             textEle.Text = text;
-            var elem = textEle as IElement;
+            var elem = (IElement)textEle;
             elem.Geometry = geom;
 
-            var eprop = elem as IElementProperties;
+            var eprop = (IElementProperties)elem;
             eprop.Name = Guid.NewGuid().ToString();
 
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
@@ -1192,9 +1207,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         internal void AddTextToMap(IGeometry geom, string text, double angle, AzimuthTypes azimuthType)
         {
+            if ((ArcMap.Application == null) || (ArcMap.Application.Document == null))
+                return;
+
             var mxDoc = ArcMap.Application.Document as IMxDocument;
+
+            if ((mxDoc == null) || (mxDoc.FocusMap == null))
+                return;
+
             var av = mxDoc.FocusMap as IActiveView;
             var gc = av as IGraphicsContainer;
+
+            if (gc == null)
+                return;
+
             double bearing = 0.0;
             if (azimuthType == AzimuthTypes.Mils)
             {
@@ -1204,19 +1230,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 bearing = angle;
             }
+
             double rotate = 360 - (bearing + 270.0) % 360;
             if (rotate > 90 && rotate <= 270)
                 rotate = rotate - 180;
-            var textEle = new TextElement() as ITextElement;
+            var textEle = (ITextElement)new TextElement();
             textEle.Text = text;
             ITextSymbol tsym = new TextSymbol();
 
             tsym.Angle = rotate;
             textEle.Symbol = tsym;
-            var elem = textEle as IElement;
+            var elem = (IElement)textEle;
             elem.Geometry = geom;
 
-            var eprop = elem as IElementProperties;
+            var eprop = (IElementProperties)elem;
             eprop.Name = Guid.NewGuid().ToString();
             Dictionary<String, Double> attributeMap = new Dictionary<string, double>();
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
@@ -1237,6 +1264,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             RaisePropertyChanged(() => HasMapGraphics);
         }
+
         /// <summary>
         /// Adds a graphic element to the map graphics container
         /// </summary>
@@ -1245,6 +1273,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
+
             IElement element = null;
             double width = 2.0;
 
@@ -1316,6 +1345,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var mxdoc = ArcMap.Application.Document as IMxDocument;
             var av = mxdoc.FocusMap as IActiveView;
             var gc = av as IGraphicsContainer;
+
+            if (gc == null)
+                return;
 
             // store guid
             var eprop = (IElementProperties)element;
@@ -1396,7 +1428,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             double result = 0.0;
 
-            var converter = new UnitConverterClass() as IUnitConverter;
+            var converter = (IUnitConverter)new UnitConverterClass();
 
             result = converter.ConvertUnits(input, GetEsriUnit(fromType), GetEsriUnit(toType));
 
@@ -1594,13 +1626,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="av">The current active view</param>
         internal void CreateFeedback(IPoint point, IActiveView av)
         {
+            if ((av == null) || (point == null))
+                return;
+
             ResetFeedback();
             feedback = new NewLineFeedback();
-            var geoFeedback = feedback as IGeodeticLineFeedback;
+            var geoFeedback = (IGeodeticLineFeedback)feedback;
             geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
             geoFeedback.UseGeodeticConstruction = true;
             geoFeedback.SpatialReference = point.SpatialReference;
-            var displayFB = feedback as IDisplayFeedback;
+            var displayFB = (IDisplayFeedback)feedback;
             displayFB.Display = av.ScreenDisplay;
         }
         /// <summary>
