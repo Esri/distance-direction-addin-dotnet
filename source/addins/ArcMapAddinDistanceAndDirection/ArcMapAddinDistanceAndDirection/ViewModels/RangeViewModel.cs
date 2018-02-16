@@ -271,13 +271,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     // set the current radius
                     radius += Distance;
-                    var polyLine = new Polyline() as IPolyline;
+                    var polyLine = (IPolyline)new Polyline();
                     polyLine.SpatialReference = Point1.SpatialReference;
                     const double DENSIFY_ANGLE_IN_DEGREES = 5.0;
-                    construct = polyLine as IConstructGeodetic;
+                    construct = (IConstructGeodetic)polyLine;
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, 
                         esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
-                    var color = new RgbColorClass() { Red = 255 } as IColor;
+                    var color = (IColor)new RgbColorClass() { Red = 255 };
                     IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
                     rrAttributes.Add("rings", NumberOfRings);
                     rrAttributes.Add("distance", radius);
@@ -285,14 +285,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     rrAttributes.Add("radials", NumberOfRadials);
                     rrAttributes.Add("centerx", Point1.X);
                     rrAttributes.Add("centery", Point1.Y);
-                    AddGraphicToMap(construct as IGeometry, color, attributes:rrAttributes);
+                    AddGraphicToMap((IGeometry)construct, color, attributes:rrAttributes);
 
                     // Use negative radius to get the location for the distance label
                     // TODO: someone explain why we need to construct this circle twice, and what -radius means (top of circle or something)?
                     DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, 
                         esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
-                    this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}", radius.ToString(), dtVal.ToString()));
+                    this.AddTextToMap((IGeometry)construct, String.Format("{0} {1}", radius.ToString(), dtVal.ToString()));
                 }
 
                 return (IGeometry)construct;

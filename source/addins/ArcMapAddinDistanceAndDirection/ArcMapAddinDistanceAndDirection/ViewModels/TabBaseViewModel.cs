@@ -667,7 +667,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var element = gc.Next();
             while (element != null)
             {
-                var eleProps = element as IElementProperties;
+                var eleProps = (IElementProperties)element;
                 foreach (Graphic graphic in GraphicsList)
                 {
                     if (graphic.UniqueId.Equals(eleProps.Name) && graphic.ViewModel == this)
@@ -1253,16 +1253,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
             {
                 // Marker symbols
-                var simpleMarkerSymbol = new SimpleMarkerSymbol() as ISimpleMarkerSymbol;
+                var simpleMarkerSymbol = (ISimpleMarkerSymbol)new SimpleMarkerSymbol();
                 simpleMarkerSymbol.Color = color;
                 simpleMarkerSymbol.Outline = true;
                 simpleMarkerSymbol.OutlineColor = color;
                 simpleMarkerSymbol.Size = 5;
                 simpleMarkerSymbol.Style = markerStyle;
 
-                var markerElement = new MarkerElement() as IMarkerElement;
+                var markerElement = (IMarkerElement)new MarkerElement();
                 markerElement.Symbol = simpleMarkerSymbol;
-                element = markerElement as IElement;
+                element = (IElement)markerElement;
             }
             else if (geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
@@ -1302,7 +1302,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ((ISymbol)lineSymbol).ROP2 = rasterOpCode;
                 }
 
-                var le = new LineElementClass() as ILineElement;
+                var le = (ILineElement)new LineElementClass();
                 element = (IElement)le;
                 le.Symbol = lineSymbol;
             }
@@ -1318,7 +1318,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var gc = av as IGraphicsContainer;
 
             // store guid
-            var eprop = element as IElementProperties;
+            var eprop = (IElementProperties)element;
             eprop.Name = Guid.NewGuid().ToString();
 
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)

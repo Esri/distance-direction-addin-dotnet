@@ -64,7 +64,7 @@ namespace ArcMapAddinDistanceAndDirection
                 //Get the active view from the ArcMap static class.
                 IActiveView activeView = (IActiveView)ArcMap.Document.FocusMap;
 
-                var point = activeView.ScreenDisplay.DisplayTransformation.ToMapPoint(arg.X, arg.Y) as IPoint;
+                var point = (IPoint)activeView.ScreenDisplay.DisplayTransformation.ToMapPoint(arg.X, arg.Y);
                 ISnappingResult snapResult = null;
                 //Try to snap the current position
                 snapResult = m_Snapper.Snap(point);

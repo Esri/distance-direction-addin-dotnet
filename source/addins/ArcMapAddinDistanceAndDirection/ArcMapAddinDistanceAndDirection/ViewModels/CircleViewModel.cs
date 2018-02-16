@@ -746,7 +746,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                 AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
 
-
                 circleAttributes.Add("radius", Distance);
                 circleAttributes.Add("disttype", CircleType.ToString());
 
@@ -754,7 +753,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                        
                 Point2 = ((IPolyline)construct).ToPoint;
                 var color = new RgbColorClass() as IColor;
-                this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
+                this.AddGraphicToMap((IGeometry)construct, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
             }
 
         }

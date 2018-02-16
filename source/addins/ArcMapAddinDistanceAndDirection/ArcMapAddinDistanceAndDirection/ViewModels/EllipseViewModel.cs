@@ -411,7 +411,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             ptAttributes.Add("Y", Point1.Y);
             AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
 
-            var ellipticArc = new Polyline() as IConstructGeodetic;
+            var ellipticArc = (IConstructGeodetic)new Polyline();
 
             var minorAxis = MinorAxisDistance;
             if (!HasMinorAxis || minorAxis == 0.0)
