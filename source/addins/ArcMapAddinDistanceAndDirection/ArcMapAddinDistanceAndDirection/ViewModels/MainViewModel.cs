@@ -52,7 +52,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return selectedTab; }
             set
             {
-                if ((selectedTab == null) || (selectedTab == value))
+                // Don't raise event if same tab selected
+                if (selectedTab == value)
                     return;
 
                 selectedTab = value;
