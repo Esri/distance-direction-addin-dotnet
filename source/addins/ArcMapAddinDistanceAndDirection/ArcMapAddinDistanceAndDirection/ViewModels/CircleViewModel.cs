@@ -107,8 +107,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 base.Point1 = value;
 
-                
-
                 UpdateFeedbackWithGeoCircle();
             }
         }
@@ -732,34 +730,29 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (Point1 == null || Distance <= 0)
                 return;
          
-            var construct = new Polyline() as IConstructGeodetic;
+            var construct = (IConstructGeodetic)new Polyline();
 
-            if (construct != null)
+            ClearTempGraphics();
+            IDictionary<String, System.Object> circleAttributes = new Dictionary<String, System.Object>();
+            if (HasPoint1)
             {
-                ClearTempGraphics();
-                IDictionary<String, System.Object> circleAttributes = new Dictionary<String, System.Object>();
-                if (HasPoint1)
-                {
-                    IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
-                    ptAttributes.Add("X", Point1.X);
-                    ptAttributes.Add("Y", Point1.Y);
-                    circleAttributes.Add("centerx", Point1.X);
-                    circleAttributes.Add("centery", Point1.Y);
-                    // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                    AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
+                IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
+                ptAttributes.Add("X", Point1.X);
+                ptAttributes.Add("Y", Point1.Y);
+                circleAttributes.Add("centerx", Point1.X);
+                circleAttributes.Add("centery", Point1.Y);
+                // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
+                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
 
+                circleAttributes.Add("radius", Distance);
+                circleAttributes.Add("disttype", CircleType.ToString());
 
-                    circleAttributes.Add("radius", Distance);
-                    circleAttributes.Add("disttype", CircleType.ToString());
-
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
+                construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                        
-                    Point2 = (construct as IPolyline).ToPoint;
-                    var color = new RgbColorClass() as IColor;
-                    this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
-                }
+                Point2 = ((IPolyline)construct).ToPoint;
+                var color = new RgbColorClass() as IColor;
+                this.AddGraphicToMap((IGeometry)construct, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
             }
-
 
         }
 
@@ -805,9 +798,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
 
             // This section including UpdateDistance serves to handle Diameter appropriately
-            var polyLine = new Polyline() as IPolyline;
+            var polyLine = (IPolyline)new Polyline();
             polyLine.SpatialReference = Point1.SpatialReference;
-            var ptCol = polyLine as IPointCollection;
+            var ptCol = (IPointCollection)polyLine;
             ptCol.AddPoint(Point1);
             ptCol.AddPoint(Point2);
 
@@ -815,7 +808,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             try
             {
-                var construct = new Polyline() as IConstructGeodetic;
+                var construct = (IConstructGeodetic)new Polyline();
                 if (construct != null)
                 {
                     construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
@@ -831,7 +824,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     if (newPoly != null)
                     {
                         //Get centroid of polygon
-                        var area = newPoly as IArea;
+                        var area = (IArea)newPoly;
                      
                         string unitLabel = "";
                         int roundingFactor = 0;

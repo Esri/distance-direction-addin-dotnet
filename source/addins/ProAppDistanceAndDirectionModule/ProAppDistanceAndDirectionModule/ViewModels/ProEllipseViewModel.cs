@@ -539,7 +539,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 }, ellipseAttributes);
 
-                return geom as Geometry;
+                return (Geometry)geom;
             }
             catch (Exception ex)
             {

@@ -228,6 +228,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             HasPoint2 = true;
             IGeometry geo = CreatePolyline();
             IPolyline line = geo as IPolyline;
+            if (line == null)
+                return;
+
             IDictionary<String, Double> lineAttributes = new Dictionary<String, Double>();
             lineAttributes.Add("distance", Distance);
             lineAttributes.Add("angle", (double)Azimuth);
@@ -244,13 +247,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             try
             {
-                if (Point1 == null || Point2 == null)
+                if ((Point1 == null) || (Point2 == null))
                     return null;
 
-                var construct = new Polyline() as IConstructGeodetic;
-
-                if (construct == null)
-                    return null;
+                var construct = (IConstructGeodetic)new Polyline();
 
                 if (srf3 == null)
                 {
@@ -259,9 +259,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
                 }
 
-                var linearUnit = srf3.CreateUnit((int)esriSRUnitType.esriSRUnit_Meter) as ILinearUnit;
+                if (srf3 == null)
+                    return null;
+
                 esriGeodeticType type = GetEsriGeodeticType();
-                IGeometry geo = Point1;
                 if (LineFromType == LineFromTypes.Points)
                     construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), Point1, Point2, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                 else
@@ -277,8 +278,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     }
                     construct.ConstructGeodeticLineFromDistance(type, Point1, GetLinearUnit(), Distance, bearing, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                 }
-                var mxdoc = ArcMap.Application.Document as IMxDocument;
-                var av = mxdoc.FocusMap as IActiveView;
+
                 if (LineFromType == LineFromTypes.Points)
                 {
                     UpdateDistance(construct as IGeometry);
@@ -462,6 +462,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         internal override void UpdateFeedback()
         {
+            if ((ArcMap.Application == null) || (ArcMap.Document == null))
+                return;
+
             // for now lets stick with only updating feedback here with Bearing and Distance case
             if (LineFromType != LineFromTypes.BearingAndDistance)
             {
@@ -477,13 +480,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     if (feedback == null)
                     {
-                        var mxdoc = ArcMap.Application.Document as IMxDocument;
-                        CreateFeedback(Point1, mxdoc.FocusMap as IActiveView);
+                        if (ArcMap.Document == null)
+                            return;
+
+                        CreateFeedback(Point1, ArcMap.Document.FocusMap as IActiveView);
                         feedback.Start(Point1);
                     }
 
                     // now get second point from distance and bearing
-                    var construct = new Polyline() as IConstructGeodetic;
+                    var construct = (IConstructGeodetic)new Polyline();
                     if (construct == null)
                         return;
 

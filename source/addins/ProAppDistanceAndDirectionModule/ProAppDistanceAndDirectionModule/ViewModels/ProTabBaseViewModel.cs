@@ -85,7 +85,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// Handler for opening the edit properties dialog
         /// </summary>
-        /// <param name="obj"></param>
         private void OnEditPropertiesDialog()
         {
             var dlg = new ProEditPropertiesView();
@@ -544,7 +543,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Inlucdes temp and map graphics
         /// Only removes temp and map graphics that were created by this add-in
         /// </summary>
-        /// <param name="obj"></param>
         private void OnClearGraphics()
         {
             List<Graphic> removedGraphics = new List<Graphic>();
@@ -554,7 +552,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             foreach (var item in GraphicsList)
             {
-                Graphic graphic = item as Graphic;
+                Graphic graphic = (Graphic)item;
                 if (graphic != null && graphic.ViewModel == this)
                 {
                     item.Disposable.Dispose();
@@ -722,11 +720,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             // .ToGeoCoordinate function calls will fail if there is no Spatial Reference
             if (point.SpatialReference == null)
                 return result;
-
-            ToGeoCoordinateParameter tgparam = null;
             
             try
             {
+                ToGeoCoordinateParameter tgparam = null;
+
                 switch (DistanceAndDirectionConfig.AddInConfig.DisplayCoordinateType)
                 {
                     case CoordinateTypes.DD:
@@ -1086,28 +1084,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             return point;
         }
-        /// <summary>
-        /// Method to use when you need to move a feedback line to a point
-        /// This forces a new point to be used, sometimes this method projects the point to a different spatial reference
-        /// </summary>
-        /// <param name="point"></param>
-        //internal void FeedbackMoveTo(IPoint point)
-        //{
-        //    if (feedback == null || point == null)
-        //        return;
-
-        //    feedback.MoveTo(new Point() { X = point.X, Y = point.Y, SpatialReference = point.SpatialReference });
-        //}
 
         /// <summary>
         /// Saves graphics to file gdb or shp file
         /// </summary>
-        /// <param name="obj"></param>
         private async void OnSaveAs()
         {
             var dlg = new ProSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
-            var vm = dlg.DataContext as ProSaveAsFormatViewModel;
+            var vm = (ProSaveAsFormatViewModel)dlg.DataContext;
             GeomType geomType = GeomType.Polygon;
 
             if (dlg.ShowDialog() == true)

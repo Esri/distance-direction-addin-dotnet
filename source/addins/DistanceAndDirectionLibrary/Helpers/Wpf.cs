@@ -190,10 +190,13 @@ namespace DistanceAndDirectionLibrary.Helpers
         static string GetPropertyName(Expression<Func<TPropertySource, object>> expression)
         {
             var lambda = expression as LambdaExpression;
+            if (lambda == null)
+                return null;
+
             MemberExpression memberExpression;
             if (lambda.Body is UnaryExpression)
             {
-                var unaryExpression = lambda.Body as UnaryExpression;
+                var unaryExpression = (UnaryExpression)lambda.Body;
                 memberExpression = unaryExpression.Operand as MemberExpression;
             }
             else
@@ -201,13 +204,14 @@ namespace DistanceAndDirectionLibrary.Helpers
                 memberExpression = lambda.Body as MemberExpression;
             }
 
-            Debug.Assert(memberExpression != null, "Please provide a lambda expression like 'n => n.PropertyName'");
+            Debug.WriteLineIf(memberExpression != null, "Please provide a lambda expression like 'n => n.PropertyName'");
 
             if (memberExpression != null)
             {
                 var propertyInfo = memberExpression.Member as PropertyInfo;
 
-                return propertyInfo.Name;
+                if (propertyInfo != null)
+                    return propertyInfo.Name;
             }
 
             return null;

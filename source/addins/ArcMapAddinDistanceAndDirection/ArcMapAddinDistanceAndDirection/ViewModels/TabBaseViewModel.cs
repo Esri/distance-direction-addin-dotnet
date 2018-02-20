@@ -209,13 +209,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ptAttributes.Add("X", Point1.X);
                     ptAttributes.Add("Y", Point1.Y);
                     AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
+
                     // lets try feedback
                     // Avoid null reference exception during automated testing
-                    if (ArcMap.Application != null)
+                    if ((ArcMap.Application != null) && (ArcMap.Document != null))
                     {
-                        var mxdoc = ArcMap.Application.Document as IMxDocument;
-                        var av = mxdoc.FocusMap as IActiveView;
-                        point.Project(mxdoc.FocusMap.SpatialReference);
+                        var av = ArcMap.Document.FocusMap as IActiveView;
+                        if (av == null)
+                            return;
+
+                        point.Project(ArcMap.Document.FocusMap.SpatialReference);
                         CreateFeedback(point, av);
                         feedback.Start(point);
                         if (Point2 != null)
@@ -283,9 +286,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     point2Formatted = value;
                     //HasPoint2 = true;
                     Point2 = point;
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    var av = mxdoc.FocusMap as IActiveView;
-                    Point2.Project(mxdoc.FocusMap.SpatialReference);
+
+                    if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null))
+                        return;
+
+                    var av = ArcMap.Document.FocusMap as IActiveView;
+                    if (av == null)
+                        return;
+
+                    Point2.Project(ArcMap.Document.FocusMap.SpatialReference);
 
                     if (HasPoint1)
                     {
@@ -498,7 +507,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             var dlg = new GRSaveAsFormatView();
             dlg.DataContext = new SaveAsFormatViewModel();
-            var vm = dlg.DataContext as SaveAsFormatViewModel;
+            var vm =  (SaveAsFormatViewModel)dlg.DataContext;
 
             if (dlg.ShowDialog() == true)
             {
@@ -574,10 +583,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="fc">IFeatureClass</param>
         private void AddFeatureLayerToMap(IFeatureClass fc)
         {
+            if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null))
+                return;
+
             IFeatureLayer outputFeatureLayer = new FeatureLayerClass();
             outputFeatureLayer.FeatureClass = fc;
 
-            IGeoFeatureLayer geoLayer = outputFeatureLayer as IGeoFeatureLayer;
+            IGeoFeatureLayer geoLayer = (IGeoFeatureLayer)outputFeatureLayer;
 
             if (geoLayer.FeatureClass.ShapeType != esriGeometryType.esriGeometryPolyline)
             {
@@ -597,6 +609,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             geoLayer.Name = fc.AliasName;
 
             ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
+
             map.AddLayer((ILayer)outputFeatureLayer);
         }
 
@@ -667,7 +680,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var element = gc.Next();
             while (element != null)
             {
-                var eleProps = element as IElementProperties;
+                var eleProps = (IElementProperties)element;
                 foreach (Graphic graphic in GraphicsList)
                 {
                     if (graphic.UniqueId.Equals(eleProps.Name) && graphic.ViewModel == this)
@@ -760,11 +773,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj">IPoint</param>
         internal virtual void OnNewMapPointEvent(object obj)
         {
-            if (!IsActiveTab)
+            if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null) 
+                || !IsActiveTab)
                 return;
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            var av = mxdoc.FocusMap as IActiveView;
             var point = obj as IPoint;
 
             if (!IsValidPoint(point))
@@ -790,6 +802,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 AddGraphicToMap(Point1, color, true, attributes: ptAttributes);
 
                 // lets try feedback
+                IActiveView av = ArcMap.Document.FocusMap as IActiveView;
                 CreateFeedback(point, av);
                 feedback.Start(point);
             }
@@ -851,11 +864,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private void ZoomToExtent(IGeometry geom)
         {
-            if (geom == null || ArcMap.Application.Document == null)
+            if (geom == null || ArcMap.Document == null)
                 return;
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
+            var mxdoc = ArcMap.Document as IMxDocument;
+            if (mxdoc == null)
+                return;
+
             var av = mxdoc.FocusMap as IActiveView;
+            if (av == null)
+                return;
 
             IEnvelope env = geom.Envelope;
 
@@ -876,7 +894,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <returns></returns>
         internal bool IsValidPoint(IPoint point)
         {
-            if (ArcMap.Document != null && ArcMap.Document.FocusMap != null)
+            if ((point != null) && (ArcMap.Document != null) && 
+                (ArcMap.Document.FocusMap != null))
             {
                 return IsPointWithinExtent(point, UnionAllLayerExtents(ArcMap.Document.FocusMap));
             }
@@ -934,7 +953,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var geomBag = new GeometryBagClass();
             geomBag.SpatialReference = map.SpatialReference;
 
-            var geomColl = geomBag as IGeometryCollection;
+            var geomColl = (IGeometryCollection)geomBag;
             object MissingType = Type.Missing;
 
             while (layer != null)
@@ -953,6 +972,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <returns>String that is formatted based on addin config display coordinate type</returns>
         private string GetFormattedPoint(IPoint point)
         {
+            if (point == null)
+                return "NA";
+
             var result = string.Format("{0:0.0} {1:0.0}", point.Y, point.X);
             var cn = point as IConversionNotation;
             if (cn != null)
@@ -1135,15 +1157,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             try
             {
-                var geomCol = new Polygon() as IGeometryCollection;
-                var polylineGeoms = line as IGeometryCollection;
+                var geomCol = (IGeometryCollection)new Polygon();
+                var polylineGeoms = (IGeometryCollection)line;
                 for (var i = 0; i < polylineGeoms.GeometryCount; i++)
                 {
-                    var ringSegs = new RingClass() as ISegmentCollection;
+                    var ringSegs = (ISegmentCollection)new RingClass();
                     ringSegs.AddSegmentCollection((ISegmentCollection)polylineGeoms.Geometry[i]);
                     geomCol.AddGeometry((IGeometry)ringSegs);
                 }
-                var newPoly = geomCol as IPolygon;
+                var newPoly = (IPolygon)geomCol;
                 newPoly.SimplifyPreserveFromTo();
                 return newPoly;
             }
@@ -1161,16 +1183,26 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="text">string</param>
         internal void AddTextToMap(IGeometry geom, string text)
         {
+            if ((ArcMap.Application == null) || (ArcMap.Application.Document == null))
+                return;
+
             var mxDoc = ArcMap.Application.Document as IMxDocument;
+
+            if ((mxDoc == null) || (mxDoc.FocusMap == null))
+                return;
+
             var av = mxDoc.FocusMap as IActiveView;
             var gc = av as IGraphicsContainer;
 
-            var textEle = new TextElement() as ITextElement;
+            if (gc == null)
+                return;
+
+            var textEle = (ITextElement)new TextElement();
             textEle.Text = text;
-            var elem = textEle as IElement;
+            var elem = (IElement)textEle;
             elem.Geometry = geom;
 
-            var eprop = elem as IElementProperties;
+            var eprop = (IElementProperties)elem;
             eprop.Name = Guid.NewGuid().ToString();
 
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
@@ -1192,9 +1224,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         internal void AddTextToMap(IGeometry geom, string text, double angle, AzimuthTypes azimuthType)
         {
+            if ((ArcMap.Application == null) || (ArcMap.Application.Document == null))
+                return;
+
             var mxDoc = ArcMap.Application.Document as IMxDocument;
+
+            if ((mxDoc == null) || (mxDoc.FocusMap == null))
+                return;
+
             var av = mxDoc.FocusMap as IActiveView;
             var gc = av as IGraphicsContainer;
+
+            if (gc == null)
+                return;
+
             double bearing = 0.0;
             if (azimuthType == AzimuthTypes.Mils)
             {
@@ -1204,19 +1247,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 bearing = angle;
             }
+
             double rotate = 360 - (bearing + 270.0) % 360;
             if (rotate > 90 && rotate <= 270)
                 rotate = rotate - 180;
-            var textEle = new TextElement() as ITextElement;
+            var textEle = (ITextElement)new TextElement();
             textEle.Text = text;
             ITextSymbol tsym = new TextSymbol();
 
             tsym.Angle = rotate;
             textEle.Symbol = tsym;
-            var elem = textEle as IElement;
+            var elem = (IElement)textEle;
             elem.Geometry = geom;
 
-            var eprop = elem as IElementProperties;
+            var eprop = (IElementProperties)elem;
             eprop.Name = Guid.NewGuid().ToString();
             Dictionary<String, Double> attributeMap = new Dictionary<string, double>();
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
@@ -1237,6 +1281,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             RaisePropertyChanged(() => HasMapGraphics);
         }
+
         /// <summary>
         /// Adds a graphic element to the map graphics container
         /// </summary>
@@ -1245,6 +1290,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
+
             IElement element = null;
             double width = 2.0;
 
@@ -1253,16 +1299,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
             {
                 // Marker symbols
-                var simpleMarkerSymbol = new SimpleMarkerSymbol() as ISimpleMarkerSymbol;
+                var simpleMarkerSymbol = (ISimpleMarkerSymbol)new SimpleMarkerSymbol();
                 simpleMarkerSymbol.Color = color;
                 simpleMarkerSymbol.Outline = true;
                 simpleMarkerSymbol.OutlineColor = color;
                 simpleMarkerSymbol.Size = 5;
                 simpleMarkerSymbol.Style = markerStyle;
 
-                var markerElement = new MarkerElement() as IMarkerElement;
+                var markerElement = (IMarkerElement)new MarkerElement();
                 markerElement.Symbol = simpleMarkerSymbol;
-                element = markerElement as IElement;
+                element = (IElement)markerElement;
             }
             else if (geom.GeometryType == esriGeometryType.esriGeometryPolyline)
             {
@@ -1302,8 +1348,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ((ISymbol)lineSymbol).ROP2 = rasterOpCode;
                 }
 
-                var le = new LineElementClass() as ILineElement;
-                element = le as IElement;
+                var le = (ILineElement)new LineElementClass();
+                element = (IElement)le;
                 le.Symbol = lineSymbol;
             }
 
@@ -1317,8 +1363,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var av = mxdoc.FocusMap as IActiveView;
             var gc = av as IGraphicsContainer;
 
+            if (gc == null)
+                return;
+
             // store guid
-            var eprop = element as IElementProperties;
+            var eprop = (IElementProperties)element;
             eprop.Name = Guid.NewGuid().ToString();
 
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
@@ -1364,6 +1413,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 srf3 = Activator.CreateInstance(srType) as ISpatialReferenceFactory3;
             }
 
+            if (srf3 == null)
+                return new LinearUnitClass();
+
             switch (LineDistanceType)
             {
                 case DistanceTypes.Feet:
@@ -1396,7 +1448,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             double result = 0.0;
 
-            var converter = new UnitConverterClass() as IUnitConverter;
+            var converter = (IUnitConverter)new UnitConverterClass();
 
             result = converter.ConvertUnits(input, GetEsriUnit(fromType), GetEsriUnit(toType));
 
@@ -1509,6 +1561,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return 0.0;
 
             var polycurvegeo = polyline as IPolycurveGeodetic;
+            if (polycurvegeo == null)
+                return 0.0;
 
             var geodeticType = GetEsriGeodeticType();
             var linearUnit = GetLinearUnit();
@@ -1594,15 +1648,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="av">The current active view</param>
         internal void CreateFeedback(IPoint point, IActiveView av)
         {
+            if ((av == null) || (point == null))
+                return;
+
             ResetFeedback();
             feedback = new NewLineFeedback();
-            var geoFeedback = feedback as IGeodeticLineFeedback;
+            var geoFeedback = (IGeodeticLineFeedback)feedback;
             geoFeedback.GeodeticConstructionMethod = GetEsriGeodeticType();
             geoFeedback.UseGeodeticConstruction = true;
             geoFeedback.SpatialReference = point.SpatialReference;
-            var displayFB = feedback as IDisplayFeedback;
+            var displayFB = (IDisplayFeedback)feedback;
             displayFB.Display = av.ScreenDisplay;
         }
+ 
         /// <summary>
         /// Method used to convert a string to a known coordinate
         /// Assumes WGS84 for now
@@ -1616,13 +1674,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             System.Object obj = Activator.CreateInstance(t);
             ISpatialReferenceFactory srFact = obj as ISpatialReferenceFactory;
 
-            // Use the enumeration to create an instance of the predefined object.
+            if (srFact == null)
+                return null;
 
+            // Use the enumeration to create an instance of the predefined object
             IGeographicCoordinateSystem geographicCS =
                 srFact.CreateGeographicCoordinateSystem((int)
                 esriSRGeoCSType.esriSRGeoCS_WGS1984);
 
-            var point = new Point() as IPoint;
+            var point = (IPoint)new Point();
+
             point.SpatialReference = geographicCS;
             var cn = point as IConversionNotation;
 
@@ -1684,6 +1745,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             return null;
         }
+
         /// <summary>
         /// Method to use when you need to move a feedback line to a point
         /// This forces a new point to be used, sometimes this method projects the point to a different spatial reference
