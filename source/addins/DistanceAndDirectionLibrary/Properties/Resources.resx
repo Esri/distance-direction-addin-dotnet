@@ -141,6 +141,9 @@
   <data name="ButtonOK" xml:space="preserve">
     <value>OK</value>
   </data>
+  <data name="DistanceDirectionLabel" xml:space="preserve">
+    <value>Distance and Direction</value>
+  </data>
   <data name="EnumBearingAndDistance" xml:space="preserve">
     <value>Distance and Bearing</value>
   </data>
@@ -245,6 +248,9 @@
   </data>
   <data name="EnumYards" xml:space="preserve">
     <value>Yards</value>
+  </data>
+  <data name="FeatureClassNameError" xml:space="preserve">
+    <value>Please provide a valid feature class name</value>
   </data>
   <data name="LabelAngle" xml:space="preserve">
     <value>Angle</value>
