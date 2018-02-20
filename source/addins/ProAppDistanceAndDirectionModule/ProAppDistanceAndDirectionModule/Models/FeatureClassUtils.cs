@@ -87,10 +87,20 @@ namespace ProAppDistanceAndDirectionModule.Models
             //Show the dialog and get the response
             if (ok == true)
             {
-                string folderName = System.IO.Path.GetDirectoryName(saveItemDlg.FilePath);
-                previousLocation = folderName;
+                if (featureChecked == true && saveItemDlg.FilePath.IndexOf(".gdb") != -1)
+                {
+                    string folderName = System.IO.Path.GetDirectoryName(saveItemDlg.FilePath);
+                    previousLocation = folderName;
 
-                return saveItemDlg.FilePath; 
+                    return saveItemDlg.FilePath;
+                }
+                else
+                {
+                    MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.FeatureClassNameError,
+                        DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel, MessageBoxButton.OK, 
+                        MessageBoxImage.Exclamation);
+                }
+                 
             }
             return null;
         }
