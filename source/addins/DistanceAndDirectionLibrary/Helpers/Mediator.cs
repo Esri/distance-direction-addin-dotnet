@@ -17,11 +17,11 @@ using System.Collections.Generic;
 
 namespace DistanceAndDirectionLibrary.Helpers
 {
-    static public class Mediator
+    public static class Mediator
     {
         static readonly IDictionary<string, List<Action<object>>> pl_dict = new Dictionary<string, List<Action<object>>>();
 
-        static public void Register(string token, Action<object> callback)
+        public static void Register(string token, Action<object> callback)
         {
             if (!pl_dict.ContainsKey(token))
             {
@@ -40,13 +40,13 @@ namespace DistanceAndDirectionLibrary.Helpers
             }
         }
 
-        static public void Unregister(string token, Action<object> callback)
+        public static void Unregister(string token, Action<object> callback)
         {
             if (pl_dict.ContainsKey(token))
                 pl_dict[token].Remove(callback);
         }
 
-        static public void NotifyColleagues(string token, object args)
+        public static void NotifyColleagues(string token, object args)
         {
             if (pl_dict.ContainsKey(token))
                 foreach (var callback in pl_dict[token])

@@ -303,7 +303,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 IWorkspaceFactory workspaceFactory = new ShapefileWorkspaceFactory();
                 IWorkspace workspace = workspaceFactory.OpenFromFile(folderName, 0);
                 IFeatureWorkspace fWorkspace = (IFeatureWorkspace)workspace;
-                IDataset ipDs = fWorkspace.OpenFeatureClass(fcName) as IDataset;
+                IDataset ipDs = (IDataset)fWorkspace.OpenFeatureClass(fcName);
                 ipDs.Delete();
 
                 File.Delete(shapeFilePath);
@@ -324,6 +324,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <param name="fileNamePath">Path to shapefile</param>
         /// <param name="graphicsList">List of graphics for selected tab</param>
         /// <param name="ipSpatialRef">Spatial Reference being used</param>
+        /// <param name="polyLineFC">Is Polyline FC</param>
         /// <returns>Created featureclass</returns>
         private IFeatureClass ExportToShapefile(string fileNamePath, List<Graphic> graphicsList, ISpatialReference ipSpatialRef, bool polyLineFC)
         {
@@ -341,19 +342,22 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     workspaceFactory = new ShapefileWorkspaceFactoryClass();
                     IWorkspace workspace = workspaceFactory.OpenFromFile(folder, 0);
                     IFeatureWorkspace featureWorkspace = workspace as IFeatureWorkspace;
+                    if (featureWorkspace == null)
+                        return null;
+
                     IFields fields = null;
                     IFieldsEdit fieldsEdit = null;
                     fields = new Fields();
                     fieldsEdit = (IFieldsEdit)fields;
                     IField field = null;
                     IFieldEdit fieldEdit = null;
-                    field = new FieldClass();///###########
+                    field = new FieldClass(); 
                     fieldEdit = (IFieldEdit)field;
                     fieldEdit.Name_2 = "Shape";
                     fieldEdit.Type_2 = (esriFieldType.esriFieldTypeGeometry);
                     IGeometryDef geomDef = null;
                     IGeometryDefEdit geomDefEdit = null;
-                    geomDef = new GeometryDefClass();///#########
+                    geomDef = new GeometryDefClass();
                     geomDefEdit = (IGeometryDefEdit)geomDef;
 
                     if (polyLineFC)
@@ -751,7 +755,9 @@ namespace ArcMapAddinDistanceAndDirection.Models
         private void DeleteFeatureClass(IFeatureWorkspace fWorkspace, string fcName)
         {
             IDataset ipDs = fWorkspace.OpenFeatureClass(fcName) as IDataset;
-            ipDs.Delete();
+
+            if (ipDs != null)
+                ipDs.Delete();
         }
 
         /// <summary> 
@@ -759,6 +765,8 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// </summary> 
         /// <param name="featWorkspace">IFeatureWorkspace</param> 
         /// <param name="name">Name of the featureclass</param> 
+        /// <param name="graphicsList">Graphics List</param> 
+        /// <param name="polyLineFC">Is Polyline FC</param> 
         /// <returns>IFeatureClass</returns> 
         private IFeatureClass CreateFeatureClass(IFeatureWorkspace featWorkspace, string name, List<Graphic> graphicsList, bool polyLineFC)
         {
@@ -980,8 +988,11 @@ namespace ArcMapAddinDistanceAndDirection.Models
             IPolygon polygon = new PolygonClass();
             Polyline polyLine = geom as Polyline;
 
-            ISegmentCollection polygonSegs = polygon as ISegmentCollection;
-            ISegmentCollection polylineSegs = polyLine as ISegmentCollection;
+            if (polyLine == null)
+                return null;
+
+            ISegmentCollection polygonSegs = (ISegmentCollection)polygon;
+            ISegmentCollection polylineSegs = (ISegmentCollection)polyLine;
 
             for (int i = 0; i < polylineSegs.SegmentCount; i++)
             {
@@ -992,7 +1003,6 @@ namespace ArcMapAddinDistanceAndDirection.Models
             polygon.SimplifyPreserveFromTo();
 
             return polygon;
-
         }
     } 
 }

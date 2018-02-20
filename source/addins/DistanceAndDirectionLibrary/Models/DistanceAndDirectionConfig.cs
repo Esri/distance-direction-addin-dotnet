@@ -62,6 +62,8 @@ namespace DistanceAndDirectionLibrary.Models
 
         public void LoadConfiguration()
         {
+            TextReader tr = null;
+
             try
             {
                 var filename = GetConfigFilename();
@@ -70,7 +72,7 @@ namespace DistanceAndDirectionLibrary.Models
                     return;
 
                 XmlSerializer x = new XmlSerializer(GetType());
-                TextReader tr = new StreamReader(filename);
+                tr = new StreamReader(filename);
                 var temp = x.Deserialize(tr) as DistanceAndDirectionConfig;
 
                 if (temp == null)
@@ -81,6 +83,11 @@ namespace DistanceAndDirectionLibrary.Models
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+            finally
+            {
+                if (tr != null)
+                    tr.Close();
             }
         }
 

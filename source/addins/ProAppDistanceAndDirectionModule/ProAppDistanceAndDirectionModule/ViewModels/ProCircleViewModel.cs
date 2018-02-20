@@ -788,7 +788,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = dist, circleFromTypes = CircleType, circletype=CircleType.ToString(), centerx=Point1.X, centery=Point1.Y, distanceunit=distunit.ToString()};
             AddGraphicToMap(geom, color, (ProGraphicAttributes)circleAttributes, IsTempGraphic: isFeedback);
 
-            return geom as Geometry;
+            return (Geometry)geom;
         }
 
         #endregion

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <BUILD_MAJOR Condition="'$(BUILD_MAJOR)' == ''">4</BUILD_MAJOR>
     <BUILD_MINOR Condition="'$(BUILD_MINOR)' == ''">0</BUILD_MINOR>
-	<BUILD_PATCH Condition="'$(BUILD_PATCH)' == ''">0</BUILD_PATCH>
+    <BUILD_PATCH Condition="'$(BUILD_PATCH)' == ''">0</BUILD_PATCH>
     <BUILD_NUMBER Condition="'$(BUILD_NUMBER)' == ''">0</BUILD_NUMBER>
   </PropertyGroup>
   <PropertyGroup>
@@ -34,6 +34,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>C:\Program Files\ArcGIS\Pro\bin\ArcGISPro.exe</StartProgram>
     <PlatformTarget>AnyCPU</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -201,10 +202,10 @@
   -->
   <Target Name="BeforeBuild">
     <Error Text="C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets not found." Condition="!Exists('C:\Program Files\ArcGIS\Pro\bin\Esri.ProApp.SDK.Desktop.targets')" />
-		<XmlPeek XmlInputPath="Config.daml" Query="//@version[1]">
-				<Output TaskParameter="Result" ItemName="Peeked" />
-		</XmlPeek>
-		<Message Importance="High" Text="old build number @(Peeked) new build number $(BUILD_MAJOR).$(BUILD_MINOR).$(BUILD_PATCH).$(BUILD_NUMBER)" />
-		<XmlPoke XmlInputPath="Config.daml" Query="//@version[1]" Value="$(BUILD_MAJOR).$(BUILD_MINOR).$(BUILD_PATCH).$(BUILD_NUMBER)" />
+    <XmlPeek XmlInputPath="Config.daml" Query="//@version[1]">
+      <Output TaskParameter="Result" ItemName="Peeked" />
+    </XmlPeek>
+    <Message Importance="High" Text="old build number @(Peeked) new build number $(BUILD_MAJOR).$(BUILD_MINOR).$(BUILD_PATCH).$(BUILD_NUMBER)" />
+    <XmlPoke XmlInputPath="Config.daml" Query="//@version[1]" Value="$(BUILD_MAJOR).$(BUILD_MINOR).$(BUILD_PATCH).$(BUILD_NUMBER)" />
   </Target>
 </Project>

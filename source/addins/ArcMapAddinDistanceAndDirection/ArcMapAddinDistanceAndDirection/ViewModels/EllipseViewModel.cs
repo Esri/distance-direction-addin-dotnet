@@ -60,7 +60,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return azimuthType; }
             set
             {
-                var before = azimuthType;
                 azimuthType = value;
                 Azimuth = Azimuth;
             }
@@ -412,7 +411,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             ptAttributes.Add("Y", Point1.Y);
             AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
 
-            var ellipticArc = new Polyline() as IConstructGeodetic;
+            var ellipticArc = (IConstructGeodetic)new Polyline();
 
             var minorAxis = MinorAxisDistance;
             if (!HasMinorAxis || minorAxis == 0.0)
@@ -431,7 +430,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 ellipseAttributes.Add("minoraxis", MinorAxisDistance);
                 ellipseAttributes.Add("azimuth", Azimuth);
                 var color = new RgbColor() as IColor;
-                AddGraphicToMap(line as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:ellipseAttributes );
+                AddGraphicToMap((IGeometry)line, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:ellipseAttributes );
             }
         }
 
@@ -450,10 +449,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (!IsActiveTab)
                 return;
 
-            var mxdoc = ArcMap.Application.Document as IMxDocument;
-            var av = mxdoc.FocusMap as IActiveView;
             var point = obj as IPoint;
-
             if (point == null)
                 return;
 
@@ -466,7 +462,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 ptAttributes.Add("X", Point1.X);
                 ptAttributes.Add("Y", Point1.Y);
                 AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
-
             }
             else if (!HasPoint2)
             {
@@ -515,9 +510,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 if (feedback == null)
                 {
-                    var mxdoc = ArcMap.Application.Document as IMxDocument;
-                    CreateFeedback(centerPoint, mxdoc.FocusMap as IActiveView);
-                    feedback.Start(centerPoint);
+                    if ((ArcMap.Document != null) && (ArcMap.Document.FocusMap != null))
+                    {
+                        CreateFeedback(centerPoint, ArcMap.Document.FocusMap as IActiveView);
+                        feedback.Start(centerPoint);
+                    }
                 }
 
                 // now get second point from distance and bearing
@@ -610,7 +607,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         private IPolyline CreateGeodeticLine(IPoint fromPoint, IPoint toPoint, double distance = 0.0)
         {
-            var construct = new Polyline() as IConstructGeodetic;
+            var construct = (IConstructGeodetic)new Polyline();
             if (construct == null)
             {
                 return null;
@@ -623,15 +620,19 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 else
                 {
-                    var minorPolyline = new Polyline() as IPolyline;
+                    var minorPolyline = (IPolyline)new Polyline();
                     minorPolyline.SpatialReference = Point1.SpatialReference;
                     minorPolyline.FromPoint = Point1;
                     minorPolyline.ToPoint = Point3;
-                    construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), fromPoint, GetLinearUnit(), distance, GetAzimuth(minorPolyline as IGeometry),
+                    construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), fromPoint, GetLinearUnit(), distance, GetAzimuth((IGeometry)minorPolyline),
                         esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex);
+                return null;
+            }
 
             return construct as IPolyline;
         }
@@ -643,7 +644,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             try
             {
-                var ellipticArc = new Polyline() as IConstructGeodetic;
+                var ellipticArc = (IConstructGeodetic)new Polyline();
+
                 double bearing;
                 if (AzimuthType==AzimuthTypes.Mils)
                 {
@@ -653,11 +655,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     bearing = Azimuth;
                 }
+
                 ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, bearing, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
-                    var color = new RgbColorClass() { Red = 255 } as IColor;
+                    var color = (IColor)new RgbColorClass() { Red = 255 };
+
                     IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
                     ellipseAttributes.Add("majoraxis", MajorAxisDistance);
                     ellipseAttributes.Add("minoraxis", MinorAxisDistance);
@@ -666,7 +670,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ellipseAttributes.Add("centery", Point1.Y);
                     ellipseAttributes.Add("distanceunit", LineDistanceType.ToString());
                     ellipseAttributes.Add("angleunit", AzimuthType.ToString());
-                    AddGraphicToMap(line as IGeometry, color, attributes:ellipseAttributes);
+
+                    AddGraphicToMap((IGeometry)line, color, attributes:ellipseAttributes);
+
                     //Convert ellipse polyline to polygon
                     var newPoly = PolylineToPolygon((IPolyline)ellipticArc);
                     if (newPoly != null)
@@ -685,24 +691,23 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                             minDist = minorAxisDistance * 2;
                         }
                         if (area != null)
-                        {
-                            
-                                AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
-                                    "Major Axis",
-                                    Math.Round(majDist, 2),
-                                    dtVal.ToString(),
-                                    Environment.NewLine,
-                                    "Minor Axis",
-                                    Math.Round(minDist, 2),
-                                    dtVal.ToString(),
-                                    Environment.NewLine,
-                                    "Orientation Angle",
-                                    Math.Round(azimuth, 2),
-                                    atVal.ToString()));
+                        {                  
+                            AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
+                                "Major Axis",
+                                Math.Round(majDist, 2),
+                                dtVal.ToString(),
+                                Environment.NewLine,
+                                "Minor Axis",
+                                Math.Round(minDist, 2),
+                                dtVal.ToString(),
+                                Environment.NewLine,
+                                "Orientation Angle",
+                                Math.Round(azimuth, 2),
+                                atVal.ToString()));
                         }
                     }
                 }
-                return line as IGeometry;
+                return (IGeometry)line;
             }
             catch (Exception ex)
             {

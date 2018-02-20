@@ -101,7 +101,10 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// <param name="outputPath">location of featureclass</param>
         /// <param name="saveAsType">Type of output selected, either fgdb featureclass or shapefile</param>
         /// <param name="graphicsList">List of graphics for selected tab</param>
-        /// <param name="ipSpatialRef">Spatial Reference being used</param>
+        /// <param name="spatialRef">Spatial Reference being used</param>
+        /// <param name="mapview">Mapview</param>
+        /// <param name="geomType">geomType to create</param>
+        /// <param name="isKML">Create KML</param>
         /// <returns>Output featureclass</returns>
         public async Task CreateFCOutput(string outputPath, SaveAsType saveAsType, List<Graphic> graphicsList, SpatialReference spatialRef, MapView mapview, GeomType geomType, bool isKML = false)
         {
@@ -153,7 +156,7 @@ namespace ProAppDistanceAndDirectionModule.Models
 
                                 if (graphic.Geometry is Polyline)
                                 {
-                                    PolylineBuilder pb = new PolylineBuilder(graphic.Geometry as Polyline);
+                                    PolylineBuilder pb = new PolylineBuilder((Polyline)graphic.Geometry);
                                     pb.HasZ = false;
                                     rowBuffer[shapeIndex] = pb.ToGeometry();
                                     isLine = true;
@@ -208,7 +211,7 @@ namespace ProAppDistanceAndDirectionModule.Models
                                 }
                                 else if (graphic.Geometry is Polygon)
                                 {
-                                    rowBuffer[shapeIndex] = new PolygonBuilder(graphic.Geometry as Polygon).ToGeometry();
+                                    rowBuffer[shapeIndex] = new PolygonBuilder((Polygon)graphic.Geometry).ToGeometry();
 
                                     // Only add attributes for Esri format
 
@@ -259,7 +262,7 @@ namespace ProAppDistanceAndDirectionModule.Models
 
                         //Get simple renderer from feature layer 
                         CIMSimpleRenderer currentRenderer = featureLayer.GetRenderer() as CIMSimpleRenderer;
-                        CIMSymbolReference sybmol = currentRenderer.Symbol;
+                        CIMSymbolReference symbol = currentRenderer.Symbol;
 
                         var outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.RedRGB, 1.0, SimpleLineStyle.Solid);
                         CIMSymbol s;
@@ -301,7 +304,7 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// Create a feature class
         /// </summary>
         /// <param name="dataset">Name of the feature class to be created.</param>
-        /// <param name="featureclassType">Type of feature class to be created. Options are:
+        /// <param name="geomType">Type of feature class to be created. Options are:
         /// <list type="bullet">
         /// <item>POINT</item>
         /// <item>MULTIPOINT</item>
