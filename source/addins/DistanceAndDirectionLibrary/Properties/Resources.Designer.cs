@@ -133,6 +133,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Distance and Direction.
+        /// </summary>
+        public static string DistanceDirectionLabel {
+            get {
+                return ResourceManager.GetString("DistanceDirectionLabel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Distance and Bearing.
         /// </summary>
         public static string EnumBearingAndDistance {
@@ -444,6 +453,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         public static string EnumYards {
             get {
                 return ResourceManager.GetString("EnumYards", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please provide a valid feature class name.
+        /// </summary>
+        public static string FeatureClassNameError {
+            get {
+                return ResourceManager.GetString("FeatureClassNameError", resourceCulture);
             }
         }
         
