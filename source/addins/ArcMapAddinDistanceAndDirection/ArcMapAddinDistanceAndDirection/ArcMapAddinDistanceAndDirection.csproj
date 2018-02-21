@@ -58,6 +58,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ESRI.ArcGIS.ADF.Connection.Local, Version=10.3.0.0, Culture=neutral, PublicKeyToken=8fc3cc631e44ad86, processorArchitecture=x86">
@@ -248,13 +250,11 @@
   -->
   <Target Name="BeforeBuild">
     <!-- Set Version element in Config.esriaddinx -->
-    <XmlPeek XmlInputPath="Config.esriaddinx" Query="/x:ESRI.Configuration/x:Version/text()"
-    Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.esri.com/Desktop/AddIns' /&gt;">
+    <XmlPeek XmlInputPath="Config.esriaddinx" Query="/x:ESRI.Configuration/x:Version/text()" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.esri.com/Desktop/AddIns' /&gt;">
       <Output TaskParameter="Result" ItemName="Peeked" />
     </XmlPeek>
     <Message Importance="High" Text="Old build number: @(Peeked) New build number: $(BUILD_MAJOR).$(BUILD_MINOR).$(BUILD_PATCH).$(BUILD_NUMBER)" />
-    <XmlPoke XmlInputPath="Config.esriaddinx" Query="/x:ESRI.Configuration/x:Version"
-    Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.esri.com/Desktop/AddIns' /&gt;" Value="$(BUILD_MAJOR).$(BUILD_MINOR).$(BUILD_PATCH).$(BUILD_NUMBER)" />
+    <XmlPoke XmlInputPath="Config.esriaddinx" Query="/x:ESRI.Configuration/x:Version" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.esri.com/Desktop/AddIns' /&gt;" Value="$(BUILD_MAJOR).$(BUILD_MINOR).$(BUILD_PATCH).$(BUILD_NUMBER)" />
   </Target>
   <Target Name="AfterBuild">
     <!-- Gives build warning when add-in targets file is not found. -->
