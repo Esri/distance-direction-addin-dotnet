@@ -683,22 +683,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         DistanceTypes dtVal = (DistanceTypes)LineDistanceType; //Get line distance type                                                    
                         AzimuthTypes atVal = (AzimuthTypes)AzimuthType; //Get azimuth type
                         EllipseTypes ellipseType = EllipseType;
-                        double majDist = majorAxisDistance;
-                        double minDist = minorAxisDistance;
-                        if (ellipseType == EllipseTypes.Full)
-                        {
-                            majDist = majorAxisDistance * 2;
-                            minDist = minorAxisDistance * 2;
-                        }
+                        double majAxisDist = majorAxisDistance * 2;
+                        double minAxisDist = minorAxisDistance * 2;
+
                         if (area != null)
                         {                  
                             AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
                                 "Major Axis",
-                                Math.Round(majDist, 2),
+                                Math.Round(majAxisDist, 2),
                                 dtVal.ToString(),
                                 Environment.NewLine,
                                 "Minor Axis",
-                                Math.Round(minDist, 2),
+                                Math.Round(minAxisDist, 2),
                                 dtVal.ToString(),
                                 Environment.NewLine,
                                 "Orientation Angle",
