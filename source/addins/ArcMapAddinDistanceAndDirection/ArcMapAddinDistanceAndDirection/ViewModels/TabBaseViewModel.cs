@@ -1291,6 +1291,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
 
+            //Check if the geometry exists in the graphics list. 
+            //If so, then exit
+            if (GraphicsList.Any(g => ((IRelationalOperator)g.Geometry).Equals(geom)))
+                return;
+
             IElement element = null;
             double width = 2.0;
 
