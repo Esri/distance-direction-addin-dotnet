@@ -277,7 +277,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
         {
             var circleVM = new CircleViewModel();
 
-            circleVM.Point1Formatted = "91 0";
+            circleVM.Point1Formatted = "91 180";
         }
 
         [TestMethod]
@@ -293,7 +293,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             // test points
             circleVM.Point1 = new Point() { X = -119.8, Y = 34.4 };
 
-            Assert.AreEqual(circleVM.Point1Formatted, "34.4 -119.8");
+            Assert.AreEqual(circleVM.Point1Formatted, "34.4N 119.8W");
 
             // Check that Distance is not converted when LineDistanceType is changed
             // #260
@@ -314,7 +314,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             // test points
             circleVM.Point1 = new Point() { X = -119.8, Y = 34.4 };
 
-            Assert.AreEqual(circleVM.Point1Formatted, "34.4 -119.8");
+            Assert.AreEqual(circleVM.Point1Formatted, "34.4N 119.8W");
 
             circleVM.LineDistanceType = DistanceTypes.Miles;
             circleVM.IsDistanceCalcExpanded = true;
@@ -354,7 +354,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             // can we create an element
             //Assert.IsTrue(circleVM.CanCreateElement);
 
-            Assert.AreEqual(ellipseVM.Point1Formatted, "34.4 -119.8");
+            Assert.AreEqual(ellipseVM.Point1Formatted, "34.4N 119.8W");
 
             // can't test manual input of of starting and ending points
             // they call methods that reference the ArcMap Application/Document objects
@@ -505,7 +505,7 @@ namespace ArcMapAddinDistanceAndDirection.Tests
             rangeVM.Point1 = new Point() { X = -119.8, Y = 34.4 };
             // can we create an element
 
-            Assert.AreEqual(rangeVM.Point1Formatted, "34.4 -119.8");
+            Assert.AreEqual(rangeVM.Point1Formatted, "34.4N 119.8W");
         }
         #endregion Range View Model
     }

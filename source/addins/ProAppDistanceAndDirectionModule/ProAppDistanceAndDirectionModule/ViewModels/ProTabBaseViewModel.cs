@@ -59,7 +59,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Mediator.Register(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
 
             // Pro Events
-            ArcGIS.Desktop.Framework.Events.ActiveToolChangedEvent.Subscribe(OnActiveToolChanged);
+            // Note: will fail if called from Unit Tests, so catch exception for this case
+            try
+            {
+                ArcGIS.Desktop.Framework.Events.ActiveToolChangedEvent.Subscribe(OnActiveToolChanged);
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine("Probably Running from Unit Tests");
+            }
 
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
