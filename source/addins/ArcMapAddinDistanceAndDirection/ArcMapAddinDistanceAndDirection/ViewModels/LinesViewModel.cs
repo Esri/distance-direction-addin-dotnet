@@ -215,17 +215,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (LineFromType == LineFromTypes.Points)
             {
                 ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(Point1Formatted, out outFormattedString);
-                Point1 = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null; //GetPointFromString(Point1Formatted);
+                Point1 = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null;
 
                 ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(Point2Formatted, out outFormattedString);
-                Point2 = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null; //GetPointFromString(Point2Formatted);
+                Point2 = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null;
                 if (!Azimuth.HasValue || Point1 == null || Point2 == null)
                     return;
             }
             else
             {
                 ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(Point1Formatted, out outFormattedString);
-                Point1 = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null; //GetPointFromString(Point1Formatted);
+                Point1 = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null;
                 if (!Azimuth.HasValue || Point1 == null)
                     return;
             }
