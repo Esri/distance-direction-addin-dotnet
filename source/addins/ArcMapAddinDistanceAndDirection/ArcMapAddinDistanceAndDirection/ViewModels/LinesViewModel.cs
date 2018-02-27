@@ -210,17 +210,22 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         // when someone hits the enter key, create geodetic graphic
         internal override void OnEnterKeyCommand(object obj)
         {
-
+            string outFormattedString = string.Empty;
+            CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Models.CoordinateType.Unknown;
             if (LineFromType == LineFromTypes.Points)
             {
-                Point1 = GetPointFromString(Point1Formatted);
-                Point2 = GetPointFromString(Point2Formatted);
+                ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(Point1Formatted, out outFormattedString);
+                Point1 = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null; //GetPointFromString(Point1Formatted);
+
+                ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(Point2Formatted, out outFormattedString);
+                Point2 = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null; //GetPointFromString(Point2Formatted);
                 if (!Azimuth.HasValue || Point1 == null || Point2 == null)
                     return;
             }
             else
             {
-                Point1 = GetPointFromString(Point1Formatted);
+                ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(Point1Formatted, out outFormattedString);
+                Point1 = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetPointFromString(outFormattedString) : null; //GetPointFromString(Point1Formatted);
                 if (!Azimuth.HasValue || Point1 == null)
                     return;
             }
