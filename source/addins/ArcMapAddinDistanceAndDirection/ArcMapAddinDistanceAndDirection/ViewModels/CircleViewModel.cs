@@ -554,12 +554,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (string.Equals(base.DistanceString, value))
                     return;
                 
-                // divide the manual input by 2
                 double d = 0.0;
-                
-                if (double.TryParse(value, out d))
-                { 
-                    
+                bool isValidValue = double.TryParse(value, out d);
+                if (isValidValue)
+                {
+                    if (d == 0.0) // Stop here (don't replace Distance/String) 
+                        return;
+
                     Distance = d;
 
                     double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);

@@ -394,7 +394,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 RaisePropertyChanged(() => DistanceString);
             }
         }
-        string distanceString = String.Empty;
+
+        protected string distanceString = String.Empty;
         /// <summary>
         /// Distance property as a string
         /// </summary>
@@ -420,6 +421,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double d = 0.0;
                 if (double.TryParse(distanceString, out d))
                 {
+                    if (d == 0.0)
+                    {
+                        // Don't set property(Distance) because this will overwrite the string if user entering zeros "00000"
+                        distance = 0.0;
+                        return;
+                    }
+
                     if (Distance != d)
                     {
                         Distance = d;
@@ -585,14 +593,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         internal void ClearTempGraphics()
         {
-            var list = GraphicsList.Where(g => g.IsTemp == true).ToList();
-
-            foreach (var item in list)
+            // Locking GraphicsList while removing objects
+            lock (GraphicsList)
             {
-                item.Disposable.Dispose();
-                GraphicsList.Remove(item);
-            }
+                var list = GraphicsList.Where(g => g.IsTemp == true).ToList();
 
+                foreach (var item in list)
+                {
+                    item.Disposable.Dispose();
+                    GraphicsList.Remove(item);
+                }
+            }
             RaisePropertyChanged(() => HasMapGraphics);
         }
 

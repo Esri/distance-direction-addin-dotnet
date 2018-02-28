@@ -516,6 +516,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
         }
+
         /// <summary>
         /// Distance is always the radius
         /// Update DistanceString for user
@@ -526,7 +527,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get
             {
                 if (Distance == 0.0)
-                    return "0";
+                    return base.DistanceString;
 
                 String dString = "";
                 if (CircleType == CircleFromTypes.Diameter)
@@ -545,6 +546,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return dString + decimalSeparator;
                 }
 
+                base.distanceString = dString;
+
                 return dString;
             }
             set
@@ -553,35 +556,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (string.Equals(base.DistanceString, value))
                     return;
 
-                //Handle for decimals
-                if (value.EndsWith(decimalSeparator))
-                {
-                    EndsWithDecimal = true;
-                    return;
-                }
-                else
-                {
-                    EndsWithDecimal = false;
-                }
-
-                // divide the manual input by 2
                 double d = 0.0;
-                if (double.TryParse(value, out d))
+                bool isValidValue = double.TryParse(value, out d);
+                EndsWithDecimal = value.EndsWith(decimalSeparator);
+
+                if (isValidValue)
                 {
-                    
-                    if (CircleType == CircleFromTypes.Diameter)
+                    if ((d == 0.0) || EndsWithDecimal)
                     {
-                        if (Distance == d)
-                            return;  
+                        // Stop here, don't replace Distance value while user still entering for these cases 
+                        base.DistanceString = value;
+                        return;
                     }
-                    else
-                    {
-                        if (Distance == d)
-                            return;
-                    }
+
+                    if (Distance == d)
+                        return;
+
+                    // divide the manual input by 2
                     double dist = 0.0;
                     if (CircleType == CircleFromTypes.Diameter)
-
                         dist = d / 2.0;
                     else
                         dist = d;
