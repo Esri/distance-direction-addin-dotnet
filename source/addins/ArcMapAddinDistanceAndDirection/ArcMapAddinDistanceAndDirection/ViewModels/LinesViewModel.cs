@@ -311,8 +311,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     //Get mid point of geodetic line
                     var midPoint = new Point() as IPoint;
                     ((IPolyline)((IGeometry)construct)).QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, false, midPoint);
+                    //Check if line crosses the international dateline
+                    var labelPoint = (DoesLineCrossIntDateline((IPolyline)((IGeometry)construct))) ? Point1 : Point2;
                     //Create text symbol using text and midPoint
-                    AddTextToMap(midPoint != null ? midPoint : Point2, 
+                    AddTextToMap(midPoint != null ? midPoint : labelPoint, 
                         string.Format("{0}:{1} {2}{3}{4}:{5} {6}", 
                         "Distance", 
                         Math.Round(Distance,2).ToString("N2"),
@@ -389,6 +391,47 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 System.Diagnostics.Debug.WriteLine(ex);
             }
+        }
+
+        /// <summary>
+        /// Creates the international dateline as a polyline geometry
+        /// 
+        /// Source: https://github.com/Esri/developer-support/blob/master/arcobjects-net/international-dateline-draw-line-across/CreateLine.cs
+        /// </summary>
+        /// <returns>Polyline geometry</returns>
+        private IPolyline GetIntDateline()
+        {
+            var referenceFactory2 = (ISpatialReferenceFactory2)new SpatialReferenceEnvironment();
+            ISpatialReference WGS84 = referenceFactory2.CreateSpatialReference((int)esriSRGeoCSType.esriSRGeoCS_WGS1984);
+            IPointCollection pointCollection = new PolylineClass();
+
+            // ------------- Ensure that both points have negative longitude values -------------------
+            IPoint point = new PointClass();
+            point.PutCoords(-170, 10); // Equivalent to 170 degrees WEST
+            point.SpatialReference = WGS84;
+            pointCollection.AddPoint(point);
+
+
+            point = new PointClass();
+            point.PutCoords(-200, 10); // Equivalent to 160 degrees EAST
+            point.SpatialReference = WGS84;
+            pointCollection.AddPoint(point);
+            // -----------------------------------------------------------------------
+
+            IPolyline polyline = (IPolyline)pointCollection;
+            polyline.SpatialReference = WGS84;
+
+            return polyline;
+        }
+
+        /// <summary>
+        /// Checks if a polyline geometry crosses the international dateline
+        /// </summary>
+        /// <param name="inputLine"></param>
+        /// <returns>bool</returns>
+        private bool DoesLineCrossIntDateline(IPolyline inputLine)
+        {
+            return (inputLine != null) ? ((IRelationalOperator)inputLine).Crosses(GetIntDateline()) : false;
         }
 
         #endregion
