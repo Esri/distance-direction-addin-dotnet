@@ -375,7 +375,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 RaisePropertyChanged(() => DistanceString);
             }
         }
-        string distanceString = String.Empty;
+
+        protected string distanceString = String.Empty;
         /// <summary>
         /// Distance property as a string
         /// </summary>
