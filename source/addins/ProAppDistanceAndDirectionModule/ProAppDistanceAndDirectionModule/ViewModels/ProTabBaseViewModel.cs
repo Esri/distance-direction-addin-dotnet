@@ -57,6 +57,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.RADIUS_DIAMETER_KEYDOWN, OnRadiusDiameterTextBoxKeyDown);
 
             // Pro Events
             // Note: will fail if called from Unit Tests, so catch exception for this case
@@ -105,6 +106,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Property to keep track of manual entry for radius or diameter value
+        /// </summary>
+        public bool isManualRadiusDiameterEntered { get; set; }
 
         private bool isActiveTab = false;
         /// <summary>
@@ -874,6 +879,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return;
                     }
                 }
+
+                //Clear manual flag for radius/diameter property
+                isManualRadiusDiameterEntered = false;
             }
         }
 
@@ -889,6 +897,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (IsToolActive)
                     IsToolActive = false;
             }
+        }
+
+        /// <summary>
+        /// Handler for when key is manually pressed in the Radius/Diameter text box
+        /// </summary>
+        /// <param name="obj"></param>
+        private void OnRadiusDiameterTextBoxKeyDown(object obj)
+        {
+            isManualRadiusDiameterEntered = true;
         }
 
         internal double ConvertFromTo(DistanceTypes fromType, DistanceTypes toType, double input)
