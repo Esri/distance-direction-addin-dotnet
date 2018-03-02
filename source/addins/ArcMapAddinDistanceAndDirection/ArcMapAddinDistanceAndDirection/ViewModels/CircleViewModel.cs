@@ -546,7 +546,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                return base.DistanceString;
+                String dString = "";
+                if (CircleType == CircleFromTypes.Diameter)
+                    dString = (Distance * 2.0).ToString("G");
+                else
+                    dString = (Distance).ToString("G");
+
+                base.distanceString = dString;
+
+                return base.distanceString;
             }
             set
             {
@@ -561,9 +569,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     if (d == 0.0) // Stop here (don't replace Distance/String) 
                         return;
 
-                    Distance = d;
+                    double dist = 0.0;
+                    if (CircleType == CircleFromTypes.Diameter)
+                        dist = d / 2.0;
+                    else
+                        dist = d;
 
-                    double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
+                    Distance = dist;
+
+                    double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, dist);
 
                     if (distanceInMeters > DistanceLimit)
                     {
