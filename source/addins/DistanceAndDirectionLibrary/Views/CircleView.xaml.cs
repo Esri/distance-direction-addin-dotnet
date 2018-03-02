@@ -30,5 +30,10 @@ namespace DistanceAndDirectionLibrary.Views
         {
             DistanceAndDirectionLibrary.Helpers.Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, null);
         }
+
+        private void Radius_Diameter_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            DistanceAndDirectionLibrary.Helpers.Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.RADIUS_DIAMETER_KEYDOWN, null);
+        }
     }
 }
