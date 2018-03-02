@@ -1255,7 +1255,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             textEle.Text = text;
             ITextSymbol tsym = new TextSymbol();
 
-            tsym.Angle = 0;//rotate;
+            tsym.Angle = 0;//rotate - rotation was removed per issue #289
+            tsym.HorizontalAlignment = esriTextHorizontalAlignment.esriTHALeft;
             textEle.Symbol = tsym;
             var elem = (IElement)textEle;
             elem.Geometry = geom;
