@@ -82,7 +82,7 @@
                          Text="{Binding Path=DistanceString,
                                         UpdateSourceTrigger=PropertyChanged,
                                         ValidatesOnExceptions=True}"
-                         Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                         Validation.ErrorTemplate="{StaticResource errorTemplate}" PreviewKeyDown="Radius_Diameter_KeyDown">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter"
                                     Command="{Binding EnterKeyCommand}"

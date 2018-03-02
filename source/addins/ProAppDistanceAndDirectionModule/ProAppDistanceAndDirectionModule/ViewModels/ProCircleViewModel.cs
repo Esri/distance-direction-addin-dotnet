@@ -574,7 +574,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     // divide the manual input by 2
                     double dist = 0.0;
-                    if (CircleType == CircleFromTypes.Diameter)
+                    if (CircleType == CircleFromTypes.Diameter && isManualRadiusDiameterEntered)
                         dist = d / 2.0;
                     else
                         dist = d;
@@ -622,6 +622,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 return;
             }
+            isManualRadiusDiameterEntered = false;
             base.OnEnterKeyCommand(obj);
         }
 
