@@ -308,23 +308,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
                     //Get azimuth type
                     AzimuthTypes atVal = (AzimuthTypes)LineAzimuthType;
-                    //Check if line crosses the international dateline
-                    IPoint labelPoint = null;
-                    if ((DoesLineCrossIntDateline((IPolyline)((IGeometry)construct))))
-                    {
-                        //Use the starting point for labeling
-                        labelPoint = Point1;
-                    }
-                    else
-                    {
-                        //Get mid point of geodetic line for labeling 
-                        var midPoint = new Point() as IPoint;
-                        ((IPolyline)((IGeometry)construct)).QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, false, midPoint);
-                        labelPoint = midPoint;
-                    }
-                    //Create text symbol using text and midPoint
-                    AddTextToMap(Point1 /*labelPoint*/, 
-                        string.Format("{0}:{1} {2}{3}{4}:{5} {6}", 
+                    //Create text symbol using text and Point1
+                    AddTextToMap(Point1, /* Use the start point for label */ 
+                        string.Format("{0}:{3}{1} {2}{3}{4}:{3}{5} {6}", 
                         "Distance", 
                         Math.Round(Distance,2).ToString("N2"),
                         dtVal.ToString(), 
