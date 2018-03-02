@@ -308,13 +308,22 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
                     //Get azimuth type
                     AzimuthTypes atVal = (AzimuthTypes)LineAzimuthType;
-                    //Get mid point of geodetic line
-                    var midPoint = new Point() as IPoint;
-                    ((IPolyline)((IGeometry)construct)).QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, false, midPoint);
                     //Check if line crosses the international dateline
-                    var labelPoint = (DoesLineCrossIntDateline((IPolyline)((IGeometry)construct))) ? Point1 : Point2;
+                    IPoint labelPoint = null;
+                    if ((DoesLineCrossIntDateline((IPolyline)((IGeometry)construct))))
+                    {
+                        //Use the starting point for labeling
+                        labelPoint = Point1;
+                    }
+                    else
+                    {
+                        //Get mid point of geodetic line for labeling 
+                        var midPoint = new Point() as IPoint;
+                        ((IPolyline)((IGeometry)construct)).QueryPoint(esriSegmentExtension.esriNoExtension, 0.5, false, midPoint);
+                        labelPoint = midPoint;
+                    }
                     //Create text symbol using text and midPoint
-                    AddTextToMap(midPoint != null ? midPoint : labelPoint, 
+                    AddTextToMap(Point1 /*labelPoint*/, 
                         string.Format("{0}:{1} {2}{3}{4}:{5} {6}", 
                         "Distance", 
                         Math.Round(Distance,2).ToString("N2"),
@@ -401,27 +410,41 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <returns>Polyline geometry</returns>
         private IPolyline GetIntDateline()
         {
-            var referenceFactory2 = (ISpatialReferenceFactory2)new SpatialReferenceEnvironment();
-            ISpatialReference WGS84 = referenceFactory2.CreateSpatialReference((int)esriSRGeoCSType.esriSRGeoCS_WGS1984);
-            IPointCollection pointCollection = new PolylineClass();
+            try
+            {
+                //Create WGS84
+                Type factoryType = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
+                var obj = Activator.CreateInstance(factoryType);
+                var srf = obj as ISpatialReferenceFactory3;
+                var WGS84 = srf.CreateSpatialReference(esriSRGeoCSType.esriSRGeoCS_WGS1984.GetHashCode());
 
-            // ------------- Ensure that both points have negative longitude values -------------------
-            IPoint point = new PointClass();
-            point.PutCoords(-170, 10); // Equivalent to 170 degrees WEST
-            point.SpatialReference = WGS84;
-            pointCollection.AddPoint(point);
+                var pointCollection = new PolylineClass();
+
+                // ------------- Ensure that both points have negative longitude values -------------------
+                var point = new PointClass();
+                point.PutCoords(180, 90); // Equivalent to 170 degrees WEST
+                point.SpatialReference = WGS84;
+                pointCollection.AddPoint(point);
 
 
-            point = new PointClass();
-            point.PutCoords(-200, 10); // Equivalent to 160 degrees EAST
-            point.SpatialReference = WGS84;
-            pointCollection.AddPoint(point);
-            // -----------------------------------------------------------------------
+                point = new PointClass();
+                point.PutCoords(180, -90); // Equivalent to 160 degrees EAST
+                point.SpatialReference = WGS84;
+                pointCollection.AddPoint(point);
+                // -----------------------------------------------------------------------
 
-            IPolyline polyline = (IPolyline)pointCollection;
-            polyline.SpatialReference = WGS84;
+                var polyline = (IPolyline)pointCollection;
+                polyline.SpatialReference = WGS84;
 
-            return polyline;
+                polyline.Project(ArcMap.Document.FocusMap.SpatialReference);
+
+                return polyline;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }            
+            return null;
         }
 
         /// <summary>
@@ -430,7 +453,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="inputLine"></param>
         /// <returns>bool</returns>
         private bool DoesLineCrossIntDateline(IPolyline inputLine)
-        {
+        {                        
             return (inputLine != null) ? ((IRelationalOperator)inputLine).Crosses(GetIntDateline()) : false;
         }
 
