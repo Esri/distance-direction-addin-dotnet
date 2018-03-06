@@ -1295,7 +1295,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             //Check if the geometry exists in the graphics list. 
             //If so, then exit
-            if (GraphicsList.Any(g => ((IRelationalOperator)g.Geometry).Equals(geom)))
+            if (GraphicsList.Any(g => ((IRelationalOperator)g.Geometry).Equals(geom) && g.GraphicType == GraphicTypes.Line))
                 return;
 
             IElement element = null;
