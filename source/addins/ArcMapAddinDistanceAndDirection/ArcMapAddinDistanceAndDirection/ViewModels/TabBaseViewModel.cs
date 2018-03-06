@@ -1223,7 +1223,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             RaisePropertyChanged(() => HasMapGraphics);
         }
 
-        internal void AddTextToMap(IGeometry geom, string text, double angle, AzimuthTypes azimuthType)
+        internal void AddTextToMap(IGeometry geom, string text, double angle, AzimuthTypes azimuthType, bool hasRotation = true)
         {
             if ((ArcMap.Application == null) || (ArcMap.Application.Document == null))
                 return;
@@ -1256,7 +1256,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             textEle.Text = text;
             ITextSymbol tsym = new TextSymbol();
 
-            tsym.Angle = 0;//rotate - rotation was removed per issue #289
+            tsym.Angle = (hasRotation) ? rotate : 0;
             tsym.HorizontalAlignment = esriTextHorizontalAlignment.esriTHALeft;
             textEle.Symbol = tsym;
             var elem = (IElement)textEle;
@@ -1295,7 +1295,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             //Check if the geometry exists in the graphics list. 
             //If so, then exit
-            if (GraphicsList.Any(g => ((IRelationalOperator)g.Geometry).Equals(geom)))
+            if (GraphicsList.Any(g => ((IRelationalOperator)g.Geometry).Equals(geom) && g.GraphicType == GraphicTypes.Line))
                 return;
 
             IElement element = null;

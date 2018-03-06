@@ -913,7 +913,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         }
 
                         //Add text using centroid point
-                        this.AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}",
+                        this.AddTextToMap(area.LabelPoint, string.Format("{0}:{1} {2}",
                             circleTypeLabel,
                             distanceLabel,
                             unitLabel));

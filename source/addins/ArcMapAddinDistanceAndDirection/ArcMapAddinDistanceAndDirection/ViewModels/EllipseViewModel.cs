@@ -688,7 +688,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                         if (area != null)
                         {                  
-                            AddTextToMap(area.Centroid, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
+                            AddTextToMap(area.LabelPoint, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
                                 "Major Axis",
                                 Math.Round(majAxisDist, 2),
                                 dtVal.ToString(),
