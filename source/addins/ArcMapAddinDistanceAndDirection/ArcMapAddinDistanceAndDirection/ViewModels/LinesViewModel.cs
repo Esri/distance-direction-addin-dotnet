@@ -317,7 +317,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         Environment.NewLine,
                         "Angle",
                         Math.Round(azimuth.Value,2),
-                        atVal.ToString()), (double)Azimuth, LineAzimuthType);
+                        atVal.ToString()), (double)Azimuth, LineAzimuthType, false);
                 }
 
                 ResetPoints();
