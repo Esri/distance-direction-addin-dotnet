@@ -955,7 +955,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var layer = layers.Next();
                 while (layer != null)
                 {
-                    if (layer is ICompositeLayer)
+                    if (layer is IBasemapLayer)
                     {
                         basemapLayer = layer;
                         break;
