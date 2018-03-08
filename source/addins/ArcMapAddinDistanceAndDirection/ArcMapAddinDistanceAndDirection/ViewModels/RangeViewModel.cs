@@ -430,12 +430,22 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = ((IPolyline)construct).ToPoint;
-                this.AddGraphicToMap(construct as IGeometry, color, attributes: rrAttributes);
+                AddGraphicToMap(construct as IGeometry, color, attributes: rrAttributes);
                 maxDistance = Math.Max(Distance, maxDistance);
 
                 // Use negative Distance to get the location for the distance label
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-                this.AddTextToMap(construct as IGeometry, String.Format("{0} {1}", Math.Round(Distance, 2).ToString(), lineDistanceType.ToString()));
+                // Create a non geodesic circle
+                var circleGeom = CreateCircleGeometry(Point1, maxDistance);
+                // Get the basemap extent
+                var basemapExt = GetBasemapExtent(ArcMap.Document.FocusMap);
+                // Check if circle is within the basemap extent. If circle is within basemap boundary,
+                // then use the geodesic circle for labeling. If it's not, then use the non-geodesic 
+                // circle to label.
+                bool isWithin = true;
+                if (basemapExt != null)
+                    isWithin = IsGeometryWithinExtent(circleGeom, basemapExt);
+                AddTextToMap((isWithin) ? (IGeometry)construct : circleGeom, String.Format("{0} {1}", Math.Round(Distance, 2).ToString(), lineDistanceType.ToString()));
             }
         }
 

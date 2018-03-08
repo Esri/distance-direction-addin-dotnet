@@ -942,6 +942,70 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         }
 
         /// <summary>
+        /// Returns the extent of a basemap
+        /// </summary>
+        /// <param name="map">IMap interface</param>
+        /// <returns>IEnvelope interface</returns>
+        internal IEnvelope GetBasemapExtent(IMap map)
+        {
+            try
+            {
+                var basemapList = new List<IEnvelope>();
+
+                var layers = map.get_Layers();
+                var layer = layers.Next();
+                while (layer != null)
+                {
+                    if (layer is IBasemapLayer)
+                        basemapList.Add(layer.AreaOfInterest);
+                    layer = layers.Next();
+                }
+                if (basemapList.Count > 1) 
+                    return basemapList.Aggregate((a,b) => ((IArea)a).Area > ((IArea)b).Area ? a : b);
+                if (basemapList.Count == 1)
+                    return basemapList[0];
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Checks if a input geometry is within an extent
+        /// </summary>
+        /// <param name="inputGeom">Input Geometry</param>
+        /// <param name="searchExtent">Search Extent</param>
+        /// <returns>bool</returns>
+        internal bool IsGeometryWithinExtent(IGeometry inputGeom, IEnvelope searchExtent)
+        {
+            if (inputGeom != null && searchExtent != null)
+            {
+                return ((IRelationalOperator)inputGeom).Within(searchExtent);
+            }
+            return true;
+        }
+        
+        /// <summary>
+        /// Creates a circle geometry based on center point and radius
+        /// </summary>
+        /// <param name="centerPoint">IPoint - Center Point </param>
+        /// <param name="radius">double - Radius</param>
+        /// <returns>IGeometry</returns>
+        internal IGeometry CreateCircleGeometry(IPoint centerPoint, double radius)
+        {
+            var circularArc = new CircularArcClass();
+            var construtionCircularArc = (IConstructCircularArc)circularArc;
+            construtionCircularArc.ConstructCircle(centerPoint, radius, true);
+            var seg = (ISegment)construtionCircularArc;
+            var segCollection = new PolylineClass();
+            segCollection.AddSegment(seg);
+            var geom = (IGeometry)segCollection;
+            return geom;
+        }
+
+        /// <summary>
         /// Unions all extents 
         /// </summary>
         /// <param name="map"></param>
@@ -1239,15 +1303,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (gc == null)
                 return;
 
-            double bearing = 0.0;
-            if (azimuthType == AzimuthTypes.Mils)
-            {
-                bearing = angle * 0.05625;
-            }
-            else
-            {
-                bearing = angle;
-            }
+            double bearing = (azimuthType == AzimuthTypes.Mils) ? angle * 0.05625 : angle;
 
             double rotate = 360 - (bearing + 270.0) % 360;
             if (rotate > 90 && rotate <= 270)
@@ -1257,7 +1313,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             ITextSymbol tsym = new TextSymbol();
 
             tsym.Angle = (hasRotation) ? rotate : 0;
-            tsym.HorizontalAlignment = esriTextHorizontalAlignment.esriTHALeft;
+            if (!hasRotation)
+                tsym.HorizontalAlignment = esriTextHorizontalAlignment.esriTHALeft;
             textEle.Symbol = tsym;
             var elem = (IElement)textEle;
             elem.Geometry = geom;
@@ -1268,9 +1325,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (geom.GeometryType == esriGeometryType.esriGeometryPoint)
                 GraphicsList.Add(new Graphic(GraphicTypes.Point, eprop.Name, geom, this, false));
             else if (this is LinesViewModel)
-            {
                 GraphicsList.Add(new Graphic(GraphicTypes.Line, eprop.Name, geom, this, false));
-            }
             else if (this is CircleViewModel)
                 GraphicsList.Add(new Graphic(GraphicTypes.Circle, eprop.Name, geom, this, false));
             else if (this is EllipseViewModel)
