@@ -950,22 +950,20 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             try
             {
-                ILayer basemapLayer = null;
+                var basemapList = new List<IEnvelope>();
+
                 var layers = map.get_Layers();
                 var layer = layers.Next();
                 while (layer != null)
                 {
                     if (layer is IBasemapLayer)
-                    {
-                        basemapLayer = layer;
-                        break;
-                    }
+                        basemapList.Add(layer.AreaOfInterest);
                     layer = layers.Next();
                 }
-                if (basemapLayer != null)
-                {
-                    return basemapLayer.AreaOfInterest;
-                }
+                if (basemapList.Count > 1) 
+                    return basemapList.Aggregate((a,b) => ((IArea)a).Area > ((IArea)b).Area ? a : b);
+                if (basemapList.Count == 1)
+                    return basemapList[0];
             }
             catch (Exception ex)
             {
@@ -982,8 +980,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <returns>bool</returns>
         internal bool IsGeometryWithinExtent(IGeometry inputGeom, IEnvelope searchExtent)
         {
-            return (inputGeom != null && searchExtent != null) ? 
-                ((IRelationalOperator)inputGeom).Within(searchExtent) : false;
+            if (inputGeom != null && searchExtent != null)
+            {
+                return ((IRelationalOperator)inputGeom).Within(searchExtent);
+            }
+            return true;
+            //return (inputGeom != null && searchExtent != null) ? 
+            //    ((IRelationalOperator)inputGeom).Within(searchExtent) : false;
         }
         
         /// <summary>
@@ -1000,7 +1003,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var seg = (ISegment)construtionCircularArc;
             var segCollection = new PolylineClass();
             segCollection.AddSegment(seg);
-            return (IGeometry)segCollection;
+            var geom = (IGeometry)segCollection;
+            //geom.Project(ArcMap.Document.FocusMap.SpatialReference); //Reproject to match current spatial reference
+            return geom;
         }
 
         /// <summary>
