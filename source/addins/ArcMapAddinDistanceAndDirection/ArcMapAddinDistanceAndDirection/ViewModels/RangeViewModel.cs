@@ -437,8 +437,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 // Create a non geodesic circle
                 var circleGeom = CreateCircleGeometry(Point1, maxDistance);
-                // Check if circle is within the basemap extent.
-                var isWithin = IsGeometryWithinExtent(circleGeom, GetBasemapExtent(ArcMap.Document.FocusMap));
+                // Get the basemap extent
+                var basemapExt = GetBasemapExtent(ArcMap.Document.FocusMap);
+                // Check if circle is within the basemap extent. If circle is within basemap boundary,
+                // then use the geodesic circle for labeling. If it's not, then use the non-geodesic 
+                // circle to label.
+                bool isWithin = true;
+                if (basemapExt != null)
+                    isWithin = IsGeometryWithinExtent(circleGeom, basemapExt);
                 AddTextToMap((isWithin) ? (IGeometry)construct : circleGeom, String.Format("{0} {1}", Math.Round(Distance, 2).ToString(), lineDistanceType.ToString()));
             }
         }
