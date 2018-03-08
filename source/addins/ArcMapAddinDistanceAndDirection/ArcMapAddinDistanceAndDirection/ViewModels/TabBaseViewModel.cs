@@ -985,8 +985,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return ((IRelationalOperator)inputGeom).Within(searchExtent);
             }
             return true;
-            //return (inputGeom != null && searchExtent != null) ? 
-            //    ((IRelationalOperator)inputGeom).Within(searchExtent) : false;
         }
         
         /// <summary>
@@ -1004,7 +1002,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var segCollection = new PolylineClass();
             segCollection.AddSegment(seg);
             var geom = (IGeometry)segCollection;
-            //geom.Project(ArcMap.Document.FocusMap.SpatialReference); //Reproject to match current spatial reference
             return geom;
         }
 
