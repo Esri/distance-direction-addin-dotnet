@@ -387,62 +387,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 System.Diagnostics.Debug.WriteLine(ex);
             }
         }
-
-        /// <summary>
-        /// Creates the international dateline as a polyline geometry
-        /// 
-        /// Source: https://github.com/Esri/developer-support/blob/master/arcobjects-net/international-dateline-draw-line-across/CreateLine.cs
-        /// </summary>
-        /// <returns>Polyline geometry</returns>
-        private IPolyline GetIntDateline()
-        {
-            try
-            {
-                //Create WGS84
-                Type factoryType = Type.GetTypeFromProgID("esriGeometry.SpatialReferenceEnvironment");
-                var obj = Activator.CreateInstance(factoryType);
-                var srf = obj as ISpatialReferenceFactory3;
-                var WGS84 = srf.CreateSpatialReference(esriSRGeoCSType.esriSRGeoCS_WGS1984.GetHashCode());
-
-                var pointCollection = new PolylineClass();
-
-                // ------------- Ensure that both points have negative longitude values -------------------
-                var point = new PointClass();
-                point.PutCoords(180, 90); // Equivalent to 170 degrees WEST
-                point.SpatialReference = WGS84;
-                pointCollection.AddPoint(point);
-
-
-                point = new PointClass();
-                point.PutCoords(180, -90); // Equivalent to 160 degrees EAST
-                point.SpatialReference = WGS84;
-                pointCollection.AddPoint(point);
-                // -----------------------------------------------------------------------
-
-                var polyline = (IPolyline)pointCollection;
-                polyline.SpatialReference = WGS84;
-
-                polyline.Project(ArcMap.Document.FocusMap.SpatialReference);
-
-                return polyline;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
-            }            
-            return null;
-        }
-
-        /// <summary>
-        /// Checks if a polyline geometry crosses the international dateline
-        /// </summary>
-        /// <param name="inputLine"></param>
-        /// <returns>bool</returns>
-        private bool DoesLineCrossIntDateline(IPolyline inputLine)
-        {                        
-            return (inputLine != null) ? ((IRelationalOperator)inputLine).Crosses(GetIntDateline()) : false;
-        }
-
         #endregion
 
         #region Mediator methods
