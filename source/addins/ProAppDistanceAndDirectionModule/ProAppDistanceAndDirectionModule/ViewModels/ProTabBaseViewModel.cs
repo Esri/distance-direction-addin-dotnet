@@ -392,6 +392,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                
+                // Prevents a stack overflow if the point is past -180 latitude, for example
+                if (double.IsNaN(value))
+                    return;
 
                 distance = value;
                 DistanceString = distance.ToString("G");
