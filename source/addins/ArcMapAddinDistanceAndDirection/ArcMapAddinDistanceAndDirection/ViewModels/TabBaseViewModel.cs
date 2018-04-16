@@ -782,7 +782,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             if (!IsValidPoint(point))
             {
-                MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI);
+                MessageBox.Show(
+                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
 

@@ -392,10 +392,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (value < 0.0)
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
-                
+
                 // Prevents a stack overflow if the point is past -180 latitude, for example
                 if (double.IsNaN(value))
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation);
                     return;
+                }
 
                 distance = value;
                 DistanceString = distance.ToString("G");
