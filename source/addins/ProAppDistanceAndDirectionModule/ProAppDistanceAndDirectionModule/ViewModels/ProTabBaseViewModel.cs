@@ -400,6 +400,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
                         DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
                         System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation);
+
+                    // Reset the points/distance or MessageBox may pop-up indefinitely
+                    Reset(false);
+
                     return;
                 }
 
