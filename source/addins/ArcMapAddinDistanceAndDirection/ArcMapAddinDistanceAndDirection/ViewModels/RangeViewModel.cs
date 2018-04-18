@@ -319,6 +319,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (point == null)
                 return;
 
+            if (!IsValidPoint(point))
+            {
+                System.Windows.Forms.MessageBox.Show(
+                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        System.Windows.Forms.MessageBoxButtons.OK,
+                        System.Windows.Forms.MessageBoxIcon.Exclamation);
+                return;
+            }
+
             if (!IsInteractive)
             {
                 Point1 = point;
