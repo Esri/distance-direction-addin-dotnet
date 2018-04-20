@@ -19,6 +19,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using System.Linq;
 
 // Esri
 using ArcGIS.Desktop.Catalog;
@@ -87,8 +88,8 @@ namespace ProAppDistanceAndDirectionModule.Models
             //Show the dialog and get the response
             if (ok == true)
             {
-                if (featureChecked == true && saveItemDlg.FilePath.IndexOf(".gdb") == -1)
-                {
+                if (ContainsInvalidChars(Path.GetFileName(saveItemDlg.FilePath)))
+                {                    
                     MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.FeatureClassNameError,
                         DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel, MessageBoxButton.OK,
                         MessageBoxImage.Exclamation);
@@ -452,6 +453,11 @@ namespace ProAppDistanceAndDirectionModule.Models
             {
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        private static bool ContainsInvalidChars(string filename)
+        {
+            return Path.GetInvalidFileNameChars().Any(item => filename.Contains(item));
         }
 
         private static List<Graphic> ClearTempGraphics(List<Graphic> graphicsList)
