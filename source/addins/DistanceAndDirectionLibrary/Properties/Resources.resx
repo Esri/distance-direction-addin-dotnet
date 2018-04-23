@@ -144,6 +144,9 @@
   <data name="DistanceDirectionLabel" xml:space="preserve">
     <value>Distance and Direction</value>
   </data>
+  <data name="EndPointAndStartPointSameError" xml:space="preserve">
+    <value>Ending Point should not be the same as the Starting Point</value>
+  </data>
   <data name="EnumBearingAndDistance" xml:space="preserve">
     <value>Distance and Bearing</value>
   </data>
