@@ -64,6 +64,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             Mediator.Register(Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
             Mediator.Register(Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
             Mediator.Register(Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
+            Mediator.Register(Constants.TOC_ITEMS_CHANGED, onActiveViewChagedEvent);
 
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
@@ -784,7 +785,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 MessageBox.Show(
                         DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
-                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel,
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }
@@ -1142,6 +1143,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
             IsToolActive = false;
             IsActiveTab = (obj == this);
+        }
+
+        /// <summary>
+        /// Revalidate Point2Formatted when items in the TOC changed
+        /// </summary>
+        private void onActiveViewChagedEvent(object obj)
+        {
+            if (ArcMap.LayerCount > 0)
+            {
+                RaisePropertyChanged(() => Point2Formatted);
+            }
         }
 
         /// <summary>

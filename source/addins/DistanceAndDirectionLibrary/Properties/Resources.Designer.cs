@@ -466,6 +466,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The operation requires a valid spatial reference.
+        /// </summary>
+        public static string InvalidSpatialReferenceError {
+            get {
+                return ResourceManager.GetString("InvalidSpatialReferenceError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Angle.
         /// </summary>
         public static string LabelAngle {
