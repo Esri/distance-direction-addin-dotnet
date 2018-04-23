@@ -22,7 +22,7 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
 using System.Collections.Generic;
-using System.Threading;
+using System.Windows.Forms;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -210,6 +210,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         // when someone hits the enter key, create geodetic graphic
         internal override void OnEnterKeyCommand(object obj)
         {
+            if (ArcMap.Document.FocusMap.SpatialReference == null)
+            {
+                MessageBox.Show(
+                        DistanceAndDirectionLibrary.Properties.Resources.InvalidSpatialReferenceError,
+                        DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel,
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }           
+
             string outFormattedString = string.Empty;
             CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Models.CoordinateType.Unknown;
             if (LineFromType == LineFromTypes.Points)
