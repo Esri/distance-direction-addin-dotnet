@@ -278,6 +278,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     RaisePropertyChanged(() => Point2Formatted);
                     return;
                 }
+
+                // Point1Formatted should never equal to Point2Formatted
+                if (Point1Formatted.ToLower().Trim().Equals(value.ToLower().Trim()))
+                {
+                    Point2 = null;
+                    HasPoint2 = false;
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.EndPointAndStartPointSameError);
+                }
+
                 // try to convert string to an IPoint
                 string outFormattedString = string.Empty;
                 CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(value, out outFormattedString);
