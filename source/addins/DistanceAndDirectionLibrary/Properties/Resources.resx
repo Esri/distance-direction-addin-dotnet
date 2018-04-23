@@ -252,6 +252,9 @@
   <data name="FeatureClassNameError" xml:space="preserve">
     <value>Please provide a valid feature class name</value>
   </data>
+  <data name="InvalidSpatialReferenceError" xml:space="preserve">
+    <value>The operation requires a valid spatial reference</value>
+  </data>
   <data name="LabelAngle" xml:space="preserve">
     <value>Angle</value>
   </data>
