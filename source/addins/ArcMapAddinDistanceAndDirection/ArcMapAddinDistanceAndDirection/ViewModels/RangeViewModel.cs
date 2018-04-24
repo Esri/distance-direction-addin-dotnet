@@ -14,12 +14,12 @@
 
 // System
 using System;
+using System.Linq;
 
 // Esri
 using ESRI.ArcGIS.Display;
 using ESRI.ArcGIS.Geometry;
-using ESRI.ArcGIS.ArcMapUI;
-using ESRI.ArcGIS.Carto;
+
 
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
@@ -76,6 +76,72 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     NumberOfRings = 0;
             }
         }
+
+        private string DelimiterString { get; set; }
+        private string rangeDistanceString = string.Empty;
+        public override string DistanceString
+        {
+            get
+            {
+                return rangeDistanceString;
+            }
+
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(distanceString, value))
+                {
+                    return;
+                }
+                rangeDistanceString = value;
+
+                //Check for delimiters
+                DelimiterString = "";
+                foreach (var delimiter in new List<string>() { ",", ";", " " })
+                {
+                    if (value.IndexOf(delimiter) != -1)
+                    {
+                        DelimiterString = delimiter;
+                        break;
+                    }
+                }
+
+                //Split the distance string
+                var intervalList = value.Split(DelimiterString.ToCharArray()).ToList();
+                if (intervalList.Count > 2 && NumberOfRings != intervalList.Count)
+                {
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.RingsIntervalsMismatchError);
+                }
+
+                foreach (var v in intervalList)
+                {
+                    double d = 0.0;
+                    if (string.IsNullOrEmpty(v)) continue;
+                    if (string.IsNullOrWhiteSpace(v)) continue;
+                    if (double.TryParse(v, out d))
+                    {
+                        //Must be positive 
+                        if (d < 0.0)
+                        {
+                            throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                        }
+                        // Prevent graphical glitches from excessively high inputs
+                        double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, d);
+                        if (distanceInMeters > DistanceLimit)
+                        {
+                            ClearTempGraphics();
+                            throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    }
+                }                
+            }
+        }
+
+        private List<double> RangeIntervals { get; set; }
 
         DistanceTypes lineDistanceType = DistanceTypes.Meters;
         /// <summary>
@@ -149,6 +215,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
                 numberOfRings = value;
                 RaisePropertyChanged(() => NumberOfRings);
+                RaisePropertyChanged(() => DistanceString);
             }
         }
 
@@ -176,7 +243,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (IsInteractive)
                     return (Point1 != null && NumberOfRadials >=0);
                 else
-                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && Distance > 0.0);
+                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && RangeIntervals.Count > 0 /*Distance > 0.0*/);
             }
         }
 
@@ -270,7 +337,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 for (int x = 0; x < numberOfRings; x++)
                 {
                     // set the current radius
-                    radius += Distance;
+                    radius += RangeIntervals.Count == 1 ? RangeIntervals[0] : RangeIntervals[x]; //Distance;
                     var polyLine = (IPolyline)new Polyline();
                     polyLine.SpatialReference = Point1.SpatialReference;
                     const double DENSIFY_ANGLE_IN_DEGREES = 5.0;
@@ -294,7 +361,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
                     this.AddTextToMap((IGeometry)construct, String.Format("{0} {1}", radius.ToString(), dtVal.ToString()));
                 }
-
                 return (IGeometry)construct;
             }
             catch(Exception ex)
@@ -376,6 +442,25 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        internal override void OnEnterKeyCommand(object obj)
+        {
+            //Iterate through the distance string
+            foreach (var v in DistanceString.Split(DelimiterString.ToCharArray()).ToList())
+            {
+                double d = 0.0;
+                if (double.TryParse(v, out d))
+                {
+                    //Add interval
+                    if (RangeIntervals == null)
+                    {
+                        RangeIntervals = new List<double>();
+                    }
+                    RangeIntervals.Add(d);
+                }
+            }
+            base.OnEnterKeyCommand(obj);
+        }
+
         /// <summary>
         /// Override the mouse move event to dynamically update the center point
         /// Also dynamically update the ring feedback
@@ -420,7 +505,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         internal override void Reset(bool toolReset)
         {
             base.Reset(toolReset);
-
+            RangeIntervals = new List<double>();
             NumberOfRadials = 0;
         }
 
