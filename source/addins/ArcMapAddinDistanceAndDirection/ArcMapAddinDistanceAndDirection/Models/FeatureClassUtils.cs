@@ -295,27 +295,37 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
         public void DeleteShapeFile(string shapeFilePath)
         {
-            string fcName = System.IO.Path.GetFileName(shapeFilePath);
-            string folderName = System.IO.Path.GetDirectoryName(shapeFilePath);
+            string shapeFile = shapeFilePath;
 
-            using (ComReleaser oComReleaser = new ComReleaser())
+            // WORKAROUND: ArcObjects Delete below not removing all of the files
+            string[] extensionNames = { ".cpg", ".dbf", ".prj", ".shx", ".shp", ".sbn", ".sbx" };
+            foreach (string extension in extensionNames)
             {
-                IWorkspaceFactory workspaceFactory = new ShapefileWorkspaceFactory();
-                IWorkspace workspace = workspaceFactory.OpenFromFile(folderName, 0);
-                IFeatureWorkspace fWorkspace = (IFeatureWorkspace)workspace;
-                IDataset ipDs = (IDataset)fWorkspace.OpenFeatureClass(fcName);
-                ipDs.Delete();
-
-                File.Delete(shapeFilePath);
-
-                System.Runtime.InteropServices.Marshal.FinalReleaseComObject(workspace);
-                workspace = null;
-                fWorkspace = null;
-                ipDs = null;
+                string fileToDelete = System.IO.Path.ChangeExtension(shapeFile, extension);
+                if (File.Exists(fileToDelete))
+                    File.Delete(fileToDelete);
             }
- 
-            GC.Collect();
-            
+            // Note: .lock file will not be removed until ArcMap exits
+
+            // Original code:
+            // string folderName = System.IO.Path.GetDirectoryName(shapeFilePath);
+            //using (ComReleaser oComReleaser = new ComReleaser())
+            //{
+            //    IWorkspaceFactory workspaceFactory = new ShapefileWorkspaceFactory();
+            //    IWorkspace workspace = workspaceFactory.OpenFromFile(folderName, 0);
+            //    IFeatureWorkspace fWorkspace = (IFeatureWorkspace)workspace;
+            //    IDataset ipDs = (IDataset)fWorkspace.OpenFeatureClass(fcName);
+            //    ipDs.Delete();
+            //
+            //    File.Delete(shapeFilePath);
+            //
+            //    System.Runtime.InteropServices.Marshal.FinalReleaseComObject(workspace);
+            //    workspace = null;
+            //    fWorkspace = null;
+            //    ipDs = null;
+            //}
+            //GC.Collect();
+
         }
 
         /// <summary>

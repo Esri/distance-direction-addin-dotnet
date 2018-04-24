@@ -431,13 +431,13 @@ namespace ProAppDistanceAndDirectionModule.Models
                     await KMLUtils.ConvertLayerToKML(connection, dataset, MapView.Active);
 
                     // Delete temporary Shapefile
-                    string[] extensionNames = { ".cpg", ".dbf", ".prj", ".shx", ".shp", ".sbn", ".sbx" };
+                    string[] extensionNames = { ".cpg", ".dbf", ".prj", ".shx", ".shp", ".sbn", ".sbx", ".shp.xml" };
                     string datasetNoExtension = Path.GetFileNameWithoutExtension(dataset);
                     foreach (string extension in extensionNames)
                     {
                         string shapeFile = Path.Combine(connection, datasetNoExtension + extension);
                         string shapefileproj = Path.Combine(connection, datasetNoExtension + "_proj" + extension);
-                        if(File.Exists(shapeFile))
+                        if (File.Exists(shapeFile))
                             File.Delete(shapeFile);
                         if (File.Exists(shapefileproj))
                             File.Delete(shapefileproj);

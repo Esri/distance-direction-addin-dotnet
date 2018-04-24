@@ -338,6 +338,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
                 }
 
+                // Point1Formatted should never equal to Point2Formatted
+                if (Point1Formatted.ToLower().Trim().Equals(value.ToLower().Trim()))
+                {
+                    Point2 = null;
+                    HasPoint2 = false;
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.EndPointAndStartPointSameError);
+                }
+
                 // try to convert string to a MapPoint
                 string outFormattedString = string.Empty;
                 CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(value, out outFormattedString);
