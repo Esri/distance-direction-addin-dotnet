@@ -142,6 +142,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Ending Point should not be the same as the Starting Point.
+        /// </summary>
+        public static string EndPointAndStartPointSameError {
+            get {
+                return ResourceManager.GetString("EndPointAndStartPointSameError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Distance and Bearing.
         /// </summary>
         public static string EnumBearingAndDistance {
