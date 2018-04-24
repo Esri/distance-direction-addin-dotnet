@@ -13,14 +13,13 @@
 // limitations under the License.
 
 using ArcGIS.Core.Geometry;
-using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -92,6 +91,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 numberOfRings = value;
                 RaisePropertyChanged(() => NumberOfRings);
+                RaisePropertyChanged(() => DistanceString);
             }
         }
 
@@ -119,10 +119,81 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (IsInteractive)
                     return (Point1 != null && NumberOfRadials >= 0);
                 else
-                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && Distance > 0.0);
+                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && RangeIntervals.Count > 0);
             }
         }
 
+        private string DelimiterString { get; set; }
+        private string rangeDistanceString = string.Empty;
+        private double DistanceLimit = 20000000;
+        public override string DistanceString
+        {
+            get
+            {
+                return rangeDistanceString;
+            }
+
+            set
+            {
+                // lets avoid an infinite loop here
+                if (string.Equals(distanceString, value))
+                {
+                    return;
+                }
+                rangeDistanceString = value;
+
+                //Check for delimiters
+                DelimiterString = "";
+                foreach (var delimiter in new List<string>() { ",", ";", " " })
+                {
+                    if (value.IndexOf(delimiter) != -1)
+                    {
+                        DelimiterString = delimiter;
+                        break;
+                    }
+                }
+
+                //Split the distance string
+                var intervalList = value.Split(DelimiterString.ToCharArray()).ToList();
+                if (intervalList.Count > 2 && NumberOfRings != intervalList.Count)
+                {
+                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.RingsIntervalsMismatchError);
+                }
+
+                foreach (var v in intervalList)
+                {
+                    double d = 0.0;
+                    if (string.IsNullOrEmpty(v)) continue;
+                    if (string.IsNullOrWhiteSpace(v)) continue;
+                    if (double.TryParse(v, out d))
+                    {
+                        //Must be positive 
+                        if (d < 0.0)
+                        {
+                            throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                        }
+                        //Rings must be more than 0 in length
+                        if (d == 0.0)
+                        {
+                            throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.ZeroLengthIntervalError);
+                        }
+                        // Prevent graphical glitches from excessively high inputs
+                        double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, d);
+                        if (distanceInMeters > DistanceLimit)
+                        {
+                            ClearTempGraphics();
+                            throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                        }
+                    }
+                    else
+                    {
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    }
+                }
+            }
+        }
+
+        private List<double> RangeIntervals { get; set; }
         #endregion Properties
 
         /// <summary>
@@ -235,7 +306,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 for (int x = 0; x < numberOfRings; x++)
                 {
                     // set the current radius
-                    radius += Distance;
+                    radius += RangeIntervals.Count == 1 ? RangeIntervals[0] : RangeIntervals[x];
 
                     var param = new GeodesicEllipseParameter();
                     
@@ -346,6 +417,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        internal override void OnEnterKeyCommand(object obj)
+        {
+            //Iterate through the distance string
+            foreach (var v in DistanceString.Split(DelimiterString.ToCharArray()).ToList())
+            {
+                double d = 0.0;
+                if (double.TryParse(v, out d))
+                {
+                    //Add interval
+                    if (RangeIntervals == null)
+                    {
+                        RangeIntervals = new List<double>();
+                    }
+                    RangeIntervals.Add(d);
+                }
+            }
+            base.OnEnterKeyCommand(obj);
+        }
+
         /// <summary>
         /// Method to handle map point tool double click
         /// End interactive drawing of range rings
@@ -361,6 +451,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             base.Reset(toolReset);
 
+            RangeIntervals = new List<double>();
             NumberOfRadials = 0;
             NumberOfRings = 10;
         }

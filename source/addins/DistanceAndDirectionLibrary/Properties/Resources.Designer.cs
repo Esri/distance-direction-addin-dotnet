@@ -835,6 +835,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Number of rings must match the number of intervals supplied.
+        /// </summary>
+        public static string RingsIntervalsMismatchError {
+            get {
+                return ResourceManager.GetString("RingsIntervalsMismatchError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Properties.
         /// </summary>
         public static string TitleEditProperties {
@@ -858,6 +867,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         public static string TooltipMapPointTool {
             get {
                 return ResourceManager.GetString("TooltipMapPointTool", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ring interval must be more than 0 in length.
+        /// </summary>
+        public static string ZeroLengthIntervalError {
+            get {
+                return ResourceManager.GetString("ZeroLengthIntervalError", resourceCulture);
             }
         }
     }

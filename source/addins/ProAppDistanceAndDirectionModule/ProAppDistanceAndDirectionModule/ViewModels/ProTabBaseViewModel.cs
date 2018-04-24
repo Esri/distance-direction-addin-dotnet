@@ -837,7 +837,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             ResetFeedback();
 
-            Distance = 0.0;
+            Distance = 1.0;
 
 
             ClearTempGraphics();
