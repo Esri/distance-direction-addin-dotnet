@@ -125,6 +125,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         {
                             throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
                         }
+                        //Rings must be more than 0 in length
+                        if (d == 0)
+                        {
+                            throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.ZeroLengthIntervalError);
+                        }
                         // Prevent graphical glitches from excessively high inputs
                         double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, d);
                         if (distanceInMeters > DistanceLimit)
@@ -243,7 +248,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (IsInteractive)
                     return (Point1 != null && NumberOfRadials >=0);
                 else
-                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && RangeIntervals.Count > 0 /*Distance > 0.0*/);
+                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && RangeIntervals.Count > 0);
             }
         }
 
@@ -337,7 +342,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 for (int x = 0; x < numberOfRings; x++)
                 {
                     // set the current radius
-                    radius += RangeIntervals.Count == 1 ? RangeIntervals[0] : RangeIntervals[x]; //Distance;
+                    radius += RangeIntervals.Count == 1 ? RangeIntervals[0] : RangeIntervals[x];
                     var polyLine = (IPolyline)new Polyline();
                     polyLine.SpatialReference = Point1.SpatialReference;
                     const double DENSIFY_ANGLE_IN_DEGREES = 5.0;
@@ -507,6 +512,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             base.Reset(toolReset);
             RangeIntervals = new List<double>();
             NumberOfRadials = 0;
+            NumberOfRings = 10;
         }
 
         private void ConstructGeoCircle()
