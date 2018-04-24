@@ -387,4 +387,7 @@
   <data name="TooltipMapPointTool" xml:space="preserve">
     <value>Map Point Tool</value>
   </data>
+  <data name="ZeroLengthIntervalError" xml:space="preserve">
+    <value>Ring interval must be more than 0 in length</value>
+  </data>
 </root>
