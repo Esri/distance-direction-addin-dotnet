@@ -88,7 +88,7 @@ namespace ProAppDistanceAndDirectionModule.Models
             //Show the dialog and get the response
             if (ok == true)
             {
-                if (ContainsInvalidChars(Path.GetFileName(saveItemDlg.FilePath)))
+                if (ContainsInvalidChars(Path.GetFileName(saveItemDlg.InitialLocation)))
                 {                    
                     MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.FeatureClassNameError,
                         DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel, MessageBoxButton.OK,
@@ -455,9 +455,22 @@ namespace ProAppDistanceAndDirectionModule.Models
             }
         }
 
+        /// <summary>
+        /// Checks if file name has illegal characters
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>
         private static bool ContainsInvalidChars(string filename)
-        {
-            return Path.GetInvalidFileNameChars().Any(item => filename.Contains(item));
+        {         
+            if (Path.GetInvalidFileNameChars().Any(item => filename.Contains(item)))
+            {
+                return true;
+            }
+            if (filename.ToLower().Contains(".gdb"))
+            {
+                return true;
+            }
+            return false;
         }
 
         private static List<Graphic> ClearTempGraphics(List<Graphic> graphicsList)
