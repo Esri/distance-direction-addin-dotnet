@@ -375,6 +375,9 @@
   <data name="MsgOutOfAOI" xml:space="preserve">
     <value>Point is out of bounds</value>
   </data>
+  <data name="RingsIntervalsMismatchError" xml:space="preserve">
+    <value>Number of rings must match the number of intervals supplied</value>
+  </data>
   <data name="TitleEditProperties" xml:space="preserve">
     <value>Edit Properties</value>
   </data>
