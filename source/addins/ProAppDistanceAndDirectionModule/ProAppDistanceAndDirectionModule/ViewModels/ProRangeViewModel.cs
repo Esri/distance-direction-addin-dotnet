@@ -119,7 +119,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (IsInteractive)
                     return (Point1 != null && NumberOfRadials >= 0);
                 else
-                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && RangeIntervals.Count > 0 /*Distance > 0.0*/);
+                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && RangeIntervals.Count > 0);
             }
         }
 
@@ -171,6 +171,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         if (d < 0.0)
                         {
                             throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                        }
+                        //Rings must be more than 0 in length
+                        if (d == 0.0)
+                        {
+                            throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.ZeroLengthIntervalError);
                         }
                         // Prevent graphical glitches from excessively high inputs
                         double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, d);
@@ -301,7 +306,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 for (int x = 0; x < numberOfRings; x++)
                 {
                     // set the current radius
-                    radius += RangeIntervals.Count == 1 ? RangeIntervals[0] : RangeIntervals[x]; //Distance;
+                    radius += RangeIntervals.Count == 1 ? RangeIntervals[0] : RangeIntervals[x];
 
                     var param = new GeodesicEllipseParameter();
                     
@@ -448,7 +453,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             RangeIntervals = new List<double>();
             NumberOfRadials = 0;
-            NumberOfRings = 2;
+            NumberOfRings = 10;
         }
 
         private void ConstructGeoCircle()
