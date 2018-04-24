@@ -869,5 +869,14 @@ namespace DistanceAndDirectionLibrary.Properties {
                 return ResourceManager.GetString("TooltipMapPointTool", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ring interval must be more than 0 in length.
+        /// </summary>
+        public static string ZeroLengthIntervalError {
+            get {
+                return ResourceManager.GetString("ZeroLengthIntervalError", resourceCulture);
+            }
+        }
     }
 }
