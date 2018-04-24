@@ -474,5 +474,15 @@ namespace ProAppDistanceAndDirectionModule.Models
             }
             return list;
         }
+
+        public static string AddinAssemblyLocation()
+        {
+            var asm = System.Reflection.Assembly.GetExecutingAssembly();
+            return System.IO.Path.GetDirectoryName(
+                              Uri.UnescapeDataString(
+                                      new Uri(asm.CodeBase).LocalPath));
+        }
+
+
     }
 }
