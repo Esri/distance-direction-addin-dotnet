@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:ArcGIS.Desktop.Framework.Controls;assembly=ArcGIS.Desktop.Framework"
              xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"                      
-             mc:Ignorable="d" Width="168" Height="119" 
+             mc:Ignorable="d" Width="168" Height="125" 
              ResizeMode="NoResize" SizeToContent="WidthAndHeight" 
              Title="Select Output" WindowStartupLocation="CenterScreen" 
              Topmost="True">
@@ -22,7 +22,7 @@
             <RadioButton IsChecked="{Binding ShapeIsChecked}" x:Name="rbShape" Content="Shapefile" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top"/>
             <RadioButton IsChecked="{Binding KmlIsChecked}" x:Name="rbKml" Content="KMZ" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top" />
         </StackPanel>
-        <StackPanel Height="35" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Height="40" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button x:Name="btnOk" Content="OK" Click="Button_Click" 
                     Width="75" Margin="3,8,3,5" 
                     Style="{DynamicResource Esri_Button}" />
