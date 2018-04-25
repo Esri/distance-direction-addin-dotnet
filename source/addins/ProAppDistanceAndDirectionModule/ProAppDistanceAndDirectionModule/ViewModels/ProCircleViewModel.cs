@@ -803,8 +803,23 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private ProgressDialog _progressDialog = null;
 
+        public async Task<bool> HasCircleFeatures()
+        {
+            FeatureClass fc = null;
+
+            await QueuedTask.Run(async () =>
+            {
+                fc = await GetCircleFeatureClass();
+            });
+
+            return fc == null ? false : fc.GetCount() > 0;
+        }
+
         private FeatureLayer GetFeatureLayerByNameInActiveView(string featureLayerName)
         {
+            if ((MapView.Active == null) || (MapView.Active.Map == null))
+                return null;
+
             var viewLayer =
                 MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().
                     FirstOrDefault(f => f.Name == featureLayerName);
@@ -850,13 +865,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return success;
         }
 
-        private async Task<FeatureClass> GetCircleFeatureClass()
+        private async Task<FeatureClass> GetCircleFeatureClass(bool addToMapIfNotPresent = false)
         {
             string featureLayerName = "Circles";
 
             FeatureLayer featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
 
-            if (featureLayer == null)
+            if ((featureLayer == null) && (addToMapIfNotPresent))
             {
                 await System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)(async () =>
                 {
@@ -889,12 +904,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return false;
             }
 
-            FeatureClass circleFeatureClass = await GetCircleFeatureClass(); 
+            FeatureClass circleFeatureClass = await GetCircleFeatureClass(addToMapIfNotPresent : true); 
             if (circleFeatureClass == null)
             {
                 // ERROR
                 return false;
             }
+
+            circleFeatureClass.GetCount();
 
             string message = String.Empty;
             bool creationResult = false;
@@ -954,6 +971,81 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
 
             return true;
+        }
+
+        public async Task<bool> DeleteAllFeatures()
+        {
+            FeatureClass circleFeatureClass = await GetCircleFeatureClass(addToMapIfNotPresent: true);
+            if (circleFeatureClass == null)
+            {
+                // ERROR
+                return false;
+            }
+
+            string error = String.Empty;
+            bool result = false;
+
+            await QueuedTask.Run(async () =>
+            {
+                using (Table table = circleFeatureClass as Table)
+                {
+                    try
+                    {
+                        using (var rowCursor = table.Search(null, false))
+                        {
+                            var editOperation = new EditOperation()
+                            {
+                                Name = string.Format(@"Deleted All Circle Features") // where {0}", queryFilter.WhereClause)
+                            };
+
+                            editOperation.Callback(context =>
+                            {
+                                // Note: calling the following method: "await editOperation.ExecuteAsync();"
+                                // within the context of the "using (var rowCursor ..." clause 
+                                // ensures that "rowCursor" in the following while statement is stil
+                                // defined and not disposed.  So the warning "Access to disposed closure"
+                                // doesn't apply here
+                                while (rowCursor.MoveNext())
+                                {
+                                    Thread.Yield();
+                                    using (var row = rowCursor.Current)
+                                    {
+                                        context.Invalidate(row);
+                                        row.Delete();
+                                    }
+                                }
+                            }, table);
+
+                            // TODO: We may care about this:
+                            //if (table.GetRegistrationType().Equals(RegistrationType.Nonversioned) &&
+                            //    ArcGIS.Desktop.Core.Project.Current.HasEdits)
+                            //{
+                            //    error =
+                            //        "The FeatureClass is Non-Versioned and there are Unsaved Edits in the Project. Please save or discard the edits before attempting Non-Versioned Edits";
+                            //}
+                            //else
+                            result = await editOperation.ExecuteAsync();
+
+                            if (!result)
+                                error = editOperation.ErrorMessage;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        error = e.Message;
+                    }
+                }
+            });
+
+            if (!result)
+            {
+                System.Diagnostics.Trace.WriteLine("Could not delete features: " + error);
+                //Note: MessageBox will deadlock thread 
+                // ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(String.Format("Could not delete features : {0}",
+                //    error));
+            }
+
+            return result;
         }
 
     }
