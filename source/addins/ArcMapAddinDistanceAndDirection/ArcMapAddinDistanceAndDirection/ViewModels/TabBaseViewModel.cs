@@ -367,7 +367,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
         }
 
-        double distance = 0.0;
+        double distance = 1.0;
         /// <summary>
         /// Property for the distance/length
         /// </summary>
