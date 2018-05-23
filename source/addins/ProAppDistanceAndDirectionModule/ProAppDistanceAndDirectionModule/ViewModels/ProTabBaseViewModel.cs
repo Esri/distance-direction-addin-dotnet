@@ -178,7 +178,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 else if (this is ProCircleViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Circle && g.IsTemp == false);
+                    ProCircleViewModel cvm = this as ProCircleViewModel;
+                    return QueuedTask.Run<bool>(() =>
+                    {
+                        return cvm.HasCircleFeatures();
+                    }).Result;
                 }
                 else if (this is ProEllipseViewModel)
                 {
@@ -589,6 +593,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private void OnClearGraphics()
         {
+            if (this is ProCircleViewModel)
+            {
+                ProCircleViewModel cvm = this as ProCircleViewModel;
+                QueuedTask.Run<bool>(() =>
+                {
+                    return cvm.DeleteAllFeatures();
+                });
+            }
+
             List<Graphic> removedGraphics = new List<Graphic>();
 
             if (MapView.Active == null)
