@@ -975,10 +975,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public async Task<bool> DeleteAllFeatures()
         {
-            FeatureClass circleFeatureClass = await GetCircleFeatureClass(addToMapIfNotPresent: true);
+            FeatureClass circleFeatureClass = await GetCircleFeatureClass(addToMapIfNotPresent: false);
             if (circleFeatureClass == null)
             {
-                // ERROR
+                // Feature Class not found in Project, can't continue
                 return false;
             }
 
@@ -995,16 +995,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         {
                             var editOperation = new EditOperation()
                             {
-                                Name = string.Format(@"Deleted All Circle Features") // where {0}", queryFilter.WhereClause)
+                                Name = string.Format(@"Deleted All Circle Features")
                             };
 
                             editOperation.Callback(context =>
                             {
-                                // Note: calling the following method: "await editOperation.ExecuteAsync();"
-                                // within the context of the "using (var rowCursor ..." clause 
-                                // ensures that "rowCursor" in the following while statement is stil
-                                // defined and not disposed.  So the warning "Access to disposed closure"
-                                // doesn't apply here
                                 while (rowCursor.MoveNext())
                                 {
                                     Thread.Yield();
@@ -1016,14 +1011,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                                 }
                             }, table);
 
-                            // TODO: We may care about this:
-                            //if (table.GetRegistrationType().Equals(RegistrationType.Nonversioned) &&
-                            //    ArcGIS.Desktop.Core.Project.Current.HasEdits)
-                            //{
-                            //    error =
-                            //        "The FeatureClass is Non-Versioned and there are Unsaved Edits in the Project. Please save or discard the edits before attempting Non-Versioned Edits";
-                            //}
-                            //else
                             result = await editOperation.ExecuteAsync();
 
                             if (!result)

@@ -614,8 +614,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     item.Disposable.Dispose();
                     removedGraphics.Add(graphic);
-                }
-                    
+                }                    
             }
 
             // clean up the GraphicsList and remove the necessary graphics from it
