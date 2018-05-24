@@ -1215,5 +1215,117 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #endregion Private Functions
 
+        // ******************************************************************************
+        // Feature Support below in progress, will be integrated with the above when complete
+        // ******************************************************************************
+
+        private ProgressDialog _progressDialog = null;
+
+        protected async Task<bool> AddLayerPackageToMapAsync()
+        {
+            if (_progressDialog == null)
+                _progressDialog = new ProgressDialog("Loading Required Layer Package...");
+
+            bool success = false;
+
+            try
+            {
+                _progressDialog.Show();
+
+                await QueuedTask.Run(() =>
+                {
+                    string layerFileName = "Distance_And_Direction.lpkx";
+                    string layerPath = System.IO.Path.Combine(Models.FeatureClassUtils.AddinAssemblyLocation(), "Data", layerFileName);
+                    Layer layerAdded = LayerFactory.Instance.CreateLayer(
+                        new Uri(layerPath), MapView.Active.Map);
+                    success = (layerAdded != null);
+                });
+
+                // Save the project, so layer stays in project
+                // Note: Must be called on Main/UI Thread
+                await ArcGIS.Desktop.Framework.FrameworkApplication.Current.Dispatcher.Invoke(async () =>
+                {
+                    bool success2 = await ArcGIS.Desktop.Core.Project.Current.SaveAsync();
+                });
+
+                _progressDialog.Hide();
+            }
+            catch (Exception exception)
+            {
+                // Catch any exception found and display a message box.
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Exception caught: " + exception.Message);
+            }
+
+            return success;
+        }
+
+        protected FeatureLayer GetFeatureLayerByNameInActiveView(string featureLayerName)
+        {
+            if ((MapView.Active == null) || (MapView.Active.Map == null))
+                return null;
+
+            var viewLayer =
+                MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().
+                    FirstOrDefault(f => f.Name == featureLayerName);
+
+            return viewLayer;
+        }
+
+        public async Task<bool> DeleteAllFeatures(ArcGIS.Core.Data.FeatureClass featureClass)
+        {
+            if (featureClass == null)
+                return false;
+
+            string error = String.Empty;
+            bool result = false;
+            await QueuedTask.Run(async () =>
+            {
+                using (ArcGIS.Core.Data.Table table = featureClass as ArcGIS.Core.Data.Table)
+                {
+                    try
+                    {
+                        using (var rowCursor = table.Search(null, false))
+                        {
+                            var editOperation = new ArcGIS.Desktop.Editing.EditOperation()
+                            {
+                                Name = string.Format(@"Deleted All Features")
+                            };
+
+                            editOperation.Callback(context =>
+                            {
+                                while (rowCursor.MoveNext())
+                                {
+                                    System.Threading.Thread.Yield();
+                                    using (var row = rowCursor.Current)
+                                    {
+                                        context.Invalidate(row);
+                                        row.Delete();
+                                    }
+                                }
+                            }, table);
+
+                            result = await editOperation.ExecuteAsync();
+
+                            if (!result)
+                                error = editOperation.ErrorMessage;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        error = e.Message;
+                    }
+                }
+            });
+
+            if (!result)
+            {
+                System.Diagnostics.Trace.WriteLine("Could not delete features: " + error);
+                //Note: MessageBox will deadlock thread 
+                // ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(String.Format("Could not delete features : {0}",
+                //    error));
+            }
+
+            return result;
+        }
     }
 }
