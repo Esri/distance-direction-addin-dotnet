@@ -191,7 +191,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Data\Distance_And_Direction.lpkx">
+    <Content Include="Data\DistanceAndDirection.lpkx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

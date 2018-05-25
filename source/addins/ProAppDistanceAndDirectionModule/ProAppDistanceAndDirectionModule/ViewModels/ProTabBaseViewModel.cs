@@ -1251,7 +1251,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 await QueuedTask.Run(() =>
                 {
-                    string layerFileName = "Distance_And_Direction.lpkx";
+                    string layerFileName = "DistanceAndDirection.lpkx";
                     string layerPath = System.IO.Path.Combine(Models.FeatureClassUtils.AddinAssemblyLocation(), "Data", layerFileName);
                     Layer layerAdded = LayerFactory.Instance.CreateLayer(
                         new Uri(layerPath), MapView.Active.Map);

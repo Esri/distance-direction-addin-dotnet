@@ -573,7 +573,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private async Task<FeatureClass> GetLineFeatureClass(bool addToMapIfNotPresent = false)
         {
-            string featureLayerName = "Lines of Bearing";
+            string featureLayerName = "Lines";
 
             FeatureLayer featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
 
