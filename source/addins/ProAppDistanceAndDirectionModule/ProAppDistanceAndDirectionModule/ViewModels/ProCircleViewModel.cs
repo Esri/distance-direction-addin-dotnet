@@ -801,8 +801,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 // Feature Support below - will be moved to base/utility class in future
 // ******************************************************************************
 
-        private ProgressDialog _progressDialog = null;
-
         public async Task<bool> HasCircleFeatures()
         {
             FeatureClass fc = null;
@@ -813,56 +811,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             });
 
             return fc == null ? false : fc.GetCount() > 0;
-        }
-
-        private FeatureLayer GetFeatureLayerByNameInActiveView(string featureLayerName)
-        {
-            if ((MapView.Active == null) || (MapView.Active.Map == null))
-                return null;
-
-            var viewLayer =
-                MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().
-                    FirstOrDefault(f => f.Name == featureLayerName);
-
-            return viewLayer;
-        }
-
-        private async Task<bool> AddLayerPackageToMapAsync()
-        {
-            if (_progressDialog == null)
-                _progressDialog = new ProgressDialog("Loading Required Layer Package...");
-
-            bool success = false;
-
-            try
-            {
-                _progressDialog.Show();
-
-                await QueuedTask.Run(() =>
-                {
-                    string layerFileName = "Distance_And_Direction.lpkx";
-                    string layerPath = System.IO.Path.Combine(Models.FeatureClassUtils.AddinAssemblyLocation(), "Data", layerFileName);
-                    Layer layerAdded = LayerFactory.Instance.CreateLayer(
-                        new Uri(layerPath), MapView.Active.Map);
-                    success = (layerAdded != null);
-                });
-
-                // Save the project, so layer stays in project
-                // Note: Must be called on Main/UI Thread
-                await ArcGIS.Desktop.Framework.FrameworkApplication.Current.Dispatcher.Invoke(async () =>
-                {
-                    bool success2 = await ArcGIS.Desktop.Core.Project.Current.SaveAsync();
-                });
-
-                _progressDialog.Hide();
-            }
-            catch (Exception exception)
-            {
-                // Catch any exception found and display a message box.
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Exception caught: " + exception.Message);
-            }
-
-            return success;
         }
 
         private async Task<FeatureClass> GetCircleFeatureClass(bool addToMapIfNotPresent = false)
@@ -975,65 +923,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public async Task<bool> DeleteAllFeatures()
         {
+            bool success = false;
+
             FeatureClass circleFeatureClass = await GetCircleFeatureClass(addToMapIfNotPresent: false);
-            if (circleFeatureClass == null)
+            if (circleFeatureClass != null)
             {
-                // Feature Class not found in Project, can't continue
-                return false;
+                success = await DeleteAllFeatures(circleFeatureClass);
             }
 
-            string error = String.Empty;
-            bool result = false;
+            if (!success)
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Failed to Delete Circle Features"); // TODO: Add as resource
 
-            await QueuedTask.Run(async () =>
-            {
-                using (Table table = circleFeatureClass as Table)
-                {
-                    try
-                    {
-                        using (var rowCursor = table.Search(null, false))
-                        {
-                            var editOperation = new EditOperation()
-                            {
-                                Name = string.Format(@"Deleted All Circle Features")
-                            };
-
-                            editOperation.Callback(context =>
-                            {
-                                while (rowCursor.MoveNext())
-                                {
-                                    Thread.Yield();
-                                    using (var row = rowCursor.Current)
-                                    {
-                                        context.Invalidate(row);
-                                        row.Delete();
-                                    }
-                                }
-                            }, table);
-
-                            result = await editOperation.ExecuteAsync();
-
-                            if (!result)
-                                error = editOperation.ErrorMessage;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        error = e.Message;
-                    }
-                }
-            });
-
-            if (!result)
-            {
-                System.Diagnostics.Trace.WriteLine("Could not delete features: " + error);
-                //Note: MessageBox will deadlock thread 
-                // ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(String.Format("Could not delete features : {0}",
-                //    error));
-            }
-
-            return result;
+            return success;
         }
-
     }
 }
