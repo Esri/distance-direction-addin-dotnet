@@ -617,8 +617,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return false;
             }
 
-            lineFeatureClass.GetCount();
-
             string message = String.Empty;
             bool creationResult = false;
 
@@ -632,30 +630,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     RowBuffer rowBuffer = lineFeatureClass.CreateRowBuffer();
 
-                    // *TODO: this is the datamodel for export, but the provided 
-                    // layer package does not match this model
-
-                    //rowBuffer["Distance"] = attributes._distance;
-                    //rowBuffer["DistUnit"] = attributes.distanceunit;
-                    //rowBuffer["Angle"] = attributes.angle;
-                    //rowBuffer["AngleUnit"] = attributes.angleunit;
-                    //rowBuffer["OriginX"] = attributes.originx;
-                    //rowBuffer["OriginY"] = attributes.originy;
-                    //rowBuffer["DestX"] = attributes.destinationx;
-                    //rowBuffer["DestY"] = attributes.destinationy;
-
-                    // *TODO: Using provided layer package model for now until resolved
                     if (lineDefinition.FindField("Distance") >= 0)
                         rowBuffer["Distance"] = attributes._distance;     // Double
 
                     if (lineDefinition.FindField("DistUnit") >= 0)
                         rowBuffer["DistUnit"] = attributes.distanceunit; // Text
 
-                    if (lineDefinition.FindField("Azimuth") >= 0)
-                        rowBuffer["Azimuth"] = attributes.angle;       // Double
+                    if (lineDefinition.FindField("Angle") >= 0)
+                        rowBuffer["Angle"] = attributes.angle;       // Double
 
-                    if (lineDefinition.FindField("AzUnit") >= 0)
-                        rowBuffer["AzUnit"] = attributes.angleunit;   // Text
+                    if (lineDefinition.FindField("AngleUnit") >= 0)
+                        rowBuffer["AngleUnit"] = attributes.angleunit;   // Text
+
+                    if (lineDefinition.FindField("OriginX") >= 0)
+                        rowBuffer["OriginX"] = attributes.originx;   // Double
+
+                    if (lineDefinition.FindField("OriginY") >= 0)
+                        rowBuffer["OriginY"] = attributes.originy;   // Double
+
+                    if (lineDefinition.FindField("DestX") >= 0)
+                        rowBuffer["DestX"] = attributes.destinationx;   // Double
+
+                    if (lineDefinition.FindField("DestY") >= 0)
+                        rowBuffer["DestY"] = attributes.destinationy;   // Double
 
                     rowBuffer["Shape"] = GeometryEngine.Instance.Project(geom, lineDefinition.GetSpatialReference());
 
