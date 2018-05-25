@@ -174,10 +174,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (this is ProLinesViewModel)
                 {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Line && g.IsTemp == false);
+// TODO: when all are implemented this will be moved to base class/override
+                    ProLinesViewModel clm = this as ProLinesViewModel;
+                    return QueuedTask.Run<bool>(() =>
+                    {
+                        return clm.HasLineFeatures();
+                    }).Result;
                 }
                 else if (this is ProCircleViewModel)
                 {
+// TODO: when all are implemented this will be moved to base class/override
                     ProCircleViewModel cvm = this as ProCircleViewModel;
                     return QueuedTask.Run<bool>(() =>
                     {
@@ -593,6 +599,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private void OnClearGraphics()
         {
+// TODO: when all are implemented this will be moved to base class/override
             if (this is ProCircleViewModel)
             {
                 ProCircleViewModel cvm = this as ProCircleViewModel;
@@ -601,6 +608,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return cvm.DeleteAllFeatures();
                 });
             }
+
+            if (this is ProLinesViewModel)
+            {
+                ProLinesViewModel clm = this as ProLinesViewModel;
+                QueuedTask.Run<bool>(() =>
+                {
+                    return clm.DeleteAllFeatures();
+                });
+            }
+// END TODO
 
             List<Graphic> removedGraphics = new List<Graphic>();
 
