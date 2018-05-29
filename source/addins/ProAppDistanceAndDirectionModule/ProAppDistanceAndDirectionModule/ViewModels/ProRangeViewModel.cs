@@ -190,6 +190,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         //UpdateFeedback();
                         foreach (var mp in results)
                             movedMP = mp;
+
                         if (movedMP != null)
                         {
                             var movedMPproj = GeometryEngine.Instance.Project(movedMP, Point1.SpatialReference);
@@ -529,13 +530,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (ringDefinition.FindField("CenterX") >= 0)
                         rowBuffer["CenterX"] = attributes.centerx;   // Double
 
-                    if (ringDefinition.FindField("OriginY") >= 0)
+                    if (ringDefinition.FindField("CenterY") >= 0)
                         rowBuffer["CenterY"] = attributes.centery;   // Double
 
                     if (ringDefinition.FindField("RRType") >= 0)
                         rowBuffer["RRType"] = attributes.ringorradial;   // Double
 
-                    rowBuffer["Shape"] = GeometryEngine.Instance.Project(geom, ringDefinition.GetSpatialReference());
+                    // Ensure Z removed (this feature class does not have Z)
+                    var geoNoZ = geom;
+                    if (geom.HasZ)
+                    {
+                        PolylineBuilder pb = new PolylineBuilder((Polyline)geom);
+                        pb.HasZ = false;
+                        geoNoZ = pb.ToGeometry();
+                    }
+
+                    rowBuffer["Shape"] = GeometryEngine.Instance.Project(geoNoZ, ringDefinition.GetSpatialReference());
 
                     Feature feature = ringFeatureClass.CreateRow(rowBuffer);
                     feature.Store();
