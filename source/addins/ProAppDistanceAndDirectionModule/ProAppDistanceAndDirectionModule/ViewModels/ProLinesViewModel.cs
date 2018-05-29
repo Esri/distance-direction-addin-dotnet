@@ -312,6 +312,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         // WORKAROUND: For some odd reason GeodeticMove is removing the Z attribute of the point
                         // so need to put it back so all points will have a consistent Z.
                         // This is important when storing to feature class with Z
+                        if (mp == null)
+                            continue;
+
                         if (Double.IsNaN(mp.Z))
                         {
                             MapPointBuilder mb = new MapPointBuilder(mp.X, mp.Y, 0.0, mp.SpatialReference);
@@ -666,7 +669,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (lineDefinition.FindField("DestY") >= 0)
                         rowBuffer["DestY"] = attributes.destinationy;   // Double
 
-                    rowBuffer["Shape"] = GeometryEngine.Instance.Project(geom, lineDefinition.GetSpatialReference());
+                    // Ensure Geometry Has Z
+                    var geomZ = geom;
+                    if (!geom.HasZ)
+                    {
+                        PolylineBuilder pb = new PolylineBuilder((Polyline)geom);
+                        pb.HasZ = true;
+                        geomZ = pb.ToGeometry();
+                    }
+
+                    rowBuffer["Shape"] = GeometryEngine.Instance.Project(geomZ, lineDefinition.GetSpatialReference());
 
                     Feature feature = lineFeatureClass.CreateRow(rowBuffer);
                     feature.Store();

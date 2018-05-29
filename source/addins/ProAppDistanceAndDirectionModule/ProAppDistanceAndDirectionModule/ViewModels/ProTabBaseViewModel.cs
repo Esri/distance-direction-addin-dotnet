@@ -175,10 +175,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (this is ProLinesViewModel)
                 {
 // TODO: when all are implemented this will be moved to base class/override
-                    ProLinesViewModel clm = this as ProLinesViewModel;
+                    ProLinesViewModel lvm = this as ProLinesViewModel;
                     return QueuedTask.Run<bool>(() =>
                     {
-                        return clm.HasLineFeatures();
+                        return lvm.HasLineFeatures();
                     }).Result;
                 }
                 else if (this is ProCircleViewModel)
@@ -190,11 +190,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return cvm.HasCircleFeatures();
                     }).Result;
                 }
-                else if (this is ProEllipseViewModel)
-                {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.Ellipse && g.IsTemp == false);
-                }
                 else if (this is ProRangeViewModel)
+                {
+// TODO: when all are implemented this will be moved to base class/override
+                    ProRangeViewModel rvm = this as ProRangeViewModel;
+                    return QueuedTask.Run<bool>(() =>
+                    {
+                        return rvm.HasRingFeatures();
+                    }).Result;
+                }
+                else if (this is ProEllipseViewModel)
                 {
                     return GraphicsList.Any(g => g.GraphicType == GraphicTypes.RangeRing && g.IsTemp == false);
                 }
@@ -600,7 +605,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private void OnClearGraphics()
         {
 // TODO: when all are implemented this will be moved to base class/override
-            if (this is ProCircleViewModel)
+            if (this is ProLinesViewModel)
+            {
+                ProLinesViewModel lvm = this as ProLinesViewModel;
+                QueuedTask.Run<bool>(() =>
+                {
+                    return lvm.DeleteAllFeatures();
+                });
+            }
+            else if (this is ProCircleViewModel)
             {
                 ProCircleViewModel cvm = this as ProCircleViewModel;
                 QueuedTask.Run<bool>(() =>
@@ -608,13 +621,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return cvm.DeleteAllFeatures();
                 });
             }
-
-            if (this is ProLinesViewModel)
+            else if(this is ProRangeViewModel)
             {
-                ProLinesViewModel clm = this as ProLinesViewModel;
+                ProRangeViewModel rvm = this as ProRangeViewModel;
                 QueuedTask.Run<bool>(() =>
                 {
-                    return clm.DeleteAllFeatures();
+                    return rvm.DeleteAllFeatures();
                 });
             }
 // END TODO
