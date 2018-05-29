@@ -308,7 +308,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     var tempDistance = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
                     var results = GeometryEngine.Instance.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value, GetCurveType());
                     foreach (var mp in results)
-                        Point2 = mp;
+                    {
+                        // WORKAROUND: For some odd reason GeodeticMove is removing the Z attribute of the point
+                        // so need to put it back so all points will have a consistent Z.
+                        // This is important when storing to feature class with Z
+                        if (Double.IsNaN(mp.Z))
+                        {
+                            MapPointBuilder mb = new MapPointBuilder(mp.X, mp.Y, 0.0, mp.SpatialReference);
+                            Point2 = mb.ToGeometry();
+                        }
+                        else
+                            Point2 = mp;
+                    }
+
                     if (Point2 != null)
                     {
                         var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
@@ -448,7 +460,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var polyline = QueuedTask.Run(() =>
                     {
                         var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
-                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
+                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj); 
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
                 Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, curveType);

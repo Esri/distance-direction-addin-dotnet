@@ -874,8 +874,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     RowBuffer rowBuffer = circleFeatureClass.CreateRowBuffer();
 
+                    double distance = attributes.distance;
+                    if (IsDistanceCalcExpanded && (CircleType == CircleFromTypes.Diameter))
+                        distance *= 2.0;
+
                     if (circleDefinition.FindField("Distance") >= 0)
-                        rowBuffer["Distance"] = attributes.distance;     // Double
+                        rowBuffer["Distance"] = distance;     // Double
 
                     if (circleDefinition.FindField("DistUnit") >= 0)
                         rowBuffer["DistUnit"] = attributes.distanceunit; // Text
