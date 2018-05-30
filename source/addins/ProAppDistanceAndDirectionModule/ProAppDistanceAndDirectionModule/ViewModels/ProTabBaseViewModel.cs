@@ -1062,10 +1062,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 try
                 {
-                    point = QueuedTask.Run(() =>
-                    {
-                        return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, type, FromGeoCoordinateMode.Default);
-                    }).Result;
+                    // Make sure there is an active map
+                    if ((MapView.Active == null) || (MapView.Active.Map == null) ||
+                        (MapView.Active.Map.SpatialReference == null))
+                        point = null;
+                    else
+                        point = QueuedTask.Run(() =>
+                        {
+                            return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, type, FromGeoCoordinateMode.Default);
+                        }).Result;
                 }
                 catch (Exception ex)
                 {
@@ -1078,17 +1083,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             try
             {
-                point = QueuedTask.Run(() =>
-                {
-                    return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
-                }).Result;
+                // Make sure there is an active map
+                if ((MapView.Active == null) || (MapView.Active.Map == null) ||
+                        (MapView.Active.Map.SpatialReference == null))
+                    point = null;
+                else
+                    point = QueuedTask.Run(() =>
+                    {
+                        return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
+                    }).Result;
             }
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
 
-            if(point == null)
+            if (point == null)
             {
                 // lets support web mercator
                 Regex regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
@@ -1175,13 +1185,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #endregion Private Functions
 
-        // ******************************************************************************
-        // Feature Support below in progress, will be integrated with the above when complete
-        // ******************************************************************************
+        #region Feature Class Support
+
+        /// <summary>
+        /// This is the name of the feature layer in the Table of Contents that contains the 
+        /// features for the graphic type (ex. "Lines" "Ellipses" etc.). It should be overridden
+        /// in derived classes with the correct layer name 
+        /// </summary>
+        /// <returns>Layer Name in Table of Contents to save features</returns>
+        public virtual string GetLayerName()
+        {
+            return "UNKNOWN";
+        }
 
         private ProgressDialog _progressDialog = null;
 
-        protected async Task<bool> AddLayerPackageToMapAsync()
+        private async Task<bool> AddLayerPackageToMapAsync()
         {
             if (_progressDialog == null)
                 _progressDialog = new ProgressDialog("Loading Required Layer Package...");
@@ -1232,17 +1251,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             // group since the layer names used are pretty common and may not be unique
 
             return viewLayer;
-        }
-
-        /// <summary>
-        /// This is the name of the feature layer in the Table of Contents that contains the 
-        /// features for the graphic type (ex. "Lines" "Ellipses" etc.). It should be overridden
-        /// in derived classes with the correct layer name 
-        /// </summary>
-        /// <returns>Layer Name in Table of Contents to save features</returns>
-        public virtual string GetLayerName()
-        {
-            return "UNKNOWN";
         }
 
         protected async Task<FeatureClass> GetFeatureClass(bool addToMapIfNotPresent = false)
@@ -1299,7 +1307,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return success;
         }
 
-        public async Task<bool> DeleteAllFeatures(ArcGIS.Core.Data.FeatureClass featureClass)
+        protected async Task<bool> DeleteAllFeatures(ArcGIS.Core.Data.FeatureClass featureClass)
         {
             if (featureClass == null)
                 return false;
@@ -1356,5 +1364,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             return result;
         }
+        #endregion
+
     }
 }
