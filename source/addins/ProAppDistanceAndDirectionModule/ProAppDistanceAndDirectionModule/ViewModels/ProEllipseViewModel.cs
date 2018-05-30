@@ -584,49 +584,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         }
         #endregion
 
-        // ******************************************************************************
-        // Feature Support below - will be moved to base/utility class in future
-        // ******************************************************************************
-
-        public async Task<bool> HasEllipseFeatures()
+        public override string GetLayerName()
         {
-            FeatureClass fc = null;
-
-            await QueuedTask.Run(async () =>
-            {
-                fc = await GetEllipseFeatureClass();
-            });
-
-            return fc == null ? false : fc.GetCount() > 0;
-        }
-
-        private async Task<FeatureClass> GetEllipseFeatureClass(bool addToMapIfNotPresent = false)
-        {
-            string featureLayerName = "Ellipses";
-
-            FeatureLayer featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
-
-            if ((featureLayer == null) && (addToMapIfNotPresent))
-            {
-                await System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)(async () =>
-                {
-                    await AddLayerPackageToMapAsync();
-                }));
-
-                // Verify added correctly
-                featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
-            }
-
-            if (featureLayer == null)
-                return null;
-
-            FeatureClass ellipseFeatureClass = featureLayer.GetTable() as FeatureClass;
-
-            //****************************************************
-            // TODO: check ellipseFeatureClass has require fields
-            //****************************************************
-
-            return ellipseFeatureClass;
+            return "Ellipses";
         }
 
         private async Task<bool> AddFeatureToLayer(Geometry geom, ProGraphicAttributes p = null)
@@ -639,7 +599,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return false;
             }
 
-            FeatureClass ellipseFeatureClass = await GetEllipseFeatureClass(addToMapIfNotPresent: true);
+            FeatureClass ellipseFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (ellipseFeatureClass == null)
             {
                 // ERROR
@@ -714,22 +674,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
 
             return true;
-        }
-
-        public async Task<bool> DeleteAllFeatures()
-        {
-            bool success = false;
-
-            FeatureClass ellipseFeatureClass = await GetEllipseFeatureClass(addToMapIfNotPresent: false);
-            if (ellipseFeatureClass != null)
-            {
-                success = await DeleteAllFeatures(ellipseFeatureClass);
-            }
-
-            if (!success)
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Failed to Delete Ellipses Features"); // TODO: Add as resource
-
-            return success;
         }
 
     }

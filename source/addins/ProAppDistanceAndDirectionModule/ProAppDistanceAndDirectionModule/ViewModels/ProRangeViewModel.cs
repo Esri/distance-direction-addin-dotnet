@@ -433,10 +433,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             AddGraphicToMap(geom, ColorFactory.Instance.GreyRGB, rangeAttributes, true);
         }
 
-        // ******************************************************************************
-        // Feature Support below - will be moved to base/utility class in future
-        // ******************************************************************************
-
         private void CreateRangeRingOrRadial(Geometry geom, RangeAttributes rangeAttributes)
         {
             bool success = false;
@@ -444,45 +440,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 success = await AddFeatureToLayer(geom, (ProGraphicAttributes)rangeAttributes));
         }
 
-        public async Task<bool> HasRingFeatures()
+        public override string GetLayerName()
         {
-            FeatureClass fc = null;
-
-            await QueuedTask.Run(async () =>
-            {
-                fc = await GetRingFeatureClass();
-            });
-
-            return fc == null ? false : fc.GetCount() > 0;
-        }
-
-        private async Task<FeatureClass> GetRingFeatureClass(bool addToMapIfNotPresent = false)
-        {
-            string featureLayerName = "Range Rings";
-
-            FeatureLayer featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
-
-            if ((featureLayer == null) && (addToMapIfNotPresent))
-            {
-                await System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)(async () =>
-                {
-                    await AddLayerPackageToMapAsync();
-                }));
-
-                // Verify added correctly
-                featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
-            }
-
-            if (featureLayer == null)
-                return null;
-
-            FeatureClass ringFeatureClass = featureLayer.GetTable() as FeatureClass;
-
-            //****************************************************
-            // TODO: check ringFeatureClass has require fields
-            //****************************************************
-
-            return ringFeatureClass;
+            return "Range Rings";
         }
 
         private async Task<bool> AddFeatureToLayer(Geometry geom, ProGraphicAttributes p = null)
@@ -495,7 +455,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return false;
             }
 
-            FeatureClass ringFeatureClass = await GetRingFeatureClass(addToMapIfNotPresent: true);
+            FeatureClass ringFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (ringFeatureClass == null)
             {
                 // ERROR
@@ -522,16 +482,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         rowBuffer["DistUnit"] = attributes.distanceunit; // Text
 
                     if (ringDefinition.FindField("Rings") >= 0)
-                        rowBuffer["Rings"] = attributes.numRings;       // Double
+                        rowBuffer["Rings"] = attributes.numRings;        // Double
 
                     if (ringDefinition.FindField("Radials") >= 0)
-                        rowBuffer["Radials"] = attributes.numRadials;   // Text
+                        rowBuffer["Radials"] = attributes.numRadials;    // Text
 
                     if (ringDefinition.FindField("CenterX") >= 0)
-                        rowBuffer["CenterX"] = attributes.centerx;   // Double
+                        rowBuffer["CenterX"] = attributes.centerx;       // Double
 
                     if (ringDefinition.FindField("CenterY") >= 0)
-                        rowBuffer["CenterY"] = attributes.centery;   // Double
+                        rowBuffer["CenterY"] = attributes.centery;       // Double
 
                     if (ringDefinition.FindField("RRType") >= 0)
                         rowBuffer["RRType"] = attributes.ringorradial;   // Double
@@ -557,6 +517,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     message = geodatabaseException.Message;
                 }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                }
             }, ringFeatureClass);
 
             await QueuedTask.Run(async () =>
@@ -575,22 +539,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
 
             return true;
-        }
-
-        public async Task<bool> DeleteAllFeatures()
-        {
-            bool success = false;
-
-            FeatureClass ringFeatureClass = await GetRingFeatureClass(addToMapIfNotPresent: false);
-            if (ringFeatureClass != null)
-            {
-                success = await DeleteAllFeatures(ringFeatureClass);
-            }
-
-            if (!success)
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Failed to Delete Rings Features"); // TODO: Add as resource
-
-            return success;
         }
 
     }
