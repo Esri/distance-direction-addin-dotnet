@@ -200,6 +200,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         else
                             return null;
                     }).Result;
+
                     Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, GeodeticCurveType.Loxodrome);
                     if (newline != null)
                     {
@@ -222,6 +223,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 System.Diagnostics.Debug.WriteLine(ex);
             }
         }
+
         private double GetAzimuthAsRadians(double azimuth)
         {
             return azimuth * (Math.PI / 180.0);
@@ -264,7 +266,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         numRadials = numberOfRadials, centerx = Point1.X, centery = Point1.Y,
                         distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
 
-                    // AddGraphicToMap(geom, rangeAttributes);
                     CreateRangeRingOrRadial(geom, rangeAttributes);
                 }
 
@@ -405,7 +406,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
 
             CreateRangeRingOrRadial(geom, rangeAttributes);
-            // AddGraphicToMap(geom, rangeAttributes);
         }
 
         private void UpdateFeedbackWithGeoCircle()
@@ -433,10 +433,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             AddGraphicToMap(geom, ColorFactory.Instance.GreyRGB, rangeAttributes, true);
         }
 
-        private void CreateRangeRingOrRadial(Geometry geom, RangeAttributes rangeAttributes)
+        private async void CreateRangeRingOrRadial(Geometry geom, RangeAttributes rangeAttributes)
         {
             bool success = false;
-            QueuedTask.Run(async() =>
+            await QueuedTask.Run(async() =>
                 success = await AddFeatureToLayer(geom, (ProGraphicAttributes)rangeAttributes));
         }
 

@@ -841,6 +841,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return;
 
             IsActiveTab = (obj == this);
+
+            // For Range Rings Tab only ensure the layer package is loaded
+            if (IsActiveTab && (this is ProRangeViewModel))
+            {
+                QueuedTask.Run(async () =>
+                {
+                    FeatureClass ringFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
+                });
+            }
         }
 
         /// <summary>
