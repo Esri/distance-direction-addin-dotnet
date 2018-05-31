@@ -469,7 +469,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, curveType);
 
                 // Hold onto the attributes in case user saves graphics to file later
-                LineAttributes lineAttributes = new LineAttributes(){mapPoint1 = Point1, mapPoint2 = Point2, distance = distance, angle = (double)azimuth, angleunit = LineAzimuthType.ToString(), distanceunit = LineDistanceType.ToString(), originx=Point1.X, originy = Point1.Y, destinationx=Point2.X, destinationy=Point2.Y};
+                LineAttributes lineAttributes = new LineAttributes() {
+                    mapPoint1 = Point1, mapPoint2 = Point2,
+                    distance = distance, angle = (double)azimuth,
+                    angleunit = LineAzimuthType.ToString(),
+                    distanceunit = LineDistanceType.ToString(),
+                    originx =Point1.X, originy = Point1.Y,
+                    destinationx =Point2.X, destinationy=Point2.Y };
+
+                CreateLineFeature(newline, lineAttributes);
 
                 ResetPoints();
 
