@@ -252,6 +252,15 @@
   <data name="EnumYards" xml:space="preserve">
     <value>Yards</value>
   </data>
+  <data name="ErrorDeleteFailed" xml:space="preserve">
+    <value>Failed to delete features from layer: </value>
+  </data>
+  <data name="ErrorFeatureClassNotFound" xml:space="preserve">
+    <value>Required feature layer was not found: </value>
+  </data>
+  <data name="ErrorFeatureCreateTitle" xml:space="preserve">
+    <value>Feature Create Error</value>
+  </data>
   <data name="FeatureClassNameError" xml:space="preserve">
     <value>Please provide a valid feature class name</value>
   </data>

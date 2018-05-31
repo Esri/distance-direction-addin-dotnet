@@ -471,10 +471,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // Hold onto the attributes in case user saves graphics to file later
                 LineAttributes lineAttributes = new LineAttributes(){mapPoint1 = Point1, mapPoint2 = Point2, distance = distance, angle = (double)azimuth, angleunit = LineAzimuthType.ToString(), distanceunit = LineDistanceType.ToString(), originx=Point1.X, originy = Point1.Y, destinationx=Point2.X, destinationy=Point2.Y};
 
-                bool success = false;
-                QueuedTask.Run(async () =>
-                    success = await AddFeatureToLayer(newline, (ProGraphicAttributes)lineAttributes));
-
                 ResetPoints();
 
                 return (Geometry)newline;
@@ -575,24 +571,34 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return "Lines";
         }
 
-        private async Task<bool> AddFeatureToLayer(Geometry geom, ProGraphicAttributes p = null)
+        private async void CreateLineFeature(Geometry geom, LineAttributes lineAttributes)
         {
-            LineAttributes attributes = p as LineAttributes;
+            string message = string.Empty;
+            await QueuedTask.Run(async () =>
+                message = await AddFeatureToLayer(geom, lineAttributes));
+
+            if (!string.IsNullOrEmpty(message))
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
+                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+        }
+
+        private async Task<string> AddFeatureToLayer(Geometry geom, LineAttributes attributes)
+        {
+            string message = String.Empty;
 
             if (attributes == null)
             {
-                // ERROR
-                return false;
+                message = "Attributes are Empty"; // For debug does not need to be resource
+                return message;
             }
 
             FeatureClass lineFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (lineFeatureClass == null)
             {
-                // ERROR
-                return false;
+                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                return message;
             }
 
-            string message = String.Empty;
             bool creationResult = false;
 
             FeatureClassDefinition lineDefinition = lineFeatureClass.GetDefinition();
@@ -666,12 +672,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 message = editOperation.ErrorMessage;
             }
 
-            if (!creationResult)
-            {
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message);
-            }
-
-            return true;
+            return message;
         }
 
     }

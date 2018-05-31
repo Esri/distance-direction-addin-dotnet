@@ -1319,8 +1319,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
 
             if (!success)
-                // TODO: Add as resource
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Failed to Delete Features from Layer: " + this.GetLayerName()); 
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                    DistanceAndDirectionLibrary.Properties.Resources.ErrorDeleteFailed 
+                    + this.GetLayerName(), DistanceAndDirectionLibrary.Properties.Resources.ErrorDeleteFailed); 
 
             return success;
         }
