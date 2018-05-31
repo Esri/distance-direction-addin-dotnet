@@ -469,7 +469,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, curveType);
 
                 // Hold onto the attributes in case user saves graphics to file later
-                LineAttributes lineAttributes = new LineAttributes(){mapPoint1 = Point1, mapPoint2 = Point2, _distance = distance, angle = (double)azimuth, angleunit = LineAzimuthType.ToString(), distanceunit = LineDistanceType.ToString(), originx=Point1.X, originy = Point1.Y, destinationx=Point2.X, destinationy=Point2.Y};
+                LineAttributes lineAttributes = new LineAttributes(){mapPoint1 = Point1, mapPoint2 = Point2, distance = distance, angle = (double)azimuth, angleunit = LineAzimuthType.ToString(), distanceunit = LineDistanceType.ToString(), originx=Point1.X, originy = Point1.Y, destinationx=Point2.X, destinationy=Point2.Y};
 
                 bool success = false;
                 QueuedTask.Run(async () =>
@@ -570,49 +570,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        // ******************************************************************************
-        // Feature Support below - will be moved to base/utility class in future
-        // ******************************************************************************
-
-        public async Task<bool> HasLineFeatures()
+        public override string GetLayerName()
         {
-            FeatureClass fc = null;
-
-            await QueuedTask.Run(async () =>
-            {
-                fc = await GetLineFeatureClass();
-            });
-
-            return fc == null ? false : fc.GetCount() > 0;
-        }
-
-        private async Task<FeatureClass> GetLineFeatureClass(bool addToMapIfNotPresent = false)
-        {
-            string featureLayerName = "Lines";
-
-            FeatureLayer featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
-
-            if ((featureLayer == null) && (addToMapIfNotPresent))
-            {
-                await System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)(async () =>
-                {
-                    await AddLayerPackageToMapAsync();
-                }));
-
-                // Verify added correctly
-                featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
-            }
-
-            if (featureLayer == null)
-                return null;
-
-            FeatureClass lineFeatureClass = featureLayer.GetTable() as FeatureClass;
-
-            //****************************************************
-            // TODO: check lineFeatureClass has require fields
-            //****************************************************
-
-            return lineFeatureClass;
+            return "Lines";
         }
 
         private async Task<bool> AddFeatureToLayer(Geometry geom, ProGraphicAttributes p = null)
@@ -625,7 +585,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return false;
             }
 
-            FeatureClass lineFeatureClass = await GetLineFeatureClass(addToMapIfNotPresent: true);
+            FeatureClass lineFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (lineFeatureClass == null)
             {
                 // ERROR
@@ -646,7 +606,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     RowBuffer rowBuffer = lineFeatureClass.CreateRowBuffer();
 
                     if (lineDefinition.FindField("Distance") >= 0)
-                        rowBuffer["Distance"] = attributes._distance;     // Double
+                        rowBuffer["Distance"] = attributes.distance;     // Double
 
                     if (lineDefinition.FindField("DistUnit") >= 0)
                         rowBuffer["DistUnit"] = attributes.distanceunit; // Text
@@ -690,6 +650,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     message = geodatabaseException.Message;
                 }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                }
             }, lineFeatureClass);
 
             await QueuedTask.Run(async () =>
@@ -710,21 +674,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return true;
         }
 
-        public async Task<bool> DeleteAllFeatures()
-        {
-            bool success = false;
-
-            FeatureClass lineFeatureClass = await GetLineFeatureClass(addToMapIfNotPresent: false);
-            if (lineFeatureClass != null)
-            {
-                success = await DeleteAllFeatures(lineFeatureClass);
-            }
-
-            if (!success)
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Failed to Delete Lines Features"); // TODO: Add as resource
-
-            return success;
-        }
     }
 }
 

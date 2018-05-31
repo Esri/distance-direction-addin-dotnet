@@ -18,11 +18,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Windows.Controls;
+
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Framework;
+
 using DistanceAndDirectionLibrary.Views;
 using DistanceAndDirectionLibrary.ViewModels;
 using DistanceAndDirectionLibrary.Helpers;
@@ -172,39 +175,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                if (this is ProLinesViewModel)
+                // Call helper method (must be run on MCT)
+                return QueuedTask.Run<bool>(() =>
                 {
-// TODO: when all are implemented this will be moved to base class/override
-                    ProLinesViewModel lvm = this as ProLinesViewModel;
-                    return QueuedTask.Run<bool>(() =>
-                    {
-                        return lvm.HasLineFeatures();
-                    }).Result;
-                }
-                else if (this is ProCircleViewModel)
-                {
-// TODO: when all are implemented this will be moved to base class/override
-                    ProCircleViewModel cvm = this as ProCircleViewModel;
-                    return QueuedTask.Run<bool>(() =>
-                    {
-                        return cvm.HasCircleFeatures();
-                    }).Result;
-                }
-                else if (this is ProRangeViewModel)
-                {
-// TODO: when all are implemented this will be moved to base class/override
-                    ProRangeViewModel rvm = this as ProRangeViewModel;
-                    return QueuedTask.Run<bool>(() =>
-                    {
-                        return rvm.HasRingFeatures();
-                    }).Result;
-                }
-                else if (this is ProEllipseViewModel)
-                {
-                    return GraphicsList.Any(g => g.GraphicType == GraphicTypes.RangeRing && g.IsTemp == false);
-                }
-
-                return false;
+                    return this.HasLayerFeatures();
+                }).Result;
             }
         }
 
@@ -604,54 +579,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private void OnClearGraphics()
         {
-// TODO: when all are implemented this will be moved to base class/override
-            if (this is ProLinesViewModel)
+            QueuedTask.Run<bool>(() =>
             {
-                ProLinesViewModel lvm = this as ProLinesViewModel;
-                QueuedTask.Run<bool>(() =>
-                {
-                    return lvm.DeleteAllFeatures();
-                });
-            }
-            else if (this is ProCircleViewModel)
-            {
-                ProCircleViewModel cvm = this as ProCircleViewModel;
-                QueuedTask.Run<bool>(() =>
-                {
-                    return cvm.DeleteAllFeatures();
-                });
-            }
-            else if(this is ProRangeViewModel)
-            {
-                ProRangeViewModel rvm = this as ProRangeViewModel;
-                QueuedTask.Run<bool>(() =>
-                {
-                    return rvm.DeleteAllFeatures();
-                });
-            }
-// END TODO
-
-            List<Graphic> removedGraphics = new List<Graphic>();
-
-            if (MapView.Active == null)
-                return;
-
-            foreach (var item in GraphicsList)
-            {
-                Graphic graphic = (Graphic)item;
-                if (graphic != null && graphic.ViewModel == this)
-                {
-                    item.Disposable.Dispose();
-                    removedGraphics.Add(graphic);
-                }                    
-            }
-
-            // clean up the GraphicsList and remove the necessary graphics from it
-            foreach (Graphic graphic in removedGraphics)
-            {
-                GraphicsList.Remove(graphic);
-            }
-            //GraphicsList.Clear();
+                return this.DeleteAllFeatures();
+            });
 
             RaisePropertyChanged(() => HasMapGraphics);
         }
@@ -1131,10 +1062,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 try
                 {
-                    point = QueuedTask.Run(() =>
-                    {
-                        return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, type, FromGeoCoordinateMode.Default);
-                    }).Result;
+                    // Make sure there is an active map
+                    if ((MapView.Active == null) || (MapView.Active.Map == null) ||
+                        (MapView.Active.Map.SpatialReference == null))
+                        point = null;
+                    else
+                        point = QueuedTask.Run(() =>
+                        {
+                            return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, type, FromGeoCoordinateMode.Default);
+                        }).Result;
                 }
                 catch (Exception ex)
                 {
@@ -1147,17 +1083,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             try
             {
-                point = QueuedTask.Run(() =>
-                {
-                    return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
-                }).Result;
+                // Make sure there is an active map
+                if ((MapView.Active == null) || (MapView.Active.Map == null) ||
+                        (MapView.Active.Map.SpatialReference == null))
+                    point = null;
+                else
+                    point = QueuedTask.Run(() =>
+                    {
+                        return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
+                    }).Result;
             }
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
 
-            if(point == null)
+            if (point == null)
             {
                 // lets support web mercator
                 Regex regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
@@ -1244,13 +1185,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #endregion Private Functions
 
-        // ******************************************************************************
-        // Feature Support below in progress, will be integrated with the above when complete
-        // ******************************************************************************
+        #region Feature Class Support
+
+        /// <summary>
+        /// This is the name of the feature layer in the Table of Contents that contains the 
+        /// features for the graphic type (ex. "Lines" "Ellipses" etc.). It should be overridden
+        /// in derived classes with the correct layer name 
+        /// </summary>
+        /// <returns>Layer Name in Table of Contents to save features</returns>
+        public virtual string GetLayerName()
+        {
+            return "UNKNOWN";
+        }
 
         private ProgressDialog _progressDialog = null;
 
-        protected async Task<bool> AddLayerPackageToMapAsync()
+        private async Task<bool> AddLayerPackageToMapAsync()
         {
             if (_progressDialog == null)
                 _progressDialog = new ProgressDialog("Loading Required Layer Package...");
@@ -1265,17 +1215,24 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     string layerFileName = "DistanceAndDirection.lpkx";
                     string layerPath = System.IO.Path.Combine(Models.FeatureClassUtils.AddinAssemblyLocation(), "Data", layerFileName);
-                    Layer layerAdded = LayerFactory.Instance.CreateLayer(
-                        new Uri(layerPath), MapView.Active.Map);
-                    success = (layerAdded != null);
+
+                    // Do a final check that another queued thread has not already loaded this layer
+                    if (GetFeatureLayerByNameInActiveView(this.GetLayerName()) == null)
+                    {
+                        // Now add the layer package
+                        Layer layerAdded = LayerFactory.Instance.CreateLayer(
+                            new Uri(layerPath), MapView.Active.Map);
+                            success = (layerAdded != null);
+                    }
                 });
 
                 // Save the project, so layer stays in project
                 // Note: Must be called on Main/UI Thread
-                await ArcGIS.Desktop.Framework.FrameworkApplication.Current.Dispatcher.Invoke(async () =>
-                {
-                    bool success2 = await ArcGIS.Desktop.Core.Project.Current.SaveAsync();
-                });
+                if (success)
+                    await ArcGIS.Desktop.Framework.FrameworkApplication.Current.Dispatcher.Invoke(async () =>
+                    {
+                        bool success2 = await ArcGIS.Desktop.Core.Project.Current.SaveAsync();
+                    });
 
                 _progressDialog.Hide();
             }
@@ -1297,10 +1254,67 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().
                     FirstOrDefault(f => f.Name == featureLayerName);
 
+            // TODO: May need to also verify that the layer is child of "Distance and Direction" 
+            // group since the layer names used are pretty common and may not be unique
+
             return viewLayer;
         }
 
-        public async Task<bool> DeleteAllFeatures(ArcGIS.Core.Data.FeatureClass featureClass)
+        protected async Task<FeatureClass> GetFeatureClass(bool addToMapIfNotPresent = false)
+        {
+            string featureLayerName = this.GetLayerName();
+
+            FeatureLayer featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
+
+            if ((featureLayer == null) && (addToMapIfNotPresent))
+            {
+                await System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)(async () =>
+                {
+                    await AddLayerPackageToMapAsync();
+                }));
+
+                // Verify added correctly
+                featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
+            }
+
+            if (featureLayer == null)
+                return null;
+
+            FeatureClass featureClass = featureLayer.GetTable() as FeatureClass;
+
+            return featureClass;
+        }
+
+        protected async Task<bool> HasLayerFeatures()
+        {
+            FeatureClass fc = null;
+
+            await QueuedTask.Run(async () =>
+            {
+                fc = await GetFeatureClass(addToMapIfNotPresent: false);
+            });
+
+            return fc == null ? false : fc.GetCount() > 0;
+        }
+
+        protected async Task<bool> DeleteAllFeatures()
+        {
+            bool success = false;
+
+            FeatureClass featureClass = await GetFeatureClass(addToMapIfNotPresent: false);
+            if (featureClass != null)
+            {
+                success = await DeleteAllFeatures(featureClass);
+            }
+
+            if (!success)
+                // TODO: Add as resource
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Failed to Delete Features from Layer:" + this.GetLayerName()); 
+
+            return success;
+        }
+
+        protected async Task<bool> DeleteAllFeatures(ArcGIS.Core.Data.FeatureClass featureClass)
         {
             if (featureClass == null)
                 return false;
@@ -1349,12 +1363,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!result)
             {
                 System.Diagnostics.Trace.WriteLine("Could not delete features: " + error);
-                //Note: MessageBox will deadlock thread 
+                //Important/Note: MessageBox will deadlock thread if called on MCT - 
+                //Therefore need to ensure called on UI thread
                 // ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(String.Format("Could not delete features : {0}",
                 //    error));
             }
 
             return result;
         }
+        #endregion
+
     }
 }

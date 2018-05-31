@@ -797,49 +797,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #endregion
 
-// ******************************************************************************
-// Feature Support below - will be moved to base/utility class in future
-// ******************************************************************************
-
-        public async Task<bool> HasCircleFeatures()
+        public override string GetLayerName()
         {
-            FeatureClass fc = null;
-
-            await QueuedTask.Run(async () =>
-            {
-                fc = await GetCircleFeatureClass();
-            });
-
-            return fc == null ? false : fc.GetCount() > 0;
-        }
-
-        private async Task<FeatureClass> GetCircleFeatureClass(bool addToMapIfNotPresent = false)
-        {
-            string featureLayerName = "Circles";
-
-            FeatureLayer featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
-
-            if ((featureLayer == null) && (addToMapIfNotPresent))
-            {
-                await System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)(async () =>
-                {
-                    await AddLayerPackageToMapAsync();
-                }));
-
-                // Verify added correctly
-                featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
-            }
-
-            if (featureLayer == null)
-                return null;
-
-            FeatureClass circleFeatureClass = featureLayer.GetTable() as FeatureClass;
-
-            //****************************************************
-            // TODO: check circleFeatureClass has require fields
-            //****************************************************
-
-            return circleFeatureClass; 
+            return "Circles";
         }
 
         private async Task<bool> AddFeatureToLayer(Geometry geom, ProGraphicAttributes p = null)
@@ -852,7 +812,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return false;
             }
 
-            FeatureClass circleFeatureClass = await GetCircleFeatureClass(addToMapIfNotPresent : true); 
+            FeatureClass circleFeatureClass = await GetFeatureClass(addToMapIfNotPresent : true); 
             if (circleFeatureClass == null)
             {
                 // ERROR
@@ -905,6 +865,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     message = geodatabaseException.Message;
                 }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                }
             }, circleFeatureClass);
 
             await QueuedTask.Run(async () =>
@@ -925,20 +889,5 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return true;
         }
 
-        public async Task<bool> DeleteAllFeatures()
-        {
-            bool success = false;
-
-            FeatureClass circleFeatureClass = await GetCircleFeatureClass(addToMapIfNotPresent: false);
-            if (circleFeatureClass != null)
-            {
-                success = await DeleteAllFeatures(circleFeatureClass);
-            }
-
-            if (!success)
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Failed to Delete Circle Features"); // TODO: Add as resource
-
-            return success;
-        }
     }
 }

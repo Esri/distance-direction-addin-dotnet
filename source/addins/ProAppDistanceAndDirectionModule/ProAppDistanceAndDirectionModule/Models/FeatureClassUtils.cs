@@ -180,7 +180,7 @@ namespace ProAppDistanceAndDirectionModule.Models
                                                 try
                                                 {
                                                     // Add attributes
-                                                    rowBuffer[definition.FindField("Distance")] = ((LineAttributes)graphic.p)._distance;
+                                                    rowBuffer[definition.FindField("Distance")] = ((LineAttributes)graphic.p).distance;
                                                     rowBuffer[definition.FindField("DistUnit")] = ((LineAttributes)graphic.p).distanceunit;
                                                     rowBuffer[definition.FindField("Angle")] = ((LineAttributes)graphic.p).angle;
                                                     rowBuffer[definition.FindField("AngleUnit")] = ((LineAttributes)graphic.p).angleunit;
