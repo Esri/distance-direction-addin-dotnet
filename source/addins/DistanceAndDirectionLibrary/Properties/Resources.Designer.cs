@@ -520,7 +520,7 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clear Graphics.
+        ///   Looks up a localized string similar to Clear.
         /// </summary>
         public static string LabelClearGraphics {
             get {
