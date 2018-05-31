@@ -212,7 +212,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                             distanceunit = LineDistanceType.ToString(), ringorradial = "Radial" };
 
                         // AddGraphicToMap(newline, rangeAttributes);
-                        CreateRangeRingOrRadial(newline, rangeAttributes);
+                        CreateRangeRingOrRadialFeature(newline, rangeAttributes);
                     }
 
                     azimuth += interval;
@@ -266,7 +266,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         numRadials = numberOfRadials, centerx = Point1.X, centery = Point1.Y,
                         distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
 
-                    CreateRangeRingOrRadial(geom, rangeAttributes);
+                    CreateRangeRingOrRadialFeature(geom, rangeAttributes);
                 }
 
                 return geom;
@@ -405,7 +405,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 centerx = Point1.X, centery = Point1.Y,
                 distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
 
-            CreateRangeRingOrRadial(geom, rangeAttributes);
+            CreateRangeRingOrRadialFeature(geom, rangeAttributes);
         }
 
         private void UpdateFeedbackWithGeoCircle()
@@ -433,36 +433,39 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             AddGraphicToMap(geom, ColorFactory.Instance.GreyRGB, rangeAttributes, true);
         }
 
-        private async void CreateRangeRingOrRadial(Geometry geom, RangeAttributes rangeAttributes)
-        {
-            bool success = false;
-            await QueuedTask.Run(async() =>
-                success = await AddFeatureToLayer(geom, (ProGraphicAttributes)rangeAttributes));
-        }
-
         public override string GetLayerName()
         {
             return "Range Rings";
         }
 
-        private async Task<bool> AddFeatureToLayer(Geometry geom, ProGraphicAttributes p = null)
+        private async void CreateRangeRingOrRadialFeature(Geometry geom, RangeAttributes rangeAttributes)
         {
-            RangeAttributes attributes = p as RangeAttributes;
+            string message = string.Empty;
+            await QueuedTask.Run(async () =>
+                message = await AddFeatureToLayer(geom, rangeAttributes));
+
+            if (!string.IsNullOrEmpty(message))
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
+                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+        }
+
+        private async Task<string> AddFeatureToLayer(Geometry geom, RangeAttributes attributes)
+        {
+            string message = String.Empty;
 
             if (attributes == null)
             {
-                // ERROR
-                return false;
+                message = "Attributes are Empty"; // For debug does not need to be resource
+                return message;
             }
 
             FeatureClass ringFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (ringFeatureClass == null)
             {
-                // ERROR
-                return false;
+                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                return message;
             }
 
-            string message = String.Empty;
             bool creationResult = false;
 
             FeatureClassDefinition ringDefinition = ringFeatureClass.GetDefinition();
@@ -533,12 +536,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 message = editOperation.ErrorMessage;
             }
 
-            if (!creationResult)
-            {
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message);
-            }
-
-            return true;
+            return message;
         }
 
     }

@@ -466,6 +466,33 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Failed to delete features from layer: .
+        /// </summary>
+        public static string ErrorDeleteFailed {
+            get {
+                return ResourceManager.GetString("ErrorDeleteFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Required feature layer was not found: .
+        /// </summary>
+        public static string ErrorFeatureClassNotFound {
+            get {
+                return ResourceManager.GetString("ErrorFeatureClassNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feature Create Error.
+        /// </summary>
+        public static string ErrorFeatureCreateTitle {
+            get {
+                return ResourceManager.GetString("ErrorFeatureCreateTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Please provide a valid feature class name.
         /// </summary>
         public static string FeatureClassNameError {

@@ -786,11 +786,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (isFeedback)
                 AddGraphicToMap(geom, color, (ProGraphicAttributes)circleAttributes, IsTempGraphic: isFeedback);
             else
-            {
-                bool success = false;
-                QueuedTask.Run(async() =>
-                   success = await AddFeatureToLayer(geom, (ProGraphicAttributes)circleAttributes));
-            }
+                CreateCircleFeature(geom, circleAttributes);
 
             return (Geometry)geom;
         }
@@ -802,26 +798,34 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return "Circles";
         }
 
-        private async Task<bool> AddFeatureToLayer(Geometry geom, ProGraphicAttributes p = null)
+        private async void CreateCircleFeature(Geometry geom, CircleAttributes circleAttributes)
         {
-            CircleAttributes attributes = p as CircleAttributes;
+            string message = string.Empty;
+            await QueuedTask.Run(async () =>
+                message = await AddFeatureToLayer(geom, circleAttributes));
+
+            if (!string.IsNullOrEmpty(message))
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
+                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+        }
+
+        private async Task<string> AddFeatureToLayer(Geometry geom, CircleAttributes attributes)
+        {
+            string message = String.Empty;
 
             if (attributes == null)
             {
-                // ERROR
-                return false;
+                message = "Attributes are Empty"; // For debug does not need to be resource
+                return message;
             }
 
             FeatureClass circleFeatureClass = await GetFeatureClass(addToMapIfNotPresent : true); 
             if (circleFeatureClass == null)
             {
-                // ERROR
-                return false;
+                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                return message;
             }
 
-            circleFeatureClass.GetCount();
-
-            string message = String.Empty;
             bool creationResult = false;
 
             FeatureClassDefinition circleDefinition = circleFeatureClass.GetDefinition();
@@ -881,12 +885,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 message = editOperation.ErrorMessage;
             }
 
-            if (!creationResult)
-            {
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message);
-            }
-
-            return true;
+            return message;
         }
 
     }
