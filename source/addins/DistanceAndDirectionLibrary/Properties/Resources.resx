@@ -271,7 +271,7 @@
     <value>Center Point</value>
   </data>
   <data name="LabelClearGraphics" xml:space="preserve">
-    <value>Clear Graphics</value>
+    <value>Clear</value>
   </data>
   <data name="LabelCreateCircleFrom" xml:space="preserve">
     <value>From</value>

@@ -1215,17 +1215,24 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     string layerFileName = "DistanceAndDirection.lpkx";
                     string layerPath = System.IO.Path.Combine(Models.FeatureClassUtils.AddinAssemblyLocation(), "Data", layerFileName);
-                    Layer layerAdded = LayerFactory.Instance.CreateLayer(
-                        new Uri(layerPath), MapView.Active.Map);
-                    success = (layerAdded != null);
+
+                    // Do a final check that another queued thread has not already loaded this layer
+                    if (GetFeatureLayerByNameInActiveView(this.GetLayerName()) == null)
+                    {
+                        // Now add the layer package
+                        Layer layerAdded = LayerFactory.Instance.CreateLayer(
+                            new Uri(layerPath), MapView.Active.Map);
+                            success = (layerAdded != null);
+                    }
                 });
 
                 // Save the project, so layer stays in project
                 // Note: Must be called on Main/UI Thread
-                await ArcGIS.Desktop.Framework.FrameworkApplication.Current.Dispatcher.Invoke(async () =>
-                {
-                    bool success2 = await ArcGIS.Desktop.Core.Project.Current.SaveAsync();
-                });
+                if (success)
+                    await ArcGIS.Desktop.Framework.FrameworkApplication.Current.Dispatcher.Invoke(async () =>
+                    {
+                        bool success2 = await ArcGIS.Desktop.Core.Project.Current.SaveAsync();
+                    });
 
                 _progressDialog.Hide();
             }
