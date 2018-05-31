@@ -433,11 +433,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             AddGraphicToMap(geom, ColorFactory.Instance.GreyRGB, rangeAttributes, true);
         }
 
-        private void CreateRangeRingOrRadial(Geometry geom, RangeAttributes rangeAttributes)
+        private async void CreateRangeRingOrRadial(Geometry geom, RangeAttributes rangeAttributes)
         {
-            bool success = false;
-            QueuedTask.Run(async() =>
-                success = await AddFeatureToLayer(geom, (ProGraphicAttributes)rangeAttributes));
+            string message = string.Empty;
+            await QueuedTask.Run(async() =>
+                message = await AddFeatureToLayer(geom, (ProGraphicAttributes)rangeAttributes));
+
+            if (!string.IsNullOrEmpty(message))
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message);
         }
 
         public override string GetLayerName()
@@ -445,24 +448,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return "Range Rings";
         }
 
-        private async Task<bool> AddFeatureToLayer(Geometry geom, ProGraphicAttributes p = null)
+        private async Task<string> AddFeatureToLayer(Geometry geom, ProGraphicAttributes p = null)
         {
             RangeAttributes attributes = p as RangeAttributes;
+
+            string message = String.Empty;
 
             if (attributes == null)
             {
                 // ERROR
-                return false;
+                return message;
             }
 
             FeatureClass ringFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (ringFeatureClass == null)
             {
                 // ERROR
-                return false;
+                return message;
             }
 
-            string message = String.Empty;
             bool creationResult = false;
 
             FeatureClassDefinition ringDefinition = ringFeatureClass.GetDefinition();
@@ -533,12 +537,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 message = editOperation.ErrorMessage;
             }
 
-            if (!creationResult)
+            if (!string.IsNullOrEmpty(message))
             {
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message);
+                creationResult = false;
             }
 
-            return true;
+            return message;
         }
 
     }

@@ -1201,7 +1201,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private ProgressDialog _progressDialog = null;
 
         private async Task<bool> AddLayerPackageToMapAsync()
-        {
+        {         
             if (_progressDialog == null)
                 _progressDialog = new ProgressDialog("Loading Required Layer Package...");
 
@@ -1268,6 +1268,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 // Verify added correctly
                 featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
+
+                // If feature layer is still not found, report the problem: 
+                // ex: "Could not find required layer in the active map"
+                if (featureLayer == null)
+                {
+                    // Note: Must be called on Main/UI Thread
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Could not find required layer in the active map: " + this.GetLayerName());
+                    });
+                }
             }
 
             if (featureLayer == null)
@@ -1302,7 +1313,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (!success)
                 // TODO: Add as resource
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Failed to Delete Features from Layer:" + this.GetLayerName()); 
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Failed to Delete Features from Layer: " + this.GetLayerName()); 
 
             return success;
         }
