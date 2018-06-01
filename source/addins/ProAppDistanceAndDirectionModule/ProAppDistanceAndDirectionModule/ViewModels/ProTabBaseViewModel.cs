@@ -1153,6 +1153,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
             }
 
+            //Clear any selected features before executing export process
+            if (!ExecuteBuiltinCommand("esri_mapping_clearSelectionButton"))
+            {
+                System.Diagnostics.Trace.WriteLine("Unable to clear selected features");
+            }
+
             var dlg = new ProSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
             var vm = (ProSaveAsFormatViewModel)dlg.DataContext;
@@ -1392,6 +1398,30 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
 
             return result;
+        }
+
+        protected static bool ExecuteBuiltinCommand(string commandId)
+        {
+            bool success = false;
+
+            // Important/Note: Must be called on UI Thread (i.e. from a button or tool)
+            ArcGIS.Desktop.Framework.FrameworkApplication.Current.Dispatcher.Invoke(() =>
+            {
+                // Use the built-in Pro button/command
+                var wrapper = ArcGIS.Desktop.Framework.FrameworkApplication.GetPlugInWrapper(commandId);
+                var command = wrapper as System.Windows.Input.ICommand;
+                if ((command != null) && command.CanExecute(null))
+                {
+                    command.Execute(null);
+                    success = true;
+                }
+                else
+                {
+                    System.Diagnostics.Trace.WriteLine("Warning - unable to execute command: " + commandId);
+                }
+            });
+
+            return success;
         }
         #endregion
 
