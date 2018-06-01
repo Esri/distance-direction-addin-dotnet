@@ -123,7 +123,6 @@ namespace ProAppDistanceAndDirectionModule.Models
             if (toolParameters != null)
             {
                 sb.Append("Parameters: ");
-
                 int count = 0;
                 foreach (var param in toolParameters)
                     sb.Append(string.Format("{0}:{1} ", count++, param));
@@ -137,12 +136,21 @@ namespace ProAppDistanceAndDirectionModule.Models
 
         public async Task<bool> ExportLayer(string layerName, string outputPath, SaveAsType saveAsType)
         {
+            if (saveAsType == SaveAsType.KML)
+                return await ExportKMLLayer(layerName, outputPath);
+            else
+                return await ExportFeatureLayer(layerName, outputPath);
+        }
+
+        public async Task<bool> ExportFeatureLayer(string layerName, string outputPath)
+        {
             bool success = false;
 
             await QueuedTask.Run(async () =>
             {
                 List<object> arguments = new List<object>();
 
+                // TODO: if the user moves or renames this group, this layer name may no longer be valid
                 arguments.Add("Distance And Direction" + @"\" + layerName);
                 arguments.Add(outputPath);
 
@@ -150,6 +158,36 @@ namespace ProAppDistanceAndDirectionModule.Models
                 var environments = Geoprocessing.MakeEnvironmentArray(overwriteoutput: true);
 
                 string gpTool = "CopyFeatures_management";
+                IGPResult result = await Geoprocessing.ExecuteToolAsync(
+                    gpTool,
+                    parameters,
+                    environments,
+                    null,
+                    null,
+                    GPExecuteToolFlags.Default);
+
+                success = CheckResultAndReportMessages(result, gpTool, arguments);
+            });
+
+            return success;
+        }
+
+        public async Task<bool> ExportKMLLayer(string layerName, string outputPath)
+        {
+            bool success = false;
+
+            await QueuedTask.Run(async () =>
+            {
+                List<object> arguments = new List<object>();
+
+                // TODO: if the user moves or renames this group, this layer name may no longer be valid
+                arguments.Add("Distance And Direction" + @"\" + layerName);
+                arguments.Add(outputPath);
+
+                var parameters = Geoprocessing.MakeValueArray(arguments.ToArray());
+                var environments = Geoprocessing.MakeEnvironmentArray(overwriteoutput: true);
+
+                string gpTool = "LayerToKML_conversion";
                 IGPResult result = await Geoprocessing.ExecuteToolAsync(
                     gpTool,
                     parameters,

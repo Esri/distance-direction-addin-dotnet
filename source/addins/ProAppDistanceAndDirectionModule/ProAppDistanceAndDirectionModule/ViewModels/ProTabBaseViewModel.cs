@@ -1131,71 +1131,65 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private async void OnSaveAs()
         {
+            // TODO: All of these prompts below may need to be added as resources
+
+            // Save edits so everything in feature class will be exported
+            // Without save, only new edits since last save will be exported (which seems counterintuitive) 
+            if (ArcGIS.Desktop.Core.Project.Current.HasEdits)
+            {
+                // Prompt for confirmation, and if answer is no, return.
+                var result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                    "Edits must be saved before proceeding. Save edits?", "Save All Edits", System.Windows.MessageBoxButton.OKCancel, System.Windows.MessageBoxImage.Asterisk);
+
+                // Return if cancel value is chosen
+                if (Convert.ToString(result) == "OK")
+                {
+                    await ArcGIS.Desktop.Core.Project.Current.SaveEditsAsync();
+                }
+                else // operation cancelled
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Save As cancelled.");
+                    return;                
+                }
+            }
+
             var dlg = new ProSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
             var vm = (ProSaveAsFormatViewModel)dlg.DataContext;
-            GeomType geomType = GeomType.Polygon;
 
             if (dlg.ShowDialog() == true)
             {
-                // Get the graphics list for the selected tab
-                List<Graphic> typeGraphicsList = new List<Graphic>();
-                if (this is ProLinesViewModel)
-                {
-                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList();
-                    geomType = GeomType.PolyLine;
-                }
-                else if (this is ProCircleViewModel)
-                {
-                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Circle).ToList();
-                }
-                else if (this is ProEllipseViewModel)
-                {
-                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Ellipse).ToList();
-                }
-                else if (this is ProRangeViewModel)
-                {
-                    typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList();
-                    geomType = GeomType.PolyLine;
-                }
-
                 string path = fcUtils.PromptUserWithSaveDialog(vm.FeatureIsChecked, vm.ShapeIsChecked, vm.KmlIsChecked);
                 if (path != null)
                 {
+                    bool success = false;
+
                     try
                     {
                         string folderName = System.IO.Path.GetDirectoryName(path);
 
-// TODO: Intermediate Feature Class to Export Work to fully intergrate when all shape types are comple
-// TODO: also add the progress dialog
-// First shape type to use new export routine
-if (this is ProCircleViewModel)
-{
-SaveAsType saveAsType = SaveAsType.FileGDB;
+                        SaveAsType saveAsType = SaveAsType.FileGDB;
 
-if (vm.ShapeIsChecked)
-    saveAsType = SaveAsType.Shapefile;
-if (vm.KmlIsChecked)
-    saveAsType = SaveAsType.KML;
+                        if (vm.ShapeIsChecked)
+                            saveAsType = SaveAsType.Shapefile;
+                        if (vm.KmlIsChecked)
+                            saveAsType = SaveAsType.KML;
 
-bool success = await fcUtils.ExportLayer(this.GetLayerName(), path, saveAsType);
+                        _progressDialog = new ProgressDialog("Exporting Layer: " + this.GetLayerName());
 
-return;
-}
-// END TODO
-                        if (vm.FeatureIsChecked)
-                        {
-                            await fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, geomType);
-                        }
-                        else if (vm.ShapeIsChecked || vm.KmlIsChecked)
-                        {
-                            await fcUtils.CreateFCOutput(path, SaveAsType.Shapefile, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, geomType, vm.KmlIsChecked);
-                        }
+                        _progressDialog.Show();
+
+                        success = await fcUtils.ExportLayer(this.GetLayerName(), path, saveAsType);
+
+                        _progressDialog.Hide();
                     }
                     catch (Exception ex)
                     {
                         System.Diagnostics.Debug.WriteLine(ex.Message);
                     }
+
+                    if (!success)
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Save As failed.");
                 }
             }
         }
@@ -1219,8 +1213,7 @@ return;
 
         private async Task<bool> AddLayerPackageToMapAsync()
         {         
-            if (_progressDialog == null)
-                _progressDialog = new ProgressDialog("Loading Required Layer Package...");
+            _progressDialog = new ProgressDialog("Loading Required Layer Package...");
 
             bool success = false;
 
