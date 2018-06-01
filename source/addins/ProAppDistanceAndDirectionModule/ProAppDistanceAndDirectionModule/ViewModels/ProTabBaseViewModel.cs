@@ -1166,6 +1166,23 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         string folderName = System.IO.Path.GetDirectoryName(path);
 
+// TODO: Intermediate Feature Class to Export Work to fully intergrate when all shape types are comple
+// TODO: also add the progress dialog
+// First shape type to use new export routine
+if (this is ProCircleViewModel)
+{
+SaveAsType saveAsType = SaveAsType.FileGDB;
+
+if (vm.ShapeIsChecked)
+    saveAsType = SaveAsType.Shapefile;
+if (vm.KmlIsChecked)
+    saveAsType = SaveAsType.KML;
+
+bool success = await fcUtils.ExportLayer(this.GetLayerName(), path, saveAsType);
+
+return;
+}
+// END TODO
                         if (vm.FeatureIsChecked)
                         {
                             await fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, MapView.Active.Map.SpatialReference, MapView.Active, geomType);

@@ -103,6 +103,67 @@ namespace ProAppDistanceAndDirectionModule.Models
             return null;
         }
 
+
+        private static bool CheckResultAndReportMessages(IGPResult result, string toolToReport,
+            List<object> toolParameters)
+        {
+            // Return if no errors
+            if (!result.IsFailed)
+                return true;
+
+            // If failed, provide feedback of what went wrong
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.Append(toolToReport);
+            sb.AppendLine(" - GP Tool FAILED:");
+            foreach (var msg in result.ErrorMessages)
+                sb.AppendLine(msg.Text);
+            foreach (var msg in result.Messages)
+                sb.AppendLine(msg.Text);
+
+            if (toolParameters != null)
+            {
+                sb.Append("Parameters: ");
+
+                int count = 0;
+                foreach (var param in toolParameters)
+                    sb.Append(string.Format("{0}:{1} ", count++, param));
+                sb.AppendLine();
+            }
+
+            System.Diagnostics.Debug.WriteLine(sb);
+
+            return false;
+        }
+
+        public async Task<bool> ExportLayer(string layerName, string outputPath, SaveAsType saveAsType)
+        {
+            bool success = false;
+
+            await QueuedTask.Run(async () =>
+            {
+                List<object> arguments = new List<object>();
+
+                arguments.Add("Distance And Direction" + @"\" + layerName);
+                arguments.Add(outputPath);
+
+                var parameters = Geoprocessing.MakeValueArray(arguments.ToArray());
+                var environments = Geoprocessing.MakeEnvironmentArray(overwriteoutput: true);
+
+                string gpTool = "CopyFeatures_management";
+                IGPResult result = await Geoprocessing.ExecuteToolAsync(
+                    gpTool,
+                    parameters,
+                    environments,
+                    null,
+                    null,
+                    GPExecuteToolFlags.Default);
+
+                success = CheckResultAndReportMessages(result, gpTool, arguments);
+            });
+
+            return success;
+        }
+
         /// <summary>
         /// Creates the output featureclass, either fgdb featureclass or shapefile
         /// </summary>
