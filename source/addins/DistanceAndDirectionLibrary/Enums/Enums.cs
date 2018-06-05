@@ -54,7 +54,7 @@ namespace DistanceAndDirectionLibrary
         Miles = 4,
         
         [LocalizableDescription(@"EnumNauticalMile", typeof(Resources))]
-        NauticalMile = 5,
+        NauticalMiles = 5,
 
         [LocalizableDescription(@"EnumYards", typeof(Resources))]
         Yards = 6

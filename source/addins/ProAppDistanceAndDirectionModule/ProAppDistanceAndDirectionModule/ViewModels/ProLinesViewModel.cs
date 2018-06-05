@@ -177,7 +177,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 lu = LinearUnit.Meters;
             else if (distType == DistanceTypes.Miles)
                 lu = LinearUnit.Miles;
-            else if (distType == DistanceTypes.NauticalMile)
+            else if (distType == DistanceTypes.NauticalMiles)
                 lu = LinearUnit.NauticalMiles;
             else if (distType == DistanceTypes.Yards)
                 lu = LinearUnit.Yards;

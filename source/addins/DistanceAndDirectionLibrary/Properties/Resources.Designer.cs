@@ -403,7 +403,7 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Nautical Mile.
+        ///   Looks up a localized string similar to Nautical Miles.
         /// </summary>
         public static string EnumNauticalMile {
             get {

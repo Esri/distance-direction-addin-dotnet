@@ -1516,7 +1516,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 case DistanceTypes.Miles:
                     unitType = (int)esriSRUnitType.esriSRUnit_SurveyMile;
                     break;
-                case DistanceTypes.NauticalMile:
+                case DistanceTypes.NauticalMiles:
                     unitType = (int)esriSRUnitType.esriSRUnit_NauticalMile;
                     break;
                 case DistanceTypes.Yards:
@@ -1569,7 +1569,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 case DistanceTypes.Kilometers:
                 case DistanceTypes.Miles:
-                case DistanceTypes.NauticalMile:
+                case DistanceTypes.NauticalMiles:
                     returnDistance = Math.Round(inputDistance, largeUnitRoundingFactor);
                     break;
                 case DistanceTypes.Meters:
@@ -1601,7 +1601,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 case DistanceTypes.Miles:
                     unit = esriUnits.esriMiles;
                     break;
-                case DistanceTypes.NauticalMile:
+                case DistanceTypes.NauticalMiles:
                     unit = esriUnits.esriNauticalMiles;
                     break;
                 case DistanceTypes.Yards:

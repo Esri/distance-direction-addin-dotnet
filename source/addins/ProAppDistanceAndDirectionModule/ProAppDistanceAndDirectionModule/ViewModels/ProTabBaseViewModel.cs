@@ -1004,7 +1004,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 case DistanceTypes.Miles:
                     result = LinearUnit.Miles;
                     break;
-                case DistanceTypes.NauticalMile:
+                case DistanceTypes.NauticalMiles:
                     result = LinearUnit.NauticalMiles;
                     break;
                 case DistanceTypes.Yards:

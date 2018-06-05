@@ -414,7 +414,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return DistanceTypes.Miles;
                     case RateTimeTypes.NauticalMilesHour:
                     case RateTimeTypes.NauticalMilesSec:
-                        return DistanceTypes.NauticalMile;
+                        return DistanceTypes.NauticalMiles;
                     default:
                         return DistanceTypes.Meters;
                 }
