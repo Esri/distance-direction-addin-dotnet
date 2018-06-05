@@ -408,7 +408,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 distance = value;
-                DistanceString = distance.ToString("G");
+                DistanceString = distance.ToString("0.##");
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
             }
@@ -423,7 +423,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get
             {
                 if (string.IsNullOrWhiteSpace(distanceString))
-                    return Distance.ToString("G");
+                    return Distance.ToString("0.##");
                 else
                     return distanceString;
                 

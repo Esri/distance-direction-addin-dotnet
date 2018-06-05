@@ -380,7 +380,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
                 distance = value;
-                DistanceString = distance.ToString("G");
+                DistanceString = distance.ToString("0.##");
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
             }
@@ -394,7 +394,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                return Distance.ToString("G");
+                return Distance.ToString("0.##");              
             }
             set
             {

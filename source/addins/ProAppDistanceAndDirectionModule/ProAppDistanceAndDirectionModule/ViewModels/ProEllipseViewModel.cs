@@ -138,9 +138,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     if(EllipseType == EllipseTypes.Full)
                     {
-                        return (MinorAxisDistance * 2).ToString("G");
+                        return (MinorAxisDistance * 2).ToString("0.##");
                     }
-                    return MinorAxisDistance.ToString("G");
+                    return MinorAxisDistance.ToString("0.##");
                 }
                 else
                     return minorAxisDistanceString;
@@ -216,9 +216,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     if (EllipseType == EllipseTypes.Full)
                     {
-                        return (MajorAxisDistance * 2.0).ToString("G");
+                        return (MajorAxisDistance * 2.0).ToString("0.##");
                     }
-                    return MajorAxisDistance.ToString("G");
+                    return MajorAxisDistance.ToString("0.##");
                 }
                 else
                     return majorAxisDistanceString;
@@ -265,7 +265,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 UpdateFeedbackWithEllipse();
 
-                AzimuthString = azimuth.ToString("G");
+                AzimuthString = azimuth.ToString("0.##");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }

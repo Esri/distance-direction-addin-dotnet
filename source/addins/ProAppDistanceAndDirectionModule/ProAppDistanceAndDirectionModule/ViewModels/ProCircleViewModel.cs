@@ -88,7 +88,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                 {
                     if (value == CircleFromTypes.Diameter)
-                        DistanceString = (base.Distance * 2.0).ToString("G");
+                        DistanceString = (base.Distance * 2.0).ToString("0.##");
                 }
 
                 // reset distance
@@ -200,7 +200,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                return TravelTime.ToString("G");
+                return TravelTime.ToString("0.##");
             }
             set
             {
@@ -291,7 +291,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                return TravelRate.ToString("G");
+                return TravelRate.ToString("0.##");
             }
             set
             {
@@ -533,9 +533,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 String dString = "";
                 if (CircleType == CircleFromTypes.Diameter)
-                    dString = (Distance * 2.0).ToString("G");
+                    dString = (Distance * 2.0).ToString("0.##");
                 else
-                    dString = (Distance).ToString("G");
+                    dString = (Distance).ToString("0.##");
 
                 if (EndsWithDecimal)
                 {

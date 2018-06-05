@@ -213,7 +213,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                return TravelTime.ToString("G");
+                return TravelTime.ToString("0.##");
             }
             set
             {
@@ -318,7 +318,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                return TravelRate.ToString("G");
+                return TravelRate.ToString("0.##");
             }
             set
             {
@@ -548,9 +548,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 String dString = "";
                 if (CircleType == CircleFromTypes.Diameter)
-                    dString = (Distance * 2.0).ToString("G");
+                    dString = (Distance * 2.0).ToString("0.##");
                 else
-                    dString = (Distance).ToString("G");
+                    dString = (Distance * 2.0).ToString("0.##");
 
                 base.distanceString = dString;
 
