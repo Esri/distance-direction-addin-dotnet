@@ -1158,34 +1158,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 System.Diagnostics.Trace.WriteLine("Unable to clear selected features");
             }
 
-            var dlg = new ProSaveAsFormatView();
+            var dlg = new GRSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
             var vm = (ProSaveAsFormatViewModel)dlg.DataContext;
 
             if (dlg.ShowDialog() == true)
-            {
-                string path = fcUtils.PromptUserWithSaveDialog(vm.FeatureIsChecked, vm.ShapeIsChecked, vm.KmlIsChecked);
+            {                
+                string path = fcUtils.PromptUserWithSaveDialog(vm.FeatureShapeIsChecked);
                 if (path != null)
                 {
                     bool success = false;
-
                     try
-                    {
+                    {                        
                         string folderName = System.IO.Path.GetDirectoryName(path);
 
                         SaveAsType saveAsType = SaveAsType.FileGDB;
-
-                        if (vm.ShapeIsChecked)
+                        if (path.IndexOf(".gdb") == -1)
                             saveAsType = SaveAsType.Shapefile;
                         if (vm.KmlIsChecked)
                             saveAsType = SaveAsType.KML;
 
                         _progressDialog = new ProgressDialog("Exporting Layer: " + this.GetLayerName());
-
                         _progressDialog.Show();
-
                         success = await fcUtils.ExportLayer(this.GetLayerName(), path, saveAsType);
-
                         _progressDialog.Hide();
                     }
                     catch (Exception ex)
@@ -1194,7 +1189,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }
 
                     if (!success)
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Save As failed.");
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Save As process failed.");
                 }
             }
         }

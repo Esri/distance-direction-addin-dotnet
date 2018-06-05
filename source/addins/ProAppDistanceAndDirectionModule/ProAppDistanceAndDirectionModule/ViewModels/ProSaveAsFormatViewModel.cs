@@ -15,38 +15,25 @@
   *   limitations under the License. 
   ******************************************************************************/
 
+using DistanceAndDirectionLibrary.ViewModels;
+
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
-    class ProSaveAsFormatViewModel : ProTabBaseViewModel
+    class ProSaveAsFormatViewModel : BaseViewModel
     {
 
-        private bool featureIsChecked = true;
-        public bool FeatureIsChecked
+        private bool featureShapeIsChecked = true;
+        public bool FeatureShapeIsChecked
         {
             get
             {
-                return featureIsChecked;
+                return featureShapeIsChecked;
             }
 
             set
             {
-                featureIsChecked = value;
-                RaisePropertyChanged(() => FeatureIsChecked);
-            }
-        }
-
-        private bool shapeIsChecked = false;
-        public bool ShapeIsChecked
-        {
-            get
-            {
-                return shapeIsChecked;
-            }
-
-            set
-            {
-                shapeIsChecked = value;
-                RaisePropertyChanged(() => ShapeIsChecked);
+                featureShapeIsChecked = value;
+                RaisePropertyChanged(() => FeatureShapeIsChecked);
             }
         }
 
