@@ -267,6 +267,9 @@
   <data name="InvalidSpatialReferenceError" xml:space="preserve">
     <value>The operation requires a valid spatial reference</value>
   </data>
+  <data name="KMZExportComplete" xml:space="preserve">
+    <value>KMZ Exported Successfully</value>
+  </data>
   <data name="LabelAngle" xml:space="preserve">
     <value>Angle</value>
   </data>

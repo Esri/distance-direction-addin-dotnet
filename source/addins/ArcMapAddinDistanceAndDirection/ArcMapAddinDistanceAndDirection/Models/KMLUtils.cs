@@ -50,7 +50,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 for (int i = 0; i < map.LayerCount; i++ )
                 {
                     ILayer layer = map.get_Layer(i);
-                    if (layer.Name == "featureLayer")
+                    if ((layer.Name == "featureLayer") || (layer.Name == kmzName))
                     {
                         map.DeleteLayer(layer);
                         break;

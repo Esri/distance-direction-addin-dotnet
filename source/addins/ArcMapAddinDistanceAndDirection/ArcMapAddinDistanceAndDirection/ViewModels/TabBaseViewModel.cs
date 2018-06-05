@@ -573,8 +573,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                         if (tempFc != null)
                         {
-                            kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap);
-
+                            bool success = kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap);
+                            if (!success)
+                            {
+                                MessageBox.Show(
+                                        DistanceAndDirectionLibrary.Properties.Resources.KMZExportComplete,
+                                        DistanceAndDirectionLibrary.Properties.Resources.KMZExportComplete);
+                                    
+                            }
                             // delete the temporary shapefile
                             fcUtils.DeleteShapeFile(tempShapeFile);
                         }
