@@ -74,6 +74,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 System.Diagnostics.Debug.WriteLine("Probably Running from Unit Tests");
             }
 
+            ArcGIS.Desktop.Mapping.Events.ActiveMapViewChangedEvent.Subscribe((args) =>
+            {
+                // Subscribe to this event in case the ActiveMap already has layers with features (so buttons are enabled on load)
+                RaisePropertyChanged(() => HasMapGraphics);
+            });
+
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
             {
