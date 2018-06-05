@@ -39,28 +39,28 @@ namespace ProAppDistanceAndDirectionModule.Models
 {
     class FeatureClassUtils
     {
-        private string previousLocation = "";
-        private string previousSaveType = "";
+        private string previousLocation = string.Empty;
+        private string previousSaveType = string.Empty;
 
         /// <summary>
         /// Prompts the user to save features
-        /// 
         /// </summary>
-        /// <returns>The path to selected output (fgdb/shapefile)</returns>
-        public string PromptUserWithSaveDialog(bool featureChecked, bool shapeChecked, bool kmlChecked)
+        /// <param name="featureShapeChecked"></param>
+        /// <returns></returns>
+        public string PromptUserWithSaveDialog(bool featureShapeChecked)
         {
             //Prep the dialog
             SaveItemDialog saveItemDlg = new SaveItemDialog();
             saveItemDlg.Title = "Select output";
             saveItemDlg.OverwritePrompt = true;
-            string saveType = featureChecked ? "gdb" : "file";
+            var saveType = (featureShapeChecked) ? "feature-shape" : "kml";
             if (string.IsNullOrEmpty(previousSaveType))
                 previousSaveType = saveType;
             if (!string.IsNullOrEmpty(previousLocation) && previousSaveType == saveType)
                 saveItemDlg.InitialLocation = previousLocation;
             else
             {
-                if (featureChecked)
+                if (featureShapeChecked)
                     saveItemDlg.InitialLocation = ArcGIS.Desktop.Core.Project.Current.DefaultGeodatabasePath;
                 else
                     saveItemDlg.InitialLocation = ArcGIS.Desktop.Core.Project.Current.HomeFolderPath;
@@ -68,16 +68,9 @@ namespace ProAppDistanceAndDirectionModule.Models
             previousSaveType = saveType;
 
             // Set the filters and default extension
-            if (featureChecked)
-            {
-                saveItemDlg.Filter = ItemFilters.geodatabaseItems_all;
-            }
-            else if (shapeChecked)
-            {
-                saveItemDlg.Filter = ItemFilters.shapefiles;
-                saveItemDlg.DefaultExt = "shp";
-            }
-            else if (kmlChecked)
+            if (featureShapeChecked)
+                saveItemDlg.Filter = ItemFilters.featureClasses_all;
+            else
             {
                 saveItemDlg.Filter = ItemFilters.kml;
                 saveItemDlg.DefaultExt = "kmz";
@@ -95,13 +88,6 @@ namespace ProAppDistanceAndDirectionModule.Models
                         MessageBoxImage.Exclamation);
                     return null;
                 } 
-                if (featureChecked && saveItemDlg.FilePath.IndexOf(".gdb") == -1)
-                {
-                    MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.FeatureClassNameError,
-                        DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel, MessageBoxButton.OK,
-                        MessageBoxImage.Exclamation);
-                    return null;
-                }
                 previousLocation = Path.GetDirectoryName(saveItemDlg.FilePath);                
                 return saveItemDlg.FilePath;           
             }
