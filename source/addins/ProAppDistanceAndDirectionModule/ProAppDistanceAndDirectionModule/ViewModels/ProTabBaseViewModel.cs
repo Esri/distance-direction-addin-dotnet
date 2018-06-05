@@ -176,10 +176,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get
             {
                 // Call helper method (must be run on MCT)
-                return QueuedTask.Run<bool>(() =>
+                bool hasFeatures = QueuedTask.Run<bool>(async() =>
                 {
-                    return this.HasLayerFeatures();
+                    return await this.HasLayerFeatures();
                 }).Result;
+
+                return hasFeatures;
             }
         }
 
@@ -542,8 +544,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     var gt = GetGraphicType();
 
                     GraphicsList.Add(new Graphic(gt, disposable, geom, this, p, IsTempGraphic));
-
-                    RaisePropertyChanged(() => HasMapGraphics);
                 });
         }
 
@@ -603,7 +603,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     GraphicsList.Remove(item);
                 }
             }
-            RaisePropertyChanged(() => HasMapGraphics);
         }
 
         /// <summary>
