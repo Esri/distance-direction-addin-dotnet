@@ -511,6 +511,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to KMZ Exported Successfully.
+        /// </summary>
+        public static string KMZExportComplete {
+            get {
+                return ResourceManager.GetString("KMZExportComplete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Angle.
         /// </summary>
         public static string LabelAngle {
