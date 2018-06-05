@@ -1551,7 +1551,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         protected double TrimPrecision(double inputDistance, DistanceTypes lineDistanceType_param, bool lax)
         {
             int largeUnitRoundingFactor = 4;
-            int smallUnitRoundingFactor = 1;
+            int smallUnitRoundingFactor = 2;
 
             // We have a less strict mode for trimming precision for the case that the user
             // has Distance Calculator expanded and thus might have a large unit selected
