@@ -550,7 +550,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (CircleType == CircleFromTypes.Diameter)
                     dString = (Distance * 2.0).ToString("0.##");
                 else
-                    dString = (Distance * 2.0).ToString("0.##");
+                    dString = Distance.ToString("0.##");
 
                 base.distanceString = dString;
 
