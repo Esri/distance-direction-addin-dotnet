@@ -55,7 +55,6 @@ namespace ProAppDistanceAndDirectionModule
         public int numRings { get; set; }
         public double distance { get; set; }
         public String distanceunit { get; set; }
-        public int numRadials { get; set; }
         public Double centerx { get; set; }
         public Double centery { get; set; }
         public String ringorradial { get; set; }
