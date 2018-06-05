@@ -123,7 +123,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
-                DistanceString = distance.ToString("G");
+                DistanceString = distance.ToString("0.##");
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
                 RaisePropertyChanged(() => LineDistanceType);
