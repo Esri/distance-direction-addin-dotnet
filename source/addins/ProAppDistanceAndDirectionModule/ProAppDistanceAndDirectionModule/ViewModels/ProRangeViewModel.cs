@@ -207,7 +207,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         // Hold onto the attributes in case user saves graphics to file later
                         RangeAttributes rangeAttributes = new RangeAttributes() {
                             mapPoint = Point1, numRings = NumberOfRings,
-                            distance = radialLength, numRadials = NumberOfRadials,
+                            distance = radialLength,
                             centerx = Point1.X, centery = Point1.Y,
                             distanceunit = LineDistanceType.ToString(), ringorradial = "Radial" };
 
@@ -263,7 +263,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // Hold onto the attributes in case user saves graphics to file later
                     RangeAttributes rangeAttributes = new RangeAttributes() {
                         mapPoint = Point1, numRings = numberOfRings, distance = radius,
-                        numRadials = numberOfRadials, centerx = Point1.X, centery = Point1.Y,
+                        centerx = Point1.X, centery = Point1.Y,
                         distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
 
                     CreateRangeRingOrRadialFeature(geom, rangeAttributes);
@@ -401,7 +401,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             // Hold onto the attributes in case user saves graphics to file later
             RangeAttributes rangeAttributes = new RangeAttributes() {
                 mapPoint = Point1, numRings = NumberOfRings,
-                distance = Distance, numRadials = NumberOfRadials,
+                distance = Distance,
                 centerx = Point1.X, centery = Point1.Y,
                 distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
 
@@ -427,7 +427,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             ClearTempGraphics();
 
             // Hold onto the attributes in case user saves graphics to file later
-            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx = Point1.X, centery = Point1.Y, distanceunit = LineDistanceType.ToString() };
+            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1,
+                numRings = NumberOfRings, distance = Distance,
+                centerx = Point1.X, centery = Point1.Y,
+                distanceunit = LineDistanceType.ToString() };
 
             AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
             AddGraphicToMap(geom, ColorFactory.Instance.GreyRGB, rangeAttributes, true);
@@ -488,9 +491,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                     if (ringDefinition.FindField("Rings") >= 0)
                         rowBuffer["Rings"] = attributes.numRings;        // Double
-
-                    if (ringDefinition.FindField("Radials") >= 0)
-                        rowBuffer["Radials"] = attributes.numRadials;    // Text
 
                     if (ringDefinition.FindField("CenterX") >= 0)
                         rowBuffer["CenterX"] = attributes.centerx;       // Double
