@@ -232,7 +232,7 @@
     <value>Mils</value>
   </data>
   <data name="EnumNauticalMile" xml:space="preserve">
-    <value>Nautical Mile</value>
+    <value>Nautical Miles</value>
   </data>
   <data name="EnumNauticalMilesHour" xml:space="preserve">
     <value>Nautical Miles / Hour</value>
