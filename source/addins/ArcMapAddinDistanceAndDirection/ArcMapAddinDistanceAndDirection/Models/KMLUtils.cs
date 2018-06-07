@@ -34,6 +34,8 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 string kmzName = System.IO.Path.GetFileName(kmzOutputPath);
 
                 IGeoProcessor2 gp = new GeoProcessorClass();
+                gp.OverwriteOutput = true;
+
                 IVariantArray parameters = new VarArrayClass();
                 parameters.Add(tmpShapefilePath);
                 parameters.Add(kmzName);
