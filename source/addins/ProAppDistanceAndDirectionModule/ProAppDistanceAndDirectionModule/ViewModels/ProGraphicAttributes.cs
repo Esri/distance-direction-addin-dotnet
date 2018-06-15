@@ -16,7 +16,7 @@ namespace ProAppDistanceAndDirectionModule
     {
         public MapPoint mapPoint1 { get; set; }
         public MapPoint mapPoint2 { get; set; }
-        public double _distance { get; set; }
+        public double distance { get; set; }
         public string distanceunit { get; set; }
         public double angle { get; set; }
         public string angleunit { get; set; }
@@ -55,9 +55,9 @@ namespace ProAppDistanceAndDirectionModule
         public int numRings { get; set; }
         public double distance { get; set; }
         public String distanceunit { get; set; }
-        public int numRadials { get; set; }
         public Double centerx { get; set; }
         public Double centery { get; set; }
+        public String ringorradial { get; set; }
     }
 
 }

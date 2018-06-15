@@ -13,13 +13,17 @@
 // limitations under the License.
 
 using ArcGIS.Core.CIM;
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -27,7 +31,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 {
     public class ProCircleViewModel : ProTabBaseViewModel
     {
-        public ProCircleViewModel() 
+        public ProCircleViewModel()
         {
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
             {
@@ -76,7 +80,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // Prevent graphical glitches from excessively high inputs
                     distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 }
-                
+
                 if (IsDistanceCalcExpanded)
                 {
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
@@ -84,7 +88,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                 {
                     if (value == CircleFromTypes.Diameter)
-                        DistanceString = (base.Distance * 2.0).ToString("G");
+                        DistanceString = (base.Distance * 2.0).ToString("0.##");
                 }
 
                 // reset distance
@@ -101,8 +105,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public TimeUnits TimeUnit
         {
-            
-            get {
+            get
+            {
                 return timeUnit;
             }
             set
@@ -112,7 +116,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
                 }
                 timeUnit = value;
-                
+
                 double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
                 if (RateUnit != DistanceTypes.Meters)
                 {
@@ -125,7 +129,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     RaisePropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
-                    if(HasPoint1)
+                    if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
@@ -196,7 +200,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                return TravelTime.ToString("G");
+                return TravelTime.ToString("0.##");
             }
             set
             {
@@ -223,7 +227,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public double TravelTime
         {
-            
             get
             {
                 return travelTime;
@@ -241,7 +244,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 travelTime = value;
-                
+
                 double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
                 if (RateUnit != DistanceTypes.Meters)
                 {
@@ -285,10 +288,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// String of rate display
         /// </summary>
         public string TravelRateString
-        {  
+        {
             get
             {
-                return TravelRate.ToString("G");
+                return TravelRate.ToString("0.##");
             }
             set
             {
@@ -315,7 +318,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public double TravelRate
         {
-            
             get
             {
                 return travelRate;
@@ -412,7 +414,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return DistanceTypes.Miles;
                     case RateTimeTypes.NauticalMilesHour:
                     case RateTimeTypes.NauticalMilesSec:
-                        return DistanceTypes.NauticalMile;
+                        return DistanceTypes.NauticalMiles;
                     default:
                         return DistanceTypes.Meters;
                 }
@@ -531,9 +533,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 String dString = "";
                 if (CircleType == CircleFromTypes.Diameter)
-                    dString = (Distance * 2.0).ToString("G");
+                    dString = (Distance * 2.0).ToString("0.##");
                 else
-                    dString = (Distance).ToString("G");
+                    dString = (Distance).ToString("0.##");
 
                 if (EndsWithDecimal)
                 {
@@ -727,12 +729,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             TravelTime = 0.0;
             TravelRate = 0.0;
         }
+
         /// <summary>
         /// Create geodetic circle
         /// </summary>
         private Geometry CreateCircle(bool isFeedback)
         {
-            
             if (Point1 == null || double.IsNaN(Distance) || Distance <= 0.0)
             {
                 return null;
@@ -752,8 +754,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
-            CIMColor color =  new CIMRGBColor() { R=255,B=0,G=0,Alpha=25};
-            if(isFeedback)
+            CIMColor color = new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 };
+            if (isFeedback)
             {
                 color = ColorFactory.Instance.GreyRGB;
                 ClearTempGraphics();
@@ -768,24 +770,125 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 dist = Distance * 2;
             else
                 dist = Distance;
-           
-                if (IsDistanceCalcExpanded)
-                {
-                    dist = ConvertFromTo(LineDistanceType, RateUnit, Distance);
-                    distunit = RateUnit;
-                }
-                else
-                {
-                    distunit = LineDistanceType;
-                }
 
-            CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = dist, circleFromTypes = CircleType, circletype=CircleType.ToString(), centerx=Point1.X, centery=Point1.Y, distanceunit=distunit.ToString()};
-            AddGraphicToMap(geom, color, (ProGraphicAttributes)circleAttributes, IsTempGraphic: isFeedback);
+            if (IsDistanceCalcExpanded)
+            {
+                dist = ConvertFromTo(LineDistanceType, RateUnit, Distance);
+                distunit = RateUnit;
+            }
+            else
+            {
+                distunit = LineDistanceType;
+            }
+
+            CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = dist, circleFromTypes = CircleType, circletype = CircleType.ToString(), centerx = Point1.X, centery = Point1.Y, distanceunit = distunit.ToString() };
+
+            if (isFeedback)
+                AddGraphicToMap(geom, color, (ProGraphicAttributes)circleAttributes, IsTempGraphic: isFeedback);
+            else
+                CreateCircleFeature(geom, circleAttributes);
 
             return (Geometry)geom;
         }
 
         #endregion
+
+        public override string GetLayerName()
+        {
+            return "Circles";
+        }
+
+        private async void CreateCircleFeature(Geometry geom, CircleAttributes circleAttributes)
+        {
+            string message = string.Empty;
+            await QueuedTask.Run(async () =>
+                message = await AddFeatureToLayer(geom, circleAttributes));
+
+            RaisePropertyChanged(() => HasMapGraphics);
+
+            if (!string.IsNullOrEmpty(message))
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
+                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+        }
+
+        private async Task<string> AddFeatureToLayer(Geometry geom, CircleAttributes attributes)
+        {
+            string message = String.Empty;
+
+            if (attributes == null)
+            {
+                message = "Attributes are Empty"; // For debug does not need to be resource
+                return message;
+            }
+
+            FeatureClass circleFeatureClass = await GetFeatureClass(addToMapIfNotPresent : true); 
+            if (circleFeatureClass == null)
+            {
+                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                return message;
+            }
+
+            bool creationResult = false;
+
+            FeatureClassDefinition circleDefinition = circleFeatureClass.GetDefinition();
+
+            EditOperation editOperation = new EditOperation();
+            editOperation.Name = "Circular Feature Insert";
+            editOperation.Callback(context =>
+            {
+                try
+                {
+                    RowBuffer rowBuffer = circleFeatureClass.CreateRowBuffer();
+
+                    double distance = attributes.distance;
+                    if (IsDistanceCalcExpanded && (CircleType == CircleFromTypes.Diameter))
+                        distance *= 2.0;
+
+                    if (circleDefinition.FindField("Distance") >= 0)
+                        rowBuffer["Distance"] = distance;     // Double
+
+                    if (circleDefinition.FindField("DistUnit") >= 0)
+                        rowBuffer["DistUnit"] = attributes.distanceunit; // Text
+
+                    if (circleDefinition.FindField("DistType") >= 0)
+                        rowBuffer["DistType"] = attributes.circletype;   // Text
+
+                    if (circleDefinition.FindField("CenterX") >= 0)
+                        rowBuffer["CenterX"] = attributes.centerx;       // Double
+
+                    if (circleDefinition.FindField("CenterY") >= 0)
+                        rowBuffer["CenterY"] = attributes.centery;       // Double
+
+                    rowBuffer["Shape"] = GeometryEngine.Instance.Project(geom, circleDefinition.GetSpatialReference());
+
+                    Feature feature = circleFeatureClass.CreateRow(rowBuffer);
+                    feature.Store();
+
+                    //To Indicate that the attribute table has to be updated
+                    context.Invalidate(feature);
+                }
+                catch (GeodatabaseException geodatabaseException)
+                {
+                    message = geodatabaseException.Message;
+                }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                }
+            }, circleFeatureClass);
+
+            await QueuedTask.Run(async () =>
+            {
+                creationResult = await editOperation.ExecuteAsync();
+            });
+
+            if (!creationResult)
+            {
+                message = editOperation.ErrorMessage;
+            }
+
+            return message;
+        }
 
     }
 }

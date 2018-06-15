@@ -13,7 +13,9 @@
 // limitations under the License.
 
 using ArcGIS.Core.CIM;
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
@@ -42,6 +44,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void OnSketchComplete(object obj)
         {
+// TODO: DETERMINE IF THIS IS USED ANYWHERE? (appear to be 0 references)
             AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);
         }
 
@@ -135,9 +138,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     if(EllipseType == EllipseTypes.Full)
                     {
-                        return (MinorAxisDistance * 2).ToString("G");
+                        return (MinorAxisDistance * 2).ToString("0.##");
                     }
-                    return MinorAxisDistance.ToString("G");
+                    return MinorAxisDistance.ToString("0.##");
                 }
                 else
                     return minorAxisDistanceString;
@@ -213,9 +216,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     if (EllipseType == EllipseTypes.Full)
                     {
-                        return (MajorAxisDistance * 2.0).ToString("G");
+                        return (MajorAxisDistance * 2.0).ToString("0.##");
                     }
-                    return MajorAxisDistance.ToString("G");
+                    return MajorAxisDistance.ToString("0.##");
                 }
                 else
                     return majorAxisDistanceString;
@@ -262,7 +265,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 UpdateFeedbackWithEllipse();
 
-                AzimuthString = azimuth.ToString("G");
+                AzimuthString = azimuth.ToString("0.##");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }
@@ -561,9 +564,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 // Hold onto the attributes in case user saves graphics to file later
-                EllipseAttributes ellipseAttributes = new EllipseAttributes() { mapPoint = Point1, minorAxis = MinorAxisDistance, majorAxis = MajorAxisDistance, angle = param.AxisDirection, angleunit=AzimuthType.ToString(), centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
+                EllipseAttributes ellipseAttributes = new EllipseAttributes() {
+                    mapPoint = Point1, minorAxis = MinorAxisDistance,
+                    majorAxis = MajorAxisDistance, angle = Azimuth,
+                    angleunit = AzimuthType.ToString(), centerx=Point1.X,
+                    centery = Point1.Y, distanceunit = LineDistanceType.ToString() };
 
-                AddGraphicToMap(geom, new CIMRGBColor() { R = 255, B = 0, G = 0, Alpha = 25 }, ellipseAttributes);
+                CreateEllipseFeature(geom, ellipseAttributes);
 
                 return (Geometry)geom;
             }
@@ -574,6 +581,105 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
         #endregion
+
+        public override string GetLayerName()
+        {
+            return "Ellipses";
+        }
+
+        private async void CreateEllipseFeature(Geometry geom, EllipseAttributes ellipseAttributes)
+        {
+            string message = string.Empty;
+            await QueuedTask.Run(async () =>
+                message = await AddFeatureToLayer(geom, ellipseAttributes));
+
+            RaisePropertyChanged(() => HasMapGraphics);
+
+            if (!string.IsNullOrEmpty(message))
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
+                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+        }
+
+        private async Task<string> AddFeatureToLayer(Geometry geom, EllipseAttributes attributes)
+        {
+            string message = String.Empty;
+
+            if (attributes == null)
+            {
+                message = "Attributes are Empty"; // For debug does not need to be resource
+                return message;
+            }
+
+            FeatureClass ellipseFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
+            if (ellipseFeatureClass == null)
+            {
+                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                return message;
+            }
+
+            bool creationResult = false;
+
+            FeatureClassDefinition ellipseDefinition = ellipseFeatureClass.GetDefinition();
+
+            EditOperation editOperation = new EditOperation();
+            editOperation.Name = "Ellipse Feature Insert";
+            editOperation.Callback(context =>
+            {
+                try
+                {
+                    RowBuffer rowBuffer = ellipseFeatureClass.CreateRowBuffer();
+
+                    if (ellipseDefinition.FindField("Major") >= 0)
+                        rowBuffer["Major"] = attributes.majorAxis;       // Text
+
+                    if (ellipseDefinition.FindField("Minor") >= 0)
+                        rowBuffer["Minor"] = attributes.minorAxis;       // Double
+
+                    if (ellipseDefinition.FindField("DistUnit") >= 0)
+                        rowBuffer["DistUnit"] = attributes.distanceunit; // Text
+
+                    if (ellipseDefinition.FindField("Angle") >= 0)
+                        rowBuffer["Angle"] = attributes.angle;           // Double
+
+                    if (ellipseDefinition.FindField("AngleUnit") >= 0)
+                        rowBuffer["AngleUnit"] = attributes.angleunit;   // Text
+
+                    if (ellipseDefinition.FindField("CenterX") >= 0)
+                        rowBuffer["CenterX"] = attributes.centerx;       // Double
+
+                    if (ellipseDefinition.FindField("CenterY") >= 0)
+                        rowBuffer["CenterY"] = attributes.centery;       // Double
+
+                    rowBuffer["Shape"] = GeometryEngine.Instance.Project(geom, ellipseDefinition.GetSpatialReference());
+
+                    Feature feature = ellipseFeatureClass.CreateRow(rowBuffer);
+                    feature.Store();
+
+                    //To indicate that the attribute table has to be updated
+                    context.Invalidate(feature);
+                }
+                catch (GeodatabaseException geodatabaseException)
+                {
+                    message = geodatabaseException.Message;
+                }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                }
+            }, ellipseFeatureClass);
+
+            await QueuedTask.Run(async () =>
+            {
+                creationResult = await editOperation.ExecuteAsync();
+            });
+
+            if (!creationResult)
+            {
+                message = editOperation.ErrorMessage;
+            }
+
+            return message;
+        }
 
     }
 }

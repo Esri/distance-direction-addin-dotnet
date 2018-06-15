@@ -250,21 +250,18 @@ namespace ArcMapAddinDistanceAndDirection.Models
                                     
                                     System.Object rings;
                                     System.Object distance;
-                                    System.Object radials;
                                     System.Object distunit;
                                     System.Object centerx;
                                     System.Object centery;
 
                                     graphic.Attributes.TryGetValue("rings", out rings);
                                     graphic.Attributes.TryGetValue("distance", out distance);
-                                    graphic.Attributes.TryGetValue("radials", out radials);
                                     graphic.Attributes.TryGetValue("distanceunit", out distunit);
                                     graphic.Attributes.TryGetValue("centerx", out centerx);
                                     graphic.Attributes.TryGetValue("centery", out centery);
 
                                     feature.set_Value(feature.Fields.FindField("Rings"), rings);
                                     feature.set_Value(feature.Fields.FindField("Distance"), distance);
-                                    feature.set_Value(feature.Fields.FindField("Radials"), radials);
                                     feature.set_Value(feature.Fields.FindField("DistanceUnit"), distunit);
                                     feature.set_Value(feature.Fields.FindField("CenterX"), centerx);
                                     feature.set_Value(feature.Fields.FindField("CenterY"), centery);
@@ -560,13 +557,6 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
                                 field = new FieldClass();
                                 fieldEdit = (IFieldEdit)field;
-                                fieldEdit.Name_2 = "Radials";
-                                fieldEdit.AliasName_2 = "Radials";
-                                fieldEdit.Type_2 = esriFieldType.esriFieldTypeInteger;
-                                fieldsEdit.AddField(field);
-
-                                field = new FieldClass();
-                                fieldEdit = (IFieldEdit)field;
                                 fieldEdit.Name_2 = "CenterX";
                                 fieldEdit.AliasName_2 = "Center X";
                                 fieldEdit.Type_2 = esriFieldType.esriFieldTypeDouble;
@@ -679,21 +669,18 @@ namespace ArcMapAddinDistanceAndDirection.Models
                                 {
                                     System.Object rings;
                                     System.Object distance;
-                                    System.Object radials;
                                     System.Object distunit;
                                     System.Object centerx;
                                     System.Object centery;
 
                                     graphic.Attributes.TryGetValue("rings", out rings);
                                     graphic.Attributes.TryGetValue("distance", out distance);
-                                    graphic.Attributes.TryGetValue("radials", out radials);
                                     graphic.Attributes.TryGetValue("distanceunit", out distunit);
                                     graphic.Attributes.TryGetValue("centerx", out centerx);
                                     graphic.Attributes.TryGetValue("centery", out centery);
 
                                     feature.set_Value(feature.Fields.FindField("Rings"), rings);
                                     feature.set_Value(feature.Fields.FindField("Distance"), distance);
-                                    feature.set_Value(feature.Fields.FindField("Radials"), radials);
                                     feature.set_Value(feature.Fields.FindField("DistUnit"), distunit);
                                     feature.set_Value(feature.Fields.FindField("CenterX"), centerx);
                                     feature.set_Value(feature.Fields.FindField("CenterY"), centery);
@@ -958,12 +945,6 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         pFldEdt.Name_2 = "DistanceUnit";
                         pFldEdt.AliasName_2 = "Distance Unit";
                         pFldEdt.Type_2 = esriFieldType.esriFieldTypeString;
-                        pFldsEdt.AddField(pFldEdt);
-
-                        pFldEdt = new FieldClass();
-                        pFldEdt.Name_2 = "Radials";
-                        pFldEdt.AliasName_2 = "Radials";
-                        pFldEdt.Type_2 = esriFieldType.esriFieldTypeDouble;
                         pFldsEdt.AddField(pFldEdt);
 
                         pFldEdt = new FieldClass();

@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
@@ -180,14 +182,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         MapPoint movedMP = null;
                         var mpList = new List<MapPoint>() { Point1 };
                         // get point 2
-                        
-                        var results = GeometryEngine.Instance.GeodeticMove(mpList, 
+
+                        var results = GeometryEngine.Instance.GeodeticMove(mpList,
                             MapView.Active.Map.SpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
 
                         // update feedback
                         //UpdateFeedback();
                         foreach (var mp in results)
                             movedMP = mp;
+
                         if (movedMP != null)
                         {
                             var movedMPproj = GeometryEngine.Instance.Project(movedMP, Point1.SpatialReference);
@@ -197,12 +200,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         else
                             return null;
                     }).Result;
+
                     Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, GeodeticCurveType.Loxodrome);
                     if (newline != null)
                     {
                         // Hold onto the attributes in case user saves graphics to file later
-                        RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = radialLength, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
-                        AddGraphicToMap(newline, rangeAttributes);
+                        RangeAttributes rangeAttributes = new RangeAttributes() {
+                            mapPoint = Point1, numRings = NumberOfRings,
+                            distance = radialLength,
+                            centerx = Point1.X, centery = Point1.Y,
+                            distanceunit = LineDistanceType.ToString(), ringorradial = "Radial" };
+
+                        // AddGraphicToMap(newline, rangeAttributes);
+                        CreateRangeRingOrRadialFeature(newline, rangeAttributes);
                     }
 
                     azimuth += interval;
@@ -213,6 +223,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 System.Diagnostics.Debug.WriteLine(ex);
             }
         }
+
         private double GetAzimuthAsRadians(double azimuth)
         {
             return azimuth * (Math.PI / 180.0);
@@ -238,7 +249,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     radius += Distance;
 
                     var param = new GeodesicEllipseParameter();
-                    
+
                     param.Center = new Coordinate2D(Point1);
                     param.AxisDirection = 0.0;
                     param.LinearUnit = GetLinearUnit(LineDistanceType);
@@ -250,9 +261,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                     // Hold onto the attributes in case user saves graphics to file later
-                    RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = numberOfRings, distance = radius, numRadials = numberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
+                    RangeAttributes rangeAttributes = new RangeAttributes() {
+                        mapPoint = Point1, numRings = numberOfRings, distance = radius,
+                        centerx = Point1.X, centery = Point1.Y,
+                        distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
 
-                    AddGraphicToMap(geom, rangeAttributes);
+                    CreateRangeRingOrRadialFeature(geom, rangeAttributes);
                 }
 
                 return geom;
@@ -385,9 +399,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
             // Hold onto the attributes in case user saves graphics to file later
-            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString() };
+            RangeAttributes rangeAttributes = new RangeAttributes() {
+                mapPoint = Point1, numRings = NumberOfRings,
+                distance = Distance,
+                centerx = Point1.X, centery = Point1.Y,
+                distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
 
-            AddGraphicToMap(geom, rangeAttributes);
+            CreateRangeRingOrRadialFeature(geom, rangeAttributes);
         }
 
         private void UpdateFeedbackWithGeoCircle()
@@ -409,10 +427,119 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             ClearTempGraphics();
 
             // Hold onto the attributes in case user saves graphics to file later
-            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1, numRings = NumberOfRings, distance = Distance, numRadials = NumberOfRadials, centerx=Point1.X, centery=Point1.Y, distanceunit=LineDistanceType.ToString()};
+            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1,
+                numRings = NumberOfRings, distance = Distance,
+                centerx = Point1.X, centery = Point1.Y,
+                distanceunit = LineDistanceType.ToString() };
 
             AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
             AddGraphicToMap(geom, ColorFactory.Instance.GreyRGB, rangeAttributes, true);
         }
+
+        public override string GetLayerName()
+        {
+            return "Range Rings";
+        }
+
+        private async void CreateRangeRingOrRadialFeature(Geometry geom, RangeAttributes rangeAttributes)
+        {
+            string message = string.Empty;
+            await QueuedTask.Run(async () =>
+                message = await AddFeatureToLayer(geom, rangeAttributes));
+
+            RaisePropertyChanged(() => HasMapGraphics);
+
+            if (!string.IsNullOrEmpty(message))
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
+                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+        }
+
+        private async Task<string> AddFeatureToLayer(Geometry geom, RangeAttributes attributes)
+        {
+            string message = String.Empty;
+
+            if (attributes == null)
+            {
+                message = "Attributes are Empty"; // For debug does not need to be resource
+                return message;
+            }
+
+            FeatureClass ringFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
+            if (ringFeatureClass == null)
+            {
+                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                return message;
+            }
+
+            bool creationResult = false;
+
+            FeatureClassDefinition ringDefinition = ringFeatureClass.GetDefinition();
+
+            EditOperation editOperation = new EditOperation();
+            editOperation.Name = "Ring Feature Insert";
+            editOperation.Callback(context =>
+            {
+                try
+                {
+                    RowBuffer rowBuffer = ringFeatureClass.CreateRowBuffer();
+
+                    if (ringDefinition.FindField("Distance") >= 0)
+                        rowBuffer["Distance"] = attributes.distance;     // Double
+
+                    if (ringDefinition.FindField("DistUnit") >= 0)
+                        rowBuffer["DistUnit"] = attributes.distanceunit; // Text
+
+                    if (ringDefinition.FindField("Rings") >= 0)
+                        rowBuffer["Rings"] = attributes.numRings;        // Double
+
+                    if (ringDefinition.FindField("CenterX") >= 0)
+                        rowBuffer["CenterX"] = attributes.centerx;       // Double
+
+                    if (ringDefinition.FindField("CenterY") >= 0)
+                        rowBuffer["CenterY"] = attributes.centery;       // Double
+
+                    if (ringDefinition.FindField("RRType") >= 0)
+                        rowBuffer["RRType"] = attributes.ringorradial;   // Double
+
+                    // Ensure Z removed (this feature class does not have Z)
+                    var geoNoZ = geom;
+                    if (geom.HasZ)
+                    {
+                        PolylineBuilder pb = new PolylineBuilder((Polyline)geom);
+                        pb.HasZ = false;
+                        geoNoZ = pb.ToGeometry();
+                    }
+
+                    rowBuffer["Shape"] = GeometryEngine.Instance.Project(geoNoZ, ringDefinition.GetSpatialReference());
+
+                    Feature feature = ringFeatureClass.CreateRow(rowBuffer);
+                    feature.Store();
+
+                    //To Indicate that the attribute table has to be updated
+                    context.Invalidate(feature);
+                }
+                catch (GeodatabaseException geodatabaseException)
+                {
+                    message = geodatabaseException.Message;
+                }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                }
+            }, ringFeatureClass);
+
+            await QueuedTask.Run(async () =>
+            {
+                creationResult = await editOperation.ExecuteAsync();
+            });
+
+            if (!creationResult)
+            {
+                message = editOperation.ErrorMessage;
+            }
+
+            return message;
+        }
+
     }
 }

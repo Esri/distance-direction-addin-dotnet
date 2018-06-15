@@ -232,7 +232,7 @@
     <value>Mils</value>
   </data>
   <data name="EnumNauticalMile" xml:space="preserve">
-    <value>Nautical Mile</value>
+    <value>Nautical Miles</value>
   </data>
   <data name="EnumNauticalMilesHour" xml:space="preserve">
     <value>Nautical Miles / Hour</value>
@@ -252,11 +252,23 @@
   <data name="EnumYards" xml:space="preserve">
     <value>Yards</value>
   </data>
+  <data name="ErrorDeleteFailed" xml:space="preserve">
+    <value>Failed to delete features from layer: </value>
+  </data>
+  <data name="ErrorFeatureClassNotFound" xml:space="preserve">
+    <value>Required feature layer was not found: </value>
+  </data>
+  <data name="ErrorFeatureCreateTitle" xml:space="preserve">
+    <value>Feature Create Error</value>
+  </data>
   <data name="FeatureClassNameError" xml:space="preserve">
     <value>Please provide a valid feature class name</value>
   </data>
   <data name="InvalidSpatialReferenceError" xml:space="preserve">
     <value>The operation requires a valid spatial reference</value>
+  </data>
+  <data name="KMZExportComplete" xml:space="preserve">
+    <value>KMZ Exported Successfully</value>
   </data>
   <data name="LabelAngle" xml:space="preserve">
     <value>Angle</value>
@@ -271,7 +283,7 @@
     <value>Center Point</value>
   </data>
   <data name="LabelClearGraphics" xml:space="preserve">
-    <value>Clear Graphics</value>
+    <value>Clear</value>
   </data>
   <data name="LabelCreateCircleFrom" xml:space="preserve">
     <value>From</value>

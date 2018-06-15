@@ -34,6 +34,8 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 string kmzName = System.IO.Path.GetFileName(kmzOutputPath);
 
                 IGeoProcessor2 gp = new GeoProcessorClass();
+                gp.OverwriteOutput = true;
+
                 IVariantArray parameters = new VarArrayClass();
                 parameters.Add(tmpShapefilePath);
                 parameters.Add(kmzName);
@@ -50,7 +52,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 for (int i = 0; i < map.LayerCount; i++ )
                 {
                     ILayer layer = map.get_Layer(i);
-                    if (layer.Name == "featureLayer")
+                    if ((layer.Name == "featureLayer") || (layer.Name == kmzName))
                     {
                         map.DeleteLayer(layer);
                         break;

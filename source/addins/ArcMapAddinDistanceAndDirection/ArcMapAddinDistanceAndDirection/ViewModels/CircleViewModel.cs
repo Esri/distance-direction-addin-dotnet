@@ -213,7 +213,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                return TravelTime.ToString("G");
+                return TravelTime.ToString("0.##");
             }
             set
             {
@@ -318,7 +318,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                return TravelRate.ToString("G");
+                return TravelRate.ToString("0.##");
             }
             set
             {
@@ -424,7 +424,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         return DistanceTypes.Miles;
                     case RateTimeTypes.NauticalMilesHour:
                     case RateTimeTypes.NauticalMilesSec:
-                        return DistanceTypes.NauticalMile;
+                        return DistanceTypes.NauticalMiles;
                     default:
                         return DistanceTypes.Meters;
                 }
@@ -548,9 +548,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 String dString = "";
                 if (CircleType == CircleFromTypes.Diameter)
-                    dString = (Distance * 2.0).ToString("G");
+                    dString = (Distance * 2.0).ToString("0.##");
                 else
-                    dString = (Distance).ToString("G");
+                    dString = Distance.ToString("0.##");
 
                 base.distanceString = dString;
 
@@ -861,7 +861,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                                     unitLabel = RateUnit.ToString();
                                     roundingFactor = 2;
                                     break;
-                                case DistanceTypes.NauticalMile:
+                                case DistanceTypes.NauticalMiles:
                                     unitLabel = "Nautical Miles";
                                     roundingFactor = 2;
                                     break;
@@ -887,7 +887,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                                     unitLabel = RateUnit.ToString();
                                     roundingFactor = 2;
                                     break;
-                                case DistanceTypes.NauticalMile:
+                                case DistanceTypes.NauticalMiles:
                                     unitLabel = "Nautical Miles";
                                     roundingFactor = 2;
                                     break;

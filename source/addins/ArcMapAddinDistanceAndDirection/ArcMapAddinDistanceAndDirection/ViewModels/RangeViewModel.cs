@@ -123,7 +123,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
 
-                DistanceString = distance.ToString("G");
+                DistanceString = distance.ToString("0.##");
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
                 RaisePropertyChanged(() => LineDistanceType);
@@ -241,7 +241,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     rrAttributes.Add("rings", NumberOfRings);
                     rrAttributes.Add("distance", radialLength);
                     rrAttributes.Add("distanceunit", lineDistanceType.ToString());
-                    rrAttributes.Add("radials", NumberOfRadials);
                     rrAttributes.Add("centerx", Point1.X);
                     rrAttributes.Add("centery", Point1.Y);
                     construct.ConstructGeodeticLineFromDistance(esriGeodeticType.esriGeodeticTypeLoxodrome, Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
@@ -282,7 +281,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     rrAttributes.Add("rings", NumberOfRings);
                     rrAttributes.Add("distance", radius);
                     rrAttributes.Add("distanceunit", lineDistanceType.ToString());
-                    rrAttributes.Add("radials", NumberOfRadials);
                     rrAttributes.Add("centerx", Point1.X);
                     rrAttributes.Add("centery", Point1.Y);
                     AddGraphicToMap((IGeometry)construct, color, attributes:rrAttributes);
@@ -433,7 +431,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
                 rrAttributes.Add("rings", NumberOfRings);
                 rrAttributes.Add("distance", Distance);
-                rrAttributes.Add("radials", NumberOfRadials);
                 rrAttributes.Add("centerx", Point1.X);
                 rrAttributes.Add("centery", Point1.Y);
                 rrAttributes.Add("distanceunit", lineDistanceType.ToString());
@@ -477,7 +474,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
                 rrAttributes.Add("rings", NumberOfRings);
                 rrAttributes.Add("distance", Distance);
-                rrAttributes.Add("radials", NumberOfRadials);
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
                 var color = new RgbColorClass() as IColor;

@@ -380,7 +380,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
 
                 distance = value;
-                DistanceString = distance.ToString("G");
+                DistanceString = distance.ToString("0.##");
                 RaisePropertyChanged(() => Distance);
                 RaisePropertyChanged(() => DistanceString);
             }
@@ -394,7 +394,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                return Distance.ToString("G");
+                return Distance.ToString("0.##");              
             }
             set
             {
@@ -575,6 +575,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         {
                             kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap);
 
+                            MessageBox.Show(
+                                    DistanceAndDirectionLibrary.Properties.Resources.KMZExportComplete,
+                                    DistanceAndDirectionLibrary.Properties.Resources.KMZExportComplete);
+                                    
                             // delete the temporary shapefile
                             fcUtils.DeleteShapeFile(tempShapeFile);
                         }
@@ -1516,7 +1520,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 case DistanceTypes.Miles:
                     unitType = (int)esriSRUnitType.esriSRUnit_SurveyMile;
                     break;
-                case DistanceTypes.NauticalMile:
+                case DistanceTypes.NauticalMiles:
                     unitType = (int)esriSRUnitType.esriSRUnit_NauticalMile;
                     break;
                 case DistanceTypes.Yards:
@@ -1551,7 +1555,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         protected double TrimPrecision(double inputDistance, DistanceTypes lineDistanceType_param, bool lax)
         {
             int largeUnitRoundingFactor = 4;
-            int smallUnitRoundingFactor = 1;
+            int smallUnitRoundingFactor = 2;
 
             // We have a less strict mode for trimming precision for the case that the user
             // has Distance Calculator expanded and thus might have a large unit selected
@@ -1569,7 +1573,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 case DistanceTypes.Kilometers:
                 case DistanceTypes.Miles:
-                case DistanceTypes.NauticalMile:
+                case DistanceTypes.NauticalMiles:
                     returnDistance = Math.Round(inputDistance, largeUnitRoundingFactor);
                     break;
                 case DistanceTypes.Meters:
@@ -1601,7 +1605,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 case DistanceTypes.Miles:
                     unit = esriUnits.esriMiles;
                     break;
-                case DistanceTypes.NauticalMile:
+                case DistanceTypes.NauticalMiles:
                     unit = esriUnits.esriNauticalMiles;
                     break;
                 case DistanceTypes.Yards:

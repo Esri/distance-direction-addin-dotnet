@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
@@ -142,7 +144,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                     UpdateFeedback();
 
-                DistanceString = distance.ToString("G");
+                DistanceString = distance.ToString("0.##");
                 RaisePropertyChanged(() => DistanceString);
             }
         }
@@ -175,7 +177,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 lu = LinearUnit.Meters;
             else if (distType == DistanceTypes.Miles)
                 lu = LinearUnit.Miles;
-            else if (distType == DistanceTypes.NauticalMile)
+            else if (distType == DistanceTypes.NauticalMiles)
                 lu = LinearUnit.NauticalMiles;
             else if (distType == DistanceTypes.Yards)
                 lu = LinearUnit.Yards;
@@ -253,7 +255,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                     }
                 }
-                AzimuthString = azimuth.Value.ToString("G");
+                AzimuthString = azimuth.Value.ToString("0.##");
                 RaisePropertyChanged(() => AzimuthString);
             }
         }
@@ -306,7 +308,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     var tempDistance = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
                     var results = GeometryEngine.Instance.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value, GetCurveType());
                     foreach (var mp in results)
-                        Point2 = mp;
+                    {
+                        // WORKAROUND: For some odd reason GeodeticMove is removing the Z attribute of the point
+                        // so need to put it back so all points will have a consistent Z.
+                        // This is important when storing to feature class with Z
+                        if (mp == null)
+                            continue;
+
+                        if (Double.IsNaN(mp.Z))
+                        {
+                            MapPointBuilder mb = new MapPointBuilder(mp.X, mp.Y, 0.0, mp.SpatialReference);
+                            Point2 = mb.ToGeometry();
+                        }
+                        else
+                            Point2 = mp;
+                    }
+
                     if (Point2 != null)
                     {
                         var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
@@ -437,6 +454,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (Point1 == null || Point2 == null)
                 return null;
+
             GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
             try
@@ -445,15 +463,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var polyline = QueuedTask.Run(() =>
                     {
                         var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
-                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
+                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj); 
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
                 Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, curveType);
 
                 // Hold onto the attributes in case user saves graphics to file later
-                LineAttributes lineAttributes = new LineAttributes(){mapPoint1 = Point1, mapPoint2 = Point2, _distance = distance, angle = (double)azimuth, angleunit = LineAzimuthType.ToString(), distanceunit = LineDistanceType.ToString(), originx=Point1.X, originy = Point1.Y, destinationx=Point2.X, destinationy=Point2.Y};
+                LineAttributes lineAttributes = new LineAttributes() {
+                    mapPoint1 = Point1, mapPoint2 = Point2,
+                    distance = distance, angle = (double)azimuth,
+                    angleunit = LineAzimuthType.ToString(),
+                    distanceunit = LineDistanceType.ToString(),
+                    originx =Point1.X, originy = Point1.Y,
+                    destinationx =Point2.X, destinationy=Point2.Y };
 
-                AddGraphicToMap(newline, (ProGraphicAttributes)lineAttributes);
+                CreateLineFeature(newline, lineAttributes);
+
                 ResetPoints();
 
                 return (Geometry)newline;
@@ -496,7 +521,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             return Azimuth;
         }
-
 
         private double GetAngleDegrees(double angle)
         {
@@ -550,5 +574,117 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        public override string GetLayerName()
+        {
+            return "Lines";
+        }
+
+        private async void CreateLineFeature(Geometry geom, LineAttributes lineAttributes)
+        {
+            string message = string.Empty;
+            await QueuedTask.Run(async () =>
+                message = await AddFeatureToLayer(geom, lineAttributes));
+
+            RaisePropertyChanged(() => HasMapGraphics);
+
+            if (!string.IsNullOrEmpty(message))
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
+                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+        }
+
+        private async Task<string> AddFeatureToLayer(Geometry geom, LineAttributes attributes)
+        {
+            string message = String.Empty;
+
+            if (attributes == null)
+            {
+                message = "Attributes are Empty"; // For debug does not need to be resource
+                return message;
+            }
+
+            FeatureClass lineFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
+            if (lineFeatureClass == null)
+            {
+                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                return message;
+            }
+
+            bool creationResult = false;
+
+            FeatureClassDefinition lineDefinition = lineFeatureClass.GetDefinition();
+
+            EditOperation editOperation = new EditOperation();
+            editOperation.Name = "Line Feature Insert";
+            editOperation.Callback(context =>
+            {
+                try
+                {
+                    RowBuffer rowBuffer = lineFeatureClass.CreateRowBuffer();
+
+                    if (lineDefinition.FindField("Distance") >= 0)
+                        rowBuffer["Distance"] = attributes.distance;     // Double
+
+                    if (lineDefinition.FindField("DistUnit") >= 0)
+                        rowBuffer["DistUnit"] = attributes.distanceunit; // Text
+
+                    if (lineDefinition.FindField("Angle") >= 0)
+                        rowBuffer["Angle"] = attributes.angle;       // Double
+
+                    if (lineDefinition.FindField("AngleUnit") >= 0)
+                        rowBuffer["AngleUnit"] = attributes.angleunit;   // Text
+
+                    if (lineDefinition.FindField("OriginX") >= 0)
+                        rowBuffer["OriginX"] = attributes.originx;   // Double
+
+                    if (lineDefinition.FindField("OriginY") >= 0)
+                        rowBuffer["OriginY"] = attributes.originy;   // Double
+
+                    if (lineDefinition.FindField("DestX") >= 0)
+                        rowBuffer["DestX"] = attributes.destinationx;   // Double
+
+                    if (lineDefinition.FindField("DestY") >= 0)
+                        rowBuffer["DestY"] = attributes.destinationy;   // Double
+
+                    // Ensure Geometry Has Z
+                    var geomZ = geom;
+                    if (!geom.HasZ)
+                    {
+                        PolylineBuilder pb = new PolylineBuilder((Polyline)geom);
+                        pb.HasZ = true;
+                        geomZ = pb.ToGeometry();
+                    }
+
+                    rowBuffer["Shape"] = GeometryEngine.Instance.Project(geomZ, lineDefinition.GetSpatialReference());
+
+                    Feature feature = lineFeatureClass.CreateRow(rowBuffer);
+                    feature.Store();
+
+                    //To Indicate that the attribute table has to be updated
+                    context.Invalidate(feature);
+                }
+                catch (GeodatabaseException geodatabaseException)
+                {
+                    message = geodatabaseException.Message;
+                }
+                catch (Exception ex)
+                {
+                    message = ex.Message;
+                }
+            }, lineFeatureClass);
+
+            await QueuedTask.Run(async () =>
+            {
+                creationResult = await editOperation.ExecuteAsync();
+            });
+
+            if (!creationResult)
+            {
+                message = editOperation.ErrorMessage;
+            }
+
+            return message;
+        }
+
     }
 }
+
