@@ -132,8 +132,20 @@
     <Compile Include="ViewModels\ProRangeViewModel.cs" />
     <Compile Include="ViewModels\ProSaveAsFormatViewModel.cs" />
     <Compile Include="ViewModels\ProTabBaseViewModel.cs" />
+    <Compile Include="Views\ProCircleView.xaml.cs">
+      <DependentUpon>ProCircleView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ProEditPropertiesView.xaml.cs">
       <DependentUpon>ProEditPropertiesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProEllipseView.xaml.cs">
+      <DependentUpon>ProEllipseView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProLinesView.xaml.cs">
+      <DependentUpon>ProLinesView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ProRangeView.xaml.cs">
+      <DependentUpon>ProRangeView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProSaveAsFormatView.xaml.cs">
       <DependentUpon>ProSaveAsFormatView.xaml</DependentUpon>
@@ -144,7 +156,27 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ProMAResourceDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ProCircleView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\ProEditPropertiesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ProEllipseView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ProLinesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ProRangeView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
