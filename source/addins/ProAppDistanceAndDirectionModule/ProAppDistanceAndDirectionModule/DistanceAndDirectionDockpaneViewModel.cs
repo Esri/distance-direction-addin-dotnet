@@ -27,23 +27,23 @@ namespace ProAppDistanceAndDirectionModule
     {
         private const string _dockPaneID = "ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane";
 
-        protected DistanceAndDirectionDockpaneViewModel() 
+        protected DistanceAndDirectionDockpaneViewModel()
         {
             // set some views and datacontext
-            LinesView = new GRLinesView();
+            LinesView = new ProLinesView();
             LinesView.DataContext = new ProLinesViewModel();
 
-            CircleView = new GRCircleView();
+            CircleView = new ProCircleView();
             CircleView.DataContext = new ProCircleViewModel();
 
-            EllipseView = new GREllipseView();
+            EllipseView = new ProEllipseView();
             EllipseView.DataContext = new ProEllipseViewModel();
 
-            RangeView = new GRRangeView();
+            RangeView = new ProRangeView();
             RangeView.DataContext = new ProRangeViewModel();
 
             // load the configuration file
-            DistanceAndDirectionConfig.AddInConfig.LoadConfiguration();  
+            DistanceAndDirectionConfig.AddInConfig.LoadConfiguration();
         }
 
         /// <summary>
@@ -78,10 +78,10 @@ namespace ProAppDistanceAndDirectionModule
 
         #region Views
 
-        public GRLinesView LinesView { get; set; }
-        public GRCircleView CircleView { get; set; }
-        public GREllipseView EllipseView { get; set; }
-        public GRRangeView RangeView { get; set; }
+        public ProLinesView LinesView { get; set; }
+        public ProCircleView CircleView { get; set; }
+        public ProEllipseView EllipseView { get; set; }
+        public ProRangeView RangeView { get; set; }
         public GRSaveAsFormatView SelectSaveAsFormatView { get; set; }
 
         #endregion
