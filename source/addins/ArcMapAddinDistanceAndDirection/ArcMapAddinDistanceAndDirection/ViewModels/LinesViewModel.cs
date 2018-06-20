@@ -313,6 +313,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 if (HasPoint1 && HasPoint2)
                 {
+                    if (Point1.SpatialReference != ArcMap.Document.FocusMap.SpatialReference)
+                        Point1.Project(ArcMap.Document.FocusMap.SpatialReference);
                     //Get line distance type
                     DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
                     //Get azimuth type
