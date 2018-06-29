@@ -1,0 +1,399 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AEEnterValue" xml:space="preserve">
+    <value>Enter value</value>
+  </data>
+  <data name="AEInvalidCoordinate" xml:space="preserve">
+    <value>Invalid coordinate</value>
+  </data>
+  <data name="AEInvalidInput" xml:space="preserve">
+    <value>Invalid input</value>
+  </data>
+  <data name="AEMustBePositive" xml:space="preserve">
+    <value>The number must be positive</value>
+  </data>
+  <data name="AENumOfRadials" xml:space="preserve">
+    <value>The number of radials must be between {0} and {1}</value>
+  </data>
+  <data name="AENumOfRings" xml:space="preserve">
+    <value>The number of rings must be between {0} and {1}</value>
+  </data>
+  <data name="ButtonCancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="ButtonOK" xml:space="preserve">
+    <value>OK</value>
+  </data>
+  <data name="DistanceDirectionLabel" xml:space="preserve">
+    <value>Distance and Direction</value>
+  </data>
+  <data name="EndPointAndStartPointSameError" xml:space="preserve">
+    <value>Ending Point should not be the same as the Starting Point</value>
+  </data>
+  <data name="EnumBearingAndDistance" xml:space="preserve">
+    <value>Distance and Bearing</value>
+  </data>
+  <data name="EnumCTDD" xml:space="preserve">
+    <value>DD</value>
+  </data>
+  <data name="EnumCTDDM" xml:space="preserve">
+    <value>DDM</value>
+  </data>
+  <data name="EnumCTDMS" xml:space="preserve">
+    <value>DMS</value>
+  </data>
+  <data name="EnumCTGARS" xml:space="preserve">
+    <value>GARS</value>
+  </data>
+  <data name="EnumCTMGRS" xml:space="preserve">
+    <value>MGRS</value>
+  </data>
+  <data name="EnumCTNone" xml:space="preserve">
+    <value>Default Map Unit</value>
+  </data>
+  <data name="EnumCTUSNG" xml:space="preserve">
+    <value>USNG</value>
+  </data>
+  <data name="EnumCTUTM" xml:space="preserve">
+    <value>UTM</value>
+  </data>
+  <data name="EnumDegrees" xml:space="preserve">
+    <value>Degrees</value>
+  </data>
+  <data name="EnumDiameter" xml:space="preserve">
+    <value>Diameter</value>
+  </data>
+  <data name="EnumFeet" xml:space="preserve">
+    <value>Feet</value>
+  </data>
+  <data name="EnumFeetHour" xml:space="preserve">
+    <value>Feet / Hour</value>
+  </data>
+  <data name="EnumFeetSec" xml:space="preserve">
+    <value>Feet / Second</value>
+  </data>
+  <data name="EnumFull" xml:space="preserve">
+    <value>Full</value>
+  </data>
+  <data name="EnumGeodesic" xml:space="preserve">
+    <value>Geodetic</value>
+  </data>
+  <data name="EnumGreatElliptic" xml:space="preserve">
+    <value>Great Elliptic</value>
+  </data>
+  <data name="EnumKilometers" xml:space="preserve">
+    <value>Kilometers</value>
+  </data>
+  <data name="EnumKilometersHour" xml:space="preserve">
+    <value>Kilometers / Hour</value>
+  </data>
+  <data name="EnumKilometersSec" xml:space="preserve">
+    <value>Kilometers / Second</value>
+  </data>
+  <data name="EnumLoxodrome" xml:space="preserve">
+    <value>Loxodrome</value>
+  </data>
+  <data name="EnumMeters" xml:space="preserve">
+    <value>Meters</value>
+  </data>
+  <data name="EnumMetersHour" xml:space="preserve">
+    <value>Meters / Hour</value>
+  </data>
+  <data name="EnumMetersSec" xml:space="preserve">
+    <value>Meters / Second</value>
+  </data>
+  <data name="EnumMiles" xml:space="preserve">
+    <value>Miles</value>
+  </data>
+  <data name="EnumMilesHour" xml:space="preserve">
+    <value>Miles / Hour</value>
+  </data>
+  <data name="EnumMilesSec" xml:space="preserve">
+    <value>Miles / Second</value>
+  </data>
+  <data name="EnumMils" xml:space="preserve">
+    <value>Mils</value>
+  </data>
+  <data name="EnumNauticalMile" xml:space="preserve">
+    <value>Nautical Miles</value>
+  </data>
+  <data name="EnumNauticalMilesHour" xml:space="preserve">
+    <value>Nautical Miles / Hour</value>
+  </data>
+  <data name="EnumNauticalMilesSec" xml:space="preserve">
+    <value>Nautical Miles / Second</value>
+  </data>
+  <data name="EnumPoints" xml:space="preserve">
+    <value>Points</value>
+  </data>
+  <data name="EnumRadius" xml:space="preserve">
+    <value>Radius</value>
+  </data>
+  <data name="EnumSemi" xml:space="preserve">
+    <value>Semi</value>
+  </data>
+  <data name="EnumYards" xml:space="preserve">
+    <value>Yards</value>
+  </data>
+  <data name="ErrorDeleteFailed" xml:space="preserve">
+    <value>Failed to delete features from layer: </value>
+  </data>
+  <data name="ErrorFeatureClassNotFound" xml:space="preserve">
+    <value>Required feature layer was not found: </value>
+  </data>
+  <data name="ErrorFeatureCreateTitle" xml:space="preserve">
+    <value>Feature Create Error</value>
+  </data>
+  <data name="FeatureClassNameError" xml:space="preserve">
+    <value>Please provide a valid feature class name</value>
+  </data>
+  <data name="InvalidSpatialReferenceError" xml:space="preserve">
+    <value>The operation requires a valid spatial reference</value>
+  </data>
+  <data name="KMZExportComplete" xml:space="preserve">
+    <value>KMZ Exported Successfully</value>
+  </data>
+  <data name="LabelAngle" xml:space="preserve">
+    <value>Angle</value>
+  </data>
+  <data name="LabelAxisGroup" xml:space="preserve">
+    <value>Axis</value>
+  </data>
+  <data name="LabelAxisUnits" xml:space="preserve">
+    <value>Units</value>
+  </data>
+  <data name="LabelCenterPoint" xml:space="preserve">
+    <value>Center Point</value>
+  </data>
+  <data name="LabelClearGraphics" xml:space="preserve">
+    <value>Clear</value>
+  </data>
+  <data name="LabelCreateCircleFrom" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="LabelCreateEllipseWith" xml:space="preserve">
+    <value>Create Ellipse with</value>
+  </data>
+  <data name="LabelCreateFeature" xml:space="preserve">
+    <value>Create Feature</value>
+  </data>
+  <data name="LabelDirectionAzimuth" xml:space="preserve">
+    <value>Direction / Azimuth</value>
+  </data>
+  <data name="LabelDisplayCoordinate" xml:space="preserve">
+    <value>Display Coordinate</value>
+  </data>
+  <data name="LabelDistanceCalculator" xml:space="preserve">
+    <value>Distance Calculator</value>
+  </data>
+  <data name="LabelDistanceLength" xml:space="preserve">
+    <value>Distance / Length</value>
+  </data>
+  <data name="LabelEllipseType" xml:space="preserve">
+    <value>Ellipse Type</value>
+  </data>
+  <data name="LabelEndingPoint" xml:space="preserve">
+    <value>Ending Point</value>
+  </data>
+  <data name="LabelFrom" xml:space="preserve">
+    <value>From:</value>
+  </data>
+  <data name="LabelInteractive" xml:space="preserve">
+    <value>Interactive</value>
+  </data>
+  <data name="LabelInterval" xml:space="preserve">
+    <value>Interval Between Rings</value>
+  </data>
+  <data name="LabelMajorAxis" xml:space="preserve">
+    <value>Major</value>
+  </data>
+  <data name="LabelMapPoint" xml:space="preserve">
+    <value>Map Point</value>
+  </data>
+  <data name="LabelMinorAxis" xml:space="preserve">
+    <value>Minor</value>
+  </data>
+  <data name="LabelNumberOfRadials" xml:space="preserve">
+    <value>Number of Radials</value>
+  </data>
+  <data name="LabelNumberOfRings" xml:space="preserve">
+    <value>Number of Rings</value>
+  </data>
+  <data name="LabelOrientationAngle" xml:space="preserve">
+    <value>Angle</value>
+  </data>
+  <data name="LabelOrientationGroup" xml:space="preserve">
+    <value>Orientation</value>
+  </data>
+  <data name="LabelOrientationUnit" xml:space="preserve">
+    <value>Units</value>
+  </data>
+  <data name="LabelRadius" xml:space="preserve">
+    <value>Radius</value>
+  </data>
+  <data name="LabelRadiusDiameter" xml:space="preserve">
+    <value>Radius / Diameter</value>
+  </data>
+  <data name="LabelRangeRingsCenterPoint" xml:space="preserve">
+    <value>Center Point</value>
+  </data>
+  <data name="LabelRangeRingsDistanceBetween" xml:space="preserve">
+    <value>Distance between Rings</value>
+  </data>
+  <data name="LabelRangeRingsNumberofRadials" xml:space="preserve">
+    <value>Number of Radials</value>
+  </data>
+  <data name="LabelRate" xml:space="preserve">
+    <value>Rate</value>
+  </data>
+  <data name="LabelSaveAs" xml:space="preserve">
+    <value>Save As</value>
+  </data>
+  <data name="LabelStartingPoint" xml:space="preserve">
+    <value>Starting Point</value>
+  </data>
+  <data name="LabelTabCircle" xml:space="preserve">
+    <value>Circle</value>
+  </data>
+  <data name="LabelTabEllipse" xml:space="preserve">
+    <value>Ellipse</value>
+  </data>
+  <data name="LabelTabLines" xml:space="preserve">
+    <value>Line</value>
+  </data>
+  <data name="LabelTabRange" xml:space="preserve">
+    <value>Rings</value>
+  </data>
+  <data name="LabelTime" xml:space="preserve">
+    <value>Time</value>
+  </data>
+  <data name="MsgOutOfAOI" xml:space="preserve">
+    <value>Point is out of bounds</value>
+  </data>
+  <data name="TitleEditProperties" xml:space="preserve">
+    <value>Edit Properties</value>
+  </data>
+  <data name="TooltipEditProperties" xml:space="preserve">
+    <value>Edit Properties</value>
+  </data>
+  <data name="TooltipMapPointTool" xml:space="preserve">
+    <value>Map Point Tool</value>
+  </data>
+</root>

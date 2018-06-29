@@ -1,0 +1,26 @@
+﻿<ESRI.Configuration xmlns="http://schemas.esri.com/Desktop/AddIns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Name>Distance and Direction</Name>
+  <AddInID>{3e1d78f8-72a5-4463-ad11-0524a5913c9d}</AddInID>
+  <Description>Create Lines, Circles, Ellipses and Range Rings</Description>
+  <Version>2.1.2</Version>
+  <Image>Images\ArcMapAddinDistanceAndDirection.png</Image>
+  <Author>Esri</Author>
+  <Company>Esri</Company>
+  <Date>1/17/2017</Date>
+  <Targets>
+    <Target name="Desktop" version="10.3" />
+  </Targets>
+  <AddIn language="CLR4.5" library="DistanceAndDirection.dll" namespace="ArcMapAddinDistanceAndDirection">
+    <ArcMap>
+      <DockableWindows>
+        <DockableWindow id="Esri_ArcMapAddinDistanceAndDirection_DockableWindowDistanceAndDirection" class="DockableWindowDistanceAndDirection+AddinImpl" caption="Distance and Direction" image="Images\distance-direction-16.png">
+          <InitialPlacement height="300" width="300" state="pinned" position="left" />
+        </DockableWindow>
+      </DockableWindows>
+      <Commands>
+        <Button id="Esri_ArcMapAddinDistanceAndDirection_DistanceAndDirectionButton" class="DistanceAndDirectionButton" message="Interactively create geodetic lines, circles, ellipses, range rings, and distance calculations based on time and rate. Created graphics can be saved to feature classes, shapefiles, and KMZ files." caption="Distance and Direction" tip="Distance and Direction." category="Add-In Controls" image="Images\distance-direction-16.png" />
+        <Tool id="Esri_ArcMapAddinDistanceAndDirection_MapPointTool" class="MapPointTool" message="Add-in command for Map Point Tool." caption="Map Point" tip="Map Point Tool" category="Add-In Controls" image="Images\MapPointTool.png" />
+      </Commands>
+    </ArcMap>
+  </AddIn>
+</ESRI.Configuration>

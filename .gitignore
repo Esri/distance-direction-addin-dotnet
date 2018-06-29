@@ -7,6 +7,7 @@ NuGet.exe
 *-old
 *-sav
 *-sav.*
+*.sav
 
 #############
 ## Python
@@ -35,6 +36,7 @@ develop-eggs
 [Bb]in/
 [Oo]bj/
 *.vshost.*
+.vs/
 
 #################
 ## Eclipse
