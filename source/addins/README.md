@@ -25,12 +25,12 @@ The add-in provides the ability to create geodesic features such as lines, circl
 * Visual Studio 2015
 * ArcGIS Desktop SDK for .NET 10.3.1+
 	* [ArcGIS Desktop for .NET Requirements](https://desktop.arcgis.com/en/desktop/latest/get-started/system-requirements/arcobjects-sdk-system-requirements.htm)
-* ArcGIS Pro 2.0+ SDK
+* ArcGIS Pro 2.1+ SDK
 
 ### ArcGIS for Desktop Users
 
 * [ArcGIS Desktop 10.3.1+](http://desktop.arcgis.com/en/arcmap/10.3/get-started/system-requirements/arcgis-desktop-system-requirements.htm)
-* ArcGIS Pro 2.0+
+* ArcGIS Pro 2.1+
 
 ## Instructions
 
