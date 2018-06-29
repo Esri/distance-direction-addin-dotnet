@@ -9,7 +9,6 @@ The Distance and Direction component provides the ability to create geodesic fea
 * Creates geodesy lines, circles, ellipses and range rings.
 * Inputs can be entered manually or via a known coordinate.
 * Add-ins for ArcMap and ArcGIS Pro 
-* Widget for Web Appbuilder for ArcGIS
 
 ## Sections
 
@@ -29,8 +28,6 @@ The Distance and Direction component provides the ability to create geodesic fea
 * Add-Ins for ArcGIS for Desktop
     * ArcMap 10.3.1+
     * ArcGIS Pro 2.1+
-* Widget for Web Appbuilder for ArcGIS
-    * Web Appbuilder for ArcGIS 2.2+
 
 ### Build Requirements 
 
@@ -57,7 +54,6 @@ The Distance and Direction component provides the ability to create geodesic fea
     * ArcGIS Desktop SDK for .NET 10.3.1+
         * [ArcGIS Desktop for .NET Requirements](https://desktop.arcgis.com/en/desktop/latest/get-started/system-requirements/arcobjects-sdk-system-requirements.htm)
     * [ArcGIS Pro SDK](http://pro.arcgis.com/en/pro-app/sdk/) 2.1+
-* Web Appbuilder for ArcGIS Widget
 
 ## Instructions
 
@@ -66,10 +62,6 @@ Follow the links below to select the desired development/deployment environment.
 ### Add-ins for ArcMap and ArcGIS Pro 
 
 [Instructions for the Add-ins for ArcMap and ArcGIS Pro are here.](./source/addins)
-
-### Widget for Web Appbuilder for ArcGIS
-
-[Instructions for the Widget for Web Appbuilder for ArcGIS are here.](./source/widget/DistanceAndDirection)
 
 ## Resources
 
