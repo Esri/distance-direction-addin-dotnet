@@ -23,37 +23,22 @@ The Distance and Direction component provides the ability to create geodesic fea
 
 ## Requirements
 
-### Run Requirements
-
-* Add-Ins for ArcGIS for Desktop
-    * ArcMap 10.3.1+
-    * ArcGIS Pro 2.1+
-
 ### Build Requirements 
 
-##### Obtain the Dependent Repositories
+* Visual Studio 2015
+    * Important Note: Visual Studio 2013 is required if building on ArcGIS 10.3.1
+* ArcGIS for Desktop 
+	* ArcMap 10.3.1+
+	* ArcGIS Pro 2.1+
+* ArcGIS Desktop SDK for .NET 10.3.1+
+	* [ArcGIS Desktop for .NET Requirements](https://desktop.arcgis.com/en/desktop/latest/get-started/system-requirements/arcobjects-sdk-system-requirements.htm)
+* [ArcGIS Pro SDK](http://pro.arcgis.com/en/pro-app/sdk/) 2.1+
 
-* Clone this repository
-* Clone the following component repository *to the same root folder location* 
-	* [coordinate-conversion-addin-dotnet](https://github.com/Esri/coordinate-conversion-addin-dotnet)
-* Your local folder structure should now look like:
+### Run Requirements
 
-```
-{Github Clone Location}
-+---coordinate-conversion-addin-dotnet
-+---distance-direction-addin-dotnet
-```
-
-##### Product Requirements
-
-* Add-Ins for ArcGIS for Desktop
-    * Visual Studio 2015
-    * ArcGIS for Desktop 
-        * ArcMap 10.3.1+
-        * ArcGIS Pro 2.1+
-    * ArcGIS Desktop SDK for .NET 10.3.1+
-        * [ArcGIS Desktop for .NET Requirements](https://desktop.arcgis.com/en/desktop/latest/get-started/system-requirements/arcobjects-sdk-system-requirements.htm)
-    * [ArcGIS Pro SDK](http://pro.arcgis.com/en/pro-app/sdk/) 2.1+
+* ArcGIS for Desktop 
+	* ArcMap 10.3.1+
+	* ArcGIS Pro 2.1+
 
 ## Instructions
 
@@ -68,7 +53,6 @@ Follow the links below to select the desired development/deployment environment.
 * [ArcGIS for Defense Distance and Direction Component](http://solutions.arcgis.com/defense/help/distance-direction/)
 * [Military Tools for ArcGIS](https://esri.github.io/military-tools-desktop-addins/)
 * [Military Tools for ArcGIS Solutions Pages](http://solutions.arcgis.com/defense/help/military-tools/)
-* [ArcGIS for Defense Solutions Website](http://solutions.arcgis.com/defense)
 * [ArcGIS for Defense Downloads](http://appsforms.esri.com/products/download/#ArcGIS_for_Defense)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
 * ![Twitter](https://g.twimg.com/twitter-bird-16x16.png)[@EsriDefense](http://twitter.com/EsriDefense)
@@ -86,28 +70,17 @@ Find a bug or want to request a new feature?  Please let us know by submitting a
 
 Anyone and everyone is welcome to contribute. Please see our [guidelines for contributing](https://github.com/esri/contributing).
 
-## Repository Points of Contact
-
-#### Repository Owner: [Kevin](https://github.com/kgonzago)
-
-* Merge Pull Requests
-* Creates Releases and Tags
-* Manages Milestones
-* Manages and Assigns Issues
-
-#### Secondary: [Patrick](https://github.com/pHill5136)
-
-* Backup when the Owner is away
+## Repository Points of Contact 
+Contact the [Military Tools team](mailto:defensesolutions@esri.com)
 
 ## Licensing
-
-Copyright 2016-2017 Esri
+Copyright 2018 Esri
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
+You may obtain a copy of the License at:
 
-   http://www.apache.org/licenses/LICENSE-2.0
+   http://www.apache.org/licenses/LICENSE-2.0.
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -115,4 +88,5 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-A copy of the license is available in the repository's [license.txt](license.txt) file.
+A copy of the license is available in the repository's [license.txt](./License.txt) file.
+
