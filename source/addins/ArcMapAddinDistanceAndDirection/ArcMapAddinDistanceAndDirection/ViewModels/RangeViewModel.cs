@@ -24,6 +24,10 @@ using ESRI.ArcGIS.Carto;
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary;
 using System.Collections.Generic;
+using DistanceAndDirectionLibrary.ViewModels;
+using DistanceAndDirectionLibrary.Views;
+using DistanceAndDirectionLibrary.Models;
+using System.Collections.ObjectModel;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -31,32 +35,29 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
     {
         public RangeViewModel()
         {
+            OutputDistanceView = new OutputDistanceView();
+
             Mediator.Register(Constants.MOUSE_DOUBLE_CLICK, OnMouseDoubleClick);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.TEXTCHANGE_DELETE, OnTextChangeEvent);
         }
 
         #region Properties
+        public OutputDistanceView OutputDistanceView { get; set; }
 
         private double DistanceLimit = 20000000;
 
-        private bool isInteractive = false;
-        public bool IsInteractive 
+        RingTypes ringType = RingTypes.Fixed;
+        public override RingTypes RingType
         {
-            get
-            {
-                return isInteractive;
-            }
+            get { return ringType; }
             set
             {
-                isInteractive = value;
-                if (value)
-                {
-                    maxDistance = 0.0;
-                    NumberOfRings = 0;
-                }
-                else
-                    NumberOfRings = 10;
+                ringType = value;
+                RaisePropertyChanged(() => RingType);
+
+                ResetValue();
             }
-        }
+        }       
 
         public override bool IsToolActive
         {
@@ -72,7 +73,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     CreateMapElement();
 
                 maxDistance = 0.0;
-                if (IsInteractive)
+                if (RingType == RingTypes.Interactive)
                     NumberOfRings = 0;
             }
         }
@@ -142,7 +143,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             get { return numberOfRings; }
             set
             {
-                if (!IsInteractive)
+                if (RingType == RingTypes.Fixed)
                 {
                     if (value < 1 || value > 180)
                         throw new ArgumentException(string.Format(DistanceAndDirectionLibrary.Properties.Resources.AENumOfRings, 1, 180));
@@ -173,15 +174,60 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                if (IsInteractive)
-                    return (Point1 != null && NumberOfRadials >=0);
-                else
-                    return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && Distance > 0.0);
+                {
+                    if (RingType == RingTypes.Interactive)
+                        return (Point1 != null && NumberOfRadials >= 0);
+                    else if (RingType == RingTypes.Origin || RingType == RingTypes.Cumulative)
+                    {
+                        if (Point1 != null && NumberOfRadials >= 0 && OutputDistanceViewModel.OutputDistanceListItem.Count > 0)
+                        {
+                            foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
+                            {
+                                if (item.OutputDistance == "" || item.OutputDistance == "0")
+                                {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        }
+                        return false;
+                    }
+                    else
+                        return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && Distance > 0.0);
+                }
             }
         }
 
         #endregion Properties
 
+        private void ResetValue()
+        {
+            if (RingType == RingTypes.Fixed)
+            {
+                NumberOfRings = 10;
+            }
+            else
+            {
+                maxDistance = 0.0;
+                NumberOfRings = 0;
+            }
+            if (RingType == RingTypes.Fixed || RingType == RingTypes.Interactive)
+            {
+                if (OutputDistanceViewModel.OutputDistanceListItem != null)
+                    OutputDistanceViewModel.OutputDistanceListItem.Clear();
+            }
+            else
+            {
+                if (OutputDistanceViewModel.OutputDistanceListItem != null && OutputDistanceViewModel.OutputDistanceListItem.Count == 0)
+                {
+                    var outputItem = new OutputDistanceModel();
+                    outputItem.UniqueRowId = OutputDistanceViewModel.UniqueRowId;
+                    outputItem.OutputDistance = "0";
+                    OutputDistanceViewModel.OutputDistanceListItem.Add(outputItem);
+                    OutputDistanceViewModel.UniqueRowId++;
+                }
+            }
+        }
         /// <summary>
         /// Method used to create the needed map elements to add to the graphics container
         /// Is called by the base class when the "Enter" key is pressed
@@ -193,7 +239,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (!CanCreateElement)
                 return geom;
 
-            if (!IsInteractive)
+            if (!(RingType == RingTypes.Interactive))
             {
                 base.CreateMapElement();
 
@@ -222,7 +268,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             double interval = 360.0 / NumberOfRadials;
             double radialLength = 0.0;
 
-            if (IsInteractive)
+            if (!(RingType == RingTypes.Fixed))
                 radialLength = maxDistance;
             else
                 radialLength = Distance * NumberOfRings;
@@ -262,44 +308,76 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         private IGeometry DrawRings()
         {
             double radius = 0.0;
-
+            IGeometry construct = null;
             try
             {
-                IConstructGeodetic construct = null;
-                for (int x = 0; x < numberOfRings; x++)
+                if (RingType == RingTypes.Fixed)
                 {
-                    // set the current radius
-                    radius += Distance;
-                    var polyLine = (IPolyline)new Polyline();
-                    polyLine.SpatialReference = Point1.SpatialReference;
-                    const double DENSIFY_ANGLE_IN_DEGREES = 5.0;
-                    construct = (IConstructGeodetic)polyLine;
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius, 
-                        esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
-                    var color = (IColor)new RgbColorClass() { Red = 255 };
-                    IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
-                    rrAttributes.Add("rings", NumberOfRings);
-                    rrAttributes.Add("distance", radius);
-                    rrAttributes.Add("distanceunit", lineDistanceType.ToString());
-                    rrAttributes.Add("centerx", Point1.X);
-                    rrAttributes.Add("centery", Point1.Y);
-                    AddGraphicToMap((IGeometry)construct, color, attributes:rrAttributes);
-
-                    // Use negative radius to get the location for the distance label
-                    // TODO: someone explain why we need to construct this circle twice, and what -radius means (top of circle or something)?
-                    DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
-                    construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius, 
-                        esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
-                    this.AddTextToMap((IGeometry)construct, String.Format("{0} {1}", radius.ToString(), dtVal.ToString()));
+                    for (int x = 0; x < numberOfRings; x++)
+                    {
+                        // set the current radius
+                        radius += Distance;
+                        construct = CreateRangeRings(radius);
+                    }
+                }
+                else
+                {
+                    foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
+                    {
+                        var outputDistance = Convert.ToDouble(item.OutputDistance);
+                        if (outputDistance > 0.0)
+                        {
+                            if (RingType == RingTypes.Origin)
+                            {
+                                maxDistance = outputDistance > maxDistance ? outputDistance : maxDistance;
+                                radius = outputDistance;
+                            }
+                            else if (RingType == RingTypes.Cumulative)
+                            {
+                                radius += outputDistance;
+                                maxDistance = radius > maxDistance ? radius : maxDistance;
+                            }
+                            construct = CreateRangeRings(radius);
+                        }
+                    }
                 }
 
-                return (IGeometry)construct;
+                return construct;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
                 return null;
             }
+        }
+
+        private IGeometry CreateRangeRings(double radius)
+        {
+            IConstructGeodetic construct = null;
+
+            var polyLine = (IPolyline)new Polyline();
+            polyLine.SpatialReference = Point1.SpatialReference;
+            const double DENSIFY_ANGLE_IN_DEGREES = 5.0;
+            construct = (IConstructGeodetic)polyLine;
+            construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius,
+                esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
+            var color = (IColor)new RgbColorClass() { Red = 255 };
+            IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
+            rrAttributes.Add("rings", NumberOfRings);
+            rrAttributes.Add("distance", radius);
+            rrAttributes.Add("distanceunit", lineDistanceType.ToString());
+            rrAttributes.Add("centerx", Point1.X);
+            rrAttributes.Add("centery", Point1.Y);
+            AddGraphicToMap((IGeometry)construct, color, attributes: rrAttributes);
+
+            // Use negative radius to get the location for the distance label
+            // TODO: someone explain why we need to construct this circle twice, and what -radius means (top of circle or something)?
+            DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
+            construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius,
+                esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
+            this.AddTextToMap((IGeometry)construct, String.Format("{0} {1}", radius.ToString(), StringParser.GetStringValue(dtVal)));
+
+            return (IGeometry)construct;
         }
 
         /// <summary>
@@ -310,6 +388,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             // only if we are the active tab
             if (!IsActiveTab)
+                return;
+
+            if (ValidateDistances())
                 return;
 
             var point = obj as IPoint;
@@ -327,7 +408,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
             }
 
-            if (!IsInteractive)
+            if (!(RingType == RingTypes.Interactive))
             {
                 Point1 = point;
                 HasPoint1 = true;
@@ -374,6 +455,27 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
         }
 
+        private bool ValidateDistances()
+        {
+            if (RingType == RingTypes.Origin || RingType == RingTypes.Cumulative)
+            {
+                bool flag = true;
+                foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
+                {
+                    if (item.OutputDistance != "" && item.OutputDistance != "0")
+                    {
+                        return flag = false;
+                    }
+                }
+                if (flag)
+                {
+                    System.Windows.Forms.MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.MsgRingValidDistances);
+                    return flag;
+                }
+            }
+            return false;
+        }
+
         /// <summary>
         /// Override the mouse move event to dynamically update the center point
         /// Also dynamically update the ring feedback
@@ -394,7 +496,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 Point1 = point;
             }
-            else if(HasPoint1 && IsInteractive)
+            else if (HasPoint1 && RingType == RingTypes.Interactive)
             {
                 var polyline = GetGeoPolylineFromPoints(Point1, point);
                 UpdateDistance(polyline);
@@ -411,14 +513,38 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj"></param>
         private void OnMouseDoubleClick(object obj)
         {
-            if(IsInteractive && IsToolActive)
+            if (RingType == RingTypes.Interactive && IsToolActive)
                 IsToolActive = false;
+        }
+
+        private void OnTextChangeEvent(object obj)
+        {
+            if (OutputDistanceViewModel.OutputDistanceListItem != null && OutputDistanceViewModel.OutputDistanceListItem.Count > 1)
+            {
+                ObservableCollection<OutputDistanceModel> listOfDistances = new ObservableCollection<OutputDistanceModel>();
+                foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
+                {
+                    if (item.OutputDistance == "")
+                    {
+                        listOfDistances.Add(item);
+                    }
+                }
+
+                foreach (var item in listOfDistances)
+                {
+                    if (item.OutputDistance == "")
+                    {
+                        OutputDistanceViewModel.OutputDistanceListItem.Remove(item);
+                    }
+                }
+            }
         }
 
         internal override void Reset(bool toolReset)
         {
             base.Reset(toolReset);
-
+            if (IsToolActive && (RingType == RingTypes.Origin || RingType == RingTypes.Cumulative))
+                IsToolActive = false;
             NumberOfRadials = 0;
         }
 
@@ -452,7 +578,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 bool isWithin = true;
                 if (basemapExt != null)
                     isWithin = IsGeometryWithinExtent(circleGeom, basemapExt);
-                AddTextToMap((isWithin) ? (IGeometry)construct : circleGeom, String.Format("{0} {1}", Math.Round(Distance, 2).ToString(), lineDistanceType.ToString()));
+                AddTextToMap((isWithin) ? (IGeometry)construct : circleGeom, String.Format("{0} {1}", Math.Round(Distance, 2).ToString(), StringParser.GetStringValue(lineDistanceType)));
             }
         }
 

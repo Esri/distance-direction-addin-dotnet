@@ -23,6 +23,7 @@ using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using DistanceAndDirectionLibrary.Helpers;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -320,15 +321,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     //Get azimuth type
                     AzimuthTypes atVal = (AzimuthTypes)LineAzimuthType;
                     //Create text symbol using text and Point1
-                    AddTextToMap(Point1, /* Use the start point for label */ 
-                        string.Format("{0}:{3}{1} {2}{3}{4}:{3}{5} {6}", 
-                        "Distance", 
-                        Math.Round(Distance,2).ToString("N2"),
-                        dtVal.ToString(), 
-                        Environment.NewLine,
-                        "Angle",
-                        Math.Round(azimuth.Value,2),
-                        atVal.ToString()), (double)Azimuth, LineAzimuthType, false);
+                    AddTextToMap(Point1, /* Use the start point for label */
+                       string.Format("{0} {1} {2}: {3}{4}",
+                       Math.Round(Distance, 2).ToString("N2"),
+                       StringParser.GetStringValue(dtVal),
+                       LabelTypes.Angle,
+                       Math.Round(azimuth.Value, 0),
+                       StringParser.GetStringValue(atVal)), (double)Azimuth, LineAzimuthType, false);
                 }
 
                 ResetPoints();

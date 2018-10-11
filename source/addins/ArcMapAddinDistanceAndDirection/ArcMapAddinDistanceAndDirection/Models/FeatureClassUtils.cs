@@ -35,7 +35,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
 {
     class FeatureClassUtils
     {
-        private IGxDialog m_ipSaveAsGxDialog = null; 
+        private IGxDialog m_ipSaveAsGxDialog = null;
 
         /// <summary>
         /// Prompts the user to save features
@@ -76,7 +76,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 IGxObject ipGxObject = m_ipSaveAsGxDialog.FinalLocation;
                 string nameString = m_ipSaveAsGxDialog.Name;
                 bool replacingObject = m_ipSaveAsGxDialog.ReplacingObject;
-                string path = m_ipSaveAsGxDialog.FinalLocation.FullName + 
+                string path = m_ipSaveAsGxDialog.FinalLocation.FullName +
                     System.IO.Path.DirectorySeparatorChar + m_ipSaveAsGxDialog.Name;
                 IGxObject ipSelectedObject = m_ipSaveAsGxDialog.InternalCatalog.SelectedObject;
 
@@ -96,7 +96,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     {
                         if (System.Windows.Forms.MessageBox.Show("You've selected a feature class that already exists. Do you wish to replace it?", "Overwrite Feature Class", System.Windows.Forms.MessageBoxButtons.OKCancel) == System.Windows.Forms.DialogResult.OK)
                         {
-                            return m_ipSaveAsGxDialog.FinalLocation.FullName + 
+                            return m_ipSaveAsGxDialog.FinalLocation.FullName +
                                 System.IO.Path.DirectorySeparatorChar + m_ipSaveAsGxDialog.Name;
                         }
 
@@ -112,7 +112,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         }
                     }
 
-                    return m_ipSaveAsGxDialog.FinalLocation.FullName + 
+                    return m_ipSaveAsGxDialog.FinalLocation.FullName +
                         System.IO.Path.DirectorySeparatorChar + m_ipSaveAsGxDialog.Name;
                 }
                 else
@@ -160,7 +160,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                             feature.Shape = PolylineToPolygon(graphic.Geometry);
                         else
                             feature.Shape = graphic.Geometry;
-                        
+
                         switch (graphic.GraphicType.ToString())
                         {
                             case "Line":
@@ -247,7 +247,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                                 }
                             case "RangeRing":
                                 {
-                                    
+
                                     System.Object rings;
                                     System.Object distance;
                                     System.Object distunit;
@@ -278,7 +278,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     {
                         DeleteShapeFile(outputPath);
                     }
-
+                    
                     fc = ExportToShapefile(outputPath, graphicsList, ipSpatialRef, isGraphicLineOrRangeRing);
                 }
                 return fc;
@@ -358,7 +358,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     fieldsEdit = (IFieldsEdit)fields;
                     IField field = null;
                     IFieldEdit fieldEdit = null;
-                    field = new FieldClass(); 
+                    field = new FieldClass();
                     fieldEdit = (IFieldEdit)field;
                     fieldEdit.Name_2 = "Shape";
                     fieldEdit.Type_2 = (esriFieldType.esriFieldTypeGeometry);
@@ -371,7 +371,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolyline;
                     else
                         geomDefEdit.GeometryType_2 = esriGeometryType.esriGeometryPolygon;
-                    
+
                     geomDefEdit.SpatialReference_2 = ipSpatialRef;
 
                     fieldEdit.GeometryDef_2 = geomDef;
@@ -694,7 +694,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                     featurelayer = new FeatureLayerClass();
                     featurelayer.FeatureClass = featClass;
                     featurelayer.Name = featClass.AliasName;
-
+                    
                     System.Runtime.InteropServices.Marshal.FinalReleaseComObject(workspace);
                     workspace = null;
                     GC.Collect();
@@ -708,7 +708,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 }
             }
         }
-
+        
         /// <summary>
         /// Determines if selected feature class already exists
         /// </summary>
@@ -765,7 +765,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// <param name="graphicsList">Graphics List</param> 
         /// <param name="polyLineFC">Is Polyline FC</param> 
         /// <returns>IFeatureClass</returns> 
-        private IFeatureClass CreateFeatureClass(IFeatureWorkspace featWorkspace, string name, List<Graphic> graphicsList, bool polyLineFC)
+        public IFeatureClass CreateFeatureClass(IFeatureWorkspace featWorkspace, string name, List<Graphic> graphicsList, bool polyLineFC)
         {
             string graphicsType = graphicsList[0].GraphicType.ToString();
             IFieldsEdit pFldsEdt = new FieldsClass();
@@ -973,7 +973,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
         /// </summary>
         /// <param name="geom">IGeometry</param>
         /// <returns>IPolygon</returns>
-        private IPolygon PolylineToPolygon(IGeometry geom)
+        public static IPolygon PolylineToPolygon(IGeometry geom)
         {
             //Build a polygon segment-by-segment.
             IPolygon polygon = new PolygonClass();
@@ -995,5 +995,5 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
             return polygon;
         }
-    } 
+    }
 }

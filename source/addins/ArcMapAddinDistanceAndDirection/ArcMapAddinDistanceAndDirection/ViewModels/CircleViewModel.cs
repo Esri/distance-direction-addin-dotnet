@@ -19,9 +19,10 @@ using System;
 using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
+using System.Collections.Generic;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
-using System.Collections.Generic;
+using DistanceAndDirectionLibrary.Helpers;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -59,7 +60,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     // We have to explicitly redo the graphics here because otherwise DistanceString has not changed
                     // and thus no graphics update will be triggered
                     double distanceInMeters = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
-                    
+
                     if (distanceInMeters > DistanceLimit)
                     {
                         ClearTempGraphics();
@@ -69,7 +70,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                             ptAttributes.Add("X", Point1.X);
                             ptAttributes.Add("Y", Point1.Y);
                             // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
-                            AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
+                            AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                         }
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                     }
@@ -130,7 +131,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
-                
+
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -209,18 +210,31 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// String of time display
         /// </summary>
+        private string travelTimeString = string.Empty;
         public string TravelTimeString
         {
             get
             {
-                return TravelTime.ToString("0.##");
+                if (string.IsNullOrWhiteSpace(travelTimeString))
+                    return TravelTime.ToString("0.##");
+
+                return travelTimeString;
+
+
             }
             set
             {
+                travelTimeString = string.Empty;
                 // divide the manual input by 2
                 double t = 0.0;
                 if (double.TryParse(value, out t))
                 {
+                    if (t == 0.0)
+                    {
+                        // Don't set property(Distance) because this will overwrite the string if user entering zeros "00000"
+                        travelTimeString = value;
+                        return;
+                    }
                     TravelTime = t;
                 }
                 else
@@ -252,7 +266,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
-                
+
                 if (value < 0.0)
                 {
                     UpdateFeedbackWithGeoCircle();
@@ -272,7 +286,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
-                
+
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -314,19 +328,31 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <summary>
         /// String of rate display
         /// </summary>
+        private string travelRateString = string.Empty;
         public string TravelRateString
         {
             get
             {
-                return TravelRate.ToString("0.##");
+                if (string.IsNullOrWhiteSpace(travelRateString))
+                    return TravelRate.ToString("0.##");
+
+                return travelRateString;
+
             }
             set
             {
+                travelRateString = string.Empty;
                 // divide the manual input by 2
                 double t = 0.0;
-                
                 if (double.TryParse(value, out t))
                 {
+                    if (t == 0.0)
+                    {
+                        // Don't set property(Distance) because this will overwrite the string if user entering zeros "00000"
+                        travelRateString = value;
+                        return;
+                    }
+
                     TravelRate = t;
                 }
                 else
@@ -357,7 +383,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             set
             {
-                
+
                 if (value < 0.0)
                 {
                     ClearTempGraphics();
@@ -437,7 +463,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 rateUnit = value;
-                
+
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 if (distanceInMeters > DistanceLimit)
@@ -479,7 +505,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
-                
+
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -525,7 +551,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     Reset(false);
                 }
-                
+
                 ClearTempGraphics();
                 if (HasPoint1)
                 {
@@ -534,7 +560,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ptAttributes.Add("Y", Point1.Y);
                     AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
                 }
-                    
+
 
                 RaisePropertyChanged(() => IsDistanceCalcExpanded);
             }
@@ -561,7 +587,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 // lets avoid an infinite loop here
                 if (string.Equals(base.DistanceString, value))
                     return;
-                
+
                 double d = 0.0;
                 bool isValidValue = double.TryParse(value, out d);
                 if (isValidValue)
@@ -648,7 +674,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 }
 
                 base.LineDistanceType = value;
-                
+
                 double distanceInMeters = ConvertFromTo(value, DistanceTypes.Meters, Distance);
                 if (distanceInMeters > DistanceLimit)
                 {
@@ -689,7 +715,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 // Prevent graphical glitches from excessively high inputs
                 double distanceInMeters = ConvertFromTo(RateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
-                
+
                 if (distanceInMeters > DistanceLimit)
                 {
                     RaisePropertyChanged(() => TravelTimeString);
@@ -744,7 +770,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             if (Point1 == null || Distance <= 0)
                 return;
-         
+
             var construct = (IConstructGeodetic)new Polyline();
 
             ClearTempGraphics();
@@ -763,7 +789,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 circleAttributes.Add("disttype", CircleType.ToString());
 
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
-                       
+
                 Point2 = ((IPolyline)construct).ToPoint;
                 var color = new RgbColorClass() as IColor;
                 this.AddGraphicToMap((IGeometry)construct, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: circleAttributes);
@@ -800,7 +826,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             base.Reset(toolReset);
             TravelTime = 0;
             TravelRate = 0;
-        }
+        }  
 
         /// <summary>
         /// Create a geodetic circle
@@ -835,12 +861,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         radiusOrDiameterDistance = Distance;
 
                     //Construct a polygon from geodesic polyline
-                    var newPoly = this.PolylineToPolygon((IPolyline)construct);
+                    var newPoly = PolylineToPolygon((IPolyline)construct);
                     if (newPoly != null)
                     {
                         //Get centroid of polygon
                         var area = (IArea)newPoly;
-                     
+
                         string unitLabel = "";
                         int roundingFactor = 0;
                         // If Distance Calculator is in use, use the unit from the Rate combobox
@@ -896,16 +922,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                             }
 
                             DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
-                            unitLabel = dtVal.ToString();
+                            unitLabel = StringParser.GetStringValue(dtVal);
                         }
 
                         string circleTypeLabel = circleType.ToString();
-                        string distanceLabel ="";
+                        string distanceLabel = "";
                         // Use the unit from Rate combobox if Distance Calculator is expanded
                         if (IsDistanceCalcExpanded)
                         {
                             radiusOrDiameterDistance = ConvertFromTo(LineDistanceType, RateUnit, radiusOrDiameterDistance);
-                            distanceLabel = (TrimPrecision(radiusOrDiameterDistance, RateUnit, true)).ToString("N"+roundingFactor.ToString());
+                            distanceLabel = (TrimPrecision(radiusOrDiameterDistance, RateUnit, true)).ToString("N" + roundingFactor.ToString());
                         }
                         else
                         {
@@ -927,7 +953,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     circleAttributes.Add("disttype", CircleType.ToString());
                     circleAttributes.Add("centerx", Point1.X);
                     circleAttributes.Add("centery", Point1.Y);
-                    if(IsDistanceCalcExpanded)
+                    if (IsDistanceCalcExpanded)
                         circleAttributes.Add("distanceunit", RateUnit.ToString());
                     else
                         circleAttributes.Add("distanceunit", LineDistanceType.ToString());

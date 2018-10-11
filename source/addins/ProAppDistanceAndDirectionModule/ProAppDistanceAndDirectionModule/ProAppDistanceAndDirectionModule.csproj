@@ -150,6 +150,9 @@
     <Compile Include="Views\ProLinesView.xaml.cs">
       <DependentUpon>ProLinesView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ProOutputDistanceView.xaml.cs">
+      <DependentUpon>ProOutputDistanceView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ProRangeView.xaml.cs">
       <DependentUpon>ProRangeView.xaml</DependentUpon>
     </Compile>
@@ -179,6 +182,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\ProLinesView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ProOutputDistanceView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -253,9 +260,10 @@
     <Message Importance="High" Text="old build number @(Peeked) new build number $(BUILD_MAJOR).$(BUILD_MINOR).$(BUILD_PATCH).$(BUILD_NUMBER)" />
     <XmlPoke XmlInputPath="Config.daml" Query="//@version[1]" Value="$(BUILD_MAJOR).$(BUILD_MINOR).$(BUILD_PATCH).$(BUILD_NUMBER)" />
     <!-- Set Date element in Config.daml -->
-    <XmlPeek XmlInputPath="Config.daml" Query="/x:ArcGIS/x:AddInInfo/x:Date/text()" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.esri.com/DADF/Registry' /&gt;"> <Output TaskParameter="Result" ItemName="Peeked_Date" />
+    <XmlPeek XmlInputPath="Config.daml" Query="/x:ArcGIS/x:AddInInfo/x:Date/text()" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.esri.com/DADF/Registry' /&gt;">
+      <Output TaskParameter="Result" ItemName="Peeked_Date" />
     </XmlPeek>
     <Message Importance="High" Text="Old build date @(Peeked_Date) New build date $(BUILD_DATE)" />
-    <XmlPoke XmlInputPath="Config.daml" Query="/x:ArcGIS/x:AddInInfo/x:Date" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.esri.com/DADF/Registry' /&gt;" Value="$(BUILD_DATE)"/>
+    <XmlPoke XmlInputPath="Config.daml" Query="/x:ArcGIS/x:AddInInfo/x:Date" Namespaces="&lt;Namespace Prefix='x' Uri='http://schemas.esri.com/DADF/Registry' /&gt;" Value="$(BUILD_DATE)" />
   </Target>
 </Project>

@@ -46,6 +46,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             //properties
             LineType = LineTypes.Geodesic;
             LineDistanceType = DistanceTypes.Meters;
+            RingType = RingTypes.Interactive;
 
             //commands
             SaveAsCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnSaveAs());
@@ -470,6 +471,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Property for the type of geodesy line
         /// </summary>
         public virtual LineTypes LineType { get; set; }
+
+        /// <summary>
+        /// Property for the ring type.
+        /// </summary>
+        public virtual RingTypes RingType { get; set; }
 
         /// <summary>
         /// Property used to test if there is enough info to create a line map element
