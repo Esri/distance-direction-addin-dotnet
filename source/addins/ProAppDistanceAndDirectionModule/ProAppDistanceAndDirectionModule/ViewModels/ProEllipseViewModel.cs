@@ -159,7 +159,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         MinorAxisDistance = d / 2;
                     }
                     else
-                        MinorAxisDistance = d;
+                        if (d > MajorAxisDistance)
+                        {
+                            minorAxisDistance = d;
+                            throw new ArgumentException("Minor Axis can not be greater that Major Axis");
+                        }
+                        else
+                        {
+                            MinorAxisDistance = d;
+                            MajorAxisDistance = MajorAxisDistance;
+                        }
 
                     if (MinorAxisDistance == d)
                         return;
@@ -235,7 +244,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (EllipseType == EllipseTypes.Full)
                         MajorAxisDistance = d / 2.0;
                     else
-                        MajorAxisDistance = d;
+                    {
+                        if (d < MinorAxisDistance)
+                        {
+                            majorAxisDistance = d;
+                            throw new ArgumentException("Major Axis can not be smaller that Minor Axis");
+                        }
+                        else
+                        {
+                            MajorAxisDistance = d;
+                            MinorAxisDistance = MinorAxisDistance;
+                        }
+                    }
                     if (MajorAxisDistance == d)
                         return;
 

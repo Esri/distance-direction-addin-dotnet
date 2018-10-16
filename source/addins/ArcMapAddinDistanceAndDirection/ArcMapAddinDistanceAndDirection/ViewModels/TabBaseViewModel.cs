@@ -50,6 +50,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             //properties
             LineType = LineTypes.Geodesic;
             LineDistanceType = DistanceTypes.Meters;
+            RingType = RingTypes.Interactive;
 
             //commands
             SaveAsCommand = new RelayCommand(OnSaveAs);
@@ -80,7 +81,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         #region Properties
 
         // lists to store GUIDs of graphics, temp feedback and map graphics
-        private static ObservableCollection<Graphic> GraphicsList = new ObservableCollection<Graphic>();
+        public static ObservableCollection<Graphic> GraphicsList = new ObservableCollection<Graphic>();
 
         internal bool HasPoint1 = false;
         internal bool HasPoint2 = false;
@@ -394,7 +395,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                return Distance.ToString("0.##");              
+                return Distance.ToString("0.##");
             }
             set
             {
@@ -408,6 +409,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double d = 0.0;
                 if (double.TryParse(distanceString, out d))
                 {
+                    if (d == 0.0)
+                    {
+                        // Don't set property(Distance) because this will overwrite the string if user entering zeros "00000"
+                        distance = 0.0;
+                        return;
+                    }
+
                     Distance = d;
                 }
                 else
@@ -421,6 +429,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Property for the type of geodesy line
         /// </summary>
         public LineTypes LineType { get; set; }
+
+        /// <summary>
+        /// Property for the ring type
+        /// </summary>
+        public virtual RingTypes RingType { get; set; }
 
         /// <summary>
         /// Property used to test if there is enough info to create a line map element
@@ -452,7 +465,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     OnActivateTool(null);
                 else
                     if (ArcMap.Application.CurrentTool != null)
-                    ArcMap.Application.CurrentTool = null;
+                        ArcMap.Application.CurrentTool = null;
 
                 RaisePropertyChanged(() => IsToolActive);
             }
@@ -518,28 +531,32 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             var dlg = new GRSaveAsFormatView();
             dlg.DataContext = new SaveAsFormatViewModel();
-            var vm =  (SaveAsFormatViewModel)dlg.DataContext;
+            var vm = (SaveAsFormatViewModel)dlg.DataContext;
 
             if (dlg.ShowDialog() == true)
             {
                 IFeatureClass fc = null;
-
+                GraphicTypes graphicType = GraphicTypes.Point;
                 // Get the graphics list for the selected tab
                 List<Graphic> typeGraphicsList = new List<Graphic>();
                 if (this is LinesViewModel)
                 {
+                    graphicType = GraphicTypes.Line;
                     typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Line).ToList();
                 }
                 else if (this is CircleViewModel)
                 {
+                    graphicType = GraphicTypes.Circle;
                     typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Circle).ToList();
                 }
                 else if (this is EllipseViewModel)
                 {
+                    graphicType = GraphicTypes.Ellipse;
                     typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.Ellipse).ToList();
                 }
                 else if (this is RangeViewModel)
                 {
+                    graphicType = GraphicTypes.RangeRing;
                     typeGraphicsList = GraphicsList.Where(g => g.GraphicType == GraphicTypes.RangeRing).ToList();
                 }
 
@@ -566,19 +583,22 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     {
                         string kmlName = System.IO.Path.GetFileName(path);
                         string folderName = System.IO.Path.GetDirectoryName(path);
-                        string tempShapeFile = folderName + 
+                        string tempShapeFile = folderName +
                             System.IO.Path.DirectorySeparatorChar
                             + "tmpShapefile" + Guid.NewGuid().ToString() + ".shp";
                         IFeatureClass tempFc = fcUtils.CreateFCOutput(tempShapeFile, SaveAsType.Shapefile, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
 
                         if (tempFc != null)
                         {
-                            kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap);
+
+
+
+                            kmlUtils.ConvertLayerToKML(path, tempShapeFile, ArcMap.Document.FocusMap, graphicType);
 
                             MessageBox.Show(
                                     DistanceAndDirectionLibrary.Properties.Resources.KMZExportComplete,
                                     DistanceAndDirectionLibrary.Properties.Resources.KMZExportComplete);
-                                    
+
                             // delete the temporary shapefile
                             fcUtils.DeleteShapeFile(tempShapeFile);
                         }
@@ -788,7 +808,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <param name="obj">IPoint</param>
         internal virtual void OnNewMapPointEvent(object obj)
         {
-            if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null) 
+            if ((ArcMap.Document == null) || (ArcMap.Document.FocusMap == null)
                 || !IsActiveTab)
                 return;
 
@@ -912,7 +932,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// <returns></returns>
         internal bool IsValidPoint(IPoint point)
         {
-            if ((point != null) && (ArcMap.Document != null) && 
+            if ((point != null) && (ArcMap.Document != null) &&
                 (ArcMap.Document.FocusMap != null))
             {
                 return IsPointWithinExtent(point, UnionAllLayerExtents(ArcMap.Document.FocusMap));
@@ -977,8 +997,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         basemapList.Add(layer.AreaOfInterest);
                     layer = layers.Next();
                 }
-                if (basemapList.Count > 1) 
-                    return basemapList.Aggregate((a,b) => ((IArea)a).Area > ((IArea)b).Area ? a : b);
+                if (basemapList.Count > 1)
+                    return basemapList.Aggregate((a, b) => ((IArea)a).Area > ((IArea)b).Area ? a : b);
                 if (basemapList.Count == 1)
                     return basemapList[0];
             }
@@ -1003,7 +1023,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             return true;
         }
-        
+
         /// <summary>
         /// Creates a circle geometry based on center point and radius
         /// </summary>
@@ -1246,7 +1266,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// </summary>
         /// <param name="line">IPolyline</param>
         /// <returns>IPolygon</returns>
-        internal IPolygon PolylineToPolygon(IPolyline line)
+        internal static IPolygon PolylineToPolygon(IPolyline line)
         {
             try
             {
@@ -1371,7 +1391,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         /// Adds a graphic element to the map graphics container
         /// </summary>
         /// <param name="geom">IGeometry</param>
-        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP, IDictionary<String, System.Object> attributes = null)
+        internal void AddGraphicToMap(IGeometry geom, IColor color, bool IsTempGraphic = false, esriSimpleMarkerStyle markerStyle = esriSimpleMarkerStyle.esriSMSCircle,
+            esriRasterOpCode rasterOpCode = esriRasterOpCode.esriROPNOP, IDictionary<String, System.Object> attributes = null)
         {
             if (geom == null || ArcMap.Document == null || ArcMap.Document.FocusMap == null)
                 return;
@@ -1750,7 +1771,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var displayFB = (IDisplayFeedback)feedback;
             displayFB.Display = av.ScreenDisplay;
         }
- 
+
         /// <summary>
         /// Method used to convert a string to a known coordinate
         /// Assumes WGS84 for now
@@ -1780,23 +1801,40 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             if (cn == null)
                 return null;
 
-            try { cn.PutCoordsFromDD(coordinate); return point; } catch { }
-            try { cn.PutCoordsFromDDM(coordinate); return point; } catch { }
-            try { cn.PutCoordsFromDMS(coordinate); return point; } catch { }
-            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeCENTER, coordinate); return point; } catch { }
-            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeLL, coordinate); return point; } catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_Automatic); return point; } catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewStyle); return point; } catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewWith180InZone01); return point; } catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldStyle); return point; } catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldWith180InZone01); return point; } catch { }
-            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_USNG); return point; } catch { }
-            try { cn.PutCoordsFromUSNG(coordinate); return point; } catch { }
-            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces, coordinate); return point; } catch { }
-            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
-            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces | esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; } catch { }
-            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMNoOptions, coordinate); return point; } catch { }
-            try { cn.PutCoordsFromGeoRef(coordinate); return point; } catch { }
+            try { cn.PutCoordsFromDD(coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromDDM(coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromDMS(coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeCENTER, coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromGARS(esriGARSModeEnum.esriGARSModeLL, coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_Automatic); return point; }
+            catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewStyle); return point; }
+            catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_NewWith180InZone01); return point; }
+            catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldStyle); return point; }
+            catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_OldWith180InZone01); return point; }
+            catch { }
+            try { cn.PutCoordsFromMGRS(coordinate, esriMGRSModeEnum.esriMGRSMode_USNG); return point; }
+            catch { }
+            try { cn.PutCoordsFromUSNG(coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces, coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMAddSpaces | esriUTMConversionOptionsEnum.esriUTMUseNS, coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromUTM(esriUTMConversionOptionsEnum.esriUTMNoOptions, coordinate); return point; }
+            catch { }
+            try { cn.PutCoordsFromGeoRef(coordinate); return point; }
+            catch { }
 
             // lets see if we have a PCS coordinate
             // we'll assume the same units as the map units

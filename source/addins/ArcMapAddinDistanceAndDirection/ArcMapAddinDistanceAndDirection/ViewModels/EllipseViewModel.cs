@@ -22,6 +22,7 @@ using ESRI.ArcGIS.Geometry;
 using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
 using System.Collections.Generic;
+using DistanceAndDirectionLibrary.Helpers;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -42,7 +43,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         public ISymbol FeedbackSymbol { get; set; }
 
         private EllipseTypes ellipseType = EllipseTypes.Semi;
-        public EllipseTypes EllipseType 
+        public EllipseTypes EllipseType
         {
             get { return ellipseType; }
             set
@@ -132,14 +133,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ClearTempGraphics();
                     return;
                 }
-                
+
 
                 minorAxisDistance = TrimPrecision(value, false);
 
                 UpdateFeedbackWithEllipse();
 
                 RaisePropertyChanged(() => MinorAxisDistance);
-                RaisePropertyChanged(() => MinorAxisDistanceString);                
+                RaisePropertyChanged(() => MinorAxisDistanceString);
             }
         }
 
@@ -148,11 +149,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                if (EllipseType == EllipseTypes.Full)
+                if (string.IsNullOrWhiteSpace(minorAxisDistanceString))
                 {
-                    return (MinorAxisDistance * 2).ToString("0.##");
+                    if (EllipseType == EllipseTypes.Full)
+                    {
+                        return (MinorAxisDistance * 2).ToString("0.##");
+                    }
+                    return MinorAxisDistance.ToString("0.##");
                 }
-                return MinorAxisDistance.ToString("0.##");
+                else
+                    return minorAxisDistanceString;
             }
             set
             {
@@ -168,7 +174,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         MinorAxisDistance = d / 2;
                     }
                     else
-                        MinorAxisDistance = d;
+                        if (d > MajorAxisDistance)
+                        {
+                            minorAxisDistance = d;
+                            throw new ArgumentException("Minor Axis can not be greater that Major Axis");
+                        }
+                        else
+                        {
+                            MinorAxisDistance = d;
+                            MajorAxisDistance = MajorAxisDistance;
+                        }
 
                     if (MinorAxisDistance == d)
                         return;
@@ -221,11 +236,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             get
             {
-                if (EllipseType == EllipseTypes.Full)
+                if (string.IsNullOrWhiteSpace(majorAxisDistanceString))
                 {
-                    return (MajorAxisDistance * 2.0).ToString("0.##");
+                    if (EllipseType == EllipseTypes.Full)
+                    {
+                        return (MajorAxisDistance * 2.0).ToString("0.##");
+                    }
+                    return MajorAxisDistance.ToString("0.##");
                 }
-                return MajorAxisDistance.ToString("0.##");
+                else
+                    return majorAxisDistanceString;
             }
             set
             {
@@ -240,7 +260,18 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     if (EllipseType == EllipseTypes.Full)
                         MajorAxisDistance = d / 2.0;
                     else
-                        MajorAxisDistance = d;
+                    {
+                        if (d < MinorAxisDistance)
+                        {
+                            majorAxisDistance = d;
+                            throw new ArgumentException("Major Axis can not be smaller that Minor Axis");
+                        }
+                        else
+                        {
+                            MajorAxisDistance = d;
+                            MinorAxisDistance = MinorAxisDistance;
+                        }
+                    }
                 }
                 else
                 {
@@ -304,7 +335,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         // when someone hits the enter key, create geodetic graphic
         internal override void OnEnterKeyCommand(object obj)
         {
-            if (MajorAxisDistance == 0.0 || Point1 == null || 
+            if (MajorAxisDistance == 0.0 || Point1 == null ||
                 MinorAxisDistance == 0.0)
             {
                 return;
@@ -384,8 +415,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             }
             else if (HasPoint1 && HasPoint2 && !HasPoint3)
             {
-                var polyline = CreateGeodeticLine(Point1, point); 
-                
+                var polyline = CreateGeodeticLine(Point1, point);
+
                 // get minor distance from polyline
                 if (polyline != null)
                 {
@@ -404,7 +435,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         {
             if (!HasPoint1)
                 return;
-            
+
             ClearTempGraphics();
             IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
             ptAttributes.Add("X", Point1.X);
@@ -419,10 +450,10 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             if (minorAxis > MajorAxisDistance)
                 minorAxis = MajorAxisDistance;
-            
+
             ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, minorAxis, GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
             var line = ellipticArc as IPolyline;
-            
+
             if (line != null)
             {
                 IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
@@ -430,7 +461,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 ellipseAttributes.Add("minoraxis", MinorAxisDistance);
                 ellipseAttributes.Add("azimuth", Azimuth);
                 var color = new RgbColor() as IColor;
-                AddGraphicToMap((IGeometry)line, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:ellipseAttributes );
+                AddGraphicToMap((IGeometry)line, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: ellipseAttributes);
             }
         }
 
@@ -471,7 +502,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
                 ptAttributes.Add("X", Point1.X);
                 ptAttributes.Add("Y", Point1.Y);
-                AddGraphicToMap( Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
+                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
             }
             else if (!HasPoint2)
             {
@@ -532,9 +563,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (construct == null)
                 {
                     return null;
-                }                    
+                }
 
-                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), centerPoint, GetLinearUnit(), axisTypeDistance, 
+                construct.ConstructGeodeticLineFromDistance(GetEsriGeodeticType(), centerPoint, GetLinearUnit(), axisTypeDistance,
                     GetAzimuthAsDegrees(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
 
                 var line = construct as IPolyline;
@@ -657,7 +688,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var ellipticArc = (IConstructGeodetic)new Polyline();
 
                 double bearing;
-                if (AzimuthType==AzimuthTypes.Mils)
+                if (AzimuthType == AzimuthTypes.Mils)
                 {
                     bearing = GetAzimuthAsDegrees();
                 }
@@ -681,7 +712,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ellipseAttributes.Add("distanceunit", LineDistanceType.ToString());
                     ellipseAttributes.Add("angleunit", AzimuthType.ToString());
 
-                    AddGraphicToMap((IGeometry)line, color, attributes:ellipseAttributes);
+                    AddGraphicToMap((IGeometry)line, color, attributes: ellipseAttributes);
 
                     //Convert ellipse polyline to polygon
                     var newPoly = PolylineToPolygon((IPolyline)ellipticArc);
@@ -696,20 +727,23 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         double majAxisDist = majorAxisDistance * 2;
                         double minAxisDist = minorAxisDistance * 2;
 
+                        DistanceTypes dtVal1 = dtVal;
+                        var temp = StringParser.GetStringValue(dtVal);
+
                         if (area != null)
-                        {                  
+                        {
                             AddTextToMap(area.LabelPoint, string.Format("{0}:{1} {2}{3}{4}:{5} {6}{7}{8}:{9} {10}",
-                                "Major Axis",
+                                StringParser.GetStringValue(LabelTypes.MajorAxis),
                                 Math.Round(majAxisDist, 2),
-                                dtVal.ToString(),
+                                StringParser.GetStringValue(dtVal),
                                 Environment.NewLine,
-                                "Minor Axis",
+                                StringParser.GetStringValue(LabelTypes.MinorAxis),
                                 Math.Round(minAxisDist, 2),
-                                dtVal.ToString(),
+                                StringParser.GetStringValue(dtVal),
                                 Environment.NewLine,
-                                "Orientation Angle",
-                                Math.Round(azimuth, 2),
-                                atVal.ToString()));
+                                StringParser.GetStringValue(LabelTypes.Angle),
+                                Math.Round(azimuth, 0),
+                                StringParser.GetStringValue(atVal)));
                         }
                     }
                 }
