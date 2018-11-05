@@ -15,6 +15,7 @@
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -909,8 +910,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!creationResult)
             {
                 message = editOperation.ErrorMessage;
+                await Project.Current.DiscardEditsAsync();
             }
-
+            else
+            {
+                await Project.Current.SaveEditsAsync();
+            }
+            
             return message;
         }
 

@@ -34,6 +34,7 @@ using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
 using ProAppDistanceAndDirectionModule.ViewModels;
+using ArcGIS.Desktop.Core;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -1384,7 +1385,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                             result = await editOperation.ExecuteAsync();
 
                             if (!result)
+                            {
                                 error = editOperation.ErrorMessage;
+                                await Project.Current.DiscardEditsAsync();
+                            }
+                            else
+                            {
+                                await Project.Current.SaveEditsAsync();
+                            }
                         }
                     }
                     catch (Exception e)
