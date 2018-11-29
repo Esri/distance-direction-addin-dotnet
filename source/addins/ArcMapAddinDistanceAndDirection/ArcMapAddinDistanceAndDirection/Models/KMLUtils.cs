@@ -29,7 +29,8 @@ namespace ArcMapAddinDistanceAndDirection.Models
     class KMLUtils
     {
 
-        public bool ConvertLayerToKML(string kmzOutputPath, string tmpShapefilePath, ESRI.ArcGIS.Carto.IMap map, GraphicTypes graphicType)
+        public bool ConvertLayerToKML(string kmzOutputPath, string tmpShapefilePath, 
+            ESRI.ArcGIS.Carto.IMap map, GraphicTypes graphicType)
         {
             try
             {
@@ -44,15 +45,13 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 parameters.Add(kmzName);
                 gp.Execute("MakeFeatureLayer_management", parameters, null);
 
-                for (int i = 0; i < map.LayerCount; i++)
+                string layerFileName = getLayerFileFromGraphicType(graphicType);
+                if (!string.IsNullOrEmpty(layerFileName))
                 {
-                    ILayer layer = map.get_Layer(i);
-                    if ((layer.Name == "featureLayer") || (layer.Name == kmzName))
-                    {
-                        geoLayer = layer as IGeoFeatureLayer;
-                        SetRenderer(geoLayer, graphicType);
-                        break;
-                    }
+                    IVariantArray parametersASM = new VarArrayClass();
+                    parametersASM.Add(kmzName);
+                    parametersASM.Add(layerFileName);
+                    gp.Execute("ApplySymbologyFromLayer_management", parametersASM, null);
                 }
 
                 IVariantArray parameters1 = new VarArrayClass();
@@ -62,7 +61,7 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
                 gp.Execute("LayerToKML_conversion", parameters1, null);
 
-                 // Remove the temporary layer from the TOC
+                // Remove the temporary layer from the TOC
                 for (int i = 0; i < map.LayerCount; i++ )
                 {
                     ILayer layer = map.get_Layer(i);
@@ -86,45 +85,41 @@ namespace ArcMapAddinDistanceAndDirection.Models
             }
         }
 
-        private void SetRenderer(IGeoFeatureLayer geoLayer, GraphicTypes graphicTypes)
+        private string getLayerFileFromGraphicType(GraphicTypes graphicType)
         {
-            IUniqueValueRenderer uvRenderer = new UniqueValueRendererClass();
-            ISymbol symbol = null;
-            switch (graphicTypes)
+            var asm = System.Reflection.Assembly.GetExecutingAssembly();
+            string addinPath = System.IO.Path.GetDirectoryName(
+                              Uri.UnescapeDataString(
+                                      new Uri(asm.CodeBase).LocalPath));
+
+            string layerFileName = string.Empty;
+
+            switch (graphicType)
             {
                 case GraphicTypes.Line:
+                    layerFileName = "Lines.lyr";
+                    break;
                 case GraphicTypes.RangeRing:
-                    ESRI.ArcGIS.Display.ISimpleLineSymbol simpleLineSymbol = new ESRI.ArcGIS.Display.SimpleLineSymbol();
-                    ESRI.ArcGIS.Display.IRgbColor rgbLineColor = new ESRI.ArcGIS.Display.RgbColorClass() { Red =255, Blue = 0, Green = 0 };
-                    simpleLineSymbol.Color = rgbLineColor as IColor;
-                    simpleLineSymbol.Width = 3;
-                    symbol = simpleLineSymbol as ISymbol;
+                    layerFileName = "Rings.lyr";
                     break;
                 case GraphicTypes.Circle:
-                case GraphicTypes.Ellipse:
-                    ESRI.ArcGIS.Display.ISimpleFillSymbol simpleFillSymbol = new ESRI.ArcGIS.Display.SimpleFillSymbol();
-                    ESRI.ArcGIS.Display.IRgbColor rgbColor = new ESRI.ArcGIS.Display.RgbColorClass();
-                    simpleFillSymbol.Color = rgbColor as IColor;
-                                        
-                    ISimpleLineSymbol outlineSymbol = new SimpleLineSymbolClass();
-                    outlineSymbol.Color = new RgbColorClass() { Red = 255, Blue = 0, Green = 0 } as IColor;
-                    outlineSymbol.Style = esriSimpleLineStyle.esriSLSSolid;
-                    outlineSymbol.Width = 3;
-                    simpleFillSymbol.Color.Transparency = 100;
-                    simpleFillSymbol.Outline = outlineSymbol;
-                    symbol = simpleFillSymbol as ISymbol;
+                    layerFileName = "Circles.lyr";
                     break;
-                case GraphicTypes.Point:
+                case GraphicTypes.Ellipse:
+                    layerFileName = "Ellipses.lyr";
                     break;
                 default:
                     break;
-            };
+            }
 
-            uvRenderer.DefaultSymbol = symbol;
-            uvRenderer.UseDefaultSymbol = true;
-            geoLayer.Renderer = uvRenderer as IFeatureRenderer;
+            if (string.IsNullOrEmpty(layerFileName))
+                return layerFileName;
+
+            string layerPath = System.IO.Path.Combine(addinPath, "Data", layerFileName);
+
+            return layerPath;
         }
-    }
 
+    }
 
 }
