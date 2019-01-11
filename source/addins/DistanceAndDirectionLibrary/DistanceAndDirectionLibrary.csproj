@@ -49,6 +49,7 @@
     <Compile Include="Attributes\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Enums\Enums.cs" />
     <Compile Include="Helpers\Constants.cs" />
+    <Compile Include="Helpers\DebounceDispatcher.cs" />
     <Compile Include="Helpers\Mediator.cs" />
     <Compile Include="Helpers\NotificationObject.cs" />
     <Compile Include="Helpers\RelayCommand.cs" />
