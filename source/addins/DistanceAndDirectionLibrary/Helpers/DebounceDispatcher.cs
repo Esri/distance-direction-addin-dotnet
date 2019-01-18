@@ -41,7 +41,7 @@ namespace DistanceAndDirectionLibrary.Helpers
             Dispatcher disp = null)
         {
             // kill pending timer and pending ticks
-            timer?.Stop();
+            timer.Stop();
             timer = null;
 
             if (disp == null)
@@ -55,7 +55,7 @@ namespace DistanceAndDirectionLibrary.Helpers
                 if (timer == null)
                     return;
 
-                timer?.Stop();
+                timer.Stop();
                 timer = null;
                 action.Invoke(param);
             }, disp);
@@ -80,7 +80,7 @@ namespace DistanceAndDirectionLibrary.Helpers
             Dispatcher disp = null)
         {
             // kill pending timer and pending ticks
-            timer?.Stop();
+            timer.Stop();
             timer = null;
 
             if (disp == null)
@@ -105,7 +105,7 @@ namespace DistanceAndDirectionLibrary.Helpers
                 if (timer == null)
                     return;
 
-                timer?.Stop();
+                timer.Stop();
                 timer = null;
                 action.Invoke(param);
                 timerStarted = curTime;
