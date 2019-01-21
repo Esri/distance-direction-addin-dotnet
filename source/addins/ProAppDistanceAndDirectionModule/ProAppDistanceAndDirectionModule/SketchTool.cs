@@ -14,13 +14,12 @@
 
 using System;
 using System.Threading.Tasks;
-using System.Reactive.Linq;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary.Helpers;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using System.Reactive.Subjects;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ProAppDistanceAndDirectionModule
 {
@@ -33,21 +32,9 @@ namespace ProAppDistanceAndDirectionModule
             UseSnapping = true;
             // will need to use this in the future, commented out for now
             //Mediator.Register("SET_SKETCH_TOOL_TYPE", (sgType) => SketchType = (SketchGeometryType)sgType);
-
-            //lets limit how many times we call this
-            // take the latest event args every so often
-            // this will keep us from drawing too many feedback geometries
-            mouseSubject.Sample(TimeSpan.FromMilliseconds(150)).Subscribe(async (x) =>
-                {
-                    var mp = await QueuedTask.Run(() =>
-                    {
-                        return MapView.Active.ClientToMap(x.ClientPoint);
-                    });
-                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
-                });
-
         }
-        Subject<MapViewMouseEventArgs> mouseSubject = new Subject<MapViewMouseEventArgs>();
+
+        private readonly DebounceDispatcher _throttleMouse = new DebounceDispatcher();
 
         public static string ToolId
         {
@@ -84,10 +71,16 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
-                // try a subject here to limit the amount of times this is handled
-                mouseSubject.OnNext(e);
+                //lets limit how many times we call this
+                // take the latest event args every so often
+                // this will keep us from drawing too many feedback geometries
+                _throttleMouse.ThrottleAndFireAtInterval(150, async (args) =>
+                {
+                    var mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
+                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
+                }, priority: DispatcherPriority.Normal);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
