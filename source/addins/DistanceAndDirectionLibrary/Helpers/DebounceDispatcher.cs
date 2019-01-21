@@ -41,7 +41,9 @@ namespace DistanceAndDirectionLibrary.Helpers
             Dispatcher disp = null)
         {
             // kill pending timer and pending ticks
-            timer.Stop();
+            if (timer != null)
+                timer.Stop();
+
             timer = null;
 
             if (disp == null)
@@ -80,7 +82,9 @@ namespace DistanceAndDirectionLibrary.Helpers
             Dispatcher disp = null)
         {
             // kill pending timer and pending ticks
-            timer.Stop();
+            if (timer != null)
+                timer.Stop();
+
             timer = null;
 
             if (disp == null)
