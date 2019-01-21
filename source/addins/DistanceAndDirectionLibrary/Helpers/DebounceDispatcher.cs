@@ -19,7 +19,7 @@ namespace DistanceAndDirectionLibrary.Helpers
         private DispatcherTimer timer;
 
         private DateTime _timerStarted = DateTime.UtcNow.AddYears(-1);
-        private DateTime timerStarted { get { return timerStarted; } set { _timerStarted = value; } }
+        private DateTime timerStarted { get { return _timerStarted; } set { _timerStarted = value; } }
 
         /// <summary>
         /// Debounce an event by resetting the event timeout every time the event is 
