@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.Properties;
 
 namespace DistanceAndDirectionLibrary
@@ -39,24 +40,45 @@ namespace DistanceAndDirectionLibrary
         BearingAndDistance = 2
     }
 
+    public enum LabelTypes : int
+    {
+        [LocalizableDescription(@"EnumMajor", typeof(Resources))]
+        [StringValue("Major")]
+        MajorAxis=1,
+
+        [LocalizableDescription(@"EnumMinor", typeof(Resources))]
+        [StringValue("Minor")]
+        MinorAxis = 2,
+
+        [LocalizableDescription(@"EnumAngle", typeof(Resources))]
+        [StringValue("Angle")]
+        Angle = 3
+    }
+
     public enum DistanceTypes : int 
     {
         [LocalizableDescription(@"EnumFeet", typeof(Resources))]
+        [StringValue("ft")]
         Feet = 1,
         
         [LocalizableDescription(@"EnumKilometers", typeof(Resources))]
+        [StringValue("km")]
         Kilometers = 2,
         
         [LocalizableDescription(@"EnumMeters", typeof(Resources))]
+        [StringValue("m")]
         Meters = 3,
 
         [LocalizableDescription(@"EnumMiles", typeof(Resources))]
+        [StringValue("mi")]
         Miles = 4,
         
         [LocalizableDescription(@"EnumNauticalMile", typeof(Resources))]
+        [StringValue("NM")]
         NauticalMiles = 5,
 
         [LocalizableDescription(@"EnumYards", typeof(Resources))]
+        [StringValue("yd.")]
         Yards = 6
     }
 
@@ -96,9 +118,11 @@ namespace DistanceAndDirectionLibrary
     public enum AzimuthTypes : int
     {
         [LocalizableDescription(@"EnumDegrees", typeof(Resources))]
+        [StringValue("°")]
         Degrees = 1,
 
         [LocalizableDescription(@"EnumMils", typeof(Resources))]
+        [StringValue("mils")]
         Mils = 2
     }
 
@@ -110,6 +134,22 @@ namespace DistanceAndDirectionLibrary
         [LocalizableDescription(@"EnumDiameter", typeof(Resources))]
         Diameter = 2
     }
+
+    public enum RingTypes : int
+    {
+        [LocalizableDescription(@"EnumInteractive", typeof(Resources))]
+        Interactive = 1,
+
+        [LocalizableDescription(@"EnumFixed", typeof(Resources))]
+        Fixed = 2,
+
+        [LocalizableDescription(@"EnumOrigin", typeof(Resources))]
+        Origin = 3,
+
+        [LocalizableDescription(@"EnumCumulative", typeof(Resources))]
+        Cumulative = 4
+    }
+
 
     public enum EllipseTypes : int
     {

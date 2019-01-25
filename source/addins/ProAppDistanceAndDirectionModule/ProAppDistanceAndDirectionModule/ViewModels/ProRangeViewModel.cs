@@ -14,15 +14,21 @@
 
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
+using DistanceAndDirectionLibrary.Models;
+using DistanceAndDirectionLibrary.ViewModels;
+using DistanceAndDirectionLibrary.Views;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -30,28 +36,23 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
     {
         public ProRangeViewModel()
         {
+            OutputDistanceView = new ProOutputDistanceView();
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, OnMouseDoubleClick);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.TEXTCHANGE_DELETE, OnTextChangeEvent);
         }
-
+        public ProOutputDistanceView OutputDistanceView { get; set; }
         #region Properties
 
-        private bool isInteractive = false;
-        public bool IsInteractive
+        RingTypes ringType = RingTypes.Fixed;
+        public override RingTypes RingType
         {
-            get
-            {
-                return isInteractive;
-            }
+            get { return ringType; }
             set
             {
-                isInteractive = value;
-                if (value)
-                {
-                    maxDistance = 0.0;
-                    NumberOfRings = 0;
-                }
-                else
-                    NumberOfRings = 10;
+                ringType = value;
+                RaisePropertyChanged(() => RingType);
+
+                ResetValue();
             }
         }
 
@@ -69,7 +70,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     CreateMapElement();
 
                 maxDistance = 0.0;
-                if (IsInteractive)
+                if (RingType == RingTypes.Interactive)
                     NumberOfRings = 0;
             }
         }
@@ -87,7 +88,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get { return numberOfRings; }
             set
             {
-                if (!IsInteractive)
+                if (RingType == RingTypes.Fixed)
                 {
                     if (value < 1 || value > 180)
                         throw new ArgumentException(string.Format(DistanceAndDirectionLibrary.Properties.Resources.AENumOfRings, 1, 180));
@@ -118,14 +119,60 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             get
             {
-                if (IsInteractive)
+                if (RingType == RingTypes.Interactive)
                     return (Point1 != null && NumberOfRadials >= 0);
+                else if (RingType == RingTypes.Origin || RingType == RingTypes.Cumulative)
+                {
+                    if (Point1 != null && NumberOfRadials >= 0 && OutputDistanceViewModel.OutputDistanceListItem.Count > 0)
+                    {
+                        foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
+                        {
+                            if (item.OutputDistance == "" || item.OutputDistance == "0")
+                            {
+                                return false;
+                            }
+                        }
+                        return true;
+                    }
+                    return false;
+                }
                 else
                     return (Point1 != null && NumberOfRings > 0 && NumberOfRadials >= 0 && Distance > 0.0);
             }
         }
 
         #endregion Properties
+
+        private void ResetValue()
+        {
+            if (RingType == RingTypes.Fixed)
+            {
+                NumberOfRings = 10;
+            }
+            else
+            {
+                maxDistance = 0.0;
+                NumberOfRings = 0;
+            }
+            if (OutputDistanceViewModel.OutputDistanceListItem == null)
+                return;
+
+            if (RingType == RingTypes.Fixed || RingType == RingTypes.Interactive)
+            {
+                OutputDistanceViewModel.OutputDistanceListItem.Clear();
+            }
+            else
+            {
+                if (OutputDistanceViewModel.OutputDistanceListItem.Count == 0)
+                {
+                    var outputItem = new OutputDistanceModel();
+                    outputItem.UniqueRowId = OutputDistanceViewModel.UniqueRowId;
+                    outputItem.OutputDistance = "0";
+                    OutputDistanceViewModel.OutputDistanceListItem.Add(outputItem);
+                    OutputDistanceViewModel.UniqueRowId++;
+                }
+            }
+        }
 
         /// <summary>
         /// Method used to create the needed map elements to add to the graphics container
@@ -138,7 +185,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!CanCreateElement)
                 return geom;
 
-            if (!IsInteractive)
+            if (!(RingType == RingTypes.Interactive))
             {
                 base.CreateMapElement();
 
@@ -167,7 +214,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             double interval = 360.0 / NumberOfRadials;
             double radialLength = 0.0;
 
-            if (IsInteractive)
+            if (!(RingType == RingTypes.Fixed))
                 radialLength = maxDistance;
             else
                 radialLength = Distance * NumberOfRings;
@@ -205,11 +252,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (newline != null)
                     {
                         // Hold onto the attributes in case user saves graphics to file later
-                        RangeAttributes rangeAttributes = new RangeAttributes() {
-                            mapPoint = Point1, numRings = NumberOfRings,
+                        RangeAttributes rangeAttributes = new RangeAttributes()
+                        {
+                            mapPoint = Point1,
+                            numRings = NumberOfRings,
                             distance = radialLength,
-                            centerx = Point1.X, centery = Point1.Y,
-                            distanceunit = LineDistanceType.ToString(), ringorradial = "Radial" };
+                            centerx = Point1.X,
+                            centery = Point1.Y,
+                            distanceunit = LineDistanceType.ToString(),
+                            ringorradial = "Radial"
+                        };
 
                         // AddGraphicToMap(newline, rangeAttributes);
                         CreateRangeRingOrRadialFeature(newline, rangeAttributes);
@@ -243,30 +295,36 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             try
             {
                 Geometry geom = null;
-                for (int x = 0; x < numberOfRings; x++)
+                if (RingType == RingTypes.Fixed)
                 {
-                    // set the current radius
-                    radius += Distance;
+                    for (int x = 0; x < numberOfRings; x++)
+                    {
+                        // set the current radius
+                        radius += Distance;
+                        geom = CreateRangeRings(radius);
+                    }
+                }
+                else
+                {
+                    foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
+                    {
+                        var outputDistance = Convert.ToDouble(item.OutputDistance);
+                        if (outputDistance > 0.0)
+                        {
+                            if (RingType == RingTypes.Origin)
+                            {
+                                maxDistance = outputDistance > maxDistance ? outputDistance : maxDistance;
+                                radius = outputDistance;
+                            }
+                            else if (RingType == RingTypes.Cumulative)
+                            {
+                                radius += outputDistance;
+                                maxDistance = radius > maxDistance ? radius : maxDistance;
 
-                    var param = new GeodesicEllipseParameter();
-
-                    param.Center = new Coordinate2D(Point1);
-                    param.AxisDirection = 0.0;
-                    param.LinearUnit = GetLinearUnit(LineDistanceType);
-                    param.OutGeometryType = GeometryType.Polyline;
-                    param.SemiAxis1Length = radius;
-                    param.SemiAxis2Length = radius;
-                    param.VertexCount = VertexCount;
-
-                    geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
-
-                    // Hold onto the attributes in case user saves graphics to file later
-                    RangeAttributes rangeAttributes = new RangeAttributes() {
-                        mapPoint = Point1, numRings = numberOfRings, distance = radius,
-                        centerx = Point1.X, centery = Point1.Y,
-                        distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
-
-                    CreateRangeRingOrRadialFeature(geom, rangeAttributes);
+                            }
+                            geom = CreateRangeRings(radius);
+                        }
+                    }
                 }
 
                 return geom;
@@ -276,6 +334,38 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 System.Diagnostics.Debug.WriteLine(ex);
                 return null;
             }
+        }
+
+        private Geometry CreateRangeRings(double radius)
+        {
+            Geometry geom = null;
+            var param = new GeodesicEllipseParameter();
+
+            param.Center = new Coordinate2D(Point1);
+            param.AxisDirection = 0.0;
+            param.LinearUnit = GetLinearUnit(LineDistanceType);
+            param.OutGeometryType = GeometryType.Polyline;
+            param.SemiAxis1Length = radius;
+            param.SemiAxis2Length = radius;
+            param.VertexCount = VertexCount;
+
+            geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
+
+            // Hold onto the attributes in case user saves graphics to file later
+            RangeAttributes rangeAttributes = new RangeAttributes()
+            {
+                mapPoint = Point1,
+                numRings = numberOfRings,
+                distance = radius,
+                centerx = Point1.X,
+                centery = Point1.Y,
+                distanceunit = LineDistanceType.ToString(),
+                ringorradial = "Ring"
+            };
+
+            CreateRangeRingOrRadialFeature(geom, rangeAttributes);
+
+            return geom;
         }
 
         /// <summary>
@@ -288,12 +378,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!IsActiveTab)
                 return;
 
+            if (ValidateDistances())
+                return;
+
             var point = obj as MapPoint;
 
             if (point == null)
                 return;
 
-            if (!IsInteractive)
+            if (!(RingType == RingTypes.Interactive))
             {
                 Point1 = point;
                 HasPoint1 = true;
@@ -331,6 +424,26 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        private bool ValidateDistances()
+        {
+            if (RingType == RingTypes.Origin || RingType == RingTypes.Cumulative)
+            {
+                bool flag = true;
+                foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
+                {
+                    if (item.OutputDistance != "" && item.OutputDistance != "0")
+                    {
+                        return flag = false;
+                    }
+                }
+                if (flag)
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.MsgRingValidDistances);
+                    return flag;
+                }
+            }
+            return false;
+        }
         /// <summary>
         /// Override the mouse move event to dynamically update the center point
         /// Also dynamically update the ring feedback
@@ -351,7 +464,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 Point1 = point;
             }
-            else if (HasPoint1 && IsInteractive)
+            else if (HasPoint1 && RingType == RingTypes.Interactive)
             {
                 Distance = GetGeodesicDistance(Point1, point);
 
@@ -367,16 +480,43 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <param name="obj"></param>
         private void OnMouseDoubleClick(object obj)
         {
-            if (IsInteractive && IsToolActive)
+            if (RingType == RingTypes.Interactive && IsToolActive)
                 IsToolActive = false;
+        }
+
+        private void OnTextChangeEvent(object obj)
+        {
+            if (OutputDistanceViewModel.OutputDistanceListItem != null && OutputDistanceViewModel.OutputDistanceListItem.Count > 1)
+            {
+                ObservableCollection<OutputDistanceModel> listOfDistances = new ObservableCollection<OutputDistanceModel>();
+                foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
+                {
+                    if (item.OutputDistance == "")
+                    {
+                        listOfDistances.Add(item);
+                    }
+                }
+
+                foreach (var item in listOfDistances)
+                {
+                    if (item.OutputDistance == "")
+                    {
+                        OutputDistanceViewModel.OutputDistanceListItem.Remove(item);
+                    }
+                }
+            }
         }
 
         internal override void Reset(bool toolReset)
         {
             base.Reset(toolReset);
 
+            if (IsToolActive && (RingType == RingTypes.Origin || RingType == RingTypes.Cumulative))
+                IsToolActive = false;
+
             NumberOfRadials = 0;
-            NumberOfRings = 10;
+            if (RingType != RingTypes.Fixed)
+                NumberOfRings = 0;
         }
 
         private void ConstructGeoCircle()
@@ -399,11 +539,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
             // Hold onto the attributes in case user saves graphics to file later
-            RangeAttributes rangeAttributes = new RangeAttributes() {
-                mapPoint = Point1, numRings = NumberOfRings,
+            RangeAttributes rangeAttributes = new RangeAttributes()
+            {
+                mapPoint = Point1,
+                numRings = NumberOfRings,
                 distance = Distance,
-                centerx = Point1.X, centery = Point1.Y,
-                distanceunit = LineDistanceType.ToString(), ringorradial = "Ring" };
+                centerx = Point1.X,
+                centery = Point1.Y,
+                distanceunit = LineDistanceType.ToString(),
+                ringorradial = "Ring"
+            };
 
             CreateRangeRingOrRadialFeature(geom, rangeAttributes);
         }
@@ -427,10 +572,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             ClearTempGraphics();
 
             // Hold onto the attributes in case user saves graphics to file later
-            RangeAttributes rangeAttributes = new RangeAttributes() { mapPoint = Point1,
-                numRings = NumberOfRings, distance = Distance,
-                centerx = Point1.X, centery = Point1.Y,
-                distanceunit = LineDistanceType.ToString() };
+            RangeAttributes rangeAttributes = new RangeAttributes()
+            {
+                mapPoint = Point1,
+                numRings = NumberOfRings,
+                distance = Distance,
+                centerx = Point1.X,
+                centery = Point1.Y,
+                distanceunit = LineDistanceType.ToString()
+            };
 
             AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
             AddGraphicToMap(geom, ColorFactory.Instance.GreyRGB, rangeAttributes, true);
@@ -536,6 +686,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!creationResult)
             {
                 message = editOperation.ErrorMessage;
+                await Project.Current.DiscardEditsAsync();
+            }
+            else
+            {
+                await Project.Current.SaveEditsAsync();
             }
 
             return message;

@@ -27,5 +27,6 @@ namespace DistanceAndDirectionLibrary
         public const string POINT_TEXT_KEYDOWN = "POINT_TEXT_KEYDOWN";
         public const string RADIUS_DIAMETER_KEYDOWN = "RADIUS_DIAMETER_KEYDOWN";
         public const string TOC_ITEMS_CHANGED = "TOC_ITEMS_CHANGED";
+        public const string TEXTCHANGE_DELETE = "TEXTCHANGE_DELETE";
     }
 }

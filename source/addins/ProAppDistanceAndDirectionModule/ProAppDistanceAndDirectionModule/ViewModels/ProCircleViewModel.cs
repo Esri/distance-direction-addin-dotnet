@@ -15,6 +15,7 @@
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -196,18 +197,29 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// String of time display
         /// </summary>
+        private string travelTimeString = string.Empty;
         public string TravelTimeString
         {
             get
             {
-                return TravelTime.ToString("0.##");
+                if (string.IsNullOrWhiteSpace(travelTimeString))
+                    return TravelTime.ToString("0.##");
+
+                return travelTimeString;
             }
             set
             {
+                travelTimeString = string.Empty;
                 // divide the manual input by 2
                 double t = 0.0;
                 if (double.TryParse(value, out t))
                 {
+                    if (t == 0.0)
+                    {
+                        // Don't set property(Distance) because this will overwrite the string if user entering zeros "00000"
+                        travelTimeString = value;
+                        return;
+                    }
                     TravelTime = t;
                 }
                 else
@@ -287,18 +299,31 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// String of rate display
         /// </summary>
+        private string travelRateString = string.Empty;
         public string TravelRateString
         {
             get
             {
-                return TravelRate.ToString("0.##");
+                if (string.IsNullOrWhiteSpace(travelRateString))
+                    return TravelRate.ToString("0.##");
+
+                return travelRateString;
+
             }
             set
             {
+                travelRateString = string.Empty;
                 // divide the manual input by 2
                 double t = 0.0;
                 if (double.TryParse(value, out t))
                 {
+                    if (t == 0.0)
+                    {
+                        // Don't set property(Distance) because this will overwrite the string if user entering zeros "00000"
+                        travelRateString = value;
+                        return;
+                    }
+
                     TravelRate = t;
                 }
                 else
@@ -885,8 +910,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!creationResult)
             {
                 message = editOperation.ErrorMessage;
+                await Project.Current.DiscardEditsAsync();
             }
-
+            else
+            {
+                await Project.Current.SaveEditsAsync();
+            }
+            
             return message;
         }
 

@@ -21,13 +21,16 @@ using System;
 using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.esriSystem;
 using ESRI.ArcGIS.Geoprocessing;
+using ESRI.ArcGIS.Display;
+using DistanceAndDirectionLibrary;
 
 namespace ArcMapAddinDistanceAndDirection.Models
 {
     class KMLUtils
     {
-        
-        public bool ConvertLayerToKML(string kmzOutputPath, string tmpShapefilePath, ESRI.ArcGIS.Carto.IMap map)
+
+        public bool ConvertLayerToKML(string kmzOutputPath, string tmpShapefilePath, 
+            ESRI.ArcGIS.Carto.IMap map, GraphicTypes graphicType)
         {
             try
             {
@@ -35,11 +38,21 @@ namespace ArcMapAddinDistanceAndDirection.Models
 
                 IGeoProcessor2 gp = new GeoProcessorClass();
                 gp.OverwriteOutput = true;
+                IGeoFeatureLayer geoLayer = null;
 
                 IVariantArray parameters = new VarArrayClass();
                 parameters.Add(tmpShapefilePath);
                 parameters.Add(kmzName);
                 gp.Execute("MakeFeatureLayer_management", parameters, null);
+
+                string layerFileName = getLayerFileFromGraphicType(graphicType);
+                if (!string.IsNullOrEmpty(layerFileName))
+                {
+                    IVariantArray parametersASM = new VarArrayClass();
+                    parametersASM.Add(kmzName);
+                    parametersASM.Add(layerFileName);
+                    gp.Execute("ApplySymbologyFromLayer_management", parametersASM, null);
+                }
 
                 IVariantArray parameters1 = new VarArrayClass();
                 // assign  parameters        
@@ -58,6 +71,10 @@ namespace ArcMapAddinDistanceAndDirection.Models
                         break;
                     }
                 }
+                if (geoLayer != null)
+                {
+                    map.DeleteLayer(geoLayer);
+                }
 
                 return true;
             }
@@ -67,7 +84,42 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 return false;
             }
         }
+
+        private string getLayerFileFromGraphicType(GraphicTypes graphicType)
+        {
+            var asm = System.Reflection.Assembly.GetExecutingAssembly();
+            string addinPath = System.IO.Path.GetDirectoryName(
+                              Uri.UnescapeDataString(
+                                      new Uri(asm.CodeBase).LocalPath));
+
+            string layerFileName = string.Empty;
+
+            switch (graphicType)
+            {
+                case GraphicTypes.Line:
+                    layerFileName = "Lines.lyr";
+                    break;
+                case GraphicTypes.RangeRing:
+                    layerFileName = "Rings.lyr";
+                    break;
+                case GraphicTypes.Circle:
+                    layerFileName = "Circles.lyr";
+                    break;
+                case GraphicTypes.Ellipse:
+                    layerFileName = "Ellipses.lyr";
+                    break;
+                default:
+                    break;
+            }
+
+            if (string.IsNullOrEmpty(layerFileName))
+                return layerFileName;
+
+            string layerPath = System.IO.Path.Combine(addinPath, "Data", layerFileName);
+
+            return layerPath;
+        }
+
     }
 
-    
 }

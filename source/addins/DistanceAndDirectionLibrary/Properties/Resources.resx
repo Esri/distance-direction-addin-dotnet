@@ -306,6 +306,9 @@
   <data name="LabelDistanceLength" xml:space="preserve">
     <value>Distance / Length</value>
   </data>
+  <data name="LabelDistanceUnit" xml:space="preserve">
+    <value>Distance Unit</value>
+  </data>
   <data name="LabelEllipseType" xml:space="preserve">
     <value>Ellipse Type</value>
   </data>
@@ -387,8 +390,14 @@
   <data name="MsgOutOfAOI" xml:space="preserve">
     <value>Point is out of bounds</value>
   </data>
+  <data name="MsgRingValidDistances" xml:space="preserve">
+    <value>Add one or more distances to draw the rings.</value>
+  </data>
   <data name="TitleEditProperties" xml:space="preserve">
     <value>Edit Properties</value>
+  </data>
+  <data name="TooltipAddDistance" xml:space="preserve">
+    <value>Add Distance</value>
   </data>
   <data name="TooltipEditProperties" xml:space="preserve">
     <value>Edit Properties</value>

@@ -15,15 +15,24 @@
                 <ResourceDictionary Source="/DistanceAndDirectionLibrary;component/MAResourceDictionary.xaml" />
                 <ResourceDictionary Source="../ProMAResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <ObjectDataProvider x:Key="ringFromData"
+                                MethodName="GetValues"
+                                ObjectType="{x:Type sys:Enum}">
+                <ObjectDataProvider.MethodParameters>
+                    <x:TypeExtension TypeName="local:RingTypes" />
+                </ObjectDataProvider.MethodParameters>
+            </ObjectDataProvider>
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid x:Name="mainControl">
         <ScrollViewer Padding="0,0,3,0" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <CheckBox x:Name="cbInteractive"
+                <ComboBox x:Name="cmbRingType"
+                          Height="Auto"
                           Margin="3,3,0,0"
-                          Content="{x:Static prop:Resources.LabelInteractive}"
-                          IsChecked="{Binding IsInteractive}" />
+                          ItemsSource="{Binding Source={StaticResource ringFromData}}"
+                          SelectedItem="{Binding Path=RingType,
+                                                 Mode=TwoWay}"/>
                 <TextBlock x:Name="Center_Point_Label"
                            Margin="3,3,0,0"
                            Text="{x:Static prop:Resources.LabelRangeRingsCenterPoint}" />
@@ -63,7 +72,21 @@
                 </Grid>
                 <TextBlock x:Name="NumberofRingsLabel"
                            Margin="3,3,0,0"
-                           Text="{x:Static prop:Resources.LabelNumberOfRings}" />
+                           Text="{x:Static prop:Resources.LabelNumberOfRings}" >
+                    <TextBlock.Style>
+                        <Style TargetType="TextBlock">
+                            <Setter Property="Visibility" Value="Visible" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Origin}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Cumulative}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </TextBlock.Style>
+                </TextBlock>
                 <TextBox x:Name="Number_of_Rings_Text_Box"
                          Margin="3,3,0,0"
                          Text="{Binding Path=NumberOfRings,
@@ -78,10 +101,17 @@
                     </TextBox.InputBindings>
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                            <Setter Property="IsEnabled" Value="True" />
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Setter Property="Visibility" Value="Visible" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=cbInteractive, Path=IsChecked}" Value="True">
-                                    <Setter Property="IsEnabled" Value="False" />
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Fixed}">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Origin}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Cumulative}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -92,9 +122,16 @@
                     <TextBlock.Style>
                         <Style TargetType="TextBlock">
                             <Setter Property="Text" Value="{x:Static prop:Resources.LabelRangeRingsDistanceBetween}" />
+                            <Setter Property="Visibility" Value="Visible" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=cbInteractive, Path=IsChecked}" Value="True">
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Interactive}">
                                     <Setter Property="Text" Value="{x:Static prop:Resources.LabelRadius}" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Origin}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Cumulative}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
@@ -114,15 +151,27 @@
                     </TextBox.InputBindings>
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-                            <Setter Property="IsEnabled" Value="True" />
+                            <Setter Property="IsEnabled" Value="False" />
+                            <Setter Property="Visibility" Value="Visible" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=cbInteractive, Path=IsChecked}" Value="True">
-                                    <Setter Property="IsEnabled" Value="False" />
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Fixed}">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Origin}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Cumulative}">
+                                    <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
                     </TextBox.Style>
                 </TextBox>
+
+                <TextBlock x:Name="DistanceUnitLbl"
+                           Margin="3,3,0,0"
+                           Text="{x:Static prop:Resources.LabelDistanceUnit}" />
+
                 <ComboBox Validation.ErrorTemplate="{StaticResource errorTemplate}" x:Name="cmbLineDistanceType"
                           Height="Auto"
                           Margin="3,3,0,0"
@@ -141,6 +190,29 @@
                         </Style>
                     </ComboBox.ItemContainerStyle>-->
                 </ComboBox>
+
+                <GroupBox  
+                          Margin="3,3,0,0"
+                          Padding="3"
+                          HorizontalAlignment="Stretch"
+                          VerticalAlignment="Stretch"
+                          Header="Distances">
+                    <UserControl Content="{Binding OutputDistanceView}" />
+                    <GroupBox.Style>
+                        <Style TargetType="GroupBox" BasedOn="{StaticResource {x:Type GroupBox}}">
+                            <Setter Property="Visibility" Value="Collapsed" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Origin}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding RingType}" Value="{x:Static local:RingTypes.Cumulative}">
+                                    <Setter Property="Visibility" Value="Visible" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </GroupBox.Style>
+                </GroupBox>
+
                 <TextBlock x:Name="NumberofRadialsLabel"
                            Margin="3,3,0,0"
                            Text="{x:Static prop:Resources.LabelRangeRingsNumberofRadials}" 
@@ -160,6 +232,7 @@
                                                                Path=.}" />
                     </TextBox.InputBindings>
                 </TextBox>
+
                 <StackPanel Margin="3,3,0,0"
                             HorizontalAlignment="Right"
                             Orientation="Horizontal">

@@ -1,0 +1,115 @@
+﻿<UserControl
+    x:Class="DistanceAndDirectionLibrary.Views.OutputDistanceView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:prop="clr-namespace:DistanceAndDirectionLibrary.Properties"
+    xmlns:viewModels="clr-namespace:DistanceAndDirectionLibrary.ViewModels"
+    x:Name="ocView"
+    d:DesignHeight="150"
+    d:DesignWidth="425"    
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/DistanceAndDirectionLibrary;component/MAResourceDictionary.xaml" />
+                <ResourceDictionary>
+                    <viewModels:OutputDistanceViewModel x:Key="vm"/>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <UserControl.DataContext>
+        <StaticResourceExtension ResourceKey="vm"/>
+    </UserControl.DataContext>
+    <Grid
+        x:Name="layoutRoot"
+        MouseLeftButtonUp="OnMouseLeftButtonUp"
+        MouseMove="OnMouseMove">
+        <DataGrid
+            x:Name="ocGrid"
+            AutoGenerateColumns="False"
+            CanUserAddRows="False"
+            CanUserDeleteRows="False"
+            CanUserReorderColumns="False"
+            CanUserResizeRows="False"
+            CanUserSortColumns="False"
+            ItemsSource="{Binding OutputDistanceList}"
+            PreviewMouseLeftButtonDown="OnMouseLeftButtonDown"
+            SelectionMode="Single">
+            <DataGrid.RowHeaderTemplate>
+                <DataTemplate>
+                    <Image
+                        Width="10"
+                        Height="10"
+                        Cursor="Hand"
+                        Source="/DistanceAndDirectionLibrary;component/Images/RowHandle.png" />
+                </DataTemplate>
+            </DataGrid.RowHeaderTemplate>
+            <DataGrid.Columns>
+                <DataGridTemplateColumn MaxWidth="0">
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <Button
+                            Grid.Column="2"
+                            Margin="0,0,0,0"
+                            ToolTip="{x:Static prop:Resources.TooltipAddDistance}"
+                            Command="{Binding Source={StaticResource vm}, Path=AddNewOCCommand}" 
+                            Style="{StaticResource ImageButtonStyle}">
+                            <Image
+                                Width="18"
+                                Height="18"
+                                Source="/DistanceAndDirectionLibrary;component/Images/hand.png" />
+                        </Button>
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBox                                
+                                PreviewTextInput="TextBox_PreviewTextInput"
+                                LostFocus="TextBox_LostFocus"
+                                BorderThickness="0"                               
+                                Text="{Binding OutputDistance,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,ValidatesOnExceptions=True}"
+                                Validation.ErrorTemplate="{StaticResource errorTemplate}">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}" />
+                                </TextBox.Style>
+                            </TextBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn CanUserResize="False" MaxWidth="400" Header="Action">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button
+								Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}}"
+								CommandParameter="{Binding UniqueRowId}"
+								ToolTip="Delete" Style="{StaticResource ImageButtonStyle}">
+                                <Image
+									Width="16"
+									Height="16"
+									Source="/DistanceAndDirectionLibrary;component/Images/Delete.png" />
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <!--  Drag and Drop Popup  -->
+        <Popup
+            x:Name="popup1"
+            AllowsTransparency="True"
+            IsHitTestVisible="False"
+            Placement="RelativePoint"
+            PlacementTarget="{Binding ElementName=ocView}">
+            <Border
+                Background="White"
+                BorderBrush="LightSteelBlue"
+                BorderThickness="2"
+                Opacity="0.85">
+
+            </Border>
+        </Popup>
+    </Grid>
+</UserControl>

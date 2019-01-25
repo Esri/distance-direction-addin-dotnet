@@ -15,6 +15,7 @@
 using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
+using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -158,8 +159,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         MinorAxisDistance = d / 2;
                     }
+                    else if (d > MajorAxisDistance)
+                    {
+                        minorAxisDistance = d;
+                        throw new ArgumentException("Minor Axis can not be greater that Major Axis");
+                    }
                     else
+                    {
                         MinorAxisDistance = d;
+                        MajorAxisDistance = MajorAxisDistance;
+                    }
 
                     if (MinorAxisDistance == d)
                         return;
@@ -234,8 +243,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     if (EllipseType == EllipseTypes.Full)
                         MajorAxisDistance = d / 2.0;
+                    else if (d < MinorAxisDistance)
+                    {
+                        majorAxisDistance = d;
+                        throw new ArgumentException("Major Axis can not be smaller that Minor Axis");
+                    }
                     else
+                    {
                         MajorAxisDistance = d;
+                        MinorAxisDistance = MinorAxisDistance;
+                    }
                     if (MajorAxisDistance == d)
                         return;
 
@@ -676,6 +693,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!creationResult)
             {
                 message = editOperation.ErrorMessage;
+                await Project.Current.DiscardEditsAsync();
+            }
+            else
+            {
+                await Project.Current.SaveEditsAsync();
             }
 
             return message;

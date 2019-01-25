@@ -19,7 +19,7 @@ namespace DistanceAndDirectionLibrary.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -628,6 +628,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Distance Unit.
+        /// </summary>
+        public static string LabelDistanceUnit {
+            get {
+                return ResourceManager.GetString("LabelDistanceUnit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ellipse Type.
         /// </summary>
         public static string LabelEllipseType {
@@ -871,11 +880,29 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Add one or more distances to draw the rings..
+        /// </summary>
+        public static string MsgRingValidDistances {
+            get {
+                return ResourceManager.GetString("MsgRingValidDistances", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Properties.
         /// </summary>
         public static string TitleEditProperties {
             get {
                 return ResourceManager.GetString("TitleEditProperties", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Add Distance.
+        /// </summary>
+        public static string TooltipAddDistance {
+            get {
+                return ResourceManager.GetString("TooltipAddDistance", resourceCulture);
             }
         }
         
