@@ -26,7 +26,7 @@
     <Grid x:Name="mainControl">
         <ScrollViewer Padding="0,0,3,0" VerticalScrollBarVisibility="Auto">
             <StackPanel>
-         
+                <TextBlock Margin="3,3,0,0" Text="{x:Static prop:Resources.LabelRingType}" />
                 <ComboBox x:Name="cmbRingType"
                           Height="Auto"
                           Margin="3,3,0,0"

@@ -19,7 +19,7 @@ namespace DistanceAndDirectionLibrary.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     public class Resources {
@@ -682,6 +682,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Line Type.
+        /// </summary>
+        public static string LabelLineType {
+            get {
+                return ResourceManager.GetString("LabelLineType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Major.
         /// </summary>
         public static string LabelMajorAxis {
@@ -804,6 +813,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         public static string LabelRate {
             get {
                 return ResourceManager.GetString("LabelRate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ring Type.
+        /// </summary>
+        public static string LabelRingType {
+            get {
+                return ResourceManager.GetString("LabelRingType", resourceCulture);
             }
         }
         
