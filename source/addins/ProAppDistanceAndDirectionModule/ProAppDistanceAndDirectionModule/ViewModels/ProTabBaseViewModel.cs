@@ -246,7 +246,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
-                        CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
+                        CoordinateConversionLibrary.Models.CoordinateType ccType = 
+                            CoordinateConversionLibrary.Helpers.ConversionUtils.
+                                GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
+
+                        // TRICKY: if point can't be formatted, then it is invalid/out of bounds
+                        if ((ccType == CoordinateConversionLibrary.Models.CoordinateType.Unknown) &&
+                                (string.IsNullOrEmpty(outFormattedString)))
+                            HasPoint1 = false;
+
                         return outFormattedString;
                     }
                     return string.Empty;
@@ -315,7 +323,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
-                        CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(GetFormattedPoint(Point2), out outFormattedString);
+                        CoordinateConversionLibrary.Models.CoordinateType ccType = 
+                            CoordinateConversionLibrary.Helpers.ConversionUtils.
+                                GetCoordinateString(GetFormattedPoint(Point2), out outFormattedString);
+
+                        // TRICKY: if point can't be formatted, then it is invalid/out of bounds
+                        if ((ccType == CoordinateConversionLibrary.Models.CoordinateType.Unknown) &&
+                                (string.IsNullOrEmpty(outFormattedString)))
+                            HasPoint2 = false;
+
                         return outFormattedString;
                     }
                     return string.Empty;
@@ -653,10 +669,35 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         }
 
         /// <summary>
+        /// Method to check to see point is withing the map area of interest
+        /// </summary>
+        /// <param name="point">IPoint to validate</param>
+        /// <returns></returns>
+        internal async Task<bool> IsValidPoint(MapPoint point)
+        {
+            if ((point != null) && (MapView.Active != null) && (MapView.Active.Map != null))
+            {
+                Envelope env = null;
+                await QueuedTask.Run(() =>
+                {
+                    env = MapView.Active.Map.CalculateFullExtent();
+                });
+
+                bool isValid = false;
+
+                if (env != null)
+                    isValid = GeometryEngine.Instance.Contains(env, point);
+                                   
+                return isValid;
+            }
+            return false;
+        }
+
+        /// <summary>
         /// Handler for the new map point click event
         /// </summary>
         /// <param name="obj">IPoint</param>
-        internal virtual void OnNewMapPointEvent(object obj)
+        internal virtual async void OnNewMapPointEvent(object obj)
         {
             if (!IsActiveTab)
                 return;
@@ -665,6 +706,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (point == null)
                 return;
+
+            bool isPointValid = await IsValidPoint(point);
+            if (!isPointValid)
+            {
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation);
+                return;
+            }
 
             if (!HasPoint1)
             {
@@ -798,6 +849,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
+                result = string.Empty;
             }
             return result;
         }
