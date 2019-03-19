@@ -682,12 +682,26 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     env = MapView.Active.Map.CalculateFullExtent();
                 });
-
+                
                 bool isValid = false;
 
                 if (env != null)
-                    isValid = GeometryEngine.Instance.Contains(env, point);
-                                   
+                {
+                    try
+                    {
+                        // Workaround for 2.1, map point SR was not set to same as map
+                        Geometry geo = GeometryEngine.Instance.Project(point, env.SpatialReference);
+                        // Now check if point is within Map Extent
+                        isValid = GeometryEngine.Instance.Contains(env, geo);
+                    }
+                    catch (Exception ex)
+                    {
+                        // This just checks the point is in the map extent so allow the check to pass even if this excepts 
+                        isValid = true;
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
+                    }
+                }
+
                 return isValid;
             }
             return false;
