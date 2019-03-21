@@ -818,7 +818,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             {
                 MessageBox.Show(
                         DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
-                        DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel,
+                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 return;
             }

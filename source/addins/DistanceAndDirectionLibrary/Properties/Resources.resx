@@ -324,6 +324,9 @@
   <data name="LabelInterval" xml:space="preserve">
     <value>Interval Between Rings</value>
   </data>
+  <data name="LabelLineType" xml:space="preserve">
+    <value>Line Type</value>
+  </data>
   <data name="LabelMajorAxis" xml:space="preserve">
     <value>Major</value>
   </data>
@@ -365,6 +368,9 @@
   </data>
   <data name="LabelRate" xml:space="preserve">
     <value>Rate</value>
+  </data>
+  <data name="LabelRingType" xml:space="preserve">
+    <value>Ring Type</value>
   </data>
   <data name="LabelSaveAs" xml:space="preserve">
     <value>Save As</value>

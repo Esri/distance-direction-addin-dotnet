@@ -55,7 +55,6 @@ Follow the links below to select the desired development/deployment environment.
 * [Military Tools for ArcGIS Solutions Pages](http://solutions.arcgis.com/defense/help/military-tools/)
 * [ArcGIS for Defense Downloads](http://appsforms.esri.com/products/download/#ArcGIS_for_Defense)
 * [ArcGIS Blog](http://blogs.esri.com/esri/arcgis/)
-* ![Twitter](https://g.twimg.com/twitter-bird-16x16.png)[@EsriDefense](http://twitter.com/EsriDefense)
 * [ArcGIS Solutions Website](http://solutions.arcgis.com/military/)
 
 ## New to Github
