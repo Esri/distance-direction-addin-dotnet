@@ -66,6 +66,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="ValueConverters\EnumToFriendlyNameConverter.cs" />
+    <Compile Include="ValueConverters\ValueConverterConstant.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\EditPropertiesViewModel.cs" />
     <Compile Include="ViewModels\OutputDistanceViewModel.cs" />

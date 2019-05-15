@@ -1060,7 +1060,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             while (layer != null)
             {
-                geomColl.AddGeometry(layer.AreaOfInterest, ref MissingType, ref MissingType);
+                if (layer.AreaOfInterest != null)
+                    geomColl.AddGeometry(layer.AreaOfInterest, ref MissingType, ref MissingType);
                 layer = layers.Next();
             }
 

@@ -46,7 +46,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private void OnSketchComplete(object obj)
         {
-// TODO: DETERMINE IF THIS IS USED ANYWHERE? (appear to be 0 references)
+            // TODO: DETERMINE IF THIS IS USED ANYWHERE? (appear to be 0 references)
             AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);
         }
 
@@ -127,7 +127,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 UpdateFeedbackWithEllipse();
 
                 RaisePropertyChanged(() => MinorAxisDistance);
-                RaisePropertyChanged(() => MinorAxisDistanceString);                
+                RaisePropertyChanged(() => MinorAxisDistanceString);
             }
         }
 
@@ -138,7 +138,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(minorAxisDistanceString))
                 {
-                    if(EllipseType == EllipseTypes.Full)
+                    if (EllipseType == EllipseTypes.Full)
                     {
                         return (MinorAxisDistance * 2).ToString("0.##");
                     }
@@ -269,7 +269,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         double azimuth = 0.0;
         public double Azimuth
         {
-            get 
+            get
             {
                 return azimuth;
             }
@@ -392,7 +392,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if (!HasPoint1 || double.IsNaN(MajorAxisDistance) || double.IsNaN(MinorAxisDistance))
                 return;
-            
+
             var minorAxis = MinorAxisDistance;
             if (!HasMinorAxis || minorAxis == 0.0)
                 minorAxis = MajorAxisDistance;
@@ -423,7 +423,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // Ellipse
                 AddGraphicToMap(geom, ColorFactory.Instance.GreyRGB, null, true);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
             }
@@ -504,9 +504,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double angle = Azimuth;
 
                 if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Mils)
-                    angle *= 17.777777778;
+                    angle *= ValueConverterConstant.DegreeToMils;
+                else if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.DegreeToGradian;
                 else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Degrees)
-                    angle *= 0.05625;
+                    angle *= ValueConverterConstant.MilsToDegree;
+                else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.MilsToGradian;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Degrees)
+                    angle *= ValueConverterConstant.GradianToDegree;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Mils)
+                    angle *= ValueConverterConstant.GradianToMils;
 
                 Azimuth = angle;
             }
@@ -519,9 +527,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private double GetAzimuthAsDegrees()
         {
             if (AzimuthType == AzimuthTypes.Mils)
-            {
-                return Azimuth * 0.05625;
-            }
+                return Azimuth * ValueConverterConstant.MilsToDegree;
+            else if (AzimuthType == AzimuthTypes.Gradians)
+                return Azimuth * ValueConverterConstant.GradianToDegree;
 
             return Azimuth;
         }
@@ -538,7 +546,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (AzimuthType == AzimuthTypes.Degrees)
                 Azimuth = degrees;
             else if (AzimuthType == AzimuthTypes.Mils)
-                Azimuth = degrees * 17.777777778;
+                Azimuth = degrees * ValueConverterConstant.DegreeToMils;
+            else if (AzimuthType == AzimuthTypes.Gradians)
+                Azimuth = degrees * ValueConverterConstant.DegreeToGradian;
         }
 
         private void OnLayerPackageLoaded(object obj)
@@ -587,11 +597,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 // Hold onto the attributes in case user saves graphics to file later
-                EllipseAttributes ellipseAttributes = new EllipseAttributes() {
-                    mapPoint = Point1, minorAxis = MinorAxisDistance,
-                    majorAxis = MajorAxisDistance, angle = Azimuth,
-                    angleunit = AzimuthType.ToString(), centerx=Point1.X,
-                    centery = Point1.Y, distanceunit = LineDistanceType.ToString() };
+                EllipseAttributes ellipseAttributes = new EllipseAttributes()
+                {
+                    mapPoint = Point1,
+                    minorAxis = MinorAxisDistance,
+                    majorAxis = MajorAxisDistance,
+                    angle = Azimuth,
+                    angleunit = AzimuthType.ToString(),
+                    centerx = Point1.X,
+                    centery = Point1.Y,
+                    distanceunit = LineDistanceType.ToString()
+                };
 
                 CreateEllipseFeature(geom, ellipseAttributes);
 

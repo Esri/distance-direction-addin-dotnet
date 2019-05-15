@@ -195,6 +195,9 @@
   <data name="EnumGeodesic" xml:space="preserve">
     <value>Geodetic</value>
   </data>
+  <data name="EnumGradians" xml:space="preserve">
+    <value>Gradians</value>
+  </data>
   <data name="EnumGreatElliptic" xml:space="preserve">
     <value>Great Elliptic</value>
   </data>

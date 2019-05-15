@@ -586,9 +586,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double angle = Azimuth;
 
                 if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Mils)
-                    angle *= 17.777777778;
+                    angle *= ValueConverterConstant.DegreeToMils;
+                else if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.DegreeToGradian;
                 else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Degrees)
-                    angle *= 0.05625;
+                    angle *= ValueConverterConstant.MilsToDegree;
+                else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.MilsToGradian;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Degrees)
+                    angle *= ValueConverterConstant.GradianToDegree;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Mils)
+                    angle *= ValueConverterConstant.GradianToMils;
 
                 Azimuth = angle;
             }
@@ -601,9 +609,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         private double GetAzimuthAsDegrees()
         {
             if (AzimuthType == AzimuthTypes.Mils)
-            {
-                return Azimuth * 0.05625;
-            }
+                return Azimuth * ValueConverterConstant.MilsToDegree;
+            else if (AzimuthType == AzimuthTypes.Gradians)
+                return Azimuth * ValueConverterConstant.GradianToDegree;
 
             return Azimuth;
         }
@@ -634,14 +642,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 bearing = 360.0 - (bearing - 90);
 
             if (AzimuthType == AzimuthTypes.Degrees)
-            {
                 return bearing;
-            }
-
-            if (AzimuthType == AzimuthTypes.Mils)
-            {
-                return bearing * 17.777777778;
-            }
+            else if (AzimuthType == AzimuthTypes.Mils)
+                return bearing * ValueConverterConstant.DegreeToMils;
+            else if (AzimuthType == AzimuthTypes.Gradians)
+                return bearing * ValueConverterConstant.DegreeToGradian;
 
             return 0.0;
         }
@@ -688,15 +693,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var ellipticArc = (IConstructGeodetic)new Polyline();
 
                 double bearing;
-                if (AzimuthType == AzimuthTypes.Mils)
-                {
-                    bearing = GetAzimuthAsDegrees();
-                }
-                else
-                {
-                    bearing = Azimuth;
-                }
-
+                bearing = GetAzimuthAsDegrees();
                 ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, bearing, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                 var line = ellipticArc as IPolyline;
                 if (line != null)

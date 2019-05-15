@@ -64,7 +64,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 RaisePropertyChanged(() => DistanceBearingReady);
             }
         }
-        
+
         LineTypes lineType = LineTypes.Geodesic;
         public override LineTypes LineType
         {
@@ -247,16 +247,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (LineAzimuthType == AzimuthTypes.Degrees)
                 {
                     if (value > 360)
-                    {
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
-                    }
                 }
-                else
+                else if (LineAzimuthType == AzimuthTypes.Mils)
                 {
                     if (value > 6400)
-                    {
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
-                    }
+                }
+                else if (LineAzimuthType == AzimuthTypes.Gradians)
+                {
+                    if (value > 400)
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
                 AzimuthString = azimuth.Value.ToString("0.##");
                 RaisePropertyChanged(() => AzimuthString);
@@ -485,6 +486,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     destinationx = Point2.X,
                     destinationy = Point2.Y
                 };
+
                 CreateLineFeature(newline, lineAttributes);
 
                 ResetPoints();
@@ -497,7 +499,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
             }
-        }        
+        }
 
         private void UpdateAzimuth(double radians)
         {
@@ -510,7 +512,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (LineAzimuthType == AzimuthTypes.Degrees)
                 Azimuth = degrees;
             else if (LineAzimuthType == AzimuthTypes.Mils)
-                Azimuth = degrees * 17.777777778;
+                Azimuth = degrees * ValueConverterConstant.DegreeToMils;
+            else if (LineAzimuthType == AzimuthTypes.Gradians)
+                Azimuth = degrees * ValueConverterConstant.DegreeToGradian;
         }
 
         private double? GetAzimuthAsRadians()
@@ -523,10 +527,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private double? GetAzimuthAsDegrees()
         {
             if (LineAzimuthType == AzimuthTypes.Mils)
-            {
-                return Azimuth * 0.05625;
-            }
-
+                return Azimuth * ValueConverterConstant.MilsToDegree;
+            else if (LineAzimuthType == AzimuthTypes.Gradians)
+                return Azimuth * ValueConverterConstant.GradianToDegree;
             return Azimuth;
         }
 
@@ -542,12 +545,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 return bearing;
             }
-
-            if (LineAzimuthType == AzimuthTypes.Mils)
+            else if(LineAzimuthType == AzimuthTypes.Mils)
             {
-                return bearing * 17.777777778;
+                return bearing * ValueConverterConstant.DegreeToMils;
             }
-
+            else if(LineAzimuthType == AzimuthTypes.Gradians)
+            {
+                return bearing * ValueConverterConstant.DegreeToGradian;
+            }
             return 0.0;
         }
 
@@ -558,9 +563,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double angle = Azimuth.GetValueOrDefault();
 
                 if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Mils)
-                    angle *= 17.777777778;
+                    angle *= ValueConverterConstant.DegreeToMils;
+                else if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.DegreeToGradian;
                 else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Degrees)
-                    angle *= 0.05625;
+                    angle *= ValueConverterConstant.MilsToDegree;
+                else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.MilsToGradian;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Degrees)
+                    angle *= ValueConverterConstant.GradianToDegree;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Mils)
+                    angle *= ValueConverterConstant.GradianToMils;
 
                 Azimuth = angle;
             }
