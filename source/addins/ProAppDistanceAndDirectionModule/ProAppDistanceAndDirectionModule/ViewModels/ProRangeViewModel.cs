@@ -39,6 +39,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             OutputDistanceView = new ProOutputDistanceView();
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, OnMouseDoubleClick);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.TEXTCHANGE_DELETE, OnTextChangeEvent);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
         }
         public ProOutputDistanceView OutputDistanceView { get; set; }
         #region Properties
@@ -444,6 +445,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             return false;
         }
+
+        private void OnLayerPackageLoaded(object obj)
+        {
+            RemoveSpatialIndexOfLayer(GetLayerName());
+        }
+
         /// <summary>
         /// Override the mouse move event to dynamically update the center point
         /// Also dynamically update the ring feedback

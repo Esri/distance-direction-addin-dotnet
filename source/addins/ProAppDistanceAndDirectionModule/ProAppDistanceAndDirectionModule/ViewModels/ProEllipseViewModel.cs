@@ -39,6 +39,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             // we may need this in the future, leave commented out for now
             //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
 
             EllipseType = EllipseTypes.Semi;
         }
@@ -538,6 +539,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Azimuth = degrees;
             else if (AzimuthType == AzimuthTypes.Mils)
                 Azimuth = degrees * 17.777777778;
+        }
+
+        private void OnLayerPackageLoaded(object obj)
+        {
+            RemoveSpatialIndexOfLayer(GetLayerName());
         }
 
         /// <summary>

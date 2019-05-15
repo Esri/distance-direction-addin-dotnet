@@ -15,6 +15,7 @@
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
+using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -36,13 +37,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             LineFromType = LineFromTypes.Points;
             LineAzimuthType = AzimuthTypes.Degrees;
 
-            ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async ()=> 
+            ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
                 {
                     await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
                     Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Line);
                 });
 
             Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
         }
         LineFromTypes lineFromType = LineFromTypes.Points;
         public LineFromTypes LineFromType
@@ -62,11 +64,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 RaisePropertyChanged(() => DistanceBearingReady);
             }
         }
-
+        
         LineTypes lineType = LineTypes.Geodesic;
         public override LineTypes LineType
         {
-            get { return lineType;  }
+            get { return lineType; }
             set
             {
                 lineType = value;
@@ -210,7 +212,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 if (segment == null)
                     return;
-               
+
                 UpdateAzimuth(segment.Angle);
 
                 await UpdateFeedbackWithGeoLine(segment, curveType, lu);
@@ -445,7 +447,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
 
                 UpdateAzimuth(segment.Angle);
-                await UpdateFeedbackWithGeoLine(segment, curveType, lu);                        
+                await UpdateFeedbackWithGeoLine(segment, curveType, lu);
             }
 
             base.OnMouseMoveEvent(obj);
@@ -464,33 +466,38 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var polyline = QueuedTask.Run(() =>
                     {
                         var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
-                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj); 
+                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
                 Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, curveType);
 
                 // Hold onto the attributes in case user saves graphics to file later
-                LineAttributes lineAttributes = new LineAttributes() {
-                    mapPoint1 = Point1, mapPoint2 = Point2,
-                    distance = distance, angle = (double)azimuth,
+                LineAttributes lineAttributes = new LineAttributes()
+                {
+                    mapPoint1 = Point1,
+                    mapPoint2 = Point2,
+                    distance = distance,
+                    angle = (double)azimuth,
                     angleunit = LineAzimuthType.ToString(),
                     distanceunit = LineDistanceType.ToString(),
-                    originx =Point1.X, originy = Point1.Y,
-                    destinationx =Point2.X, destinationy=Point2.Y };
-
+                    originx = Point1.X,
+                    originy = Point1.Y,
+                    destinationx = Point2.X,
+                    destinationy = Point2.Y
+                };
                 CreateLineFeature(newline, lineAttributes);
 
                 ResetPoints();
 
                 return (Geometry)newline;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // do nothing
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
             }
-        }
+        }        
 
         private void UpdateAzimuth(double radians)
         {
@@ -689,6 +696,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
 
             return message;
+        }
+
+        private void OnLayerPackageLoaded(object obj)
+        {
+            RemoveSpatialIndexOfLayer(GetLayerName());
         }
 
     }

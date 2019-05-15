@@ -42,7 +42,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             // we may need this in the future
             //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
-
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
             //properties
             CircleType = CircleFromTypes.Radius;
         }
@@ -807,7 +807,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
 
             CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = dist, circleFromTypes = CircleType, circletype = CircleType.ToString(), centerx = Point1.X, centery = Point1.Y, distanceunit = distunit.ToString() };
-
+            
             if (isFeedback)
                 AddGraphicToMap(geom, color, (ProGraphicAttributes)circleAttributes, IsTempGraphic: isFeedback);
             else
@@ -816,6 +816,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return (Geometry)geom;
         }
 
+        private void OnLayerPackageLoaded(object obj)
+        {
+            RemoveSpatialIndexOfLayer(GetLayerName());
+        }
         #endregion
 
         public override string GetLayerName()
