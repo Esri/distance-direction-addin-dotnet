@@ -23,6 +23,7 @@ using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
 using System.Collections.Generic;
 using DistanceAndDirectionLibrary.Helpers;
+using System.Globalization;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -700,13 +701,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 {
                     var color = (IColor)new RgbColorClass() { Red = 255 };
 
+                    var displayValue = new EnumToFriendlyNameConverter();
+                    var unitLabel = Convert.ToString(displayValue.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture));
+
                     IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
                     ellipseAttributes.Add("majoraxis", MajorAxisDistance);
                     ellipseAttributes.Add("minoraxis", MinorAxisDistance);
                     ellipseAttributes.Add("azimuth", Azimuth);
                     ellipseAttributes.Add("centerx", Point1.X);
                     ellipseAttributes.Add("centery", Point1.Y);
-                    ellipseAttributes.Add("distanceunit", LineDistanceType.ToString());
+                    ellipseAttributes.Add("distanceunit", unitLabel.ToString());
                     ellipseAttributes.Add("angleunit", AzimuthType.ToString());
 
                     AddGraphicToMap((IGeometry)line, color, attributes: ellipseAttributes);
@@ -723,9 +727,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         EllipseTypes ellipseType = EllipseType;
                         double majAxisDist = majorAxisDistance * 2;
                         double minAxisDist = minorAxisDistance * 2;
-
-                        DistanceTypes dtVal1 = dtVal;
-                        var temp = StringParser.GetStringValue(dtVal);
 
                         if (area != null)
                         {

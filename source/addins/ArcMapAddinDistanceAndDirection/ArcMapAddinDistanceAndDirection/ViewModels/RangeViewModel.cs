@@ -28,6 +28,7 @@ using DistanceAndDirectionLibrary.ViewModels;
 using DistanceAndDirectionLibrary.Views;
 using DistanceAndDirectionLibrary.Models;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -57,7 +58,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 ResetValue();
             }
-        }       
+        }
 
         public override bool IsToolActive
         {
@@ -290,12 +291,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     rrAttributes.Add("centerx", Point1.X);
                     rrAttributes.Add("centery", Point1.Y);
                     construct.ConstructGeodeticLineFromDistance(esriGeodeticType.esriGeodeticTypeLoxodrome, Point1, GetLinearUnit(), radialLength, azimuth, esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
-                    AddGraphicToMap(construct as IGeometry, color, attributes:rrAttributes);
+                    AddGraphicToMap(construct as IGeometry, color, attributes: rrAttributes);
 
                     azimuth += interval;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex);
             }
@@ -362,10 +363,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), radius,
                 esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
             var color = (IColor)new RgbColorClass() { Red = 255 };
+            var displayValue = new EnumToFriendlyNameConverter();
+            var unitLabel = Convert.ToString(displayValue.Convert(lineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture));
+
             IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
             rrAttributes.Add("rings", NumberOfRings);
             rrAttributes.Add("distance", radius);
-            rrAttributes.Add("distanceunit", lineDistanceType.ToString());
+            rrAttributes.Add("distanceunit", unitLabel);
             rrAttributes.Add("centerx", Point1.X);
             rrAttributes.Add("centery", Point1.Y);
             AddGraphicToMap((IGeometry)construct, color, attributes: rrAttributes);
@@ -375,7 +379,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
             construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), -radius,
                 esriCurveDensifyMethod.esriCurveDensifyByAngle, DENSIFY_ANGLE_IN_DEGREES);
-            this.AddTextToMap((IGeometry)construct, String.Format("{0} {1}", radius.ToString(), StringParser.GetStringValue(dtVal)));
+            this.AddTextToMap((IGeometry)construct, String.Format("{0} {1}", radius.ToString(), unitLabel));
 
             return (IGeometry)construct;
         }
@@ -418,7 +422,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
                 ptAttributes.Add("X", Point1.X);
                 ptAttributes.Add("Y", Point1.Y);
-                AddGraphicToMap( Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
+                AddGraphicToMap(Point1, color, true, esriSimpleMarkerStyle.esriSMSCircle, esriRasterOpCode.esriROPNOP, ptAttributes);
 
                 // Reset formatted string
                 Point1Formatted = string.Empty;
@@ -553,13 +557,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var construct = (IConstructGeodetic)new Polyline();
             if (construct != null)
             {
+                var displayValue = new EnumToFriendlyNameConverter();
+                var unitLabel = Convert.ToString(displayValue.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture));
+
                 var color = new RgbColorClass() { Red = 255 } as IColor;
                 IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
                 rrAttributes.Add("rings", NumberOfRings);
                 rrAttributes.Add("distance", Distance);
                 rrAttributes.Add("centerx", Point1.X);
                 rrAttributes.Add("centery", Point1.Y);
-                rrAttributes.Add("distanceunit", lineDistanceType.ToString());
+                rrAttributes.Add("distanceunit", unitLabel.ToString());
 
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = ((IPolyline)construct).ToPoint;
@@ -588,14 +595,14 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return;
 
             var construct = (IConstructGeodetic)new Polyline();
-                 
+
             if (construct != null)
             {
                 IDictionary<String, System.Object> ptAttributes = new Dictionary<String, System.Object>();
                 ptAttributes.Add("X", Point1.X);
                 ptAttributes.Add("Y", Point1.Y);
                 ClearTempGraphics();
-                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes );
+                AddGraphicToMap(Point1, new RgbColor() { Green = 255 } as IColor, true, attributes: ptAttributes);
 
                 IDictionary<String, System.Object> rrAttributes = new Dictionary<String, System.Object>();
                 rrAttributes.Add("rings", NumberOfRings);
@@ -603,7 +610,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 construct.ConstructGeodesicCircle(Point1, GetLinearUnit(), Distance, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.45);
                 Point2 = (construct as IPolyline).ToPoint;
                 var color = new RgbColorClass() as IColor;
-                this.AddGraphicToMap( construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes:rrAttributes);
+                this.AddGraphicToMap(construct as IGeometry, color, true, rasterOpCode: esriRasterOpCode.esriROPNotXOrPen, attributes: rrAttributes);
             }
         }
 

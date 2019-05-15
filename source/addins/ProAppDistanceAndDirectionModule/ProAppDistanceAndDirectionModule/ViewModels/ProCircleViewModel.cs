@@ -24,6 +24,7 @@ using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -764,7 +765,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 return null;
             }
-
+            var nameConverter = new EnumToFriendlyNameConverter();
             var param = new GeodesicEllipseParameter();
 
             param.Center = new Coordinate2D(Point1);
@@ -806,8 +807,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distunit = LineDistanceType;
             }
 
-            CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = dist, circleFromTypes = CircleType, circletype = CircleType.ToString(), centerx = Point1.X, centery = Point1.Y, distanceunit = distunit.ToString() };
-            
+            var displayValue = nameConverter.Convert(distunit, typeof(string), new object(), CultureInfo.CurrentCulture);
+            CircleAttributes circleAttributes = new CircleAttributes() { mapPoint = Point1, distance = dist, circleFromTypes = CircleType, circletype = CircleType.ToString(), centerx = Point1.X, centery = Point1.Y, distanceunit = displayValue.ToString() };
+
             if (isFeedback)
                 AddGraphicToMap(geom, color, (ProGraphicAttributes)circleAttributes, IsTempGraphic: isFeedback);
             else
@@ -850,7 +852,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return message;
             }
 
-            FeatureClass circleFeatureClass = await GetFeatureClass(addToMapIfNotPresent : true); 
+            FeatureClass circleFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (circleFeatureClass == null)
             {
                 message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
@@ -920,7 +922,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 await Project.Current.SaveEditsAsync();
             }
-            
+
             return message;
         }
 

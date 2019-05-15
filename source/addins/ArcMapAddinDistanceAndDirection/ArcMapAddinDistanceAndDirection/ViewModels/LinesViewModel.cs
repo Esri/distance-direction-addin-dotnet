@@ -24,6 +24,7 @@ using DistanceAndDirectionLibrary;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using DistanceAndDirectionLibrary.Helpers;
+using System.Globalization;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -304,9 +305,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     UpdateAzimuth(construct as IGeometry);
                 }
 
+                var displayValue = new EnumToFriendlyNameConverter();
+                var unitLabel = Convert.ToString(displayValue.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture));
+
                 IDictionary<String, System.Object> lineAttributes = new Dictionary<String, System.Object>();
                 lineAttributes.Add("distance", Distance);
-                lineAttributes.Add("distanceunit", LineDistanceType.ToString());
+                lineAttributes.Add("distanceunit", unitLabel.ToString());
                 lineAttributes.Add("angle", (double)Azimuth);
                 lineAttributes.Add("angleunit", LineAzimuthType.ToString());
                 lineAttributes.Add("startx", Point1.X);

@@ -27,6 +27,7 @@ using DistanceAndDirectionLibrary.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -211,6 +212,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (NumberOfRadials < 1)
                 return;
 
+
+            var nameConverter = new EnumToFriendlyNameConverter();
             double azimuth = 0.0;
             double interval = 360.0 / NumberOfRadials;
             double radialLength = 0.0;
@@ -253,6 +256,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (newline != null)
                     {
                         // Hold onto the attributes in case user saves graphics to file later
+                        var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
                         RangeAttributes rangeAttributes = new RangeAttributes()
                         {
                             mapPoint = Point1,
@@ -260,7 +264,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                             distance = radialLength,
                             centerx = Point1.X,
                             centery = Point1.Y,
-                            distanceunit = LineDistanceType.ToString(),
+                            distanceunit = displayValue.ToString(),
                             ringorradial = "Radial"
                         };
 

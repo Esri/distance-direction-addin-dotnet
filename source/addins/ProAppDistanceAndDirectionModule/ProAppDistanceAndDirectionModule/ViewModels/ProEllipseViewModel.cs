@@ -23,6 +23,7 @@ using ArcGIS.Desktop.Mapping;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
@@ -584,6 +585,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             try
             {
+                var nameConverter = new EnumToFriendlyNameConverter();
                 var param = new GeodesicEllipseParameter();
 
                 param.Center = new Coordinate2D(Point1);
@@ -597,6 +599,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
                 // Hold onto the attributes in case user saves graphics to file later
+                var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
                 EllipseAttributes ellipseAttributes = new EllipseAttributes()
                 {
                     mapPoint = Point1,
@@ -606,7 +609,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     angleunit = AzimuthType.ToString(),
                     centerx = Point1.X,
                     centery = Point1.Y,
-                    distanceunit = LineDistanceType.ToString()
+                    distanceunit = displayValue.ToString()
                 };
 
                 CreateEllipseFeature(geom, ellipseAttributes);

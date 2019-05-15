@@ -24,6 +24,7 @@ using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
@@ -459,6 +460,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (Point1 == null || Point2 == null)
                 return null;
 
+            var nameConverter = new EnumToFriendlyNameConverter();
             GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
             try
@@ -472,6 +474,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }).Result;
                 Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, curveType);
 
+
+                var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
                 // Hold onto the attributes in case user saves graphics to file later
                 LineAttributes lineAttributes = new LineAttributes()
                 {
@@ -480,7 +484,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     distance = distance,
                     angle = (double)azimuth,
                     angleunit = LineAzimuthType.ToString(),
-                    distanceunit = LineDistanceType.ToString(),
+                    distanceunit = displayValue.ToString(),
                     originx = Point1.X,
                     originy = Point1.Y,
                     destinationx = Point2.X,
