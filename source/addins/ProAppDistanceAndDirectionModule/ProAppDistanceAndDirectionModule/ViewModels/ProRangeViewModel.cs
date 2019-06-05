@@ -1,4 +1,4 @@
-﻿// Copyright 2016 Esri 
+// Copyright 2016 Esri 
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -535,6 +535,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (Point1 == null || double.IsNaN(Distance))
                 return;
 
+            var nameConverter = new EnumToFriendlyNameConverter();
             var param = new GeodesicEllipseParameter();
 
             param.Center = new Coordinate2D(Point1);
@@ -549,6 +550,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
+            var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
             // Hold onto the attributes in case user saves graphics to file later
             RangeAttributes rangeAttributes = new RangeAttributes()
             {
@@ -557,7 +559,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = Distance,
                 centerx = Point1.X,
                 centery = Point1.Y,
-                distanceunit = LineDistanceType.ToString(),
+                distanceunit = displayValue.ToString(),
                 ringorradial = "Ring"
             };
 
