@@ -355,7 +355,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.VertexCount = VertexCount;
 
             geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
-
+            var nameConverter = new EnumToFriendlyNameConverter();
+            var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
             // Hold onto the attributes in case user saves graphics to file later
             RangeAttributes rangeAttributes = new RangeAttributes()
             {
@@ -364,7 +365,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = radius,
                 centerx = Point1.X,
                 centery = Point1.Y,
-                distanceunit = LineDistanceType.ToString(),
+                distanceunit = displayValue.ToString(),
                 ringorradial = "Ring"
             };
 
@@ -584,6 +585,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
             ClearTempGraphics();
 
+            var nameConverter = new EnumToFriendlyNameConverter();
+            var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
+
             // Hold onto the attributes in case user saves graphics to file later
             RangeAttributes rangeAttributes = new RangeAttributes()
             {
@@ -592,7 +596,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = Distance,
                 centerx = Point1.X,
                 centery = Point1.Y,
-                distanceunit = LineDistanceType.ToString()
+                distanceunit = displayValue.ToString()
             };
 
             AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
