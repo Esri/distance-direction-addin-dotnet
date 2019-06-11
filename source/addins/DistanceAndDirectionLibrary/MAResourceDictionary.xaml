@@ -89,6 +89,12 @@
                 <Setter Property="Opacity" Value="0.5"/>
                 <Setter Property="Background" Value="Transparent"/>
             </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#E2F1FB" />
+                <Setter Property="Background" Value="{DynamicResource Esri_BackgroundHoverBrush}" />
+                <Setter Property="BorderBrush" Value="#9FCDE8" />
+                <Setter Property="BorderBrush" Value="{DynamicResource Esri_BorderHoverBrush}" />
+            </Trigger>
         </Style.Triggers>
     </Style>
     <Style x:Key="TransparentToggleButtonStyle" TargetType="{x:Type ToggleButton}">

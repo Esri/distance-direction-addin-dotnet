@@ -15,6 +15,7 @@
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
+using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -23,6 +24,7 @@ using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading.Tasks;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
@@ -36,13 +38,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             LineFromType = LineFromTypes.Points;
             LineAzimuthType = AzimuthTypes.Degrees;
 
-            ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async ()=> 
+            ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
                 {
                     await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
                     Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Line);
                 });
 
             Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
         }
         LineFromTypes lineFromType = LineFromTypes.Points;
         public LineFromTypes LineFromType
@@ -66,7 +69,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         LineTypes lineType = LineTypes.Geodesic;
         public override LineTypes LineType
         {
-            get { return lineType;  }
+            get { return lineType; }
             set
             {
                 lineType = value;
@@ -210,7 +213,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 if (segment == null)
                     return;
-               
+
                 UpdateAzimuth(segment.Angle);
 
                 await UpdateFeedbackWithGeoLine(segment, curveType, lu);
@@ -245,16 +248,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (LineAzimuthType == AzimuthTypes.Degrees)
                 {
                     if (value > 360)
-                    {
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
-                    }
                 }
-                else
+                else if (LineAzimuthType == AzimuthTypes.Mils)
                 {
                     if (value > 6400)
-                    {
                         throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
-                    }
+                }
+                else if (LineAzimuthType == AzimuthTypes.Gradians)
+                {
+                    if (value > 400)
+                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
                 }
                 AzimuthString = azimuth.Value.ToString("0.##");
                 RaisePropertyChanged(() => AzimuthString);
@@ -445,7 +449,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
 
                 UpdateAzimuth(segment.Angle);
-                await UpdateFeedbackWithGeoLine(segment, curveType, lu);                        
+                await UpdateFeedbackWithGeoLine(segment, curveType, lu);
             }
 
             base.OnMouseMoveEvent(obj);
@@ -456,6 +460,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (Point1 == null || Point2 == null)
                 return null;
 
+            var nameConverter = new EnumToFriendlyNameConverter();
             GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
             try
@@ -464,19 +469,27 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var polyline = QueuedTask.Run(() =>
                     {
                         var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
-                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj); 
+                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
                         return PolylineBuilder.CreatePolyline(segment);
                     }).Result;
                 Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, curveType);
 
+
+                var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
                 // Hold onto the attributes in case user saves graphics to file later
-                LineAttributes lineAttributes = new LineAttributes() {
-                    mapPoint1 = Point1, mapPoint2 = Point2,
-                    distance = distance, angle = (double)azimuth,
+                LineAttributes lineAttributes = new LineAttributes()
+                {
+                    mapPoint1 = Point1,
+                    mapPoint2 = Point2,
+                    distance = distance,
+                    angle = (double)azimuth,
                     angleunit = LineAzimuthType.ToString(),
-                    distanceunit = LineDistanceType.ToString(),
-                    originx =Point1.X, originy = Point1.Y,
-                    destinationx =Point2.X, destinationy=Point2.Y };
+                    distanceunit = displayValue.ToString(),
+                    originx = Point1.X,
+                    originy = Point1.Y,
+                    destinationx = Point2.X,
+                    destinationy = Point2.Y
+                };
 
                 CreateLineFeature(newline, lineAttributes);
 
@@ -484,7 +497,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 return (Geometry)newline;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 // do nothing
                 System.Diagnostics.Debug.WriteLine(ex.Message);
@@ -503,7 +516,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (LineAzimuthType == AzimuthTypes.Degrees)
                 Azimuth = degrees;
             else if (LineAzimuthType == AzimuthTypes.Mils)
-                Azimuth = degrees * 17.777777778;
+                Azimuth = degrees * ValueConverterConstant.DegreeToMils;
+            else if (LineAzimuthType == AzimuthTypes.Gradians)
+                Azimuth = degrees * ValueConverterConstant.DegreeToGradian;
         }
 
         private double? GetAzimuthAsRadians()
@@ -516,10 +531,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private double? GetAzimuthAsDegrees()
         {
             if (LineAzimuthType == AzimuthTypes.Mils)
-            {
-                return Azimuth * 0.05625;
-            }
-
+                return Azimuth * ValueConverterConstant.MilsToDegree;
+            else if (LineAzimuthType == AzimuthTypes.Gradians)
+                return Azimuth * ValueConverterConstant.GradianToDegree;
             return Azimuth;
         }
 
@@ -535,12 +549,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 return bearing;
             }
-
-            if (LineAzimuthType == AzimuthTypes.Mils)
+            else if(LineAzimuthType == AzimuthTypes.Mils)
             {
-                return bearing * 17.777777778;
+                return bearing * ValueConverterConstant.DegreeToMils;
             }
-
+            else if(LineAzimuthType == AzimuthTypes.Gradians)
+            {
+                return bearing * ValueConverterConstant.DegreeToGradian;
+            }
             return 0.0;
         }
 
@@ -551,9 +567,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 double angle = Azimuth.GetValueOrDefault();
 
                 if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Mils)
-                    angle *= 17.777777778;
+                    angle *= ValueConverterConstant.DegreeToMils;
+                else if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.DegreeToGradian;
                 else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Degrees)
-                    angle *= 0.05625;
+                    angle *= ValueConverterConstant.MilsToDegree;
+                else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.MilsToGradian;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Degrees)
+                    angle *= ValueConverterConstant.GradianToDegree;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Mils)
+                    angle *= ValueConverterConstant.GradianToMils;
 
                 Azimuth = angle;
             }
@@ -689,6 +713,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
 
             return message;
+        }
+
+        private void OnLayerPackageLoaded(object obj)
+        {
+            RemoveSpatialIndexOfLayer(GetLayerName());
         }
 
     }

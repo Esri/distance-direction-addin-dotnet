@@ -67,6 +67,7 @@ namespace DistanceAndDirectionLibrary.Views
         /// Keeps in mind whether
         /// </summary>
         public bool IsDragging { get; set; }
+        private double draggedPosition { get; set; }
         /// <summary>
         /// Initiates a drag action if the grid is not in edit mode.
         /// </summary>
@@ -90,6 +91,7 @@ namespace DistanceAndDirectionLibrary.Views
                 if (dep is System.Windows.Controls.DataGridRow)
                 {
                     IsDragging = true;
+                    draggedPosition = e.GetPosition(ocGrid).Y;
                     DraggedItem = (dep as System.Windows.Controls.DataGridRow).Item as OutputDistanceModel;
                 }
             }
@@ -119,7 +121,10 @@ namespace DistanceAndDirectionLibrary.Views
                 var targetIndex = list.IndexOf(targetItem);
 
                 //move source at the target's location
-                list.Insert(targetIndex, DraggedItem);
+                if (draggedPosition > e.GetPosition(ocGrid).Y)
+                    list.Insert(targetIndex, DraggedItem);
+                else
+                    list.Insert(targetIndex + 1, DraggedItem);
 
                 //select the dropped item
                 ocGrid.SelectedItem = DraggedItem;

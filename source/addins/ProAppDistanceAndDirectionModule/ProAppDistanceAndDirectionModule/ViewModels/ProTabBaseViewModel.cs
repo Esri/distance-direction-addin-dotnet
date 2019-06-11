@@ -35,6 +35,7 @@ using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
 using ProAppDistanceAndDirectionModule.ViewModels;
 using ArcGIS.Desktop.Core;
+using ArcGIS.Desktop.Core.Geoprocessing;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -113,7 +114,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             dlg.ShowDialog();
         }
-        
+
         #endregion
 
         #region Properties
@@ -184,7 +185,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get
             {
                 // Call helper method (must be run on MCT)
-                bool hasFeatures = QueuedTask.Run<bool>(async() =>
+                bool hasFeatures = QueuedTask.Run<bool>(async () =>
                 {
                     return await this.HasLayerFeatures();
                 }).Result;
@@ -246,7 +247,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
-                        CoordinateConversionLibrary.Models.CoordinateType ccType = 
+                        CoordinateConversionLibrary.Models.CoordinateType ccType =
                             CoordinateConversionLibrary.Helpers.ConversionUtils.
                                 GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
 
@@ -323,7 +324,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
-                        CoordinateConversionLibrary.Models.CoordinateType ccType = 
+                        CoordinateConversionLibrary.Models.CoordinateType ccType =
                             CoordinateConversionLibrary.Helpers.ConversionUtils.
                                 GetCoordinateString(GetFormattedPoint(Point2), out outFormattedString);
 
@@ -346,7 +347,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    if (!IsToolActive) 
+                    if (!IsToolActive)
                         point2 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
 
                     point2Formatted = string.Empty;
@@ -374,7 +375,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         // lets try feedback
                         SetGeodesicDistance(Point1, Point2);
-                    }       
+                    }
                 }
                 else
                 {
@@ -450,7 +451,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return Distance.ToString("0.##");
                 else
                     return distanceString;
-                
+
             }
             set
             {
@@ -529,7 +530,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             QueuedTask.Run(async () =>
             {
                 await AddGraphicToMapAsync(geom, color, p, IsTempGraphic, size);
-            }); 
+            });
         }
 
         internal async Task AddGraphicToMapAsync(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
@@ -539,7 +540,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             CIMSymbolReference symbol = null;
 
-            if(geom.GeometryType == GeometryType.Point)
+            if (geom.GeometryType == GeometryType.Point)
             {
                 await QueuedTask.Run(() =>
                     {
@@ -547,7 +548,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         symbol = new CIMSymbolReference() { Symbol = s };
                     });
             }
-            else if(geom.GeometryType == GeometryType.Polyline)
+            else if (geom.GeometryType == GeometryType.Polyline)
             {
                 await QueuedTask.Run(() =>
                     {
@@ -555,7 +556,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         symbol = new CIMSymbolReference() { Symbol = s };
                     });
             }
-            else if(geom.GeometryType == GeometryType.Polygon)
+            else if (geom.GeometryType == GeometryType.Polygon)
             {
                 await QueuedTask.Run(() =>
                 {
@@ -682,7 +683,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     env = MapView.Active.Map.CalculateFullExtent();
                 });
-                
+
                 bool isValid = false;
 
                 if (env != null)
@@ -816,7 +817,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             // .ToGeoCoordinate function calls will fail if there is no Spatial Reference
             if (point.SpatialReference == null)
                 return result;
-            
+
             try
             {
                 ToGeoCoordinateParameter tgparam = null;
@@ -860,7 +861,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         break;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 result = string.Empty;
@@ -1039,7 +1040,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 var meters = GeometryEngine.Instance.GeodesicDistance(p1, p2proj);
                 // convert to current linear unit
                 return ConvertFromTo(DistanceTypes.Meters, LineDistanceType, meters);
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
                 return Double.NaN;
@@ -1054,7 +1056,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         internal async Task UpdateFeedbackWithGeoLine(LineSegment segment, GeodeticCurveType type, LinearUnit lu)
         {
-          
+
             if (Point1 == null || segment == null)
                 return;
 
@@ -1072,7 +1074,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal LinearUnit GetLinearUnit(DistanceTypes dtype)
         {
             LinearUnit result = LinearUnit.Meters;
-            switch(dtype)
+            switch (dtype)
             {
                 case DistanceTypes.Feet:
                     result = LinearUnit.Feet;
@@ -1136,7 +1138,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var listOfTypes = Enum.GetValues(typeof(GeoCoordinateType)).Cast<GeoCoordinateType>();
 
-            foreach(var type in listOfTypes)
+            foreach (var type in listOfTypes)
             {
                 try
                 {
@@ -1171,7 +1173,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
                     }).Result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
@@ -1227,7 +1229,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else // operation cancelled
                 {
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Save As cancelled.");
-                    return;                
+                    return;
                 }
             }
 
@@ -1242,13 +1244,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var vm = (ProSaveAsFormatViewModel)dlg.DataContext;
 
             if (dlg.ShowDialog() == true)
-            {                
+            {
                 string path = fcUtils.PromptUserWithSaveDialog(vm.FeatureShapeIsChecked);
                 if (path != null)
                 {
                     bool success = false;
                     try
-                    {                        
+                    {
                         string folderName = System.IO.Path.GetDirectoryName(path);
 
                         SaveAsType saveAsType = SaveAsType.FileGDB;
@@ -1291,7 +1293,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private ProgressDialog _progressDialog = null;
 
         private async Task<bool> AddLayerPackageToMapAsync()
-        {         
+        {
             _progressDialog = new ProgressDialog("Loading Required Layer Package...");
 
             bool success = false;
@@ -1311,7 +1313,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         // Now add the layer package
                         Layer layerAdded = LayerFactory.Instance.CreateLayer(
                             new Uri(layerPath), MapView.Active.Map);
-                            success = (layerAdded != null);
+                        success = (layerAdded != null);
                     }
                 });
 
@@ -1349,6 +1351,23 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return viewLayer;
         }
 
+        internal static async void RemoveSpatialIndexOfLayer(string layerName)
+        {
+            var viewLayer = MapView.Active.Map.GetLayersAsFlattenedList();
+            foreach (var itemLayer in viewLayer)
+            {
+                if (itemLayer.ToString() == layerName)
+                {
+                    var layer = itemLayer as FeatureLayer;
+                    List<object> arguments2 = new List<object>();
+                    arguments2.Add(layer);
+                    var valueArray = Geoprocessing.MakeValueArray(arguments2.ToArray());
+                    IGPResult result = await Geoprocessing.ExecuteToolAsync("RemoveSpatialIndex_management", valueArray);
+                    break;
+                }
+            }
+        }
+
         protected async Task<FeatureClass> GetFeatureClass(bool addToMapIfNotPresent = false)
         {
             string featureLayerName = this.GetLayerName();
@@ -1374,6 +1393,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Could not find required layer in the active map: " + this.GetLayerName());
                     });
+                }
+                else
+                {
+                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, null);
                 }
             }
 
@@ -1409,8 +1432,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (!success)
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                    DistanceAndDirectionLibrary.Properties.Resources.ErrorDeleteFailed 
-                    + this.GetLayerName(), DistanceAndDirectionLibrary.Properties.Resources.ErrorDeleteFailed); 
+                    DistanceAndDirectionLibrary.Properties.Resources.ErrorDeleteFailed
+                    + this.GetLayerName(), DistanceAndDirectionLibrary.Properties.Resources.ErrorDeleteFailed);
 
             return success;
         }

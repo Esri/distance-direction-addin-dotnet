@@ -1,4 +1,4 @@
-﻿// Copyright 2016 Esri 
+// Copyright 2016 Esri 
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ using DistanceAndDirectionLibrary.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -39,6 +40,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             OutputDistanceView = new ProOutputDistanceView();
             Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, OnMouseDoubleClick);
             Mediator.Register(DistanceAndDirectionLibrary.Constants.TEXTCHANGE_DELETE, OnTextChangeEvent);
+            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
         }
         public ProOutputDistanceView OutputDistanceView { get; set; }
         #region Properties
@@ -210,6 +212,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (NumberOfRadials < 1)
                 return;
 
+
+            var nameConverter = new EnumToFriendlyNameConverter();
             double azimuth = 0.0;
             double interval = 360.0 / NumberOfRadials;
             double radialLength = 0.0;
@@ -252,6 +256,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (newline != null)
                     {
                         // Hold onto the attributes in case user saves graphics to file later
+                        var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
                         RangeAttributes rangeAttributes = new RangeAttributes()
                         {
                             mapPoint = Point1,
@@ -259,7 +264,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                             distance = radialLength,
                             centerx = Point1.X,
                             centery = Point1.Y,
-                            distanceunit = LineDistanceType.ToString(),
+                            distanceunit = displayValue.ToString(),
                             ringorradial = "Radial"
                         };
 
@@ -350,7 +355,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             param.VertexCount = VertexCount;
 
             geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
-
+            var nameConverter = new EnumToFriendlyNameConverter();
+            var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
             // Hold onto the attributes in case user saves graphics to file later
             RangeAttributes rangeAttributes = new RangeAttributes()
             {
@@ -359,7 +365,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = radius,
                 centerx = Point1.X,
                 centery = Point1.Y,
-                distanceunit = LineDistanceType.ToString(),
+                distanceunit = displayValue.ToString(),
                 ringorradial = "Ring"
             };
 
@@ -444,6 +450,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             return false;
         }
+
+        private void OnLayerPackageLoaded(object obj)
+        {
+            RemoveSpatialIndexOfLayer(GetLayerName());
+        }
+
         /// <summary>
         /// Override the mouse move event to dynamically update the center point
         /// Also dynamically update the ring feedback
@@ -524,6 +536,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (Point1 == null || double.IsNaN(Distance))
                 return;
 
+            var nameConverter = new EnumToFriendlyNameConverter();
             var param = new GeodesicEllipseParameter();
 
             param.Center = new Coordinate2D(Point1);
@@ -538,6 +551,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
 
+            var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
             // Hold onto the attributes in case user saves graphics to file later
             RangeAttributes rangeAttributes = new RangeAttributes()
             {
@@ -546,7 +560,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = Distance,
                 centerx = Point1.X,
                 centery = Point1.Y,
-                distanceunit = LineDistanceType.ToString(),
+                distanceunit = displayValue.ToString(),
                 ringorradial = "Ring"
             };
 
@@ -571,6 +585,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var geom = GeometryEngine.Instance.GeodesicEllipse(param, MapView.Active.Map.SpatialReference);
             ClearTempGraphics();
 
+            var nameConverter = new EnumToFriendlyNameConverter();
+            var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
+
             // Hold onto the attributes in case user saves graphics to file later
             RangeAttributes rangeAttributes = new RangeAttributes()
             {
@@ -579,7 +596,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 distance = Distance,
                 centerx = Point1.X,
                 centery = Point1.Y,
-                distanceunit = LineDistanceType.ToString()
+                distanceunit = displayValue.ToString()
             };
 
             AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
