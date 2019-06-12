@@ -600,11 +600,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 // Hold onto the attributes in case user saves graphics to file later
                 var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
+
                 EllipseAttributes ellipseAttributes = new EllipseAttributes()
                 {
                     mapPoint = Point1,
-                    minorAxis = MinorAxisDistance,
-                    majorAxis = MajorAxisDistance,
+                    minorAxis = MinorAxisDistance * 2, // TRICKY: Label/Attribute always shows the "full" value
+                    majorAxis = MajorAxisDistance * 2,
                     angle = Azimuth,
                     angleunit = AzimuthType.ToString(),
                     centerx = Point1.X,
@@ -672,7 +673,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     RowBuffer rowBuffer = ellipseFeatureClass.CreateRowBuffer();
 
                     if (ellipseDefinition.FindField("Major") >= 0)
-                        rowBuffer["Major"] = attributes.majorAxis;       // Text
+                        rowBuffer["Major"] = attributes.majorAxis;       // Double
 
                     if (ellipseDefinition.FindField("Minor") >= 0)
                         rowBuffer["Minor"] = attributes.minorAxis;       // Double
