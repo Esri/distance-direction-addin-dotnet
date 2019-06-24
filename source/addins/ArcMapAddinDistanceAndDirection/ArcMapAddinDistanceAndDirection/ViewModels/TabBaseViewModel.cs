@@ -1747,8 +1747,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             var construct = new Polyline() as IConstructGeodetic;
             if (construct == null)
                 return null;
-
-            construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), startPoint, endPoint, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+            try
+            {
+                construct.ConstructGeodeticLineFromPoints(GetEsriGeodeticType(), startPoint, endPoint, GetLinearUnit(), esriCurveDensifyMethod.esriCurveDensifyByDeviation, -1.0);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); }
 
             return construct as IPolyline;
         }

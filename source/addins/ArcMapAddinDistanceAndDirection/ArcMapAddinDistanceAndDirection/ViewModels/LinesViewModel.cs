@@ -244,10 +244,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 if (!Azimuth.HasValue || Point1 == null)
                     return;
             }
+
             HasPoint1 = true;
             HasPoint2 = true;
             IGeometry geo = CreatePolyline();
             IPolyline line = geo as IPolyline;
+
             if (line == null)
                 return;
 
@@ -281,6 +283,12 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
                 if (srf3 == null)
                     return null;
+
+                if (Point1.SpatialReference != ArcMap.Document.FocusMap.SpatialReference)
+                    Point1.Project(ArcMap.Document.FocusMap.SpatialReference);
+
+                if (Point2.SpatialReference != ArcMap.Document.FocusMap.SpatialReference)
+                    Point2.Project(ArcMap.Document.FocusMap.SpatialReference);
 
                 esriGeodeticType type = GetEsriGeodeticType();
                 if (LineFromType == LineFromTypes.Points)
@@ -358,7 +366,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             var line = new Line() as ILine;
 
-            curve.QueryTangent(esriSegmentExtension.esriNoExtension, 0.5, true, 10, line);
+            try
+            { 
+                curve.QueryTangent(esriSegmentExtension.esriNoExtension, 0.5, true, 10, line);
+            }
+            catch (Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); line = null;  }
 
             if (line == null)
                 return;
