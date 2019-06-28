@@ -19,13 +19,13 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using CoordinateConversionLibrary.Models; 
+using CoordinateConversionLibrary.Models;
 using DistanceAndDirectionLibrary.Models;
 using ProAppDistanceAndDirectionModule.ViewModels;
 using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.ViewModels;
 using System;
- 
+
 
 namespace DistanceAndDirectionLibrary.Views
 {
@@ -36,7 +36,7 @@ namespace DistanceAndDirectionLibrary.Views
     {
         public ProOutputDistanceView()
         {
-            InitializeComponent();           
+            InitializeComponent();
         }
 
         #region DraggedItem
@@ -65,6 +65,7 @@ namespace DistanceAndDirectionLibrary.Views
         /// Keeps in mind whether
         /// </summary>
         public bool IsDragging { get; set; }
+        private double draggedPosition { get; set; }
         /// <summary>
         /// Initiates a drag action if the grid is not in edit mode.
         /// </summary>
@@ -88,6 +89,7 @@ namespace DistanceAndDirectionLibrary.Views
                 if (dep is System.Windows.Controls.DataGridRow)
                 {
                     IsDragging = true;
+                    draggedPosition = e.GetPosition(ocGrid).Y;
                     DraggedItem = (dep as System.Windows.Controls.DataGridRow).Item as OutputDistanceModel;
                 }
             }
@@ -117,7 +119,10 @@ namespace DistanceAndDirectionLibrary.Views
                 var targetIndex = list.IndexOf(targetItem);
 
                 //move source at the target's location
-                list.Insert(targetIndex, DraggedItem);
+                if (draggedPosition > e.GetPosition(ocGrid).Y)
+                    list.Insert(targetIndex, DraggedItem);
+                else
+                    list.Insert(targetIndex + 1, DraggedItem);
 
                 //select the dropped item
                 ocGrid.SelectedItem = DraggedItem;
@@ -146,7 +151,7 @@ namespace DistanceAndDirectionLibrary.Views
             var textBox = sender as TextBox;
             e.Handled = System.Text.RegularExpressions.Regex.IsMatch(e.Text, "[^0-9]+");
         }
-      
+
         /// <summary>
         /// Updates the popup's position in case of a drag/drop operation.
         /// </summary>
@@ -183,9 +188,9 @@ namespace DistanceAndDirectionLibrary.Views
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.TEXTCHANGE_DELETE, null);           
+            Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.TEXTCHANGE_DELETE, null);
         }
-         
+
 
     }
 }

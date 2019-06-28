@@ -23,6 +23,7 @@ using System.Collections.Generic;
 using ESRI.ArcGIS.ArcMapUI;
 using ESRI.ArcGIS.Carto;
 using DistanceAndDirectionLibrary.Helpers;
+using System.Globalization;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -826,7 +827,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
             base.Reset(toolReset);
             TravelTime = 0;
             TravelRate = 0;
-        }  
+        }
 
         /// <summary>
         /// Create a geodetic circle
@@ -838,6 +839,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 return null;
             }
 
+            string unitLabel = "";
             // This section including UpdateDistance serves to handle Diameter appropriately
             var polyLine = (IPolyline)new Polyline();
             polyLine.SpatialReference = Point1.SpatialReference;
@@ -867,8 +869,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         //Get centroid of polygon
                         var area = (IArea)newPoly;
 
-                        string unitLabel = "";
                         int roundingFactor = 0;
+                        DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
                         // If Distance Calculator is in use, use the unit from the Rate combobox
                         // to label the circle
                         if (IsDistanceCalcExpanded)
@@ -888,7 +890,8 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                                     roundingFactor = 2;
                                     break;
                                 case DistanceTypes.NauticalMiles:
-                                    unitLabel = "Nautical Miles";
+                                    var displayValue = new EnumToFriendlyNameConverter();
+                                    unitLabel = Convert.ToString(displayValue.Convert(RateUnit, typeof(string), new object(), CultureInfo.CurrentCulture));
                                     roundingFactor = 2;
                                     break;
                                 default:
@@ -914,15 +917,16 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                                     roundingFactor = 2;
                                     break;
                                 case DistanceTypes.NauticalMiles:
-                                    unitLabel = "Nautical Miles";
+                                    unitLabel = RateUnit.ToString();
                                     roundingFactor = 2;
                                     break;
                                 default:
                                     break;
                             }
 
-                            DistanceTypes dtVal = (DistanceTypes)LineDistanceType;
-                            unitLabel = StringParser.GetStringValue(dtVal);
+
+                            var displayValue = new EnumToFriendlyNameConverter();
+                            unitLabel = Convert.ToString(displayValue.Convert(dtVal, typeof(string), new object(), CultureInfo.CurrentCulture));
                         }
 
                         string circleTypeLabel = circleType.ToString();
@@ -942,7 +946,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         this.AddTextToMap(area.LabelPoint, string.Format("{0}:{1} {2}",
                             circleTypeLabel,
                             distanceLabel,
-                            unitLabel));
+                            StringParser.GetStringValue(dtVal)));
                     }
 
                     double radiusDistance = radiusOrDiameterDistance;
@@ -954,9 +958,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     circleAttributes.Add("centerx", Point1.X);
                     circleAttributes.Add("centery", Point1.Y);
                     if (IsDistanceCalcExpanded)
-                        circleAttributes.Add("distanceunit", RateUnit.ToString());
+                        circleAttributes.Add("distanceunit", unitLabel.ToString());
                     else
-                        circleAttributes.Add("distanceunit", LineDistanceType.ToString());
+                        circleAttributes.Add("distanceunit", unitLabel.ToString());
                     var color = new RgbColorClass() { Red = 255 } as IColor;
                     this.AddGraphicToMap(construct as IGeometry, color, attributes: circleAttributes);
                     Point2 = null;

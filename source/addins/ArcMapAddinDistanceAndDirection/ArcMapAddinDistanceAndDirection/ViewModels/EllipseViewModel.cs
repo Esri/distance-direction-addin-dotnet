@@ -23,6 +23,7 @@ using ESRI.ArcGIS.Display;
 using DistanceAndDirectionLibrary;
 using System.Collections.Generic;
 using DistanceAndDirectionLibrary.Helpers;
+using System.Globalization;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -586,9 +587,17 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 double angle = Azimuth;
 
                 if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Mils)
-                    angle *= 17.777777778;
+                    angle *= ValueConverterConstant.DegreeToMils;
+                else if (fromType == AzimuthTypes.Degrees && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.DegreeToGradian;
                 else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Degrees)
-                    angle *= 0.05625;
+                    angle *= ValueConverterConstant.MilsToDegree;
+                else if (fromType == AzimuthTypes.Mils && toType == AzimuthTypes.Gradians)
+                    angle *= ValueConverterConstant.MilsToGradian;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Degrees)
+                    angle *= ValueConverterConstant.GradianToDegree;
+                else if (fromType == AzimuthTypes.Gradians && toType == AzimuthTypes.Mils)
+                    angle *= ValueConverterConstant.GradianToMils;
 
                 Azimuth = angle;
             }
@@ -601,9 +610,9 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
         private double GetAzimuthAsDegrees()
         {
             if (AzimuthType == AzimuthTypes.Mils)
-            {
-                return Azimuth * 0.05625;
-            }
+                return Azimuth * ValueConverterConstant.MilsToDegree;
+            else if (AzimuthType == AzimuthTypes.Gradians)
+                return Azimuth * ValueConverterConstant.GradianToDegree;
 
             return Azimuth;
         }
@@ -634,14 +643,11 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 bearing = 360.0 - (bearing - 90);
 
             if (AzimuthType == AzimuthTypes.Degrees)
-            {
                 return bearing;
-            }
-
-            if (AzimuthType == AzimuthTypes.Mils)
-            {
-                return bearing * 17.777777778;
-            }
+            else if (AzimuthType == AzimuthTypes.Mils)
+                return bearing * ValueConverterConstant.DegreeToMils;
+            else if (AzimuthType == AzimuthTypes.Gradians)
+                return bearing * ValueConverterConstant.DegreeToGradian;
 
             return 0.0;
         }
@@ -688,20 +694,15 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                 var ellipticArc = (IConstructGeodetic)new Polyline();
 
                 double bearing;
-                if (AzimuthType == AzimuthTypes.Mils)
-                {
-                    bearing = GetAzimuthAsDegrees();
-                }
-                else
-                {
-                    bearing = Azimuth;
-                }
-
+                bearing = GetAzimuthAsDegrees();
                 ellipticArc.ConstructGeodesicEllipse(Point1, GetLinearUnit(), MajorAxisDistance, MinorAxisDistance, bearing, esriCurveDensifyMethod.esriCurveDensifyByAngle, 0.01);
                 var line = ellipticArc as IPolyline;
                 if (line != null)
                 {
                     var color = (IColor)new RgbColorClass() { Red = 255 };
+
+                    var displayValue = new EnumToFriendlyNameConverter();
+                    var unitLabel = Convert.ToString(displayValue.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture));
 
                     IDictionary<String, System.Object> ellipseAttributes = new Dictionary<String, System.Object>();
                     ellipseAttributes.Add("majoraxis", MajorAxisDistance);
@@ -709,7 +710,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     ellipseAttributes.Add("azimuth", Azimuth);
                     ellipseAttributes.Add("centerx", Point1.X);
                     ellipseAttributes.Add("centery", Point1.Y);
-                    ellipseAttributes.Add("distanceunit", LineDistanceType.ToString());
+                    ellipseAttributes.Add("distanceunit", unitLabel.ToString());
                     ellipseAttributes.Add("angleunit", AzimuthType.ToString());
 
                     AddGraphicToMap((IGeometry)line, color, attributes: ellipseAttributes);
@@ -726,9 +727,6 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         EllipseTypes ellipseType = EllipseType;
                         double majAxisDist = majorAxisDistance * 2;
                         double minAxisDist = minorAxisDistance * 2;
-
-                        DistanceTypes dtVal1 = dtVal;
-                        var temp = StringParser.GetStringValue(dtVal);
 
                         if (area != null)
                         {

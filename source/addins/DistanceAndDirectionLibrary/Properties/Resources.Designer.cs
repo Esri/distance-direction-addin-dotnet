@@ -295,6 +295,15 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Gradians.
+        /// </summary>
+        public static string EnumGradians {
+            get {
+                return ResourceManager.GetString("EnumGradians", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Great Elliptic.
         /// </summary>
         public static string EnumGreatElliptic {

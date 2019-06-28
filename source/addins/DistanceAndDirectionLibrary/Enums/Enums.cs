@@ -123,7 +123,11 @@ namespace DistanceAndDirectionLibrary
 
         [LocalizableDescription(@"EnumMils", typeof(Resources))]
         [StringValue("mils")]
-        Mils = 2
+        Mils = 2,
+
+        [LocalizableDescription(@"EnumGradians", typeof(Resources))]
+        [StringValue("gon")]
+        Gradians = 3
     }
 
     public enum CircleFromTypes : int
