@@ -2,7 +2,7 @@
 
 The Distance and Direction component provides the ability to create geodesic features such as lines, circles, ellipses and range rings.
 
-![Image of Distance and Direction](DistanceDirection.jpg) 
+![Image of Distance and Direction](DistanceDirection.png) 
 
 ## Features
 
