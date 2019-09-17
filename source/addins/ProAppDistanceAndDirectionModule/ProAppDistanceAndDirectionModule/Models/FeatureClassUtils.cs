@@ -34,6 +34,7 @@ using ArcGIS.Desktop.Mapping;
 
 using DistanceAndDirectionLibrary;
 using System.Windows;
+using System.Text.RegularExpressions;
 
 namespace ProAppDistanceAndDirectionModule.Models
 {
@@ -82,10 +83,11 @@ namespace ProAppDistanceAndDirectionModule.Models
             if (ok == true)
             {
                 if (ContainsInvalidChars(Path.GetFileName(saveItemDlg.FilePath)))
-                {                    
-                    MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.FeatureClassNameError,
-                        DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel, MessageBoxButton.OK,
-                        MessageBoxImage.Exclamation);
+                {
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
+                        DistanceAndDirectionLibrary.Properties.Resources.FeatureClassNameError,
+                        DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel,
+                        System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation);
                     return null;
                 } 
                 previousLocation = Path.GetDirectoryName(saveItemDlg.FilePath);                
@@ -206,10 +208,28 @@ namespace ProAppDistanceAndDirectionModule.Models
         /// Checks if file name has illegal characters
         /// </summary>
         /// <param name="filename"></param>
-        /// <returns></returns>
-        private static bool ContainsInvalidChars(string filename)
+        /// <returns></returns>       
+        private static bool ContainsInvalidChars(string path)
         {
-            return Path.GetInvalidFileNameChars().Concat(new[] { ' ', '-' }).Any(item => filename.Contains(item));
+            var fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+            var regexItem = new Regex("^[A-Za-z_][A-Za-z0-9_]*$");
+            var isValidFileName = regexItem.IsMatch(fileName);
+            if (!isValidFileName)
+                return true;
+            else if (fileName.Length > 32)
+                return true;
+            else if (ValidateReservedWords(fileName))
+                return true;
+            return false;
+        }
+
+        private static bool ValidateReservedWords(string fileName)
+        {
+            //https://support.esri.com/en/technical-article/000010906 - Used the keyword list mentioned here for 10.1 and above
+            var reservedWords = new List<string>() {
+                "ADD","ALTER","AND","BETWEEN","BY","COLUMN","CREATE","DELETE","DROP","EXISTS","FOR","FROM","GROUP","IN","INSERT","INTO","IS","LIKE","NOT","NULL","OR","ORDER","SELECT","SET","TABLE","UPDATE","VALUES","WHERE"
+            };
+            return reservedWords.Where(x => fileName.ToUpper() == x).Any();
         }
 
         private static List<Graphic> ClearTempGraphics(List<Graphic> graphicsList)

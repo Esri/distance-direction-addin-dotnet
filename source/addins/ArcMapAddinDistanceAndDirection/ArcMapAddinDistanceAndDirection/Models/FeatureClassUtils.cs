@@ -30,6 +30,8 @@ using ESRI.ArcGIS.Carto;
 using ESRI.ArcGIS.ADF;
 using DistanceAndDirectionLibrary;
 using ESRI.ArcGIS.Display;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace ArcMapAddinDistanceAndDirection.Models
 {
@@ -289,6 +291,35 @@ namespace ArcMapAddinDistanceAndDirection.Models
                 return fc;
             }
         }
+
+        /// <summary>
+        /// Checks if file name has illegal characters
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <returns></returns>       
+        internal bool ContainsInvalidChars(string path)
+        {
+            var fileName = System.IO.Path.GetFileNameWithoutExtension(path);
+            var regexItem = new Regex("^[A-Za-z_][A-Za-z0-9_]*$");
+            var isValidFileName = regexItem.IsMatch(fileName);
+            if (!isValidFileName)
+                return true;
+            else if (fileName.Length > 32)
+                return true;
+            else if (ValidateReservedWords(fileName))
+                return true;
+            return false;
+        }
+
+        private static bool ValidateReservedWords(string fileName)
+        {
+            //https://support.esri.com/en/technical-article/000010906 - Used the keyword list mentioned here for 10.1 and above
+            var reservedWords = new List<string>() {
+                "ADD","ALTER","AND","BETWEEN","BY","COLUMN","CREATE","DELETE","DROP","EXISTS","FOR","FROM","GROUP","IN","INSERT","INTO","IS","LIKE","NOT","NULL","OR","ORDER","SELECT","SET","TABLE","UPDATE","VALUES","WHERE"
+            };
+            return reservedWords.Where(x => fileName.ToUpper() == x).Any();
+        }
+
 
         public void DeleteShapeFile(string shapeFilePath)
         {
