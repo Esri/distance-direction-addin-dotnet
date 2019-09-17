@@ -77,11 +77,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 System.Diagnostics.Debug.WriteLine("Probably Running from Unit Tests");
             }
 
-            ArcGIS.Desktop.Mapping.Events.ActiveMapViewChangedEvent.Subscribe((args) =>
-            {
-                // Subscribe to this event in case the ActiveMap already has layers with features (so buttons are enabled on load)
-                RaisePropertyChanged(() => HasMapGraphics);
-            });
+            ArcGIS.Desktop.Mapping.Events.ActiveMapViewChangedEvent.Subscribe(OnActiveMapViewChanged);
 
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
@@ -182,17 +178,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public bool HasMapGraphics
         {
+            set
+            {
+                hasMapGraphics = value;
+                RaisePropertyChanged(() => HasMapGraphics);
+            }
             get
             {
-                // Call helper method (must be run on MCT)
-                bool hasFeatures = QueuedTask.Run<bool>(async () =>
-                {
-                    return await this.HasLayerFeatures();
-                }).Result;
-
-                return hasFeatures;
+                return hasMapGraphics;
             }
         }
+        private bool hasMapGraphics = false;
 
         private MapPoint point1 = null;
         /// <summary>
@@ -614,7 +610,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 return this.DeleteAllFeatures();
             });
 
-            RaisePropertyChanged(() => HasMapGraphics);
+            HasMapGraphics = false;
         }
 
         /// <summary>
@@ -1275,6 +1271,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
+        private async void OnActiveMapViewChanged(ArcGIS.Desktop.Mapping.Events.ActiveMapViewChangedEventArgs obj)
+        {
+            // Subscribe to this event in case the ActiveMap already has layers with features (so buttons are enabled on load)
+            await HasLayerFeatures();
+            RaisePropertyChanged(() => HasMapGraphics);
+        }
+
         #endregion Private Functions
 
         #region Feature Class Support
@@ -1408,16 +1411,24 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return featureClass;
         }
 
-        protected async Task<bool> HasLayerFeatures()
+        protected async Task HasLayerFeatures()
         {
-            FeatureClass fc = null;
+            string featureLayerName = this.GetLayerName();
 
-            await QueuedTask.Run(async () =>
+            FeatureLayer featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
+
+            if (featureLayer == null)
             {
-                fc = await GetFeatureClass(addToMapIfNotPresent: false);
-            });
+                hasMapGraphics = false;
+                return;
+            }
 
-            return fc == null ? false : fc.GetCount() > 0;
+            FeatureClass featureClass = null;
+            await QueuedTask.Run(() =>
+            {
+                featureClass = featureLayer.GetFeatureClass();
+                hasMapGraphics = (featureClass == null) ? false : featureClass.GetCount() > 0;
+            });
         }
 
         protected async Task<bool> DeleteAllFeatures()

@@ -636,11 +636,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             await QueuedTask.Run(async () =>
                 message = await AddFeatureToLayer(geom, ellipseAttributes));
 
-            RaisePropertyChanged(() => HasMapGraphics);
-
             if (!string.IsNullOrEmpty(message))
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
                     DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+            else
+                HasMapGraphics = true;
         }
 
         private async Task<string> AddFeatureToLayer(Geometry geom, EllipseAttributes attributes)
