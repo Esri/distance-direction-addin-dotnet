@@ -565,7 +565,7 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Clear.
+        ///   Looks up a localized string similar to Clear All.
         /// </summary>
         public static string LabelClearGraphics {
             get {
@@ -835,7 +835,7 @@ namespace DistanceAndDirectionLibrary.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Save As.
+        ///   Looks up a localized string similar to Export.
         /// </summary>
         public static string LabelSaveAs {
             get {

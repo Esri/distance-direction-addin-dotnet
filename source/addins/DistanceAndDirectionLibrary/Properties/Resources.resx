@@ -286,7 +286,7 @@
     <value>Center Point</value>
   </data>
   <data name="LabelClearGraphics" xml:space="preserve">
-    <value>Clear</value>
+    <value>Clear All</value>
   </data>
   <data name="LabelCreateCircleFrom" xml:space="preserve">
     <value>From</value>
@@ -376,7 +376,7 @@
     <value>Ring Type</value>
   </data>
   <data name="LabelSaveAs" xml:space="preserve">
-    <value>Save As</value>
+    <value>Export</value>
   </data>
   <data name="LabelStartingPoint" xml:space="preserve">
     <value>Starting Point</value>

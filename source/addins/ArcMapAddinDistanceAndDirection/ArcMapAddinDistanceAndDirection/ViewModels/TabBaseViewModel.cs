@@ -13,28 +13,26 @@
 // limitations under the License.
 
 // System
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Controls;
-using System.Text.RegularExpressions;
-using System.Windows.Forms;
-using System.Collections.ObjectModel;
-
-// Esri
-using ESRI.ArcGIS.esriSystem;
-using ESRI.ArcGIS.ArcMapUI;
-using ESRI.ArcGIS.Carto;
-using ESRI.ArcGIS.Geometry;
-using ESRI.ArcGIS.Display;
-using ESRI.ArcGIS.Geodatabase;
-
+using ArcMapAddinDistanceAndDirection.Models;
 using DistanceAndDirectionLibrary;
 using DistanceAndDirectionLibrary.Helpers;
-using DistanceAndDirectionLibrary.ViewModels;
-using ArcMapAddinDistanceAndDirection.Models;
 using DistanceAndDirectionLibrary.Models;
+using DistanceAndDirectionLibrary.ViewModels;
 using DistanceAndDirectionLibrary.Views;
+using ESRI.ArcGIS.ArcMapUI;
+using ESRI.ArcGIS.Carto;
+using ESRI.ArcGIS.Display;
+// Esri
+using ESRI.ArcGIS.esriSystem;
+using ESRI.ArcGIS.Geodatabase;
+using ESRI.ArcGIS.Geometry;
+using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows.Controls;
+using System.Windows.Forms;
 
 namespace ArcMapAddinDistanceAndDirection.ViewModels
 {
@@ -465,7 +463,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                     OnActivateTool(null);
                 else
                     if (ArcMap.Application.CurrentTool != null)
-                        ArcMap.Application.CurrentTool = null;
+                    ArcMap.Application.CurrentTool = null;
 
                 RaisePropertyChanged(() => IsToolActive);
             }
@@ -572,7 +570,13 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
                         }
                         else
                         {
-                            fc = fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
+                            if (!fcUtils.ContainsInvalidChars(path))
+                                fc = fcUtils.CreateFCOutput(path, SaveAsType.FileGDB, typeGraphicsList, ArcMap.Document.FocusMap.SpatialReference);
+                            else
+                                MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.FeatureClassNameError,
+                                               DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel,
+                                               MessageBoxButtons.OK,
+                                               MessageBoxIcon.Information);
                         }
                     }
                 }
@@ -645,7 +649,7 @@ namespace ArcMapAddinDistanceAndDirection.ViewModels
 
             ESRI.ArcGIS.Carto.IMap map = ArcMap.Document.FocusMap;
 
-            map.AddLayer((ILayer)outputFeatureLayer);
+            map.AddLayer(outputFeatureLayer);
         }
 
         private string PromptSaveFileDialog()
