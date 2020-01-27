@@ -104,6 +104,24 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Attributes\LocalizableDescriptionAttribute.cs" />
+    <Compile Include="Common\Enums\Enums.cs" />
+    <Compile Include="Common\Helpers\Constants.cs" />
+    <Compile Include="Common\Helpers\DebounceDispatcher.cs" />
+    <Compile Include="Common\Helpers\Mediator.cs" />
+    <Compile Include="Common\Helpers\NotificationObject.cs" />
+    <Compile Include="Common\Helpers\RelayCommand.cs" />
+    <Compile Include="Common\Helpers\StringParser.cs" />
+    <Compile Include="Common\Helpers\StringValueAttribute.cs" />
+    <Compile Include="Common\Helpers\UIHelpers.cs" />
+    <Compile Include="Common\Helpers\Wpf.cs" />
+    <Compile Include="Common\Model\DistanceAndDirectionConfig.cs" />
+    <Compile Include="Common\Model\OutputDistanceModel.cs" />
+    <Compile Include="Common\ValueConverters\EnumToFriendlyNameConverter.cs" />
+    <Compile Include="Common\ValueConverters\ValueConverterConstant.cs" />
+    <Compile Include="Common\ViewModels\BaseViewModel.cs" />
+    <Compile Include="Common\ViewModels\EditPropertiesViewModel.cs" />
+    <Compile Include="Common\ViewModels\OutputDistanceViewModel.cs" />
     <Compile Include="DistanceAndDirectionDockpane.xaml.cs">
       <DependentUpon>DistanceAndDirectionDockpane.xaml</DependentUpon>
     </Compile>
@@ -114,6 +132,11 @@
     <Compile Include="Models\KMLUtils.cs" />
     <Compile Include="PropertiesButton.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SketchTool.cs" />
     <Compile Include="ViewModels\ProGraphicAttributes.cs" />
     <Compile Include="ViewModels\ProCircleViewModel.cs" />
@@ -145,6 +168,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Common\MAResourceDictionary.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="DistanceAndDirectionDockpane.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -199,10 +226,6 @@
       <Project>{67ffdfae-f8ec-45aa-a3f9-6109bcf5bbf4}</Project>
       <Name>CoordinateConversionLibrary</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj">
-      <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
-      <Name>DistanceAndDirectionLibrary</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <AddInContent Include="Images\GenericButtonRed16.png" />
@@ -218,11 +241,21 @@
     <AddInContent Include="DarkImages\distance-direction-16.png" />
     <AddInContent Include="DarkImages\distance-direction-32.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
   <ItemGroup>
     <Content Include="Data\DistanceAndDirection.lpkx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Resource Include="Images\Add_Point.png" />
+    <Resource Include="Images\Delete.png" />
+    <AddInContent Include="Images\GenericErrorStop16.png" />
+    <Resource Include="Images\GeoprocessingEnvironmentSettings16.png" />
+    <Resource Include="Images\hand.png" />
+    <Resource Include="Images\RowHandle.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask AssemblyFile="C:\Program Files\ArcGIS\Pro\bin\proapp-sdk-MSBuild.dll" TaskName="proapp_sdk_MSBuild.PackageAddIn" />

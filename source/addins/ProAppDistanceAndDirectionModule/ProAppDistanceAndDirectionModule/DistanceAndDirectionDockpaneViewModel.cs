@@ -14,11 +14,9 @@
 
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
-using DistanceAndDirectionLibrary;
-using DistanceAndDirectionLibrary.Helpers;
-using DistanceAndDirectionLibrary.Models;
-using DistanceAndDirectionLibrary.Views;
+using ProAppDistanceAndDirectionModule.Common;
 using ProAppDistanceAndDirectionModule.ViewModels;
+using ProAppDistanceAndDirectionModule.Views;
 using System.Windows.Controls;
 
 namespace ProAppDistanceAndDirectionModule
@@ -82,7 +80,7 @@ namespace ProAppDistanceAndDirectionModule
         public ProCircleView CircleView { get; set; }
         public ProEllipseView EllipseView { get; set; }
         public ProRangeView RangeView { get; set; }
-        public GRSaveAsFormatView SelectSaveAsFormatView { get; set; }
+        public ProSaveAsFormatView SelectSaveAsFormatView { get; set; }
 
         #endregion
 

@@ -26,11 +26,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Framework;
 
-using DistanceAndDirectionLibrary.Views;
-using DistanceAndDirectionLibrary.ViewModels;
-using DistanceAndDirectionLibrary.Helpers;
-using DistanceAndDirectionLibrary.Models;
-using DistanceAndDirectionLibrary;
+using ProAppDistanceAndDirectionModule.Common;
 using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
 using ProAppDistanceAndDirectionModule.ViewModels;
@@ -54,16 +50,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             SaveAsCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnSaveAs());
             ClearGraphicsCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnClearGraphics());
             //ActivateToolCommand = new RelayCommand(OnActivateTool);
-            EnterKeyCommand = new DistanceAndDirectionLibrary.Helpers.RelayCommand(OnEnterKeyCommand);
+            EnterKeyCommand = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnEnterKeyCommand);
             EditPropertiesDialogCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnEditPropertiesDialog());
 
             // Mediator
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, OnNewMapPointEvent);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.RADIUS_DIAMETER_KEYDOWN, OnRadiusDiameterTextBoxKeyDown);
+            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT, OnNewMapPointEvent);
+            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
+            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
+            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
+            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.RADIUS_DIAMETER_KEYDOWN, OnRadiusDiameterTextBoxKeyDown);
 
             // Pro Events
             // Note: will fail if called from Unit Tests, so catch exception for this case
@@ -97,7 +93,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         public ArcGIS.Desktop.Framework.RelayCommand SaveAsCommand { get; set; }
         public ArcGIS.Desktop.Framework.RelayCommand ClearGraphicsCommand { get; set; }
         //public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
-        public DistanceAndDirectionLibrary.Helpers.RelayCommand EnterKeyCommand { get; set; }
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand EnterKeyCommand { get; set; }
         public ArcGIS.Desktop.Framework.RelayCommand EditPropertiesDialogCommand { get; set; }
 
         /// <summary>
@@ -298,7 +294,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // invalid coordinate, reset and throw exception
                     Point1 = null;
                     HasPoint1 = false;
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidCoordinate);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidCoordinate);
                 }
             }
         }
@@ -356,7 +352,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     Point2 = null;
                     HasPoint2 = false;
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.EndPointAndStartPointSameError);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.EndPointAndStartPointSameError);
                 }
 
                 // try to convert string to a MapPoint
@@ -378,7 +374,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // invalid coordinate, reset and throw exception
                     Point2 = null;
                     HasPoint2 = false;
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidCoordinate);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidCoordinate);
                 }
             }
         }
@@ -412,14 +408,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
 
                 // Prevents a stack overflow if the point is past -180 latitude, for example
                 if (double.IsNaN(value))
                 {
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
-                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.MsgOutOfAOI,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.MsgOutOfAOI,
                         System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation);
 
                     // Reset the points/distance or MessageBox may pop-up indefinitely
@@ -476,7 +472,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -722,8 +718,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (!isPointValid)
             {
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
-                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.MsgOutOfAOI,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.MsgOutOfAOI,
                         System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation);
                 return;
             }
@@ -1235,7 +1231,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 System.Diagnostics.Trace.WriteLine("Unable to clear selected features");
             }
 
-            var dlg = new GRSaveAsFormatView();
+            var dlg = new ProSaveAsFormatView();
             dlg.DataContext = new ProSaveAsFormatViewModel();
             var vm = (ProSaveAsFormatViewModel)dlg.DataContext;
 
@@ -1399,7 +1395,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 else
                 {
-                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, null);
+                    Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, null);
                 }
             }
 
@@ -1443,8 +1439,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (!success)
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                    DistanceAndDirectionLibrary.Properties.Resources.ErrorDeleteFailed
-                    + this.GetLayerName(), DistanceAndDirectionLibrary.Properties.Resources.ErrorDeleteFailed);
+                    ProAppDistanceAndDirectionModule.Properties.Resources.ErrorDeleteFailed
+                    + this.GetLayerName(), ProAppDistanceAndDirectionModule.Properties.Resources.ErrorDeleteFailed);
 
             return success;
         }

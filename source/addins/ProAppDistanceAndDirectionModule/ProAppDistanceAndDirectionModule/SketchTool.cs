@@ -16,7 +16,7 @@ using System;
 using System.Threading.Tasks;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Mapping;
-using DistanceAndDirectionLibrary.Helpers;
+using ProAppDistanceAndDirectionModule.Common;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -48,7 +48,7 @@ namespace ProAppDistanceAndDirectionModule
             if (k.Key == Key.Escape)
             {
                 k.Handled = true;
-                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.KEYPRESS_ESCAPE, null);
+                Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE, null);
             }
         }
 
@@ -57,7 +57,7 @@ namespace ProAppDistanceAndDirectionModule
             try
             {
                 var mp = geometry as MapPoint;
-                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.NEW_MAP_POINT, mp);
+                Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT, mp);
             }
             catch(Exception ex)
             {
@@ -77,7 +77,7 @@ namespace ProAppDistanceAndDirectionModule
                 _throttleMouse.ThrottleAndFireAtInterval(150, async (args) =>
                 {
                     var mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
-                    Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
+                    Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT, mp);
                 }, priority: DispatcherPriority.Normal);
             }
             catch (Exception ex)
@@ -95,7 +95,7 @@ namespace ProAppDistanceAndDirectionModule
                 {
                     return MapView.Active.ClientToMap(e.ClientPoint);
                 });
-                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, mp);
+                Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_DOUBLE_CLICK, mp);
             }
             catch(Exception ex)
             {

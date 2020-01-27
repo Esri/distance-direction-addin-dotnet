@@ -20,14 +20,12 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using CoordinateConversionLibrary.Models;
-using DistanceAndDirectionLibrary.Models;
+using ProAppDistanceAndDirectionModule.Common;
 using ProAppDistanceAndDirectionModule.ViewModels;
-using DistanceAndDirectionLibrary.Helpers;
-using DistanceAndDirectionLibrary.ViewModels;
 using System;
 
 
-namespace DistanceAndDirectionLibrary.Views
+namespace ProAppDistanceAndDirectionModule.Views
 {
     /// <summary>
     /// Interaction logic for ProOutputDistanceView.xaml
@@ -188,7 +186,7 @@ namespace DistanceAndDirectionLibrary.Views
 
         private void TextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.TEXTCHANGE_DELETE, null);
+            Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.TEXTCHANGE_DELETE, null);
         }
 
 

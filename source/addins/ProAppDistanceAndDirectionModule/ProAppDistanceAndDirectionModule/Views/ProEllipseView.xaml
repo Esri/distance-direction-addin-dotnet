@@ -1,10 +1,10 @@
-﻿<UserControl x:Class="DistanceAndDirectionLibrary.Views.ProEllipseView"
+﻿<UserControl x:Class="ProAppDistanceAndDirectionModule.Views.ProEllipseView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:local="clr-namespace:DistanceAndDirectionLibrary;assembly=DistanceAndDirectionLibrary"
+             xmlns:local="clr-namespace:ProAppDistanceAndDirectionModule.Common"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:prop="clr-namespace:DistanceAndDirectionLibrary.Properties;assembly=DistanceAndDirectionLibrary"
+             xmlns:prop="clr-namespace:ProAppDistanceAndDirectionModule.Properties"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              d:DesignHeight="460"
              d:DesignWidth="300"
@@ -12,7 +12,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/DistanceAndDirectionLibrary;component/MAResourceDictionary.xaml" />
+                <ResourceDictionary Source="../Common/MAResourceDictionary.xaml" />
                 <ResourceDictionary Source="../ProMAResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <local:EnumToFriendlyNameConverter x:Key="enumItemsConverter" />
@@ -110,7 +110,7 @@
                                   Style="{StaticResource ProBorderedTButtonStyle}" >
                         <Image Width="18"
                                Height="18"
-                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point.png" />
+                               Source="/DistanceAndDirection;component/Images/Add_Point.png" />
                     </ToggleButton>
                 </Grid>
                 <GroupBox Grid.Row="4"

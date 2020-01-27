@@ -20,8 +20,7 @@ using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
-using DistanceAndDirectionLibrary;
-using DistanceAndDirectionLibrary.Helpers;
+using ProAppDistanceAndDirectionModule.Common;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -43,7 +42,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             // we may need this in the future
             //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
+            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
             //properties
             CircleType = CircleFromTypes.Radius;
         }
@@ -134,7 +133,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
@@ -229,7 +228,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -253,7 +252,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
                 }
 
                 travelTime = value;
@@ -272,7 +271,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
 
                 // we need to make sure we are in the same units as the Distance property before setting
@@ -333,7 +332,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -351,7 +350,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
 
                 travelRate = value;
 
@@ -369,7 +368,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
 
                 UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
@@ -413,7 +412,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -468,7 +467,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
@@ -506,7 +505,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
@@ -620,7 +619,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         if (HasPoint1)
                             // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                             AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                        throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                     }
 
                     UpdateFeedbackWithGeoCircle();
@@ -631,7 +630,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
                         AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
 
                 // Trigger update to clear exception highlighting if necessary
@@ -837,7 +836,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (!string.IsNullOrEmpty(message))
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
-                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+                    ProAppDistanceAndDirectionModule.Properties.Resources.ErrorFeatureCreateTitle);
             else
                 HasMapGraphics = true;
         }
@@ -855,7 +854,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             FeatureClass circleFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (circleFeatureClass == null)
             {
-                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                message = ProAppDistanceAndDirectionModule.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
                 return message;
             }
 

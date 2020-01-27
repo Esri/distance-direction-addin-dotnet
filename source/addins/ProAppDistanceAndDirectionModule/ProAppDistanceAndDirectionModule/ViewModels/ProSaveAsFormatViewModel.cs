@@ -15,7 +15,7 @@
   *   limitations under the License. 
   ******************************************************************************/
 
-using DistanceAndDirectionLibrary.ViewModels;
+using ProAppDistanceAndDirectionModule.Common;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {

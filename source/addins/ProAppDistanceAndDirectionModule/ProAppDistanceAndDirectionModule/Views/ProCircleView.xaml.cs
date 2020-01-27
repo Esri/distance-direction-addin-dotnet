@@ -14,7 +14,7 @@
 
 using System.Windows.Controls;
 
-namespace DistanceAndDirectionLibrary.Views
+namespace ProAppDistanceAndDirectionModule.Views
 {
     /// <summary>
     /// Interaction logic for ProCircleView.xaml
@@ -28,12 +28,12 @@ namespace DistanceAndDirectionLibrary.Views
 
         private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            DistanceAndDirectionLibrary.Helpers.Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, null);
+            ProAppDistanceAndDirectionModule.Common.Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.POINT_TEXT_KEYDOWN, null);
         }
 
         private void Radius_Diameter_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            DistanceAndDirectionLibrary.Helpers.Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.RADIUS_DIAMETER_KEYDOWN, null);
+            ProAppDistanceAndDirectionModule.Common.Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.RADIUS_DIAMETER_KEYDOWN, null);
         }
     }
 }
