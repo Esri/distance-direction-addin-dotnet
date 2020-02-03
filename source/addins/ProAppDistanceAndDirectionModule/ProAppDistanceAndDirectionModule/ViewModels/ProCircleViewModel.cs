@@ -40,8 +40,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Circle);
             });
 
-            // we may need this in the future
-            //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
             Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
             //properties
             CircleType = CircleFromTypes.Radius;

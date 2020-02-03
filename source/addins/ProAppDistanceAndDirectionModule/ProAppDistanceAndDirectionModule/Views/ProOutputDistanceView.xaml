@@ -2,6 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+            xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
             xmlns:Behaviors="clr-namespace:ArcGIS.Desktop.Internal.Framework.Behaviors;assembly=ArcGIS.Desktop.Framework"
@@ -227,8 +228,14 @@
 								Text="{Binding OutputDistance,UpdateSourceTrigger=PropertyChanged, Mode=TwoWay , ValidatesOnExceptions=True}"                                
                                 Validation.ErrorTemplate="{StaticResource errorTemplate}"
                                 PreviewTextInput="TextBox_PreviewTextInput"
-                                LostFocus="TextBox_LostFocus"
-                                Style="{DynamicResource Esri_DataGridRowTextBox}"/>
+                                Style="{DynamicResource Esri_DataGridRowTextBox}">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="LostFocus" >
+                                        <i:InvokeCommandAction Command="{Binding DataContext.TextLostFocus, RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}}"></i:InvokeCommandAction>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </TextBox>
+                      
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>

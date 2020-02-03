@@ -38,13 +38,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             LineAzimuthType = AzimuthTypes.Degrees;
 
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
-                {
-                    await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
-                    Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Line);
-                });
-
-            Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
+            {
+                await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
+                //Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Line);
+            });
+  
             Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
+        
         }
         LineFromTypes lineFromType = LineFromTypes.Points;
         public LineFromTypes LineFromType

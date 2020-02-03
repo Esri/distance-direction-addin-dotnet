@@ -183,12 +183,5 @@ namespace ProAppDistanceAndDirectionModule.Views
         }
 
         #endregion
-
-        private void TextBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.TEXTCHANGE_DELETE, null);
-        }
-
-
     }
 }

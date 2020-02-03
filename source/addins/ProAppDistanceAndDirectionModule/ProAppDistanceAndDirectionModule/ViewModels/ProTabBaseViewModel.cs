@@ -35,7 +35,7 @@ using ArcGIS.Desktop.Core.Geoprocessing;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
-    public class ProTabBaseViewModel : BaseViewModel
+    public class ProTabBaseViewModel : NotificationObject
     {
         public string MAP_TOOL_NAME = SketchTool.ToolId;
 
@@ -53,14 +53,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             EnterKeyCommand = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnEnterKeyCommand);
             EditPropertiesDialogCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnEditPropertiesDialog());
 
-            // Mediator
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT, OnNewMapPointEvent);
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT, OnMouseMoveEvent);
             Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE, OnKeypressEscape);
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.POINT_TEXT_KEYDOWN, OnPointTextBoxKeyDown);
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.RADIUS_DIAMETER_KEYDOWN, OnRadiusDiameterTextBoxKeyDown);
 
+            NewMapPointEvent = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnNewMapPointEvent);
+            MouseMoveEvent = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnMouseMoveEvent);
+            KeypressEscape = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnKeypressEscape);
+            PointTextBoxKeyDown = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnPointTextBoxKeyDown);
+            RadiusDiameterTextBoxKeyDown = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnRadiusDiameterTextBoxKeyDown);
+         
             // Pro Events
             // Note: will fail if called from Unit Tests, so catch exception for this case
             try
@@ -95,6 +95,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         //public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
         public ProAppDistanceAndDirectionModule.Common.RelayCommand EnterKeyCommand { get; set; }
         public ArcGIS.Desktop.Framework.RelayCommand EditPropertiesDialogCommand { get; set; }
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand NewMapPointEvent { get; set; }
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand MouseMoveEvent { get; set; }
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand PointTextBoxKeyDown { get; set; }
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand RadiusDiameterTextBoxKeyDown { get; set; }
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand KeypressEscape { get; set; }
+        
 
         /// <summary>
         /// Handler for opening the edit properties dialog

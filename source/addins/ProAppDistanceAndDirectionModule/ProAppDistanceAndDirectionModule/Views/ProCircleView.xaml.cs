@@ -25,15 +25,5 @@ namespace ProAppDistanceAndDirectionModule.Views
         {
             InitializeComponent();
         }
-
-        private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            ProAppDistanceAndDirectionModule.Common.Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.POINT_TEXT_KEYDOWN, null);
-        }
-
-        private void Radius_Diameter_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            ProAppDistanceAndDirectionModule.Common.Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.RADIUS_DIAMETER_KEYDOWN, null);
-        }
     }
 }

@@ -20,21 +20,22 @@ using ProAppDistanceAndDirectionModule.Common;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
+using ArcGIS.Desktop.Framework;
+using ProAppDistanceAndDirectionModule.ViewModels;
+using ProAppDistanceAndDirectionModule.Views;
 
 namespace ProAppDistanceAndDirectionModule
 {
     class SketchTool : MapTool
     {
+
+        private DelayedInvoker _interval = new DelayedInvoker(150);
         public SketchTool()
         {
             IsSketchTool = true;
             SketchType = SketchGeometryType.Point;
             UseSnapping = true;
-            // will need to use this in the future, commented out for now
-            //Mediator.Register("SET_SKETCH_TOOL_TYPE", (sgType) => SketchType = (SketchGeometryType)sgType);
         }
-
-        private readonly DebounceDispatcher _throttleMouse = new DebounceDispatcher();
 
         public static string ToolId
         {
@@ -48,7 +49,7 @@ namespace ProAppDistanceAndDirectionModule
             if (k.Key == Key.Escape)
             {
                 k.Handled = true;
-                Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE, null);
+                SketchMouseEvents(null, ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE);
             }
         }
 
@@ -56,8 +57,8 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
-                var mp = geometry as MapPoint;
-                Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT, mp);
+                MapPoint mp = geometry as MapPoint;
+                SketchMouseEvents(mp, ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT);
             }
             catch(Exception ex)
             {
@@ -74,11 +75,12 @@ namespace ProAppDistanceAndDirectionModule
                 //lets limit how many times we call this
                 // take the latest event args every so often
                 // this will keep us from drawing too many feedback geometries
-                _throttleMouse.ThrottleAndFireAtInterval(150, async (args) =>
+
+                _interval.Invoke(async () =>
                 {
-                    var mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
-                    Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT, mp);
-                }, priority: DispatcherPriority.Normal);
+                    MapPoint mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
+                    SketchMouseEvents(mp, ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT);
+                });
             }
             catch (Exception ex)
             {
@@ -91,17 +93,107 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
-                var mp = await QueuedTask.Run(() =>
+                MapPoint mp = await QueuedTask.Run(() =>
                 {
                     return MapView.Active.ClientToMap(e.ClientPoint);
                 });
-                Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_DOUBLE_CLICK, mp);
+                SketchMouseEvents(mp, ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_DOUBLE_CLICK);
             }
             catch(Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
             base.OnToolDoubleClick(e);
+        }
+
+        private void SketchMouseEvents(MapPoint mp,string mouseevent)
+        {
+            //Get the instance of the Main ViewModel from the dock pane
+
+            DistanceAndDirectionDockpaneViewModel ddVM = DistanceAndDirectionModule.DistanceAndDirectionVM;
+
+            if (ddVM != null)
+            {
+                System.Windows.Controls.TabItem tabItem = ddVM.SelectedTab as System.Windows.Controls.TabItem;
+                if (tabItem != null)
+                {
+                    if (tabItem.Header.Equals(Properties.Resources.LabelTabLines))
+                    {
+                        ProLinesView plView = (tabItem.Content as System.Windows.Controls.UserControl).Content as ProLinesView;
+                        ProLinesViewModel plViewmodel = plView.DataContext as ProLinesViewModel;
+                        if(mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT))
+                        {
+                            plViewmodel.NewMapPointEvent.Execute(mp);
+                        }
+                        else if(mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT))
+                        {
+                            plViewmodel.MouseMoveEvent.Execute(mp);
+                        }
+                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE))
+                        {
+                            plViewmodel.KeypressEscape.Execute(mp);
+                        }
+                            
+                    }
+                    else if (tabItem.Header.Equals(Properties.Resources.LabelTabCircle))
+                    {
+                        ProCircleView pcView = (tabItem.Content as System.Windows.Controls.UserControl).Content as ProCircleView;
+                        ProCircleViewModel pcViewmodel = pcView.DataContext as ProCircleViewModel;
+                        if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT))
+                        {
+                            pcViewmodel.NewMapPointEvent.Execute(mp);
+                        }
+                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT))
+                        {
+                            pcViewmodel.MouseMoveEvent.Execute(mp);
+                        }
+                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE))
+                        {
+                            pcViewmodel.KeypressEscape.Execute(mp);
+                        }
+                    }
+                    else if (tabItem.Header.Equals(Properties.Resources.LabelTabEllipse))
+                    {
+                        ProEllipseView pelView = (tabItem.Content as System.Windows.Controls.UserControl).Content as ProEllipseView;
+                        ProCircleViewModel pelViewmodel = pelView.DataContext as ProCircleViewModel;
+                        if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT))
+                        {
+                            pelViewmodel.NewMapPointEvent.Execute(mp);
+                        }
+                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT))
+                        {
+                            pelViewmodel.MouseMoveEvent.Execute(mp);
+                        }
+                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE))
+                        {
+                            pelViewmodel.KeypressEscape.Execute(mp);
+                        }
+                    }
+                    else if (tabItem.Header.Equals(Properties.Resources.LabelTabRange))
+                    {
+                        ProRangeView prView = (tabItem.Content as System.Windows.Controls.UserControl).Content as ProRangeView;
+                        ProRangeViewModel prViewmodel = prView.DataContext as ProRangeViewModel;
+                        if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_DOUBLE_CLICK))
+                        {
+                            prViewmodel.MouseDoubleClick.Execute(mp);
+                        }
+                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT))
+                        {
+                            prViewmodel.NewMapPointEvent.Execute(mp);
+                        }
+                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT))
+                        {
+                            prViewmodel.MouseMoveEvent.Execute(mp);
+                        }
+                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE))
+                        {
+                            prViewmodel.KeypressEscape.Execute(mp);
+                        }
+                    }
+
+                }
+
+            }
         }
     }
 }

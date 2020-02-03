@@ -15,7 +15,7 @@
 
 namespace ProAppDistanceAndDirectionModule.Common
 {
-    public class EditPropertiesViewModel : BaseViewModel
+    public class EditPropertiesViewModel : NotificationObject
     {
         public EditPropertiesViewModel()
         {

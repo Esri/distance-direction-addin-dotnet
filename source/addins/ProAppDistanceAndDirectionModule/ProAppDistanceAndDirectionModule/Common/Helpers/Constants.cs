@@ -24,8 +24,8 @@ namespace ProAppDistanceAndDirectionModule.Common
         public const string TAB_ITEM_SELECTED = "TAB_ITEM_SELECTED";
         public const string MOUSE_DOUBLE_CLICK = "MOUSE_DOUBLE_CLICK";
         public const string KEYPRESS_ESCAPE = "KEYPRESS_ESCAPE";
-        public const string POINT_TEXT_KEYDOWN = "POINT_TEXT_KEYDOWN";
-        public const string RADIUS_DIAMETER_KEYDOWN = "RADIUS_DIAMETER_KEYDOWN";
+        //public const string POINT_TEXT_KEYDOWN = "POINT_TEXT_KEYDOWN";
+        //public const string RADIUS_DIAMETER_KEYDOWN = "RADIUS_DIAMETER_KEYDOWN";
         public const string TOC_ITEMS_CHANGED = "TOC_ITEMS_CHANGED";
         public const string TEXTCHANGE_DELETE = "TEXTCHANGE_DELETE";
         public const string LAYER_PACKAGE_LOADED = "LAYER_PACKAGE_LOADED";

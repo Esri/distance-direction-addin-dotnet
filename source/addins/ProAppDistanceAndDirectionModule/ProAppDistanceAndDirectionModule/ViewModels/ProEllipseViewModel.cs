@@ -37,8 +37,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.AngledEllipse);
             });
 
-            // we may need this in the future, leave commented out for now
-            //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
             Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
 
             EllipseType = EllipseTypes.Semi;

@@ -36,10 +36,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         public ProRangeViewModel()
         {
             OutputDistanceView = new ProOutputDistanceView();
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_DOUBLE_CLICK, OnMouseDoubleClick);
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.TEXTCHANGE_DELETE, OnTextChangeEvent);
+            MouseDoubleClick = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnMouseDoubleClick);
             Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
         }
+
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand MouseDoubleClick { get; set; }
         public ProOutputDistanceView OutputDistanceView { get; set; }
         #region Properties
 
@@ -494,28 +495,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 IsToolActive = false;
         }
 
-        private void OnTextChangeEvent(object obj)
-        {
-            if (OutputDistanceViewModel.OutputDistanceListItem != null && OutputDistanceViewModel.OutputDistanceListItem.Count > 1)
-            {
-                ObservableCollection<OutputDistanceModel> listOfDistances = new ObservableCollection<OutputDistanceModel>();
-                foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
-                {
-                    if (item.OutputDistance == "")
-                    {
-                        listOfDistances.Add(item);
-                    }
-                }
-
-                foreach (var item in listOfDistances)
-                {
-                    if (item.OutputDistance == "")
-                    {
-                        OutputDistanceViewModel.OutputDistanceListItem.Remove(item);
-                    }
-                }
-            }
-        }
+        
 
         internal override void Reset(bool toolReset)
         {

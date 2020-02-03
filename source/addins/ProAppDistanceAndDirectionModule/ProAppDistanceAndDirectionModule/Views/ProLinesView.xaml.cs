@@ -26,9 +26,9 @@ namespace ProAppDistanceAndDirectionModule.Views
             InitializeComponent();
         }
 
-        private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        private void ToggleButton_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            ProAppDistanceAndDirectionModule.Common.Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.POINT_TEXT_KEYDOWN, null);
-        }  
+
+        }
     }
 }

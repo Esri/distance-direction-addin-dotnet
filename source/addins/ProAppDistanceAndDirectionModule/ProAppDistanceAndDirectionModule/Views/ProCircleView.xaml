@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
              xmlns:prop="clr-namespace:ProAppDistanceAndDirectionModule.Properties"
              xmlns:local="clr-namespace:ProAppDistanceAndDirectionModule.Common"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -57,7 +58,15 @@
                              Text="{Binding Path=Point1Formatted,
                                             UpdateSourceTrigger=PropertyChanged,
                                             ValidatesOnExceptions=True}"
-                             Validation.ErrorTemplate="{StaticResource errorTemplate}" PreviewKeyDown="TextBox_KeyDown">
+                             Validation.ErrorTemplate="{StaticResource errorTemplate}" >
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="KeyDown">
+                                <i:InvokeCommandAction Command="{Binding PointTextBoxKeyDown}"
+                                                       CommandParameter="{Binding ElementName=mainControl,
+                                                                   Path=.}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter"
                                         Command="{Binding EnterKeyCommand}"
@@ -84,7 +93,15 @@
                          Text="{Binding Path=DistanceString,
                                         UpdateSourceTrigger=PropertyChanged,
                                         ValidatesOnExceptions=True}"
-                         Validation.ErrorTemplate="{StaticResource errorTemplate}" PreviewKeyDown="Radius_Diameter_KeyDown">
+                         Validation.ErrorTemplate="{StaticResource errorTemplate}" >
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="KeyDown">
+                            <i:InvokeCommandAction Command="{Binding RadiusDiameterTextBoxKeyDown}"
+                                                       CommandParameter="{Binding ElementName=mainControl,
+                                                                   Path=.}">
+                            </i:InvokeCommandAction>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter"
                                     Command="{Binding EnterKeyCommand}"

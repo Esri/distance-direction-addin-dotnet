@@ -24,12 +24,13 @@ using System.Xml.Serialization;
 
 namespace ProAppDistanceAndDirectionModule.Common
 {
-    public class OutputDistanceViewModel : BaseViewModel
+    public class OutputDistanceViewModel : NotificationObject
     {
         public OutputDistanceViewModel()
         {
             AddNewOCCommand = new RelayCommand(OnAddNewOCCommand);
             DeleteCommand = new RelayCommand(OnDeleteCommand);
+            TextLostFocus = new RelayCommand(OnTextChangeEvent);
             OutputDistanceListItem = new ObservableCollection<OutputDistanceModel>();
         }
 
@@ -49,8 +50,11 @@ namespace ProAppDistanceAndDirectionModule.Common
         [XmlIgnore]
         public RelayCommand AddNewOCCommand { get; set; }
 
+        [XmlIgnore]
+        public RelayCommand TextLostFocus { get; set; }
+
         #endregion
-         
+
         public static int UniqueRowId { get; set; }
         private void OnAddNewOCCommand(object obj)
         {
@@ -84,6 +88,29 @@ namespace ProAppDistanceAndDirectionModule.Common
                     return;
                 }
 
+            }
+        }
+
+        private void OnTextChangeEvent(object obj)
+        {
+            if (OutputDistanceListItem != null && OutputDistanceListItem.Count > 1)
+            {
+                ObservableCollection<OutputDistanceModel> listOfDistances = new ObservableCollection<OutputDistanceModel>();
+                foreach (var item in OutputDistanceListItem)
+                {
+                    if (item.OutputDistance == "")
+                    {
+                        listOfDistances.Add(item);
+                    }
+                }
+
+                foreach (var item in listOfDistances)
+                {
+                    if (item.OutputDistance == "")
+                    {
+                        OutputDistanceListItem.Remove(item);
+                    }
+                }
             }
         }
 
