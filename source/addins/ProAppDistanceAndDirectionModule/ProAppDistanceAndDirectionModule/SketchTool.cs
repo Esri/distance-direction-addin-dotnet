@@ -155,7 +155,7 @@ namespace ProAppDistanceAndDirectionModule
                     else if (tabItem.Header.Equals(Properties.Resources.LabelTabEllipse))
                     {
                         ProEllipseView pelView = (tabItem.Content as System.Windows.Controls.UserControl).Content as ProEllipseView;
-                        ProCircleViewModel pelViewmodel = pelView.DataContext as ProCircleViewModel;
+                        ProEllipseViewModel pelViewmodel = pelView.DataContext as ProEllipseViewModel;
                         if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT))
                         {
                             pelViewmodel.NewMapPointEvent.Execute(mp);

@@ -37,10 +37,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
             {
                 await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
-                Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Circle);
             });
 
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
+            LayerPackageLoaded = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnLayerPackageLoaded);
+           
             //properties
             CircleType = CircleFromTypes.Radius;
         }
@@ -50,6 +50,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         //{
         //    AddGraphicToMap(obj as ArcGIS.Core.Geometry.Geometry);
         //}
+
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand LayerPackageLoaded { get; set; }
 
         public ArcGIS.Desktop.Framework.RelayCommand ActivateToolCommand { get; set; }
 

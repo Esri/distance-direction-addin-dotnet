@@ -70,7 +70,13 @@ namespace ProAppDistanceAndDirectionModule
                 selectedTab = value;
                 var tabItem = selectedTab as TabItem;
                 if ((tabItem.Content as UserControl).Content != null)
-                    Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
+                {
+                    //Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
+                    ProTabBaseViewModel tbViewModel = ((tabItem.Content as UserControl).Content as UserControl).DataContext as ProTabBaseViewModel;
+                    tbViewModel.TabItemSelected.Execute((tabItem.Content as UserControl).Content);
+                    tbViewModel.IsActiveTab = true;
+                }
+            
             }
         }
 

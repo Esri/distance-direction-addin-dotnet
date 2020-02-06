@@ -37,8 +37,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             OutputDistanceView = new ProOutputDistanceView();
             MouseDoubleClick = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnMouseDoubleClick);
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
+            LayerPackageLoaded = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnLayerPackageLoaded);
         }
+
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand LayerPackageLoaded { get; set; }
 
         public ProAppDistanceAndDirectionModule.Common.RelayCommand MouseDoubleClick { get; set; }
         public ProOutputDistanceView OutputDistanceView { get; set; }

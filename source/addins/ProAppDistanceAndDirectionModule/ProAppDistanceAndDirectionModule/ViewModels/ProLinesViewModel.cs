@@ -40,12 +40,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
             {
                 await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
-                //Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Line);
+                
             });
-  
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
-        
+
+            LayerPackageLoaded = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnLayerPackageLoaded);
+                    
         }
+
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand LayerPackageLoaded { get; set; }
+
         LineFromTypes lineFromType = LineFromTypes.Points;
         public LineFromTypes LineFromType
         {

@@ -53,8 +53,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             EnterKeyCommand = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnEnterKeyCommand);
             EditPropertiesDialogCommand = new ArcGIS.Desktop.Framework.RelayCommand(() => OnEditPropertiesDialog());
 
-            Mediator.Register(ProAppDistanceAndDirectionModule.Common.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
-
+            //Mediator.Register(Common.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
+            TabItemSelected = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnTabItemSelected);
             NewMapPointEvent = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnNewMapPointEvent);
             MouseMoveEvent = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnMouseMoveEvent);
             KeypressEscape = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnKeypressEscape);
@@ -100,7 +100,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         public ProAppDistanceAndDirectionModule.Common.RelayCommand PointTextBoxKeyDown { get; set; }
         public ProAppDistanceAndDirectionModule.Common.RelayCommand RadiusDiameterTextBoxKeyDown { get; set; }
         public ProAppDistanceAndDirectionModule.Common.RelayCommand KeypressEscape { get; set; }
-        
+
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand TabItemSelected { get; set; }
+
 
         /// <summary>
         /// Handler for opening the edit properties dialog
@@ -1401,7 +1403,26 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 else
                 {
-                    Mediator.NotifyColleagues(ProAppDistanceAndDirectionModule.Common.Constants.LAYER_PACKAGE_LOADED, null);
+                    if (this is ProLinesViewModel)
+                    {
+                        ProLinesViewModel lvModel = this as ProLinesViewModel;
+                        lvModel.LayerPackageLoaded.Execute(null);
+                    }
+                    else if (this is ProCircleViewModel)
+                    {
+                        ProCircleViewModel cvModel = this as ProCircleViewModel;
+                        cvModel.LayerPackageLoaded.Execute(null);
+                    }
+                    else if (this is ProEllipseViewModel)
+                    {
+                        ProEllipseViewModel evModel = this as ProEllipseViewModel;
+                        evModel.LayerPackageLoaded.Execute(null);
+                    }
+                    else if (this is ProRangeViewModel)
+                    {
+                        ProRangeViewModel rvModel = this as ProRangeViewModel;
+                        rvModel.LayerPackageLoaded.Execute(null);
+                    }
                 }
             }
 

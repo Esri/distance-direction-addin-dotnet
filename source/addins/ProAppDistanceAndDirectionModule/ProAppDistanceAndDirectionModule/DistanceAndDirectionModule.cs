@@ -64,27 +64,5 @@ namespace ProAppDistanceAndDirectionModule
             }
         }
 
-
-
-        ///// <summary>
-        ///// Stores the instance of the proLineViewModel
-        ///// </summary>
-        //public static ProAppDistanceAndDirectionModule.ViewModels.ProLinesViewModel proLineVM;
-
-        ///// <summary>
-        ///// Stores the instance of the proCircleViewModel
-        ///// </summary>
-        //public static ProAppDistanceAndDirectionModule.ViewModels.ProCircleViewModel proCircleVM;
-
-        ///// <summary>
-        ///// Stores the instance of the proEllipseViewModel
-        ///// </summary>
-        //public static ProAppDistanceAndDirectionModule.ViewModels.ProEllipseViewModel proEllipseVM;
-
-        ///// <summary>
-        ///// Stores the instance of the proRangeViewModel
-        ///// </summary>
-        //public static ProAppDistanceAndDirectionModule.ViewModels.ProRangeViewModel proRangeVM;
-
     }
 }
