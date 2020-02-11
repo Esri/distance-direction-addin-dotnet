@@ -113,6 +113,7 @@
   <ItemGroup>
     <Compile Include="Common\Attributes\LocalizableDescriptionAttribute.cs" />
     <Compile Include="Common\Enums\Enums.cs" />
+    <Compile Include="Common\Helpers\DebounceDispatcher.cs" />
     <Compile Include="Common\Helpers\NotificationObject.cs" />
     <Compile Include="Common\Helpers\RelayCommand.cs" />
     <Compile Include="Common\Helpers\StringParser.cs" />

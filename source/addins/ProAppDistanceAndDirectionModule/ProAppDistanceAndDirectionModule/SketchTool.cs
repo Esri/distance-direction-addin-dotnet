@@ -40,7 +40,7 @@ namespace ProAppDistanceAndDirectionModule
         private const string TEXTCHANGE_DELETE = "TEXTCHANGE_DELETE";
         private const string LAYER_PACKAGE_LOADED = "LAYER_PACKAGE_LOADED";
 
-        private DelayedInvoker _interval = new DelayedInvoker(150);
+        private readonly DebounceDispatcher _throttleMouse = new DebounceDispatcher();
         public SketchTool()
         {
             IsSketchTool = true;
@@ -86,11 +86,11 @@ namespace ProAppDistanceAndDirectionModule
                 //lets limit how many times we call this
                 // take the latest event args every so often
                 // this will keep us from drawing too many feedback geometries
-                _interval.Invoke(async () =>
+                _throttleMouse.ThrottleAndFireAtInterval(150, async (args) =>
                 {
                     MapPoint mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
                     SketchMouseEvents(mp, MOUSE_MOVE_POINT);
-                });
+                }, priority: DispatcherPriority.Normal);
             }
             catch (Exception ex)
             {
