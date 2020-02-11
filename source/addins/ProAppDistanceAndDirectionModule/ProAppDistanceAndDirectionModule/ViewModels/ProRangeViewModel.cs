@@ -21,6 +21,7 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
 
 using ProAppDistanceAndDirectionModule.Common;
+using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
 using System;
 using System.Collections.Generic;

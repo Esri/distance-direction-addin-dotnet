@@ -29,6 +29,17 @@ namespace ProAppDistanceAndDirectionModule
     class SketchTool : MapTool
     {
 
+        private const string NEW_MAP_POINT = "NEW_MAP_POINT";
+        private const string MOUSE_MOVE_POINT = "MOUSE_MOVE_POINT";
+        private const string TAB_ITEM_SELECTED = "TAB_ITEM_SELECTED";
+        private const string MOUSE_DOUBLE_CLICK = "MOUSE_DOUBLE_CLICK";
+        private const string KEYPRESS_ESCAPE = "KEYPRESS_ESCAPE";
+        //private const string POINT_TEXT_KEYDOWN = "POINT_TEXT_KEYDOWN";
+        //private const string RADIUS_DIAMETER_KEYDOWN = "RADIUS_DIAMETER_KEYDOWN";
+        private const string TOC_ITEMS_CHANGED = "TOC_ITEMS_CHANGED";
+        private const string TEXTCHANGE_DELETE = "TEXTCHANGE_DELETE";
+        private const string LAYER_PACKAGE_LOADED = "LAYER_PACKAGE_LOADED";
+
         private DelayedInvoker _interval = new DelayedInvoker(150);
         public SketchTool()
         {
@@ -49,7 +60,7 @@ namespace ProAppDistanceAndDirectionModule
             if (k.Key == Key.Escape)
             {
                 k.Handled = true;
-                SketchMouseEvents(null, ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE);
+                SketchMouseEvents(null, KEYPRESS_ESCAPE);
             }
         }
 
@@ -58,7 +69,7 @@ namespace ProAppDistanceAndDirectionModule
             try
             {
                 MapPoint mp = geometry as MapPoint;
-                SketchMouseEvents(mp, ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT);
+                SketchMouseEvents(mp, NEW_MAP_POINT);
             }
             catch(Exception ex)
             {
@@ -75,11 +86,10 @@ namespace ProAppDistanceAndDirectionModule
                 //lets limit how many times we call this
                 // take the latest event args every so often
                 // this will keep us from drawing too many feedback geometries
-
                 _interval.Invoke(async () =>
                 {
                     MapPoint mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
-                    SketchMouseEvents(mp, ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT);
+                    SketchMouseEvents(mp, MOUSE_MOVE_POINT);
                 });
             }
             catch (Exception ex)
@@ -97,7 +107,7 @@ namespace ProAppDistanceAndDirectionModule
                 {
                     return MapView.Active.ClientToMap(e.ClientPoint);
                 });
-                SketchMouseEvents(mp, ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_DOUBLE_CLICK);
+                SketchMouseEvents(mp, MOUSE_DOUBLE_CLICK);
             }
             catch(Exception ex)
             {
@@ -121,15 +131,15 @@ namespace ProAppDistanceAndDirectionModule
                     {
                         ProLinesView plView = (tabItem.Content as System.Windows.Controls.UserControl).Content as ProLinesView;
                         ProLinesViewModel plViewmodel = plView.DataContext as ProLinesViewModel;
-                        if(mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT))
+                        if(mouseevent.Equals(NEW_MAP_POINT))
                         {
                             plViewmodel.NewMapPointEvent.Execute(mp);
                         }
-                        else if(mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT))
+                        else if(mouseevent.Equals(MOUSE_MOVE_POINT))
                         {
                             plViewmodel.MouseMoveEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE))
+                        else if (mouseevent.Equals(KEYPRESS_ESCAPE))
                         {
                             plViewmodel.KeypressEscape.Execute(mp);
                         }
@@ -139,15 +149,15 @@ namespace ProAppDistanceAndDirectionModule
                     {
                         ProCircleView pcView = (tabItem.Content as System.Windows.Controls.UserControl).Content as ProCircleView;
                         ProCircleViewModel pcViewmodel = pcView.DataContext as ProCircleViewModel;
-                        if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT))
+                        if (mouseevent.Equals(NEW_MAP_POINT))
                         {
                             pcViewmodel.NewMapPointEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT))
+                        else if (mouseevent.Equals(MOUSE_MOVE_POINT))
                         {
                             pcViewmodel.MouseMoveEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE))
+                        else if (mouseevent.Equals(KEYPRESS_ESCAPE))
                         {
                             pcViewmodel.KeypressEscape.Execute(mp);
                         }
@@ -156,15 +166,15 @@ namespace ProAppDistanceAndDirectionModule
                     {
                         ProEllipseView pelView = (tabItem.Content as System.Windows.Controls.UserControl).Content as ProEllipseView;
                         ProEllipseViewModel pelViewmodel = pelView.DataContext as ProEllipseViewModel;
-                        if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT))
+                        if (mouseevent.Equals(NEW_MAP_POINT))
                         {
                             pelViewmodel.NewMapPointEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT))
+                        else if (mouseevent.Equals(MOUSE_MOVE_POINT))
                         {
                             pelViewmodel.MouseMoveEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE))
+                        else if (mouseevent.Equals(KEYPRESS_ESCAPE))
                         {
                             pelViewmodel.KeypressEscape.Execute(mp);
                         }
@@ -173,19 +183,19 @@ namespace ProAppDistanceAndDirectionModule
                     {
                         ProRangeView prView = (tabItem.Content as System.Windows.Controls.UserControl).Content as ProRangeView;
                         ProRangeViewModel prViewmodel = prView.DataContext as ProRangeViewModel;
-                        if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_DOUBLE_CLICK))
+                        if (mouseevent.Equals(MOUSE_DOUBLE_CLICK))
                         {
                             prViewmodel.MouseDoubleClick.Execute(mp);
                         }
-                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.NEW_MAP_POINT))
+                        else if (mouseevent.Equals(NEW_MAP_POINT))
                         {
                             prViewmodel.NewMapPointEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.MOUSE_MOVE_POINT))
+                        else if (mouseevent.Equals(MOUSE_MOVE_POINT))
                         {
                             prViewmodel.MouseMoveEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(ProAppDistanceAndDirectionModule.Common.Constants.KEYPRESS_ESCAPE))
+                        else if (mouseevent.Equals(KEYPRESS_ESCAPE))
                         {
                             prViewmodel.KeypressEscape.Execute(mp);
                         }

@@ -26,9 +26,5 @@ namespace ProAppDistanceAndDirectionModule.Views
             InitializeComponent();
         }
 
-        private void ToggleButton_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-
-        }
     }
 }

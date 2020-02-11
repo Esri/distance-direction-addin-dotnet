@@ -3,10 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:prop="clr-namespace:ProAppDistanceAndDirectionModule.Properties"
              xmlns:controls="clr-namespace:ArcGIS.Desktop.Framework.Controls;assembly=ArcGIS.Desktop.Framework"
              xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"                      
              mc:Ignorable="d"  Width="242" Height="102" ResizeMode="NoResize" SizeToContent="WidthAndHeight" 
-             Title="Select Output" WindowStartupLocation="CenterScreen" 
+             Title="{x:Static prop:Resources.LabelPSTitle}" WindowStartupLocation="CenterScreen" 
              Topmost="True">
     <Window.Resources>
         <ResourceDictionary>
@@ -17,14 +18,14 @@
     </Window.Resources>    
     <StackPanel>
         <StackPanel>
-            <RadioButton IsChecked="{Binding FeatureShapeIsChecked}" x:Name="rbFeature" Content="Feature class / Shapefile" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top"/>
-            <RadioButton IsChecked="{Binding KmlIsChecked}" x:Name="rbKml" Content="KMZ" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top" />
+            <RadioButton IsChecked="{Binding FeatureShapeIsChecked}" x:Name="rbFeature" Content="{x:Static prop:Resources.LabelPSFCShape}" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top"/>
+            <RadioButton IsChecked="{Binding KmlIsChecked}" x:Name="rbKml" Content="{x:Static prop:Resources.LabelPSKMZ}" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top" />
         </StackPanel>
         <StackPanel Height="40" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button x:Name="btnOk" Content="OK" Click="Button_Click" 
+            <Button x:Name="btnOk" Content="{x:Static prop:Resources.LabelPSOK}" Click="Button_Click" 
                     Width="75" Margin="3,8,3,5" 
                     Style="{DynamicResource Esri_Button}" />
-            <Button x:Name="btnCancel" Content="Cancel" IsCancel="True" 
+            <Button x:Name="btnCancel" Content="{x:Static prop:Resources.LabelPSCancel}" IsCancel="True" 
                     Width=" 75" Margin="3,8,3,5" 
                     Style="{DynamicResource Esri_Button}" />
         </StackPanel>

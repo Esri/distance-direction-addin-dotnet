@@ -18,9 +18,9 @@ using System.Text;
 using System.Xml.Serialization;
 using System.Xml;
 using System.IO;
+using ProAppDistanceAndDirectionModule.Common;
 
-
-namespace ProAppDistanceAndDirectionModule.Common
+namespace ProAppDistanceAndDirectionModule.Models
 {
     public class DistanceAndDirectionConfig : NotificationObject
     {

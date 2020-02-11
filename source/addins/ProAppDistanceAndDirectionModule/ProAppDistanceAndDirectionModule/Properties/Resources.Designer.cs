@@ -142,6 +142,15 @@ namespace ProAppDistanceAndDirectionModule.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cant convert back.
+        /// </summary>
+        public static string EFConverter {
+            get {
+                return ResourceManager.GetString("EFConverter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ending Point should not be the same as the Starting Point.
         /// </summary>
         public static string EndPointAndStartPointSameError {
@@ -772,6 +781,51 @@ namespace ProAppDistanceAndDirectionModule.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel.
+        /// </summary>
+        public static string LabelPSCancel {
+            get {
+                return ResourceManager.GetString("LabelPSCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Feature class / Shapefile.
+        /// </summary>
+        public static string LabelPSFCShape {
+            get {
+                return ResourceManager.GetString("LabelPSFCShape", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to KMZ.
+        /// </summary>
+        public static string LabelPSKMZ {
+            get {
+                return ResourceManager.GetString("LabelPSKMZ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to OK.
+        /// </summary>
+        public static string LabelPSOK {
+            get {
+                return ResourceManager.GetString("LabelPSOK", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select Output.
+        /// </summary>
+        public static string LabelPSTitle {
+            get {
+                return ResourceManager.GetString("LabelPSTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Radius.
         /// </summary>
         public static string LabelRadius {
@@ -916,6 +970,114 @@ namespace ProAppDistanceAndDirectionModule.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Could not delete features: .
+        /// </summary>
+        public static string PTBDelete {
+            get {
+                return ResourceManager.GetString("PTBDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exception caught:.
+        /// </summary>
+        public static string PTBException {
+            get {
+                return ResourceManager.GetString("PTBException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Exporting Layer: .
+        /// </summary>
+        public static string PTBExport {
+            get {
+                return ResourceManager.GetString("PTBExport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Loading Required Layer Package....
+        /// </summary>
+        public static string PTBLoad {
+            get {
+                return ResourceManager.GetString("PTBLoad", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save As cancelled.
+        /// </summary>
+        public static string PTBMsgCancel {
+            get {
+                return ResourceManager.GetString("PTBMsgCancel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Unable to clear selected features.
+        /// </summary>
+        public static string PTBMsgClear {
+            get {
+                return ResourceManager.GetString("PTBMsgClear", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Edits must be saved before proceeding. Save edits?.
+        /// </summary>
+        public static string PTBMsgEdit {
+            get {
+                return ResourceManager.GetString("PTBMsgEdit", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save As process failed..
+        /// </summary>
+        public static string PTBMsgFail {
+            get {
+                return ResourceManager.GetString("PTBMsgFail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Save All Edits.
+        /// </summary>
+        public static string PTBMsgSave {
+            get {
+                return ResourceManager.GetString("PTBMsgSave", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Could not find required layer in the active map: .
+        /// </summary>
+        public static string PTBNFLayer {
+            get {
+                return ResourceManager.GetString("PTBNFLayer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Warning - unable to execute command:.
+        /// </summary>
+        public static string PTBWarning {
+            get {
+                return ResourceManager.GetString("PTBWarning", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to exception.
+        /// </summary>
+        public static string RCException {
+            get {
+                return ResourceManager.GetString("RCException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Properties.
         /// </summary>
         public static string TitleEditProperties {
@@ -934,6 +1096,15 @@ namespace ProAppDistanceAndDirectionModule.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Delete.
+        /// </summary>
+        public static string TooltipDelete {
+            get {
+                return ResourceManager.GetString("TooltipDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Edit Properties.
         /// </summary>
         public static string TooltipEditProperties {
@@ -948,6 +1119,42 @@ namespace ProAppDistanceAndDirectionModule.Properties {
         public static string TooltipMapPointTool {
             get {
                 return ResourceManager.GetString("TooltipMapPointTool", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &apos;expression&apos; did not provide a property name..
+        /// </summary>
+        public static string WFAEException {
+            get {
+                return ResourceManager.GetString("WFAEException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to handler.
+        /// </summary>
+        public static string WFHandle {
+            get {
+                return ResourceManager.GetString("WFHandle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Please provide a lambda expression like &apos;n =&gt; n.PropertyName&apos;.
+        /// </summary>
+        public static string WFMessage {
+            get {
+                return ResourceManager.GetString("WFMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to expression.
+        /// </summary>
+        public static string WFNException {
+            get {
+                return ResourceManager.GetString("WFNException", resourceCulture);
             }
         }
     }

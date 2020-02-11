@@ -86,14 +86,14 @@ namespace ProAppDistanceAndDirectionModule.Common
             Action<TPropertySource> handler)
         {
             if (expression == null)
-                throw new ArgumentNullException("expression");
+                throw new ArgumentNullException(Properties.Resources.WFNException);
 
             string propertyName = GetPropertyName(expression);
             if (String.IsNullOrEmpty(propertyName))
-                throw new ArgumentException("'expression' did not provide a property name.");
+                throw new ArgumentException(Properties.Resources.WFNException);
 
             if (handler == null)
-                throw new ArgumentNullException("handler");
+                throw new ArgumentNullException(Properties.Resources.WFHandle);
 
             TPropertySource propertySource = this.GetPropertySource();
             if (propertySource != null)
@@ -119,11 +119,11 @@ namespace ProAppDistanceAndDirectionModule.Common
         public PropertyObserver<TPropertySource> UnregisterHandler(Expression<Func<TPropertySource, object>> expression)
         {
             if (expression == null)
-                throw new ArgumentNullException("expression");
+                throw new ArgumentNullException(Properties.Resources.WFNException);
 
             string propertyName = GetPropertyName(expression);
             if (String.IsNullOrEmpty(propertyName))
-                throw new ArgumentException("'expression' did not provide a property name.");
+                throw new ArgumentException(Properties.Resources.WFAEException);
 
             TPropertySource propertySource = this.GetPropertySource();
             if (propertySource != null)
@@ -204,7 +204,7 @@ namespace ProAppDistanceAndDirectionModule.Common
                 memberExpression = lambda.Body as MemberExpression;
             }
 
-            Debug.WriteLineIf(memberExpression != null, "Please provide a lambda expression like 'n => n.PropertyName'");
+            Debug.WriteLineIf(memberExpression != null, Properties.Resources.WFMessage);
 
             if (memberExpression != null)
             {

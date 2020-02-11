@@ -14,6 +14,8 @@
   *   limitations under the License. 
   ******************************************************************************/
 
+using ProAppDistanceAndDirectionModule.Common;
+using ProAppDistanceAndDirectionModule.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -22,7 +24,7 @@ using System.Text;
 using System.Xml.Serialization;
 
 
-namespace ProAppDistanceAndDirectionModule.Common
+namespace ProAppDistanceAndDirectionModule.ViewModels
 {
     public class OutputDistanceViewModel : NotificationObject
     {

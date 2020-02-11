@@ -64,7 +64,7 @@ namespace ProAppDistanceAndDirectionModule.Common
         /// </summary>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            throw new Exception("Cant convert back");
+            throw new Exception(Properties.Resources.EFConverter);
         }
         #endregion
     }

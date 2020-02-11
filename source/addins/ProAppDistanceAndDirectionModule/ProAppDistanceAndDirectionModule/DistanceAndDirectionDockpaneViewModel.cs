@@ -15,6 +15,7 @@
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ProAppDistanceAndDirectionModule.Common;
+using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.ViewModels;
 using ProAppDistanceAndDirectionModule.Views;
 using System.Windows.Controls;

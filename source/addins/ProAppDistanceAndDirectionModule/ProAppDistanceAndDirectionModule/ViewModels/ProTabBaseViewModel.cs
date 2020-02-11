@@ -1219,7 +1219,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 // Prompt for confirmation, and if answer is no, return.
                 var result = ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                    "Edits must be saved before proceeding. Save edits?", "Save All Edits", System.Windows.MessageBoxButton.OKCancel, System.Windows.MessageBoxImage.Asterisk);
+                    Properties.Resources.PTBMsgEdit, Properties.Resources.PTBMsgSave, System.Windows.MessageBoxButton.OKCancel, System.Windows.MessageBoxImage.Asterisk);
 
                 // Return if cancel value is chosen
                 if (Convert.ToString(result) == "OK")
@@ -1228,7 +1228,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 else // operation cancelled
                 {
-                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Save As cancelled.");
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(Properties.Resources.PTBMsgCancel);
                     return;
                 }
             }
@@ -1236,7 +1236,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             //Clear any selected features before executing export process
             if (!ExecuteBuiltinCommand("esri_mapping_clearSelectionButton"))
             {
-                System.Diagnostics.Trace.WriteLine("Unable to clear selected features");
+                System.Diagnostics.Trace.WriteLine(Properties.Resources.PTBMsgClear);
             }
 
             var dlg = new ProSaveAsFormatView();
@@ -1259,7 +1259,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         if (vm.KmlIsChecked)
                             saveAsType = SaveAsType.KML;
 
-                        _progressDialog = new ProgressDialog("Exporting Layer: " + this.GetLayerName());
+                        _progressDialog = new ProgressDialog(Properties.Resources.PTBExport + this.GetLayerName());
                         _progressDialog.Show();
                         success = await fcUtils.ExportLayer(this.GetLayerName(), path, saveAsType);
                         _progressDialog.Hide();
@@ -1270,7 +1270,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }
 
                     if (!success)
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Save As process failed.");
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(Properties.Resources.PTBMsgFail);
                 }
             }
         }
@@ -1301,7 +1301,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         private async Task<bool> AddLayerPackageToMapAsync()
         {
-            _progressDialog = new ProgressDialog("Loading Required Layer Package...");
+            _progressDialog = new ProgressDialog(Properties.Resources.PTBLoad);
 
             bool success = false;
 
@@ -1337,7 +1337,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             catch (Exception exception)
             {
                 // Catch any exception found and display a message box.
-                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Exception caught: " + exception.Message);
+                ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(Properties.Resources.PTBException + exception.Message);
             }
 
             return success;
@@ -1398,7 +1398,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // Note: Must be called on Main/UI Thread
                     System.Windows.Application.Current.Dispatcher.Invoke(() =>
                     {
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Could not find required layer in the active map: " + this.GetLayerName());
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(Properties.Resources.PTBNFLayer + this.GetLayerName());
                     });
                 }
                 else
@@ -1527,7 +1527,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (!result)
             {
-                System.Diagnostics.Trace.WriteLine("Could not delete features: " + error);
+                System.Diagnostics.Trace.WriteLine(Properties.Resources.PTBDelete + error);
                 //Important/Note: MessageBox will deadlock thread if called on MCT - 
                 //Therefore need to ensure called on UI thread
                 // ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(String.Format("Could not delete features : {0}",
@@ -1554,7 +1554,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 else
                 {
-                    System.Diagnostics.Trace.WriteLine("Warning - unable to execute command: " + commandId);
+                    System.Diagnostics.Trace.WriteLine(Properties.Resources.PTBWarning + commandId);
                 }
             });
 

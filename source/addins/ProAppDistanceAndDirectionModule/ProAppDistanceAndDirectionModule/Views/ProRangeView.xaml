@@ -253,7 +253,7 @@
                             Content="{x:Static prop:Resources.LabelClearGraphics}"
                             ToolTip="{x:Static prop:Resources.LabelClearGraphics}">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource TransparentButtonStyle}">
+                            <Style TargetType="Button" BasedOn="{StaticResource Esri_Button}">
                                 <Setter Property="IsEnabled" Value="False" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding HasMapGraphics}" Value="True">
@@ -270,7 +270,7 @@
                             Content="{x:Static prop:Resources.LabelSaveAs}"
                             ToolTip="{x:Static prop:Resources.LabelSaveAs}">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource TransparentButtonStyle}">
+                            <Style TargetType="Button" BasedOn="{StaticResource Esri_Button}">
                                 <Setter Property="IsEnabled" Value="False" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding HasMapGraphics}" Value="True">

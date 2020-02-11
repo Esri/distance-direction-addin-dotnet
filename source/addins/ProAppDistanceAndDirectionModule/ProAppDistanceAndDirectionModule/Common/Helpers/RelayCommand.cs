@@ -35,7 +35,7 @@ namespace ProAppDistanceAndDirectionModule.Common
         public RelayCommand(Action<object> execute, Predicate<object> canExecute)
         {
             if (execute == null)
-                throw new ArgumentNullException("execute");
+                throw new ArgumentNullException(Properties.Resources.RCException);
 
             _execute = execute;
             _canExecute = canExecute;

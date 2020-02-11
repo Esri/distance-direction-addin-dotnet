@@ -6,7 +6,7 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
             xmlns:Behaviors="clr-namespace:ArcGIS.Desktop.Internal.Framework.Behaviors;assembly=ArcGIS.Desktop.Framework"
-            xmlns:viewModels ="clr-namespace:ProAppDistanceAndDirectionModule.Common"
+            xmlns:viewModels ="clr-namespace:ProAppDistanceAndDirectionModule.ViewModels"
             xmlns:prop="clr-namespace:ProAppDistanceAndDirectionModule.Properties"
             x:Name="ocView"
             d:DesignHeight="150"
@@ -246,7 +246,7 @@
                             <Button
 								Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=DataGrid}}"
 								CommandParameter="{Binding UniqueRowId}"
-								ToolTip="Delete" Style="{StaticResource ImageButtonStyle}">
+								ToolTip="{x:Static prop:Resources.TooltipDelete}" Style="{StaticResource ImageButtonStyle}">
                                 <Image
 									Width="16"
 									Height="16"

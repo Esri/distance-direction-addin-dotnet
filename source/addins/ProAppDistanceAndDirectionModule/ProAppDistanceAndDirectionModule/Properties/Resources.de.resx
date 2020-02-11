@@ -118,369 +118,369 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="AEEnterValue" xml:space="preserve">
-    <value>Enter value</value>
+    <value>Enter value de</value>
   </data>
   <data name="AEInvalidCoordinate" xml:space="preserve">
-    <value>Invalid coordinate</value>
+    <value>Invalid coordinate de</value>
   </data>
   <data name="AEInvalidInput" xml:space="preserve">
-    <value>Invalid input</value>
+    <value>Invalid input de</value>
   </data>
   <data name="AEMustBePositive" xml:space="preserve">
-    <value>The number must be positive</value>
+    <value>The number must be positive de</value>
   </data>
   <data name="AENumOfRadials" xml:space="preserve">
-    <value>The number of radials must be between {0} and {1}</value>
+    <value>The number of radials must be between {0} and {1} de</value>
   </data>
   <data name="AENumOfRings" xml:space="preserve">
-    <value>The number of rings must be between {0} and {1}</value>
+    <value>The number of rings must be between {0} and {1} de</value>
   </data>
   <data name="ButtonCancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Cancel de</value>
   </data>
   <data name="ButtonOK" xml:space="preserve">
-    <value>OK</value>
+    <value>OK de</value>
   </data>
   <data name="DistanceDirectionLabel" xml:space="preserve">
-    <value>Distance and Direction</value>
+    <value>Distance and Direction de</value>
   </data>
   <data name="EFConverter" xml:space="preserve">
-    <value>Cant convert back</value>
+    <value>Cant convert back de</value>
   </data>
   <data name="EndPointAndStartPointSameError" xml:space="preserve">
-    <value>Ending Point should not be the same as the Starting Point</value>
+    <value>Ending Point should not be the same as the Starting Point de</value>
   </data>
   <data name="EnumBearingAndDistance" xml:space="preserve">
-    <value>Distance and Bearing</value>
+    <value>Distance and Bearing de</value>
   </data>
   <data name="EnumCTDD" xml:space="preserve">
-    <value>DD</value>
+    <value>DD de</value>
   </data>
   <data name="EnumCTDDM" xml:space="preserve">
-    <value>DDM</value>
+    <value>DDM de</value>
   </data>
   <data name="EnumCTDMS" xml:space="preserve">
-    <value>DMS</value>
+    <value>DMS de</value>
   </data>
   <data name="EnumCTGARS" xml:space="preserve">
-    <value>GARS</value>
+    <value>GARS de</value>
   </data>
   <data name="EnumCTMGRS" xml:space="preserve">
-    <value>MGRS</value>
+    <value>MGRS de</value>
   </data>
   <data name="EnumCTNone" xml:space="preserve">
-    <value>Default Map Unit</value>
+    <value>Default Map Unit de</value>
   </data>
   <data name="EnumCTUSNG" xml:space="preserve">
-    <value>USNG</value>
+    <value>USNG de</value>
   </data>
   <data name="EnumCTUTM" xml:space="preserve">
-    <value>UTM</value>
+    <value>UTM de</value>
   </data>
   <data name="EnumDegrees" xml:space="preserve">
-    <value>Degrees</value>
+    <value>Degrees de</value>
   </data>
   <data name="EnumDiameter" xml:space="preserve">
-    <value>Diameter</value>
+    <value>Diameter de</value>
   </data>
   <data name="EnumFeet" xml:space="preserve">
-    <value>Feet</value>
+    <value>Feet de</value>
   </data>
   <data name="EnumFeetHour" xml:space="preserve">
-    <value>Feet / Hour</value>
+    <value>Feet / Hour de</value>
   </data>
   <data name="EnumFeetSec" xml:space="preserve">
-    <value>Feet / Second</value>
+    <value>Feet / Second de</value>
   </data>
   <data name="EnumFull" xml:space="preserve">
-    <value>Full</value>
+    <value>Full de</value>
   </data>
   <data name="EnumGeodesic" xml:space="preserve">
-    <value>Geodetic</value>
+    <value>Geodetic de</value>
   </data>
   <data name="EnumGradians" xml:space="preserve">
-    <value>Gradians</value>
+    <value>Gradians de</value>
   </data>
   <data name="EnumGreatElliptic" xml:space="preserve">
-    <value>Great Elliptic</value>
+    <value>Great Elliptic de</value>
   </data>
   <data name="EnumKilometers" xml:space="preserve">
-    <value>Kilometers</value>
+    <value>Kilometers de</value>
   </data>
   <data name="EnumKilometersHour" xml:space="preserve">
-    <value>Kilometers / Hour</value>
+    <value>Kilometers / Hour de</value>
   </data>
   <data name="EnumKilometersSec" xml:space="preserve">
-    <value>Kilometers / Second</value>
+    <value>Kilometers / Second de</value>
   </data>
   <data name="EnumLoxodrome" xml:space="preserve">
-    <value>Loxodrome</value>
+    <value>Loxodrome de</value>
   </data>
   <data name="EnumMeters" xml:space="preserve">
-    <value>Meters</value>
+    <value>Meters de</value>
   </data>
   <data name="EnumMetersHour" xml:space="preserve">
-    <value>Meters / Hour</value>
+    <value>Meters / Hour de</value>
   </data>
   <data name="EnumMetersSec" xml:space="preserve">
-    <value>Meters / Second</value>
+    <value>Meters / Second de</value>
   </data>
   <data name="EnumMiles" xml:space="preserve">
-    <value>Miles</value>
+    <value>Miles de</value>
   </data>
   <data name="EnumMilesHour" xml:space="preserve">
-    <value>Miles / Hour</value>
+    <value>Miles / Hour de</value>
   </data>
   <data name="EnumMilesSec" xml:space="preserve">
-    <value>Miles / Second</value>
+    <value>Miles / Second de</value>
   </data>
   <data name="EnumMils" xml:space="preserve">
-    <value>Mils</value>
+    <value>Mils de</value>
   </data>
   <data name="EnumNauticalMile" xml:space="preserve">
-    <value>Nautical Miles</value>
+    <value>Nautical Miles de</value>
   </data>
   <data name="EnumNauticalMilesHour" xml:space="preserve">
-    <value>Nautical Miles / Hour</value>
+    <value>Nautical Miles / Hour de</value>
   </data>
   <data name="EnumNauticalMilesSec" xml:space="preserve">
-    <value>Nautical Miles / Second</value>
+    <value>Nautical Miles / Second de</value>
   </data>
   <data name="EnumPoints" xml:space="preserve">
-    <value>Points</value>
+    <value>Points de</value>
   </data>
   <data name="EnumRadius" xml:space="preserve">
-    <value>Radius</value>
+    <value>Radius de</value>
   </data>
   <data name="EnumSemi" xml:space="preserve">
-    <value>Semi</value>
+    <value>Semi de</value>
   </data>
   <data name="EnumYards" xml:space="preserve">
-    <value>Yards</value>
+    <value>Yards de</value>
   </data>
   <data name="ErrorDeleteFailed" xml:space="preserve">
-    <value>Failed to delete features from layer: </value>
+    <value>Failed to delete features from layer: de</value>
   </data>
   <data name="ErrorFeatureClassNotFound" xml:space="preserve">
-    <value>Required feature layer was not found: </value>
+    <value>Required feature layer was not found: de</value>
   </data>
   <data name="ErrorFeatureCreateTitle" xml:space="preserve">
-    <value>Feature Create Error</value>
+    <value>Feature Create Error de</value>
   </data>
   <data name="FeatureClassNameError" xml:space="preserve">
-    <value>Please provide a valid feature class name</value>
+    <value>Please provide a valid feature class name de</value>
   </data>
   <data name="InvalidSpatialReferenceError" xml:space="preserve">
-    <value>The operation requires a valid spatial reference</value>
+    <value>The operation requires a valid spatial reference de</value>
   </data>
   <data name="KMZExportComplete" xml:space="preserve">
-    <value>KMZ Exported Successfully</value>
+    <value>KMZ Exported Successfully de</value>
   </data>
   <data name="LabelAngle" xml:space="preserve">
-    <value>Angle</value>
+    <value>Angle de</value>
   </data>
   <data name="LabelAxisGroup" xml:space="preserve">
-    <value>Axis</value>
+    <value>Axis de</value>
   </data>
   <data name="LabelAxisUnits" xml:space="preserve">
-    <value>Units</value>
+    <value>Units de</value>
   </data>
   <data name="LabelCenterPoint" xml:space="preserve">
-    <value>Center Point</value>
+    <value>Center Point de</value>
   </data>
   <data name="LabelClearGraphics" xml:space="preserve">
-    <value>Clear All</value>
+    <value>Clear All de</value>
   </data>
   <data name="LabelCreateCircleFrom" xml:space="preserve">
-    <value>From</value>
+    <value>From de</value>
   </data>
   <data name="LabelCreateEllipseWith" xml:space="preserve">
-    <value>Create Ellipse with</value>
+    <value>Create Ellipse with de</value>
   </data>
   <data name="LabelCreateFeature" xml:space="preserve">
-    <value>Create Feature</value>
+    <value>Create Feature de</value>
   </data>
   <data name="LabelDirectionAzimuth" xml:space="preserve">
-    <value>Direction / Azimuth</value>
+    <value>Direction / Azimuth de</value>
   </data>
   <data name="LabelDisplayCoordinate" xml:space="preserve">
-    <value>Display Coordinate</value>
+    <value>Display Coordinate de</value>
   </data>
   <data name="LabelDistanceCalculator" xml:space="preserve">
-    <value>Distance Calculator</value>
+    <value>Distance Calculator de</value>
   </data>
   <data name="LabelDistanceLength" xml:space="preserve">
-    <value>Distance / Length</value>
+    <value>Distance / Length de</value>
   </data>
   <data name="LabelDistanceUnit" xml:space="preserve">
-    <value>Distance Unit</value>
+    <value>Distance Unit de</value>
   </data>
   <data name="LabelEllipseType" xml:space="preserve">
-    <value>Ellipse Type</value>
+    <value>Ellipse Type de</value>
   </data>
   <data name="LabelEndingPoint" xml:space="preserve">
-    <value>Ending Point</value>
+    <value>Ending Point de</value>
   </data>
   <data name="LabelFrom" xml:space="preserve">
-    <value>From:</value>
+    <value>From: de</value>
   </data>
   <data name="LabelInteractive" xml:space="preserve">
-    <value>Interactive</value>
+    <value>Interactive de</value>
   </data>
   <data name="LabelInterval" xml:space="preserve">
-    <value>Interval Between Rings</value>
+    <value>Interval Between Rings de</value>
   </data>
   <data name="LabelLineType" xml:space="preserve">
-    <value>Line Type</value>
+    <value>Line Type de</value>
   </data>
   <data name="LabelMajorAxis" xml:space="preserve">
-    <value>Major</value>
+    <value>Major de</value>
   </data>
   <data name="LabelMapPoint" xml:space="preserve">
-    <value>Map Point</value>
+    <value>Map Point de</value>
   </data>
   <data name="LabelMinorAxis" xml:space="preserve">
-    <value>Minor</value>
+    <value>Minor de</value>
   </data>
   <data name="LabelNumberOfRadials" xml:space="preserve">
-    <value>Number of Radials</value>
+    <value>Number of Radials de</value>
   </data>
   <data name="LabelNumberOfRings" xml:space="preserve">
-    <value>Number of Rings</value>
+    <value>Number of Rings de</value>
   </data>
   <data name="LabelOrientationAngle" xml:space="preserve">
-    <value>Angle</value>
+    <value>Angle de</value>
   </data>
   <data name="LabelOrientationGroup" xml:space="preserve">
-    <value>Orientation</value>
+    <value>Orientation de</value>
   </data>
   <data name="LabelOrientationUnit" xml:space="preserve">
-    <value>Units</value>
+    <value>Units de</value>
   </data>
   <data name="LabelPSCancel" xml:space="preserve">
-    <value>Cancel</value>
+    <value>Cancel  de</value>
   </data>
   <data name="LabelPSFCShape" xml:space="preserve">
-    <value>Feature class / Shapefile</value>
+    <value>Feature class / Shapefile de</value>
   </data>
   <data name="LabelPSKMZ" xml:space="preserve">
-    <value>KMZ</value>
+    <value>KMZ de</value>
   </data>
   <data name="LabelPSOK" xml:space="preserve">
-    <value>OK</value>
+    <value>OK de</value>
   </data>
   <data name="LabelPSTitle" xml:space="preserve">
-    <value>Select Output</value>
+    <value>Select Output de</value>
   </data>
   <data name="LabelRadius" xml:space="preserve">
-    <value>Radius</value>
+    <value>Radius de</value>
   </data>
   <data name="LabelRadiusDiameter" xml:space="preserve">
-    <value>Radius / Diameter</value>
+    <value>Radius / Diameter de</value>
   </data>
   <data name="LabelRangeRingsCenterPoint" xml:space="preserve">
-    <value>Center Point</value>
+    <value>Center Point de</value>
   </data>
   <data name="LabelRangeRingsDistanceBetween" xml:space="preserve">
-    <value>Distance between Rings</value>
+    <value>Distance between Rings de</value>
   </data>
   <data name="LabelRangeRingsNumberofRadials" xml:space="preserve">
-    <value>Number of Radials</value>
+    <value>Number of Radials de</value>
   </data>
   <data name="LabelRate" xml:space="preserve">
-    <value>Rate</value>
+    <value>Rate de</value>
   </data>
   <data name="LabelRingType" xml:space="preserve">
-    <value>Ring Type</value>
+    <value>Ring Type de</value>
   </data>
   <data name="LabelSaveAs" xml:space="preserve">
-    <value>Export</value>
+    <value>Export de</value>
   </data>
   <data name="LabelStartingPoint" xml:space="preserve">
-    <value>Starting Point</value>
+    <value>Starting Point de</value>
   </data>
   <data name="LabelTabCircle" xml:space="preserve">
-    <value>Circle</value>
+    <value>Circle de</value>
   </data>
   <data name="LabelTabEllipse" xml:space="preserve">
-    <value>Ellipse</value>
+    <value>Ellipse de</value>
   </data>
   <data name="LabelTabLines" xml:space="preserve">
-    <value>Line</value>
+    <value>Line de</value>
   </data>
   <data name="LabelTabRange" xml:space="preserve">
-    <value>Rings</value>
+    <value>Rings de</value>
   </data>
   <data name="LabelTime" xml:space="preserve">
-    <value>Time</value>
+    <value>Time de</value>
   </data>
   <data name="MsgOutOfAOI" xml:space="preserve">
-    <value>Point is out of bounds</value>
+    <value>Point is out of bounds de</value>
   </data>
   <data name="MsgRingValidDistances" xml:space="preserve">
-    <value>Add one or more distances to draw the rings.</value>
+    <value>Add one or more distances to draw the rings. de</value>
   </data>
   <data name="PTBDelete" xml:space="preserve">
-    <value>Could not delete features: </value>
+    <value>Could not delete features: de</value>
   </data>
   <data name="PTBException" xml:space="preserve">
-    <value>Exception caught:</value>
+    <value>Exception caught: de</value>
   </data>
   <data name="PTBExport" xml:space="preserve">
-    <value>Exporting Layer: </value>
+    <value>Exporting Layer:  de</value>
   </data>
   <data name="PTBLoad" xml:space="preserve">
-    <value>Loading Required Layer Package...</value>
+    <value>Loading Required Layer Package... de</value>
   </data>
   <data name="PTBMsgCancel" xml:space="preserve">
-    <value>Save As cancelled</value>
+    <value>Save As cancelled de</value>
   </data>
   <data name="PTBMsgClear" xml:space="preserve">
-    <value>Unable to clear selected features</value>
+    <value>Unable to clear selected features de</value>
   </data>
   <data name="PTBMsgEdit" xml:space="preserve">
-    <value>Edits must be saved before proceeding. Save edits?</value>
+    <value>Edits must be saved before proceeding. Save edits? de</value>
   </data>
   <data name="PTBMsgFail" xml:space="preserve">
-    <value>Save As process failed.</value>
+    <value>Save As process failed. de</value>
   </data>
   <data name="PTBMsgSave" xml:space="preserve">
-    <value>Save All Edits</value>
+    <value>Save All Edits de</value>
   </data>
   <data name="PTBNFLayer" xml:space="preserve">
-    <value>Could not find required layer in the active map: </value>
+    <value>Could not find required layer in the active map:  de</value>
   </data>
   <data name="PTBWarning" xml:space="preserve">
-    <value>Warning - unable to execute command:</value>
+    <value>Warning - unable to execute command: de</value>
   </data>
   <data name="RCException" xml:space="preserve">
-    <value>exception</value>
+    <value>exception de</value>
   </data>
   <data name="TitleEditProperties" xml:space="preserve">
-    <value>Edit Properties</value>
+    <value>Edit Properties de</value>
   </data>
   <data name="TooltipAddDistance" xml:space="preserve">
-    <value>Add Distance</value>
+    <value>Add Distance de</value>
   </data>
   <data name="TooltipDelete" xml:space="preserve">
-    <value>Delete</value>
+    <value>Delete de</value>
   </data>
   <data name="TooltipEditProperties" xml:space="preserve">
-    <value>Edit Properties</value>
+    <value>Edit Properties de</value>
   </data>
   <data name="TooltipMapPointTool" xml:space="preserve">
-    <value>Map Point Tool</value>
+    <value>Map Point Tool de</value>
   </data>
   <data name="WFAEException" xml:space="preserve">
-    <value>'expression' did not provide a property name.</value>
+    <value>'expression' did not provide a property name. de</value>
   </data>
   <data name="WFHandle" xml:space="preserve">
-    <value>handler</value>
+    <value>handler de</value>
   </data>
   <data name="WFMessage" xml:space="preserve">
-    <value>Please provide a lambda expression like 'n =&gt; n.PropertyName'</value>
+    <value>Please provide a lambda expression like 'n =&gt; n.PropertyName' de</value>
   </data>
   <data name="WFNException" xml:space="preserve">
-    <value>expression</value>
+    <value>expression de</value>
   </data>
 </root>

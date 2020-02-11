@@ -13,7 +13,10 @@
 // limitations under the License.
 
 
-namespace ProAppDistanceAndDirectionModule.Common
+using ProAppDistanceAndDirectionModule.Common;
+using ProAppDistanceAndDirectionModule.Models;
+
+namespace ProAppDistanceAndDirectionModule.ViewModels
 {
     public class EditPropertiesViewModel : NotificationObject
     {

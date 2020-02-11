@@ -23,7 +23,7 @@ using CoordinateConversionLibrary.Models;
 using ProAppDistanceAndDirectionModule.Common;
 using ProAppDistanceAndDirectionModule.ViewModels;
 using System;
-
+using ProAppDistanceAndDirectionModule.Models;
 
 namespace ProAppDistanceAndDirectionModule.Views
 {
