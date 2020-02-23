@@ -127,15 +127,15 @@ namespace ProAppDistanceAndDirectionModule.Models
             return false;
         }
 
-        public async Task<bool> ExportLayer(string layerName, string outputPath, SaveAsType saveAsType)
+        public Task<bool> ExportLayer(string layerName, string outputPath, SaveAsType saveAsType)
         {
             if (saveAsType == SaveAsType.KML)
-                return await ExportKMLLayer(layerName, outputPath);
+                return ExportKMLLayerAsync(layerName, outputPath);
             else
-                return await ExportFeatureLayer(layerName, outputPath);
+                return ExportFeatureLayerAsync(layerName, outputPath);
         }
 
-        public async Task<bool> ExportFeatureLayer(string layerName, string outputPath)
+        public async Task<bool> ExportFeatureLayerAsync(string layerName, string outputPath)
         {
             bool success = false;
 
@@ -165,7 +165,7 @@ namespace ProAppDistanceAndDirectionModule.Models
             return success;
         }
 
-        public async Task<bool> ExportKMLLayer(string layerName, string outputPath)
+        public async Task<bool> ExportKMLLayerAsync(string layerName, string outputPath)
         {
             bool success = false;
 
