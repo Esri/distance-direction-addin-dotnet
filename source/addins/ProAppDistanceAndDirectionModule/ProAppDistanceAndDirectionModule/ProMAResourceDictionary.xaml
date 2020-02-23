@@ -2,13 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib" 
                     xmlns:local="clr-namespace:DistanceAndDirectionLibrary;assembly=DistanceAndDirectionLibrary"
-                    xmlns:prop="clr-namespace:DistanceAndDirectionLibrary.Properties;assembly=DistanceAndDirectionLibrary"
-                    xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions">
-
-    <ResourceDictionary.MergedDictionaries>
-        <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
-    </ResourceDictionary.MergedDictionaries>
-
+                    xmlns:prop="clr-namespace:DistanceAndDirectionLibrary.Properties;assembly=DistanceAndDirectionLibrary">
     <Style x:Key="ProBorderedButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
         <Setter Property="Background" Value="Transparent"/>

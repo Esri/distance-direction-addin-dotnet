@@ -3,8 +3,7 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
-            xmlns:Behaviors="clr-namespace:ArcGIS.Desktop.Internal.Framework.Behaviors;assembly=ArcGIS.Desktop.Framework"
+            xmlns:behaviors="clr-namespace:ArcGIS.Desktop.Internal.Framework.Behaviors;assembly=ArcGIS.Desktop.Framework"
             xmlns:viewModels ="clr-namespace:DistanceAndDirectionLibrary.ViewModels;assembly=DistanceAndDirectionLibrary"
             xmlns:prop="clr-namespace:DistanceAndDirectionLibrary.Properties;assembly=DistanceAndDirectionLibrary"
             x:Name="ocView"
@@ -14,7 +13,6 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
                 <ResourceDictionary Source="/DistanceAndDirectionLibrary;component/MAResourceDictionary.xaml" />
                 <ResourceDictionary Source="../ProMAResourceDictionary.xaml"/>
                 <ResourceDictionary>
@@ -90,7 +88,7 @@
                                 <Trigger Property="IsPressed" Value="True">
                                     <Setter Property="Background" TargetName="HeaderGrid" Value="{DynamicResource Esri_Blue3}"/>
                                 </Trigger>
-                                <Trigger Property="Behaviors:DataGridBehavior.IsSelectedHeader" Value="True">
+                                <Trigger Property="behaviors:DataGridBehavior.IsSelectedHeader" Value="True">
                                     <Setter Property="Background" TargetName="HeaderGrid" Value="{DynamicResource Esri_Blue6}"/>
                                 </Trigger>
                                 <!--<Trigger Property="SortDirection" Value="Ascending">

@@ -30,6 +30,5 @@
                     Width=" 75" Margin="3,8,3,5" 
                     Style="{DynamicResource Esri_Button}" />
         </StackPanel>
-
     </StackPanel>
 </controls:ProWindow>
