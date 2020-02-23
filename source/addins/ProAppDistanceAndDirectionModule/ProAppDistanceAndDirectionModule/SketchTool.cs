@@ -84,7 +84,6 @@ namespace ProAppDistanceAndDirectionModule
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
-            base.OnToolMouseMove(e);
         }
 
         protected override async void OnToolDoubleClick(MapViewMouseButtonEventArgs e)
