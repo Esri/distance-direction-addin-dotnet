@@ -32,10 +32,9 @@ using DistanceAndDirectionLibrary.Helpers;
 using DistanceAndDirectionLibrary.Models;
 using DistanceAndDirectionLibrary;
 using ProAppDistanceAndDirectionModule.Models;
-using ProAppDistanceAndDirectionModule.Views;
-using ProAppDistanceAndDirectionModule.ViewModels;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Core.Geoprocessing;
+using ArcGIS.Desktop.Internal.Mapping;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -1304,7 +1303,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             try
             {
                 _progressDialog.Show();
-
+                
                 await QueuedTask.Run(() =>
                 {
                     string layerFileName = "DistanceAndDirection.lpkx";
@@ -1323,7 +1322,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // Save the project, so layer stays in project
                 // Note: Must be called on Main/UI Thread
                 if (success)
-                    await ArcGIS.Desktop.Framework.FrameworkApplication.Current.Dispatcher.Invoke(async () =>
+                    await Utilities.StartOnUIThread(async () =>
                     {
                         bool success2 = await ArcGIS.Desktop.Core.Project.Current.SaveAsync();
                     });
@@ -1379,10 +1378,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if ((featureLayer == null) && (addToMapIfNotPresent))
             {
-                await System.Windows.Application.Current.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Normal, (Action)(async () =>
+                await Utilities.StartOnUIThread(async () =>
                 {
                     await AddLayerPackageToMapAsync();
-                }));
+                });
 
                 // Verify added correctly
                 featureLayer = GetFeatureLayerByNameInActiveView(featureLayerName);
@@ -1392,7 +1391,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (featureLayer == null)
                 {
                     // Note: Must be called on Main/UI Thread
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    await Utilities.StartOnUIThread(() =>
                     {
                         ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show("Could not find required layer in the active map: " + this.GetLayerName());
                     });
