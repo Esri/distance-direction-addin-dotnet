@@ -781,7 +781,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Private Functions
 
-        private async Task ZoomToExtent(Envelope env)
+        private void ZoomToExtent(Envelope env)
         {
             if (env == null || MapView.Active == null || MapView.Active.Map == null)
                 return;
@@ -793,13 +793,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             double ymin = env.YMin - extentPercent;
 
             // avoid chaining issues
-            var mapSpatialReference = MapView.Active.Map.SpatialReference;
+            var mapView = MapView.Active;
 
             //Create the envelope
-            var envelope = await QueuedTask.Run(() => ArcGIS.Core.Geometry.EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, mapSpatialReference));
-
-            //Zoom the view to a given extent.
-            MapView.Active.ZoomToAsync(envelope, TimeSpan.FromSeconds(0.5));
+            QueuedTask.Run(() =>
+            {
+                var envelope = ArcGIS.Core.Geometry.EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, mapView.Map.SpatialReference);
+                //Zoom the view to a given extent.
+                mapView.ZoomToAsync(envelope, TimeSpan.FromSeconds(0.5));
+            });
         }
 
         /// <summary>
