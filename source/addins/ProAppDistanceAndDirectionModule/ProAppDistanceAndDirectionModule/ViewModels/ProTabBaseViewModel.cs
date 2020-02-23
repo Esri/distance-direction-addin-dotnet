@@ -1303,7 +1303,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             try
             {
                 _progressDialog.Show();
-                
+
+                // avoid chaining issues
+                var map = MapView.Active.Map;
+
                 await QueuedTask.Run(() =>
                 {
                     string layerFileName = "DistanceAndDirection.lpkx";
@@ -1314,7 +1317,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         // Now add the layer package
                         Layer layerAdded = LayerFactory.Instance.CreateLayer(
-                            new Uri(layerPath), MapView.Active.Map);
+                            new Uri(layerPath), map);
                         success = (layerAdded != null);
                     }
                 });
