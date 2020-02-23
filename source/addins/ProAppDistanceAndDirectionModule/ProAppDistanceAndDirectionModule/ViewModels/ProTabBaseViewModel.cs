@@ -561,9 +561,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 });
             }
 
+            // avoid chaining issues
+            var mapView = MapView.Active;
+
             await QueuedTask.Run(() =>
                 {
-                    var disposable = MapView.Active.AddOverlay(geom, symbol);
+                    var disposable = mapView.AddOverlay(geom, symbol);
                     overlayObjects.Add(disposable);
 
                     var gt = GetGraphicType();
@@ -635,7 +638,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Calls CreateMapElement
         /// </summary>
         /// <param name="obj"></param>
-        internal virtual async void OnEnterKeyCommand(object obj)
+        internal virtual void OnEnterKeyCommand(object obj)
         {
             var depends = obj as System.Windows.DependencyObject;
 
@@ -650,7 +653,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (geom != null)
             {
-                await ZoomToExtent(geom.Extent);
+                ZoomToExtent(geom.Extent);
             }
         }
 
@@ -673,11 +676,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             if ((point != null) && (MapView.Active != null) && (MapView.Active.Map != null))
             {
-                Envelope env = null;
-                await QueuedTask.Run(() =>
-                {
-                    env = MapView.Active.Map.CalculateFullExtent();
-                });
+                // avoid chaining issues
+                var map = MapView.Active.Map;
+
+                var env = await QueuedTask.Run(() => map.CalculateFullExtent());
 
                 bool isValid = false;
 
@@ -790,11 +792,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             double ymax = env.YMax + extentPercent;
             double ymin = env.YMin - extentPercent;
 
+            // avoid chaining issues
+            var mapSpatialReference = MapView.Active.Map.SpatialReference;
+
             //Create the envelope
-            var envelope = await QueuedTask.Run(() => ArcGIS.Core.Geometry.EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, MapView.Active.Map.SpatialReference));
+            var envelope = await QueuedTask.Run(() => ArcGIS.Core.Geometry.EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, mapSpatialReference));
 
             //Zoom the view to a given extent.
-            await MapView.Active.ZoomToAsync(envelope, TimeSpan.FromSeconds(0.5));
+            MapView.Active.ZoomToAsync(envelope, TimeSpan.FromSeconds(0.5));
         }
 
         /// <summary>
@@ -1135,17 +1140,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             foreach (var type in listOfTypes)
             {
+                // avoid chaining issues
+                var mapSpatialReference = MapView.Active?.Map?.SpatialReference;
+
                 try
                 {
                     // Make sure there is an active map
-                    if ((MapView.Active == null) || (MapView.Active.Map == null) ||
-                        (MapView.Active.Map.SpatialReference == null))
+                    if (mapSpatialReference == null)
                         point = null;
                     else
-                        point = QueuedTask.Run(() =>
-                        {
-                            return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, type, FromGeoCoordinateMode.Default);
-                        }).Result;
+                    {
+                        point = QueuedTask.Run(() => MapPointBuilder.FromGeoCoordinateString(coordinate, mapSpatialReference, type, FromGeoCoordinateMode.Default)).Result; // TODO .Result can deadlock, refactor
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -1158,15 +1164,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             try
             {
+                // avoid chaining issues
+                var mapSpatialReference = MapView.Active?.Map?.SpatialReference;
+
                 // Make sure there is an active map
-                if ((MapView.Active == null) || (MapView.Active.Map == null) ||
-                        (MapView.Active.Map.SpatialReference == null))
+                if (mapSpatialReference == null)
                     point = null;
                 else
-                    point = QueuedTask.Run(() =>
-                    {
-                        return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
-                    }).Result;
+                {
+                    point = QueuedTask.Run(() => MapPointBuilder.FromGeoCoordinateString(coordinate,
+                        mapSpatialReference, GeoCoordinateType.UTM,
+                        FromGeoCoordinateMode.UtmNorthSouth)).Result;
+                }
             }
             catch (Exception ex)
             {

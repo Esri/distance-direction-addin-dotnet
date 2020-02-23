@@ -76,7 +76,11 @@ namespace ProAppDistanceAndDirectionModule
                 // this will keep us from drawing too many feedback geometries
                 _throttleMouse.ThrottleAndFireAtInterval(150, async (args) =>
                 {
-                    var mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
+                    // avoid chaining issues
+                    var mapView = MapView.Active;
+
+                    var mp = await QueuedTask.Run(() => mapView.ClientToMap(e.ClientPoint));
+
                     Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_MOVE_POINT, mp);
                 }, priority: DispatcherPriority.Normal);
             }
@@ -90,7 +94,9 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
-                var mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
+                // avoid chaining issues
+                var mapView = MapView.Active;
+                var mp = await QueuedTask.Run(() => mapView.ClientToMap(e.ClientPoint));
                 Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, mp); //TODO add event for this
             }
             catch(Exception ex)

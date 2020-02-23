@@ -304,6 +304,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 GeodeticCurveType curveType = DeriveCurveType(LineType);
                 LinearUnit lu = DeriveUnit(LineDistanceType);
+
+                // avoid chaining issues
+                var mapSpatialReference = MapView.Active.Map.SpatialReference;
+
                 // update feedback
                 var segment = QueuedTask.Run(() =>
                 {
@@ -311,7 +315,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     // get point 2
                     // SDK Bug, GeometryEngine.GeodesicMove seems to not honor the LinearUnit passed in, always does Meters
                     var tempDistance = ConvertFromTo(LineDistanceType, DistanceTypes.Meters, Distance);
-                    var results = GeometryEngine.Instance.GeodeticMove(mpList, MapView.Active.Map.SpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value, GetCurveType());
+                    var results = GeometryEngine.Instance.GeodeticMove(mpList, mapSpatialReference, tempDistance, LinearUnit.Meters /*GetLinearUnit(LineDistanceType)*/, GetAzimuthAsRadians().Value, GetCurveType());
                     foreach (var mp in results)
                     {
                         // WORKAROUND: For some odd reason GeodeticMove is removing the Z attribute of the point

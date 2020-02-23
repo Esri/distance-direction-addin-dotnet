@@ -225,6 +225,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             try
             {
+                // avoid chaining issues
+                var mapSpatialReference = MapView.Active.Map.SpatialReference;
+
                 // for each radial, draw from center point
                 for (int x = 0; x < NumberOfRadials; x++)
                 {
@@ -235,7 +238,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         // get point 2
 
                         var results = GeometryEngine.Instance.GeodeticMove(mpList,
-                            MapView.Active.Map.SpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
+                            mapSpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
 
                         // update feedback
                         //UpdateFeedback();
