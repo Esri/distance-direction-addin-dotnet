@@ -1282,7 +1282,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private async void OnActiveMapViewChanged(ArcGIS.Desktop.Mapping.Events.ActiveMapViewChangedEventArgs obj)
         {
             // Subscribe to this event in case the ActiveMap already has layers with features (so buttons are enabled on load)
-            await HasLayerFeatures();
+            await HasLayerFeaturesAsync();
             RaisePropertyChanged(() => HasMapGraphics);
         }
 
@@ -1422,7 +1422,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return featureClass;
         }
 
-        protected async Task HasLayerFeatures()
+        protected Task HasLayerFeaturesAsync()
         {
             string featureLayerName = this.GetLayerName();
 
@@ -1431,11 +1431,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (featureLayer == null)
             {
                 hasMapGraphics = false;
-                return;
+                return Task.CompletedTask;
             }
 
             FeatureClass featureClass = null;
-            await QueuedTask.Run(() =>
+
+            return QueuedTask.Run(() =>
             {
                 featureClass = featureLayer.GetFeatureClass();
                 hasMapGraphics = (featureClass == null) ? false : featureClass.GetCount() > 0;
