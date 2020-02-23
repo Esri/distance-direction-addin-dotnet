@@ -91,15 +91,12 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
-                var mp = await QueuedTask.Run(() =>
-                {
-                    return MapView.Active.ClientToMap(e.ClientPoint);
-                });
-                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, mp);
+                var mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
+                Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, mp); //TODO add event for this
             }
             catch(Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine(ex.Message);
+                System.Diagnostics.Debug.WriteLine(ex.Message); //TODO replace these with pro diagnostic entries
             }
             base.OnToolDoubleClick(e);
         }
