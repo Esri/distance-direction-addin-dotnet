@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:ArcGIS.Desktop.Framework.Controls;assembly=ArcGIS.Desktop.Framework"
-             xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"                      
              xmlns:local="clr-namespace:ProAppDistanceAndDirectionModule.Common"
              xmlns:libprop="clr-namespace:ProAppDistanceAndDirectionModule.Properties"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -17,7 +16,6 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
                 <ResourceDictionary Source="../Common/MAResourceDictionary.xaml" />
             </ResourceDictionary.MergedDictionaries>
             <ObjectDataProvider x:Key="coordinateTypes"

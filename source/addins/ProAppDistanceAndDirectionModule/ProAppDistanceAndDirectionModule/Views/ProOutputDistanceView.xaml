@@ -4,7 +4,6 @@
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"
             xmlns:Behaviors="clr-namespace:ArcGIS.Desktop.Internal.Framework.Behaviors;assembly=ArcGIS.Desktop.Framework"
             xmlns:viewModels ="clr-namespace:ProAppDistanceAndDirectionModule.ViewModels"
             xmlns:prop="clr-namespace:ProAppDistanceAndDirectionModule.Properties"
@@ -15,7 +14,6 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
                 <ResourceDictionary Source="../Common/MAResourceDictionary.xaml" />
                 <ResourceDictionary Source="../ProMAResourceDictionary.xaml"/>
                 <ResourceDictionary>

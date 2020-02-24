@@ -5,17 +5,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:prop="clr-namespace:ProAppDistanceAndDirectionModule.Properties"
              xmlns:controls="clr-namespace:ArcGIS.Desktop.Framework.Controls;assembly=ArcGIS.Desktop.Framework"
-             xmlns:extensions="clr-namespace:ArcGIS.Desktop.Extensions;assembly=ArcGIS.Desktop.Extensions"                      
              mc:Ignorable="d"  Width="242" Height="102" ResizeMode="NoResize" SizeToContent="WidthAndHeight" 
              Title="{x:Static prop:Resources.LabelPSTitle}" WindowStartupLocation="CenterScreen" 
              Topmost="True">
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Window.Resources>    
     <StackPanel>
         <StackPanel>
             <RadioButton IsChecked="{Binding FeatureShapeIsChecked}" x:Name="rbFeature" Content="{x:Static prop:Resources.LabelPSFCShape}" HorizontalAlignment="Left" Margin="3,3,0,0" VerticalAlignment="Top"/>
@@ -29,6 +21,5 @@
                     Width=" 75" Margin="3,8,3,5" 
                     Style="{DynamicResource Esri_Button}" />
         </StackPanel>
-
     </StackPanel>
 </controls:ProWindow>
