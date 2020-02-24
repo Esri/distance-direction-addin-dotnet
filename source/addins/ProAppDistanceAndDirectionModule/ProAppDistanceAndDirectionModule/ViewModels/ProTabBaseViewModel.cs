@@ -1088,10 +1088,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (Point1 == null || segment == null)
                 return;
 
-            var polyline = await QueuedTask.Run(() =>
-            {
-                return PolylineBuilder.CreatePolyline(segment);
-            });
+            var polyline = PolylineBuilder.CreatePolyline(segment);
 
             ClearTempGraphics();
             Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, type);
