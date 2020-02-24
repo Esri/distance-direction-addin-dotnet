@@ -1327,7 +1327,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         protected FeatureLayer GetFeatureLayerByNameInActiveView(string featureLayerName)
         {
-            if ((MapView.Active == null) || (MapView.Active.Map == null))
+            if (MapView.Active?.Map == null)
                 return null;
 
             var viewLayer =
