@@ -20,7 +20,7 @@ using ProAppDistanceAndDirectionModule.Common;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Threading;
-using ArcGIS.Desktop.Framework;
+using ProAppDistanceAndDirectionModule.Events;
 using ProAppDistanceAndDirectionModule.ViewModels;
 using ProAppDistanceAndDirectionModule.Views;
 
@@ -30,7 +30,6 @@ namespace ProAppDistanceAndDirectionModule
     {
 
         private const string NEW_MAP_POINT = "NEW_MAP_POINT";
-        private const string MOUSE_MOVE_POINT = "MOUSE_MOVE_POINT";
         private const string TAB_ITEM_SELECTED = "TAB_ITEM_SELECTED";
         private const string MOUSE_DOUBLE_CLICK = "MOUSE_DOUBLE_CLICK";
         private const string KEYPRESS_ESCAPE = "KEYPRESS_ESCAPE";
@@ -91,8 +90,8 @@ namespace ProAppDistanceAndDirectionModule
                     // avoid chaining issues
                     var mapView = MapView.Active;
 
-                    MapPoint mp = await QueuedTask.Run(() => mapView.ClientToMap(e.ClientPoint));
-                    SketchMouseEvents(mp, MOUSE_MOVE_POINT); //TODO this should be a custom Pro event so it can be called from within the QTR and avoid another await
+                    var mapPoint = await QueuedTask.Run(() => mapView.ClientToMap(e.ClientPoint));
+                    SketchToolMouseMoveEvent.Publish(new SketchToolMouseMoveEventArgs(mapPoint));
                 }, priority: DispatcherPriority.Normal);
             }
             catch (Exception ex)
