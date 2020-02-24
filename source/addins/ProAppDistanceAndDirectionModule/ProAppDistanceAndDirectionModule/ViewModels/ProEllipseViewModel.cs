@@ -319,30 +319,25 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        internal override void OnMouseMoveEvent(object obj)
+        internal override void OnSketchToolMouseMove(MapPoint mapPoint)
         {
-            if (!IsActiveTab)
-                return;
-
-            var point = obj as MapPoint;
-
-            if (point == null)
+            if (!IsActiveTab || mapPoint == null)
                 return;
 
             if (!HasPoint1)
             {
-                Point1 = point;
+                Point1 = mapPoint;
             }
             else if (HasPoint1 && !HasPoint2)
             {
                 // get major distance from polyline
-                MajorAxisDistance = GetGeodesicDistance(Point1, point);
+                MajorAxisDistance = GetGeodesicDistance(Point1, mapPoint);
                 // update bearing
                 var segment = QueuedTask.Run(() =>
                 {
                     try
                     {
-                        var pointproj = GeometryEngine.Instance.Project(point, Point1.SpatialReference);
+                        var pointproj = GeometryEngine.Instance.Project(mapPoint, Point1.SpatialReference);
                         return LineBuilder.CreateLineSegment(Point1, (MapPoint)pointproj);
                     }
                     catch (Exception ex)
@@ -359,7 +354,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             else if (HasPoint1 && HasPoint2 && !HasPoint3)
             {
-                MinorAxisDistance = GetGeodesicDistance(Point1, point);
+                MinorAxisDistance = GetGeodesicDistance(Point1, mapPoint);
             }
         }
 
