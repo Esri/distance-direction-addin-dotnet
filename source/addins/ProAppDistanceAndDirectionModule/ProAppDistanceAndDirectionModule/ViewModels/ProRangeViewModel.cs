@@ -227,48 +227,50 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // for each radial, draw from center point
                 for (int x = 0; x < NumberOfRadials; x++)
                 {
-                    var polyline = QueuedTask.Run(() =>
+                    MapPoint movedMP = null;
+                    var mpList = new List<MapPoint>() { Point1 };
+                    // get point 2
+
+                    var results = GeometryEngine.Instance.GeodeticMove(mpList,
+                        MapView.Active.Map.SpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
+
+                    // update feedback
+                    //UpdateFeedback();
+                    foreach (var mp in results)
+                        movedMP = mp;
+
+                    Polyline polyline = null;
+
+                    if (movedMP != null)
                     {
-                        MapPoint movedMP = null;
-                        var mpList = new List<MapPoint>() { Point1 };
-                        // get point 2
+                        var movedMPproj = GeometryEngine.Instance.Project(movedMP, Point1.SpatialReference);
+                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)movedMPproj);
+                        polyline = PolylineBuilder.CreatePolyline(segment);
+                    }
 
-                        var results = GeometryEngine.Instance.GeodeticMove(mpList,
-                            MapView.Active.Map.SpatialReference, radialLength, GetLinearUnit(LineDistanceType), GetAzimuthAsRadians(azimuth), GetCurveType());
+                    if (polyline != null)
+                    {
+                        Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, GeodeticCurveType.Loxodrome);
 
-                        // update feedback
-                        //UpdateFeedback();
-                        foreach (var mp in results)
-                            movedMP = mp;
-
-                        if (movedMP != null)
+                        if (newline != null)
                         {
-                            var movedMPproj = GeometryEngine.Instance.Project(movedMP, Point1.SpatialReference);
-                            var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)movedMPproj);
-                            return PolylineBuilder.CreatePolyline(segment);
+                            // Hold onto the attributes in case user saves graphics to file later
+                            var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(),
+                                CultureInfo.CurrentCulture);
+                            RangeAttributes rangeAttributes = new RangeAttributes()
+                            {
+                                mapPoint = Point1,
+                                numRings = NumberOfRings,
+                                distance = radialLength,
+                                centerx = Point1.X,
+                                centery = Point1.Y,
+                                distanceunit = displayValue.ToString(),
+                                ringorradial = "Radial"
+                            };
+
+                            // AddGraphicToMap(newline, rangeAttributes);
+                            CreateRangeRingOrRadialFeature(newline, rangeAttributes);
                         }
-                        else
-                            return null;
-                    }).Result;
-
-                    Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, LinearUnit.Meters, GeodeticCurveType.Loxodrome);
-                    if (newline != null)
-                    {
-                        // Hold onto the attributes in case user saves graphics to file later
-                        var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
-                        RangeAttributes rangeAttributes = new RangeAttributes()
-                        {
-                            mapPoint = Point1,
-                            numRings = NumberOfRings,
-                            distance = radialLength,
-                            centerx = Point1.X,
-                            centery = Point1.Y,
-                            distanceunit = displayValue.ToString(),
-                            ringorradial = "Radial"
-                        };
-
-                        // AddGraphicToMap(newline, rangeAttributes);
-                        CreateRangeRingOrRadialFeature(newline, rangeAttributes);
                     }
 
                     azimuth += interval;
