@@ -439,17 +439,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var nameConverter = new EnumToFriendlyNameConverter();
             GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
+
             try
             {
                 // create line
-                var polyline = QueuedTask.Run(() =>
-                    {
-                        var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
-                        var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
-                        return PolylineBuilder.CreatePolyline(segment);
-                    }).Result;
+                var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
+                var segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
+                var polyline = PolylineBuilder.CreatePolyline(segment);
                 Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, curveType);
-
 
                 var displayValue = nameConverter.Convert(LineDistanceType, typeof(string), new object(), CultureInfo.CurrentCulture);
                 // Hold onto the attributes in case user saves graphics to file later
