@@ -114,7 +114,6 @@ namespace ProAppDistanceAndDirectionModule
             {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }
-            base.OnToolDoubleClick(e);
         }
 
         private void SketchMouseEvents(MapPoint mp,string mouseevent)
