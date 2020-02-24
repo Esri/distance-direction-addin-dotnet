@@ -16,17 +16,13 @@
 
 using ProAppDistanceAndDirectionModule.Common;
 using ProAppDistanceAndDirectionModule.Models;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
 using System.Xml.Serialization;
-
+using ArcGIS.Desktop.Framework.Contracts;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
-    public class OutputDistanceViewModel : NotificationObject
+    public class OutputDistanceViewModel : ViewModelBase
     {
         public OutputDistanceViewModel()
         {
@@ -115,8 +111,5 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
             }
         }
-
-
-
     }
 }

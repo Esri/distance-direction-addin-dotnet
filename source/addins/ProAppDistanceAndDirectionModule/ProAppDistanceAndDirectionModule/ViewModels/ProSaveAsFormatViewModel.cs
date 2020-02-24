@@ -15,41 +15,25 @@
   *   limitations under the License. 
   ******************************************************************************/
 
-using ProAppDistanceAndDirectionModule.Common;
+using ArcGIS.Desktop.Framework.Contracts;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
-    class ProSaveAsFormatViewModel : NotificationObject
+    class ProSaveAsFormatViewModel : ViewModelBase
     {
 
-        private bool featureShapeIsChecked = true;
+        private bool _featureShapeIsChecked = true;
         public bool FeatureShapeIsChecked
         {
-            get
-            {
-                return featureShapeIsChecked;
-            }
-
-            set
-            {
-                featureShapeIsChecked = value;
-                RaisePropertyChanged(() => FeatureShapeIsChecked);
-            }
+            get => _featureShapeIsChecked;
+            set => SetProperty(ref _featureShapeIsChecked, value);
         }
 
-        private bool kmlIsChecked = false;
+        private bool _kmlIsChecked = false;
         public bool KmlIsChecked
         {
-            get
-            {
-                return kmlIsChecked;
-            }
-
-            set
-            {
-                kmlIsChecked = value;
-                RaisePropertyChanged(() => KmlIsChecked);
-            }
+            get => _kmlIsChecked;
+            set => SetProperty(ref _kmlIsChecked, value);
         }
     }  
 }

@@ -14,44 +14,34 @@
   *   limitations under the License. 
   ******************************************************************************/
 
-
 using System;
-using System.Collections.Generic;
-using System.Windows;
 using System.Xml.Serialization;
-using ProAppDistanceAndDirectionModule.Common;
-
+using ArcGIS.Desktop.Framework.Contracts;
 
 namespace ProAppDistanceAndDirectionModule.Models
 {
-    public class OutputDistanceModel : NotificationObject
+    public class OutputDistanceModel : PropertyChangedBase
     {
         
-        private int uniqueRowId;
+        private int _uniqueRowId;
 
         public int UniqueRowId
         {
-            get { return uniqueRowId; }
-            set
-            {
-                uniqueRowId = value;
-                RaisePropertyChanged(() => UniqueRowId);
-            }
+            get => _uniqueRowId;
+            set => SetProperty(ref _uniqueRowId, value);
         }         
 
         #region OutputDistance
  
-        private string outputDistance = "0";
+        private string _outputDistance = "0";
 
         [XmlIgnore]
         public string OutputDistance
         {
-            get { return outputDistance; }
+            get => _outputDistance;
             set
             {
-
-                outputDistance = value;
-                RaisePropertyChanged(() => OutputDistance);
+                SetProperty(ref _outputDistance, value);
              
                 if (value == "")
                     throw new ArgumentException(Properties.Resources.AEMustBePositive);

@@ -18,11 +18,12 @@ using System.Text;
 using System.Xml.Serialization;
 using System.Xml;
 using System.IO;
+using ArcGIS.Desktop.Framework.Contracts;
 using ProAppDistanceAndDirectionModule.Common;
 
 namespace ProAppDistanceAndDirectionModule.Models
 {
-    public class DistanceAndDirectionConfig : NotificationObject
+    public class DistanceAndDirectionConfig : PropertyChangedBase
     {
         public DistanceAndDirectionConfig()
         {
@@ -30,15 +31,11 @@ namespace ProAppDistanceAndDirectionModule.Models
 
         public static DistanceAndDirectionConfig AddInConfig = new DistanceAndDirectionConfig(); 
 
-        private CoordinateTypes displayCoordinateType = CoordinateTypes.None;
+        private CoordinateTypes _displayCoordinateType = CoordinateTypes.None;
         public CoordinateTypes DisplayCoordinateType
         {
-            get { return displayCoordinateType; }
-            set
-            {
-                displayCoordinateType = value;
-                RaisePropertyChanged(() => DisplayCoordinateType);
-            }
+            get => _displayCoordinateType;
+            set => SetProperty(ref _displayCoordinateType, value);
         }
 
         public void SaveConfiguration()

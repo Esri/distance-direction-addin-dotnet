@@ -13,12 +13,13 @@
 // limitations under the License.
 
 
+using ArcGIS.Desktop.Framework.Contracts;
 using ProAppDistanceAndDirectionModule.Common;
 using ProAppDistanceAndDirectionModule.Models;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
-    public class EditPropertiesViewModel : NotificationObject
+    public class EditPropertiesViewModel : PropertyChangedBase
     {
         public EditPropertiesViewModel()
         {
@@ -30,15 +31,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public CoordinateTypes SelectedCoordinateType { get; set; }
 
-        private bool? dialogResult = null;
+        private bool? _dialogResult = null;
         public bool? DialogResult 
         {
-            get { return dialogResult; }
-            set
-            {
-                dialogResult = value;
-                RaisePropertyChanged(() => DialogResult);
-            }
+            get => _dialogResult;
+            set => SetProperty(ref _dialogResult, value);
         }
 
         /// <summary>
