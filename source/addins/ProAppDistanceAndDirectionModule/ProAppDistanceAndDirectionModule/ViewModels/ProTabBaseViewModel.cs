@@ -35,6 +35,7 @@ using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Internal.Mapping;
+using ProAppDistanceAndDirectionModule.Common.Helpers;
 using ProAppDistanceAndDirectionModule.Events;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
@@ -313,7 +314,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     HasPoint1 = true;
                     Point1 = point;
 
-                    AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
+                    ProHelper.NonAwaitCall(AddGraphicToMapAsync(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0));
 
                     if (Point2 != null)
                     {
@@ -541,21 +542,36 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        internal async void AddGraphicToMap(Geometry geom, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
+        internal void AddGraphicToMap(Geometry geom, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
             // default color Red
-            await AddGraphicToMapAsync(geom, ColorFactory.Instance.RedRGB, p, IsTempGraphic, size);
+            AddGraphicToMap(geom, ColorFactory.Instance.RedRGB, p, IsTempGraphic, size);
         }
 
         internal void AddGraphicToMap(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
         {
-            QueuedTask.Run(async () =>
+            ProHelper.NonAwaitCall( QueuedTask.Run(() =>
             {
-                await AddGraphicToMapAsync(geom, color, p, IsTempGraphic, size);
-            });
+                AddGraphicToMapSync(geom, color, p, IsTempGraphic, size);
+            }));
         }
 
-        internal async Task AddGraphicToMapAsync(Geometry geom, CIMColor color, ProGraphicAttributes p = null, bool IsTempGraphic = false, double size = 1.0)
+        internal Task AddGraphicToMapAsync(Geometry geom, CIMColor color, ProGraphicAttributes p = null,
+            bool IsTempGraphic = false, double size = 1.0)
+        {
+            return QueuedTask.Run(() => AddGraphicToMapSync(geom, color, p, IsTempGraphic, size));
+        }
+
+        /// <summary>
+        /// Must be called on MCT.
+        /// </summary>
+        /// <param name="geom"></param>
+        /// <param name="color"></param>
+        /// <param name="p"></param>
+        /// <param name="IsTempGraphic"></param>
+        /// <param name="size"></param>
+        internal void AddGraphicToMapSync(Geometry geom, CIMColor color, ProGraphicAttributes p = null,
+            bool IsTempGraphic = false, double size = 1.0)
         {
             if (geom == null || MapView.Active == null)
                 return;
@@ -564,39 +580,28 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (geom.GeometryType == GeometryType.Point)
             {
-                await QueuedTask.Run(() =>
-                    {
-                        var s = SymbolFactory.Instance.ConstructPointSymbol(color, size, SimpleMarkerStyle.Circle);
-                        symbol = new CIMSymbolReference() { Symbol = s };
-                    });
+                var s = SymbolFactory.Instance.ConstructPointSymbol(color, size, SimpleMarkerStyle.Circle);
+                symbol = new CIMSymbolReference() {Symbol = s};
             }
             else if (geom.GeometryType == GeometryType.Polyline)
             {
-                await QueuedTask.Run(() =>
-                    {
-                        var s = SymbolFactory.Instance.ConstructLineSymbol(color, size);
-                        symbol = new CIMSymbolReference() { Symbol = s };
-                    });
+                var s = SymbolFactory.Instance.ConstructLineSymbol(color, size);
+                symbol = new CIMSymbolReference() {Symbol = s};
             }
             else if (geom.GeometryType == GeometryType.Polygon)
             {
-                await QueuedTask.Run(() =>
-                {
-                    var outline = SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.RedRGB, 1.0, SimpleLineStyle.Solid);
-                    var s = SymbolFactory.Instance.ConstructPolygonSymbol(color, SimpleFillStyle.Null, outline);
-                    symbol = new CIMSymbolReference() { Symbol = s };
-                });
+                var outline =
+                    SymbolFactory.Instance.ConstructStroke(ColorFactory.Instance.RedRGB, 1.0, SimpleLineStyle.Solid);
+                var s = SymbolFactory.Instance.ConstructPolygonSymbol(color, SimpleFillStyle.Null, outline);
+                symbol = new CIMSymbolReference() {Symbol = s};
             }
 
-            await QueuedTask.Run(() =>
-                {
-                    var disposable = MapView.Active.AddOverlay(geom, symbol);
-                    overlayObjects.Add(disposable);
+            var disposable = MapView.Active.AddOverlay(geom, symbol);
+            overlayObjects.Add(disposable);
 
-                    var gt = GetGraphicType();
+            var gt = GetGraphicType();
 
-                    GraphicsList.Add(new Graphic(gt, disposable, geom, this, p, IsTempGraphic));
-                });
+            Utilities.StartOnUIThread(() => GraphicsList.Add(new Graphic(gt, disposable, geom, this, p, IsTempGraphic)));
         }
 
         private GraphicTypes GetGraphicType()
@@ -761,7 +766,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 HasPoint1 = true;
                 Point1Formatted = string.Empty;
 
-                AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
+                ProHelper.NonAwaitCall(AddGraphicToMapAsync(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0));
 
                 // lets try feedback
                 //CreateFeedback(point, av);
@@ -1082,7 +1087,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Distance = GetGeodesicDistance(p1, p2);
         }
 
-        internal async Task UpdateFeedbackWithGeoLine(LineSegment segment, GeodeticCurveType type, LinearUnit lu)
+        internal void UpdateFeedbackWithGeoLine(LineSegment segment, GeodeticCurveType type, LinearUnit lu)
         {
 
             if (Point1 == null || segment == null)
@@ -1091,9 +1096,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             var polyline = PolylineBuilder.CreatePolyline(segment);
 
             ClearTempGraphics();
+
             Geometry newline = GeometryEngine.Instance.GeodeticDensifyByLength(polyline, 0, lu, type);
-            await AddGraphicToMapAsync(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
-            await AddGraphicToMapAsync(newline, ColorFactory.Instance.GreyRGB, null, true);
+
+            QueuedTask.Run(() =>
+            {
+                AddGraphicToMapSync(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
+                AddGraphicToMapSync(newline, ColorFactory.Instance.GreyRGB, null, true);
+            });
         }
 
         internal LinearUnit GetLinearUnit(DistanceTypes dtype)

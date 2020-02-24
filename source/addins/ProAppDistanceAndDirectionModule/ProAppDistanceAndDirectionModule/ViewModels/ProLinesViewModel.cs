@@ -15,7 +15,6 @@
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
@@ -25,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using ArcGIS.Desktop.Internal.Mapping;
 using ProAppDistanceAndDirectionModule.Common.Helpers;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
@@ -180,7 +180,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return lu;
         }
 
-        internal override async void UpdateFeedback()
+        internal override void UpdateFeedback()
         {
             GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
@@ -189,26 +189,24 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (Point1 == null || Point2 == null)
                     return;
 
-                var segment = QueuedTask.Run(() =>
-                {
-                    try
-                    {
-                        var point2proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
-                        return LineBuilder.CreateLineSegment(Point1, (MapPoint)point2proj);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        return null;
-                    }
-                }).Result;
+                LineSegment lineSegment = null;
 
-                if (segment == null)
+                try
+                {
+                    var point2proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
+                    lineSegment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2proj);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
+
+                if (lineSegment == null)
                     return;
 
-                UpdateAzimuth(segment.Angle);
+                UpdateAzimuth(lineSegment.Angle);
 
-                await UpdateFeedbackWithGeoLine(segment, curveType, lu);
+                UpdateFeedbackWithGeoLine(lineSegment, curveType, lu);
             }
             else
             {
@@ -291,14 +289,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        private async void UpdateManualFeedback()
+        private void UpdateManualFeedback()
         {
             if (LineFromType == LineFromTypes.BearingAndDistance && Azimuth.HasValue && HasPoint1 && Point1 != null)
             {
                 GeodeticCurveType curveType = DeriveCurveType(LineType);
                 LinearUnit lu = DeriveUnit(LineDistanceType);
+
                 // update feedback
-                var segment = QueuedTask.Run(() =>
+                ProHelper.NonAwaitCall(QueuedTask.Run(() =>
                 {
                     var mpList = new List<MapPoint>() { Point1 };
                     // get point 2
@@ -325,14 +324,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (Point2 != null)
                     {
                         var point2Proj = GeometryEngine.Instance.Project(Point2, Point1.SpatialReference);
-                        return LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
+                        var lineSegment = LineBuilder.CreateLineSegment(Point1, (MapPoint)point2Proj);
+                        if (lineSegment != null)
+                            Utilities.StartOnUIThread(() => UpdateFeedbackWithGeoLine(lineSegment, curveType, lu));
                     }
-                    else
-                        return null;
-                }).Result;
-
-                if (segment != null)
-                    await UpdateFeedbackWithGeoLine(segment, curveType, lu);
+                }));
             }
             else
             {
@@ -377,7 +373,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Azimuth = 0.0;
         }
 
-        internal override async void OnNewMapPointEvent(object obj)
+        internal override void OnNewMapPointEvent(object obj)
         {
             if (!IsActiveTab)
                 return;
@@ -393,7 +389,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ClearTempGraphics();
                 HasPoint1 = true;
                 Point1 = point;
-                await AddGraphicToMapAsync(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
+                AddGraphicToMapAsync(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
                 return;
             }
 
@@ -429,7 +425,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
 
                 UpdateAzimuth(lineSegment.Angle);
-                ProHelper.NonAwaitCall(UpdateFeedbackWithGeoLine(lineSegment, curveType, lu));
+                UpdateFeedbackWithGeoLine(lineSegment, curveType, lu);
             }
 
             base.OnSketchToolMouseMove(mapPoint);
