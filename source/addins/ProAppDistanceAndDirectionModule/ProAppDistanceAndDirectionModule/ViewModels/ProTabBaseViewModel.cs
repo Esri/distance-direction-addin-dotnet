@@ -152,6 +152,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 _isToolActive = value;
+
                 if (_isToolActive)
                 {
                     FrameworkApplication.SetCurrentToolAsync(MAP_TOOL_NAME);
