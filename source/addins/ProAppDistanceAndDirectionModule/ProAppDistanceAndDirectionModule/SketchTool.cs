@@ -136,10 +136,10 @@ namespace ProAppDistanceAndDirectionModule
                         {
                             plViewmodel.NewMapPointEvent.Execute(mp);
                         }
-                        else if(mouseevent.Equals(MOUSE_MOVE_POINT))
-                        {
-                            plViewmodel.MouseMoveEvent.Execute(mp);
-                        }
+                        //else if(mouseevent.Equals(MOUSE_MOVE_POINT))
+                        //{
+                        //    plViewmodel.MouseMoveEvent.Execute(mp);
+                        //}
                         else if (mouseevent.Equals(KEYPRESS_ESCAPE))
                         {
                             plViewmodel.KeypressEscape.Execute(mp);
@@ -154,10 +154,10 @@ namespace ProAppDistanceAndDirectionModule
                         {
                             pcViewmodel.NewMapPointEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(MOUSE_MOVE_POINT))
-                        {
-                            pcViewmodel.MouseMoveEvent.Execute(mp);
-                        }
+                        //else if (mouseevent.Equals(MOUSE_MOVE_POINT))
+                        //{
+                        //    pcViewmodel.MouseMoveEvent.Execute(mp);
+                        //}
                         else if (mouseevent.Equals(KEYPRESS_ESCAPE))
                         {
                             pcViewmodel.KeypressEscape.Execute(mp);
@@ -171,10 +171,10 @@ namespace ProAppDistanceAndDirectionModule
                         {
                             pelViewmodel.NewMapPointEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(MOUSE_MOVE_POINT))
-                        {
-                            pelViewmodel.MouseMoveEvent.Execute(mp);
-                        }
+                        //else if (mouseevent.Equals(MOUSE_MOVE_POINT))
+                        //{
+                        //    pelViewmodel.MouseMoveEvent.Execute(mp);
+                        //}
                         else if (mouseevent.Equals(KEYPRESS_ESCAPE))
                         {
                             pelViewmodel.KeypressEscape.Execute(mp);
@@ -192,10 +192,10 @@ namespace ProAppDistanceAndDirectionModule
                         {
                             prViewmodel.NewMapPointEvent.Execute(mp);
                         }
-                        else if (mouseevent.Equals(MOUSE_MOVE_POINT))
-                        {
-                            prViewmodel.MouseMoveEvent.Execute(mp);
-                        }
+                        //else if (mouseevent.Equals(MOUSE_MOVE_POINT))
+                        //{
+                        //    prViewmodel.MouseMoveEvent.Execute(mp);
+                        //}
                         else if (mouseevent.Equals(KEYPRESS_ESCAPE))
                         {
                             prViewmodel.KeypressEscape.Execute(mp);

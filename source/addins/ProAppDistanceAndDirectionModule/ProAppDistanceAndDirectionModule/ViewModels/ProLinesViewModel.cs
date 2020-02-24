@@ -399,16 +399,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.OnNewMapPointEvent(obj);
         }
 
-        internal override async void OnMouseMoveEvent(object obj)
+        internal override async void OnSketchToolMouseMove(MapPoint mapPoint)
         {
             GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
-            if (!IsActiveTab)
-                return;
-
-            var point = obj as MapPoint;
-
-            if (point == null)
+            if (!IsActiveTab || mapPoint == null)
                 return;
 
             if (LineFromType == LineFromTypes.BearingAndDistance)
@@ -421,7 +416,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     try
                     {
-                        var pointProj = GeometryEngine.Instance.Project(point, Point1.SpatialReference);
+                        var pointProj = GeometryEngine.Instance.Project(mapPoint, Point1.SpatialReference);
                         return LineBuilder.CreateLineSegment(Point1, (MapPoint)pointProj);
                     }
                     catch (Exception ex)
@@ -438,7 +433,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 await UpdateFeedbackWithGeoLine(segment, curveType, lu);
             }
 
-            base.OnMouseMoveEvent(obj);
+            base.OnSketchToolMouseMove(mapPoint);
         }
 
         private Geometry CreatePolyline()

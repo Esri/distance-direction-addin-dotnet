@@ -25,6 +25,7 @@ using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Core.CIM;
+using ArcGIS.Core.Events;
 using ArcGIS.Desktop.Framework;
 
 using ProAppDistanceAndDirectionModule.Common;
@@ -34,6 +35,7 @@ using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Internal.Mapping;
+using ProAppDistanceAndDirectionModule.Events;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -58,10 +60,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             //Mediator.Register(Common.Constants.TAB_ITEM_SELECTED, OnTabItemSelected);
             TabItemSelected = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnTabItemSelected);
             NewMapPointEvent = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnNewMapPointEvent);
-            MouseMoveEvent = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnMouseMoveEvent);
+            //MouseMoveEvent = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnMouseMoveEvent);
             KeypressEscape = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnKeypressEscape);
             PointTextBoxKeyDown = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnPointTextBoxKeyDown);
             RadiusDiameterTextBoxKeyDown = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnRadiusDiameterTextBoxKeyDown);
+
+            // hook events
+            _sketchToolMouseMoveEventToken = SketchToolMouseMoveEvent.Subscribe(OnSketchToolMouseMoveEvent);
          
             // Pro Events
             // Note: will fail if called from Unit Tests, so catch exception for this case
@@ -85,6 +90,44 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             });
 
         }
+
+        ~ProTabBaseViewModel()
+        {
+            SketchToolMouseMoveEvent.Unsubscribe(_sketchToolMouseMoveEventToken);
+            _sketchToolMouseMoveEventToken = null;
+        }
+
+        private void OnSketchToolMouseMoveEvent(SketchToolMouseMoveEventArgs args)
+        {
+            OnSketchToolMouseMove(args.MapPoint);
+        }
+
+        internal virtual void OnSketchToolMouseMove(MapPoint mapPoint)
+        {
+            if (!IsActiveTab || mapPoint == null)
+                return;
+
+            // dynamically update start point if not set yet
+            if (!HasPoint1)
+            {
+                Point1 = mapPoint;
+            }
+            else if (HasPoint1 && !HasPoint2)
+            {
+                Point2Formatted = string.Empty;
+                Point2 = mapPoint;
+                // get distance
+                SetGeodesicDistance(Point1, mapPoint);
+            }
+
+            // update feedback
+            if (HasPoint1 && !HasPoint2)
+            {
+                // future use
+            }
+        }
+
+        private SubscriptionToken _sketchToolMouseMoveEventToken = null;
 
         internal const int VertexCount = 99;
 
@@ -985,35 +1028,35 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// When the mouse moves accross the map, IPoints are returned to aid in updating feedback to user
         /// </summary>
         /// <param name="obj">IPoint</param>
-        internal virtual void OnMouseMoveEvent(object obj)
-        {
-            if (!IsActiveTab)
-                return;
+        //internal virtual void OnMouseMoveEvent(object obj)
+        //{
+        //    if (!IsActiveTab)
+        //        return;
 
-            var point = obj as MapPoint;
+        //    var point = obj as MapPoint;
 
-            if (point == null)
-                return;
+        //    if (point == null)
+        //        return;
 
-            // dynamically update start point if not set yet
-            if (!HasPoint1)
-            {
-                Point1 = point;
-            }
-            else if (HasPoint1 && !HasPoint2)
-            {
-                Point2Formatted = string.Empty;
-                Point2 = point;
-                // get distance
-                SetGeodesicDistance(Point1, point);
-            }
+        //    // dynamically update start point if not set yet
+        //    if (!HasPoint1)
+        //    {
+        //        Point1 = point;
+        //    }
+        //    else if (HasPoint1 && !HasPoint2)
+        //    {
+        //        Point2Formatted = string.Empty;
+        //        Point2 = point;
+        //        // get distance
+        //        SetGeodesicDistance(Point1, point);
+        //    }
 
-            // update feedback
-            if (HasPoint1 && !HasPoint2)
-            {
-                // future use
-            }
-        }
+        //    // update feedback
+        //    if (HasPoint1 && !HasPoint2)
+        //    {
+        //        // future use
+        //    }
+        //}
 
         internal double GetGeodesicDistance(MapPoint p1, MapPoint p2)
         {
