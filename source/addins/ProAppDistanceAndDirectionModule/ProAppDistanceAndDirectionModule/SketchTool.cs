@@ -88,8 +88,11 @@ namespace ProAppDistanceAndDirectionModule
                 // this will keep us from drawing too many feedback geometries
                 _throttleMouse.ThrottleAndFireAtInterval(150, async (args) =>
                 {
-                    MapPoint mp = await QueuedTask.Run(() => MapView.Active.ClientToMap(e.ClientPoint));
-                    SketchMouseEvents(mp, MOUSE_MOVE_POINT);
+                    // avoid chaining issues
+                    var mapView = MapView.Active;
+
+                    MapPoint mp = await QueuedTask.Run(() => mapView.ClientToMap(e.ClientPoint));
+                    SketchMouseEvents(mp, MOUSE_MOVE_POINT); //TODO this should be a custom Pro event but is it even used?
                 }, priority: DispatcherPriority.Normal);
             }
             catch (Exception ex)
