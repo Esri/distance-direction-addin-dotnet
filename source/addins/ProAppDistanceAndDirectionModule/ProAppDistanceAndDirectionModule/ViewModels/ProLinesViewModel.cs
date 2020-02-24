@@ -411,26 +411,24 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (HasPoint1 && !HasPoint2)
             {
-                // update azimuth from segment
-                var segment = QueuedTask.Run(() =>
-                {
-                    try
-                    {
-                        var pointProj = GeometryEngine.Instance.Project(mapPoint, Point1.SpatialReference);
-                        return LineBuilder.CreateLineSegment(Point1, (MapPoint)pointProj);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        return null;
-                    }
-                }).Result;
+                LineSegment lineSegment = null;
 
-                if (segment == null)
+                // update azimuth from segment
+                try
+                {
+                    var pointProj = GeometryEngine.Instance.Project(mapPoint, Point1.SpatialReference);
+                    lineSegment = LineBuilder.CreateLineSegment(Point1, (MapPoint)pointProj);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
+
+                if (lineSegment == null)
                     return;
 
-                UpdateAzimuth(segment.Angle);
-                await UpdateFeedbackWithGeoLine(segment, curveType, lu);
+                UpdateAzimuth(lineSegment.Angle);
+                await UpdateFeedbackWithGeoLine(lineSegment, curveType, lu);
             }
 
             base.OnSketchToolMouseMove(mapPoint);
