@@ -92,7 +92,7 @@ namespace ProAppDistanceAndDirectionModule
                     var mapView = MapView.Active;
 
                     MapPoint mp = await QueuedTask.Run(() => mapView.ClientToMap(e.ClientPoint));
-                    SketchMouseEvents(mp, MOUSE_MOVE_POINT); //TODO this should be a custom Pro event but is it even used?
+                    SketchMouseEvents(mp, MOUSE_MOVE_POINT); //TODO this should be a custom Pro event so it can be called from within the QTR and avoid another await
                 }, priority: DispatcherPriority.Normal);
             }
             catch (Exception ex)
