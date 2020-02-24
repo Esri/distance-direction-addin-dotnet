@@ -1378,10 +1378,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // ex: "Could not find required layer in the active map"
                 if (featureLayer == null)
                 {
+                    var layerName = GetLayerName();
                     // Note: Must be called on Main/UI Thread
-                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    await Utilities.StartOnUIThread(() =>
                     {
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(Properties.Resources.PTBNFLayer + this.GetLayerName());
+                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show($"{Properties.Resources.PTBNFLayer}{layerName}");
                     });
                 }
                 else
