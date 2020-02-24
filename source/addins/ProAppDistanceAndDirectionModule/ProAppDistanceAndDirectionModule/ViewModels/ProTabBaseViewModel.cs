@@ -1129,33 +1129,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (string.IsNullOrWhiteSpace(coordinate) || coordinate.Length < 3) // basic check
                 return null;
 
-            // future use if order of GetValues is not acceptable
-            //var listOfTypes = new List<GeoCoordinateType>(new GeoCoordinateType[] {
-            //    GeoCoordinateType.DD,
-            //    GeoCoordinateType.DDM,
-            //    GeoCoordinateType.DMS,
-            //    GeoCoordinateType.GARS,
-            //    GeoCoordinateType.GeoRef,
-            //    GeoCoordinateType.MGRS,
-            //    GeoCoordinateType.USNG,
-            //    GeoCoordinateType.UTM
-            //});
-
             var listOfTypes = Enum.GetValues(typeof(GeoCoordinateType)).Cast<GeoCoordinateType>();
 
             foreach (var type in listOfTypes)
             {
                 try
                 {
+                    var mapSpatialReference = MapView.Active?.Map?.SpatialReference;
+
                     // Make sure there is an active map
-                    if ((MapView.Active == null) || (MapView.Active.Map == null) ||
-                        (MapView.Active.Map.SpatialReference == null))
-                        point = null;
-                    else
-                        point = QueuedTask.Run(() =>
-                        {
-                            return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, type, FromGeoCoordinateMode.Default);
-                        }).Result;
+                    if(mapSpatialReference != null)
+                        point = MapPointBuilder.FromGeoCoordinateString(coordinate, mapSpatialReference, type, FromGeoCoordinateMode.Default);
                 }
                 catch (Exception ex)
                 {
@@ -1168,15 +1152,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             try
             {
-                // Make sure there is an active map
-                if ((MapView.Active == null) || (MapView.Active.Map == null) ||
-                        (MapView.Active.Map.SpatialReference == null))
-                    point = null;
-                else
-                    point = QueuedTask.Run(() =>
-                    {
-                        return MapPointBuilder.FromGeoCoordinateString(coordinate, MapView.Active.Map.SpatialReference, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
-                    }).Result;
+                var mapSpatialReference = MapView.Active?.Map?.SpatialReference;
+
+                if (mapSpatialReference != null)
+                    point = MapPointBuilder.FromGeoCoordinateString(coordinate, mapSpatialReference, GeoCoordinateType.UTM, FromGeoCoordinateMode.UtmNorthSouth);
             }
             catch (Exception ex)
             {
@@ -1186,7 +1165,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (point == null)
             {
                 // lets support web mercator
-                Regex regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
+                var regexMercator = new Regex(@"^(?<latitude>\-?\d+\.?\d*)[+,;:\s]*(?<longitude>\-?\d+\.?\d*)");
 
                 var matchMercator = regexMercator.Match(coordinate);
 
@@ -1196,10 +1175,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         var Lat = Double.Parse(matchMercator.Groups["latitude"].Value);
                         var Lon = Double.Parse(matchMercator.Groups["longitude"].Value);
-                        point = QueuedTask.Run(() =>
-                        {
-                            return MapPointBuilder.CreateMapPoint(Lon, Lat, SpatialReferences.WebMercator);
-                        }).Result;
+
+                        point = MapPointBuilder.CreateMapPoint(Lon, Lat, SpatialReferences.WebMercator);
                     }
                     catch (Exception ex)
                     {
