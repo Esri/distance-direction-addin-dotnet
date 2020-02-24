@@ -671,25 +671,20 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        internal override void OnMouseMoveEvent(object obj)
+        internal override void OnSketchToolMouseMove(MapPoint mapPoint)
         {
-            if (!IsActiveTab)
-                return;
-
-            var point = obj as MapPoint;
-
-            if (point == null)
+            if (!IsActiveTab || mapPoint == null)
                 return;
 
             // dynamically update start point if not set yet
             if (!HasPoint1)
             {
-                Point1 = point;
+                Point1 = mapPoint;
             }
             else if (HasPoint1 && !HasPoint2 && !IsDistanceCalcExpanded)
             {
                 Point2Formatted = string.Empty;
-                Distance = GetGeodesicDistance(Point1, point);
+                Distance = GetGeodesicDistance(Point1, mapPoint);
             }
 
             // update feedback
