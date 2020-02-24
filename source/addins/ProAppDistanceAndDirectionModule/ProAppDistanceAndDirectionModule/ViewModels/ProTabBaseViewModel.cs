@@ -32,11 +32,12 @@ using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Core.Geoprocessing;
+using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Internal.Mapping;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
-    public class ProTabBaseViewModel : NotificationObject
+    public class ProTabBaseViewModel : ViewModelBase
     {
         public string MAP_TOOL_NAME = SketchTool.ToolId;
 
@@ -79,8 +80,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             configObserver = new PropertyObserver<DistanceAndDirectionConfig>(DistanceAndDirectionConfig.AddInConfig)
             .RegisterHandler(n => n.DisplayCoordinateType, n =>
             {
-                RaisePropertyChanged(() => Point1Formatted);
-                RaisePropertyChanged(() => Point2Formatted);
+                NotifyPropertyChanged(nameof(Point1Formatted));
+                NotifyPropertyChanged(nameof(Point2Formatted));
             });
 
         }
@@ -124,21 +125,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         public bool isManualRadiusDiameterEntered { get; set; }
 
-        private bool isActiveTab = false;
+        private bool _isActiveTab = false;
         /// <summary>
         /// Property to keep track of which tab/viewmodel is the active item
         /// </summary>
         public bool IsActiveTab
         {
-            get
-            {
-                return isActiveTab;
-            }
+            get => _isActiveTab;
             set
             {
                 Reset(true);
-                isActiveTab = value;
-                RaisePropertyChanged(() => IsActiveTab);
+                SetProperty(ref _isActiveTab, value);
             }
         }
 
@@ -147,18 +144,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// </summary>
         private string lastActiveToolName;
 
-        private bool isToolActive = false;
+        private bool _isToolActive = false;
         public virtual bool IsToolActive
         {
             get
             {
-                return isToolActive;
+                return _isToolActive;
             }
 
             set
             {
-                isToolActive = value;
-                if (isToolActive)
+                if (_isToolActive)
                 {
                     FrameworkApplication.SetCurrentToolAsync(MAP_TOOL_NAME);
                 }
@@ -167,7 +163,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     DeactivateTool(MAP_TOOL_NAME);
                 }
 
-                RaisePropertyChanged(() => IsToolActive);
+                SetProperty(ref _isToolActive, value);
             }
         }
 
@@ -181,58 +177,43 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         internal bool HasPoint2 = false;
         internal bool HasPoint3 = false;
 
+        private bool _hasMapGraphics = false;
         public bool HasMapGraphics
         {
-            set
-            {
-                hasMapGraphics = value;
-                RaisePropertyChanged(() => HasMapGraphics);
-            }
-            get
-            {
-                return hasMapGraphics;
-            }
+            get => _hasMapGraphics;
+            set => SetProperty(ref _hasMapGraphics, value);
         }
-        private bool hasMapGraphics = false;
 
-        private MapPoint point1 = null;
+        private MapPoint _point1 = null;
         /// <summary>
         /// Property for the first IPoint
         /// </summary>
         public virtual MapPoint Point1
         {
-            get
-            {
-                return point1;
-            }
+            get => _point1;
             set
             {
                 // do not add anything to the map from here
-                point1 = value;
-                RaisePropertyChanged(() => Point1);
-                RaisePropertyChanged(() => Point1Formatted);
+                SetProperty(ref _point1, value);
+                NotifyPropertyChanged(nameof(Point1Formatted));
             }
         }
 
-        private MapPoint point2 = null;
+        private MapPoint _point2 = null;
         /// <summary>
         /// Property for the second IPoint
         /// Not all tools need a second point
         /// </summary>
         public virtual MapPoint Point2
         {
-            get
-            {
-                return point2;
-            }
+            get => _point2;
             set
             {
-                point2 = value;
-                RaisePropertyChanged(() => Point2);
-                RaisePropertyChanged(() => Point2Formatted);
+                SetProperty(ref _point2, value);
+                NotifyPropertyChanged(nameof(Point2Formatted));
             }
         }
-        string point1Formatted = string.Empty;
+        string _point1Formatted = string.Empty;
         /// <summary>
         /// String property for the first IPoint
         /// This is used to format the point for the UI and allow string input of different types of coordinates
@@ -242,7 +223,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get
             {
                 // return a formatted first point depending on how it was entered, manually or via map point tool
-                if (string.IsNullOrWhiteSpace(point1Formatted))
+                if (string.IsNullOrWhiteSpace(_point1Formatted))
                 {
                     if (Point1 != null)
                     {
@@ -264,7 +245,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                 {
                     // this was user inputed so just return the inputed string
-                    return point1Formatted;
+                    return _point1Formatted;
                 }
             }
 
@@ -273,10 +254,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     if (!IsToolActive)
-                        point1 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+                        _point1 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
 
-                    point1Formatted = string.Empty;
-                    RaisePropertyChanged(() => Point1Formatted);
+                    SetProperty(ref _point1Formatted, string.Empty);
                     return;
                 }
                 // try to convert string to an IPoint                
@@ -287,7 +267,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     // clear temp graphics
                     ClearTempGraphics();
-                    point1Formatted = value;
+                    _point1Formatted = value;
                     HasPoint1 = true;
                     Point1 = point;
 
@@ -308,7 +288,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        string point2Formatted = string.Empty;
+        string _point2Formatted = string.Empty;
         /// <summary>
         /// String property for the second IPoint
         /// This is used to format the point for the UI and allow string input of different types of coordinates
@@ -319,7 +299,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             get
             {
                 // return a formatted second point depending on how it was entered, manually or via map point tool
-                if (string.IsNullOrWhiteSpace(point2Formatted))
+                if (string.IsNullOrWhiteSpace(_point2Formatted))
                 {
                     if (Point2 != null)
                     {
@@ -341,7 +321,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 else
                 {
                     // this was user inputed so just return the inputed string
-                    return point2Formatted;
+                    return _point2Formatted;
                 }
             }
             set
@@ -349,10 +329,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (string.IsNullOrWhiteSpace(value))
                 {
                     if (!IsToolActive)
-                        point2 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
+                        _point2 = null; // reset the point if the user erased (TRICKY: tool sets to "" on click)
 
-                    point2Formatted = string.Empty;
-                    RaisePropertyChanged(() => Point2Formatted);
+                    SetProperty(ref _point2Formatted, string.Empty);
                     return;
                 }
 
@@ -370,7 +349,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 MapPoint point = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetMapPointFromString(outFormattedString) : null;
                 if (point != null)
                 {
-                    point2Formatted = value;
+                    _point2Formatted = value;
                     Point2 = point;
                     if (HasPoint1)
                     {
@@ -407,13 +386,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         }
 
-        double distance = 0.0;
+        double _distance = 0.0;
         /// <summary>
         /// Property for the distance/length
         /// </summary>
         public virtual double Distance
         {
-            get { return distance; }
+            get => _distance;
             set
             {
                 if (value < 0.0)
@@ -433,10 +412,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
                 }
 
-                distance = value;
-                DistanceString = distance.ToString("0.##");
-                RaisePropertyChanged(() => Distance);
-                RaisePropertyChanged(() => DistanceString);
+                _distance = value;
+                DistanceString = _distance.ToString("0.##");
+                NotifyPropertyChanged(nameof(Distance));
+                NotifyPropertyChanged(nameof(DistanceString));
             }
         }
 
@@ -469,7 +448,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (d == 0.0)
                     {
                         // Don't set property(Distance) because this will overwrite the string if user entering zeros "00000"
-                        distance = 0.0;
+                        _distance = 0.0;
                         return;
                     }
 
@@ -751,8 +730,9 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 ResetFeedback();
                 Point2 = point;
                 HasPoint2 = true;
-                point2Formatted = string.Empty;
-                RaisePropertyChanged(() => Point2Formatted);
+
+                _point2Formatted = string.Empty;
+                NotifyPropertyChanged(nameof(Point2Formatted));
             }
 
             if (HasPoint1 && HasPoint2)
@@ -935,7 +915,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <param name="obj">always null</param>
         private void OnKeypressEscape(object obj)
         {
-            if (isActiveTab)
+            if (_isActiveTab)
             {
                 if (FrameworkApplication.CurrentTool != null)
                 {
@@ -970,7 +950,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <param name="obj">always null</param>
         private void OnPointTextBoxKeyDown(object obj)
         {
-            if (isActiveTab)
+            if (_isActiveTab)
             {
                 // deactivate the map point tool when a point is manually entered
                 if (IsToolActive)
@@ -1262,7 +1242,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         {
             // Subscribe to this event in case the ActiveMap already has layers with features (so buttons are enabled on load)
             await HasLayerFeatures();
-            RaisePropertyChanged(() => HasMapGraphics);
+            NotifyPropertyChanged(nameof(HasMapGraphics));
         }
 
         #endregion Private Functions
@@ -1426,7 +1406,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (featureLayer == null)
             {
-                hasMapGraphics = false;
+                _hasMapGraphics = false;
                 return;
             }
 
@@ -1434,7 +1414,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             await QueuedTask.Run(() =>
             {
                 featureClass = featureLayer.GetFeatureClass();
-                hasMapGraphics = (featureClass == null) ? false : featureClass.GetCount() > 0;
+                _hasMapGraphics = (featureClass == null) ? false : featureClass.GetCount() > 0;
             });
         }
 

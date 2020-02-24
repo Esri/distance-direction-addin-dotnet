@@ -49,14 +49,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public ProAppDistanceAndDirectionModule.Common.RelayCommand LayerPackageLoaded { get; set; }
 
-        LineFromTypes lineFromType = LineFromTypes.Points;
+        LineFromTypes _lineFromType = LineFromTypes.Points;
         public LineFromTypes LineFromType
         {
-            get { return lineFromType; }
+            get => _lineFromType;
             set
             {
-                lineFromType = value;
-                RaisePropertyChanged(() => LineFromType);
+                SetProperty(ref _lineFromType, value);
 
                 // reset points
                 ResetPoints();
@@ -64,18 +63,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // stop feedback when from type changes
                 ResetFeedback();
                 Reset(false);
-                RaisePropertyChanged(() => DistanceBearingReady);
+                NotifyPropertyChanged(nameof(DistanceBearingReady));
             }
         }
 
-        LineTypes lineType = LineTypes.Geodesic;
+        LineTypes _lineType = LineTypes.Geodesic;
         public override LineTypes LineType
         {
-            get { return lineType; }
+            get => _lineType;
             set
             {
-                lineType = value;
-                RaisePropertyChanged(() => LineType);
+                SetProperty(ref _lineType, value);
                 ResetFeedback();
             }
         }
@@ -92,16 +90,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             return curveType;
         }
 
-        public System.Windows.Visibility LineTypeComboVisibility
-        {
-            get { return System.Windows.Visibility.Visible; }
-        }
+        public System.Windows.Visibility LineTypeComboVisibility => System.Windows.Visibility.Visible;
 
 
         AzimuthTypes lineAzimuthType = AzimuthTypes.Degrees;
         public AzimuthTypes LineAzimuthType
         {
-            get { return lineAzimuthType; }
+            get => lineAzimuthType;
             set
             {
                 if (LineFromType == LineFromTypes.Points)
@@ -119,10 +114,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         public override MapPoint Point1
         {
-            get
-            {
-                return base.Point1;
-            }
+            get => base.Point1;
             set
             {
                 base.Point1 = value;
@@ -132,35 +124,32 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     ResetFeedback();
                 }
                 UpdateFeedback();
-                RaisePropertyChanged(() => DistanceBearingReady);
+                NotifyPropertyChanged(nameof(DistanceBearingReady));
+
             }
         }
 
-        double distance = 0.0;
+        double _distance = 0.0;
         public override double Distance
         {
-            get { return distance; }
+            get => _distance;
             set
             {
-                distance = value;
-                RaisePropertyChanged(() => Distance);
+                SetProperty(ref _distance, value);
 
                 if (LineFromType == LineFromTypes.BearingAndDistance)
                     UpdateManualFeedback();
                 else
                     UpdateFeedback();
 
-                DistanceString = distance.ToString("0.##");
-                RaisePropertyChanged(() => DistanceString);
+                DistanceString = _distance.ToString("0.##");
+                NotifyPropertyChanged(nameof(DistanceString));
             }
         }
 
         public override DistanceTypes LineDistanceType
         {
-            get
-            {
-                return base.LineDistanceType;
-            }
+            get => base.LineDistanceType;
             set
             {
                 if (LineFromType == LineFromTypes.Points)
@@ -226,18 +215,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        double? azimuth = 0.0;
+        double? _azimuth = 0.0;
         public double? Azimuth
         {
-            get { return azimuth; }
+            get => _azimuth;
             set
             {
-                if ((value != null) && (value >= 0.0))
-                    azimuth = value;
-                else
-                    azimuth = null;
+                double? clampedAzimuth = null;
 
-                RaisePropertyChanged(() => Azimuth);
+                if ((value != null) && (value >= 0.0))
+                    clampedAzimuth = value;
+
+                SetProperty(ref _azimuth, clampedAzimuth);
 
                 if (LineFromType == LineFromTypes.BearingAndDistance)
                 {
@@ -262,14 +251,15 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (value > 400)
                         throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
-                AzimuthString = azimuth.Value.ToString("0.##");
-                RaisePropertyChanged(() => AzimuthString);
+
+                AzimuthString = _azimuth.Value.ToString("0.##");
+                NotifyPropertyChanged(nameof(AzimuthString));
             }
         }
         string azimuthString = string.Empty;
         public string AzimuthString
         {
-            get { return azimuthString; }
+            get => azimuthString;
             set
             {
                 // lets avoid an infinite loop here
@@ -352,13 +342,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <summary>
         /// On top of the base class we need to make sure we have an azimuth
         /// </summary>
-        public override bool CanCreateElement
-        {
-            get
-            {
-                return (Azimuth.HasValue && base.CanCreateElement);
-            }
-        }
+        public override bool CanCreateElement => (Azimuth.HasValue && base.CanCreateElement);
 
         // sketch doesn't support geodesic lines
         // not using this for now
@@ -392,7 +376,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Azimuth = 0.0;
         }
 
-        internal async override void OnNewMapPointEvent(object obj)
+        internal override async void OnNewMapPointEvent(object obj)
         {
             if (!IsActiveTab)
                 return;
@@ -483,8 +467,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     mapPoint1 = Point1,
                     mapPoint2 = Point2,
-                    distance = distance,
-                    angle = (double)azimuth,
+                    distance = _distance,
+                    angle = (double)_azimuth,
                     angleunit = LineAzimuthType.ToString(),
                     distanceunit = displayValue.ToString(),
                     originx = Point1.X,

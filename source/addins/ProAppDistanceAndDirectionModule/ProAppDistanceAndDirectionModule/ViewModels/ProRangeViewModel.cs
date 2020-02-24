@@ -47,14 +47,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         public ProOutputDistanceView OutputDistanceView { get; set; }
         #region Properties
 
-        RingTypes ringType = RingTypes.Fixed;
+        RingTypes _ringType = RingTypes.Fixed;
         public override RingTypes RingType
         {
-            get { return ringType; }
+            get => _ringType;
             set
             {
-                ringType = value;
-                RaisePropertyChanged(() => RingType);
+                SetProperty(ref _ringType, value);
 
                 ResetValue();
             }
@@ -83,13 +82,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         // keep track of the max distance for drawing of radials in interactive mode
         double maxDistance = 0.0;
 
-        int numberOfRings = 10;
+        int _numberOfRings = 10;
         /// <summary>
         /// Property for the number or rings
         /// </summary>
         public int NumberOfRings
         {
-            get { return numberOfRings; }
+            get => _numberOfRings;
             set
             {
                 if (RingType == RingTypes.Fixed)
@@ -97,25 +96,23 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (value < 1 || value > 180)
                         throw new ArgumentException(string.Format(ProAppDistanceAndDirectionModule.Properties.Resources.AENumOfRings, 1, 180));
                 }
-                numberOfRings = value;
-                RaisePropertyChanged(() => NumberOfRings);
+                SetProperty(ref _numberOfRings, value);
             }
         }
 
-        int numberOfRadials = 0;
+        int _numberOfRadials = 0;
         /// <summary>
         /// Property for the number of radials
         /// </summary>
         public int NumberOfRadials
         {
-            get { return numberOfRadials; }
+            get => _numberOfRadials;
             set
             {
                 if (value < 0 || value > 180)
                     throw new ArgumentException(string.Format(ProAppDistanceAndDirectionModule.Properties.Resources.AENumOfRadials, 0, 180));
 
-                numberOfRadials = value;
-                RaisePropertyChanged(() => NumberOfRadials);
+                SetProperty(ref _numberOfRadials, value);
             }
         }
 
@@ -304,7 +301,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 Geometry geom = null;
                 if (RingType == RingTypes.Fixed)
                 {
-                    for (int x = 0; x < numberOfRings; x++)
+                    for (int x = 0; x < _numberOfRings; x++)
                     {
                         // set the current radius
                         radius += Distance;
@@ -363,7 +360,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             RangeAttributes rangeAttributes = new RangeAttributes()
             {
                 mapPoint = Point1,
-                numRings = numberOfRings,
+                numRings = _numberOfRings,
                 distance = radius,
                 centerx = Point1.X,
                 centery = Point1.Y,

@@ -68,41 +68,24 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        private MapPoint point2 = null;
+        private MapPoint _point2 = null;
         public override MapPoint Point2
         {
-            get
-            {
-                return point2;
-            }
-            set
-            {
-                point2 = value;
-                RaisePropertyChanged(() => Point2);
-            }
+            get => _point2;
+            set => SetProperty(ref _point2, value);
         }
 
-        private MapPoint point3 = null;
+        private MapPoint _point3 = null;
         public MapPoint Point3
         {
-            get
-            {
-                return point3;
-            }
-            set
-            {
-                point3 = value;
-                RaisePropertyChanged(() => Point3);
-            }
+            get => _point3;
+            set => SetProperty(ref _point3, value);
         }
 
-        private double minorAxisDistance = 0.0;
+        private double _minorAxisDistance = 0.0;
         public double MinorAxisDistance
         {
-            get
-            {
-                return minorAxisDistance;
-            }
+            get => _minorAxisDistance;
             set
             {
                 if (value < 0.0)
@@ -121,21 +104,21 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
                 }
 
-                minorAxisDistance = value;
+                _minorAxisDistance = value;
 
                 UpdateFeedbackWithEllipse();
 
-                RaisePropertyChanged(() => MinorAxisDistance);
-                RaisePropertyChanged(() => MinorAxisDistanceString);
+                NotifyPropertyChanged(nameof(MinorAxisDistance));
+                NotifyPropertyChanged(nameof(MinorAxisDistanceString));
             }
         }
 
-        private string minorAxisDistanceString = string.Empty;
+        private string _minorAxisDistanceString = string.Empty;
         public string MinorAxisDistanceString
         {
             get
             {
-                if (string.IsNullOrWhiteSpace(minorAxisDistanceString))
+                if (string.IsNullOrWhiteSpace(_minorAxisDistanceString))
                 {
                     if (EllipseType == EllipseTypes.Full)
                     {
@@ -144,16 +127,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return MinorAxisDistance.ToString("0.##");
                 }
                 else
-                    return minorAxisDistanceString;
+                    return _minorAxisDistanceString;
             }
             set
             {
-                if (string.Equals(minorAxisDistanceString, value))
+                if (string.Equals(_minorAxisDistanceString, value))
                     return;
 
-                minorAxisDistanceString = value;
+                _minorAxisDistanceString = value;
                 double d = 0.0;
-                if (double.TryParse(minorAxisDistanceString, out d))
+                if (double.TryParse(_minorAxisDistanceString, out d))
                 {
                     if (EllipseType == EllipseTypes.Full)
                     {
@@ -161,7 +144,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     }
                     else if (d > MajorAxisDistance)
                     {
-                        minorAxisDistance = d;
+                        _minorAxisDistance = d;
                         throw new ArgumentException("Minor Axis can not be greater that Major Axis");
                     }
                     else
@@ -173,7 +156,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     if (MinorAxisDistance == d)
                         return;
 
-                    RaisePropertyChanged(() => MinorAxisDistance);
+                    NotifyPropertyChanged(nameof(MinorAxisDistance));
                 }
                 else
                 {
@@ -182,13 +165,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        private double majorAxisDistance = 0.0;
+        private double _majorAxisDistance = 0.0;
         public double MajorAxisDistance
         {
-            get
-            {
-                return majorAxisDistance;
-            }
+            get => _majorAxisDistance;
             set
             {
                 if (value < 0.0)
@@ -207,12 +187,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
                 }
 
-                majorAxisDistance = value;
+                _majorAxisDistance = value;
 
                 UpdateFeedbackWithEllipse();
 
-                RaisePropertyChanged(() => MajorAxisDistance);
-                RaisePropertyChanged(() => MajorAxisDistanceString);
+                NotifyPropertyChanged(nameof(MajorAxisDistance));
+                NotifyPropertyChanged(nameof(MajorAxisDistanceString));
             }
         }
 
@@ -245,7 +225,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                         MajorAxisDistance = d / 2.0;
                     else if (d < MinorAxisDistance)
                     {
-                        majorAxisDistance = d;
+                        _majorAxisDistance = d;
                         throw new ArgumentException("Major Axis can not be smaller that Minor Axis");
                     }
                     else
@@ -265,25 +245,21 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        double azimuth = 0.0;
+        double _azimuth = 0.0;
         public double Azimuth
         {
-            get
-            {
-                return azimuth;
-            }
+            get => _azimuth;
             set
             {
                 if (value < 0.0)
                     throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
 
-                azimuth = value;
-                RaisePropertyChanged(() => Azimuth);
+                SetProperty(ref _azimuth, value);
 
                 UpdateFeedbackWithEllipse();
 
-                AzimuthString = azimuth.ToString("0.##");
-                RaisePropertyChanged(() => AzimuthString);
+                AzimuthString = _azimuth.ToString("0.##");
+                NotifyPropertyChanged(nameof(AzimuthString));
             }
         }
 
@@ -480,7 +456,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             Point3 = null;
 
             majorAxisDistanceString = string.Empty;
-            minorAxisDistanceString = string.Empty;
+            _minorAxisDistanceString = string.Empty;
 
             MajorAxisDistance = 0.0;
             MinorAxisDistance = 0.0;

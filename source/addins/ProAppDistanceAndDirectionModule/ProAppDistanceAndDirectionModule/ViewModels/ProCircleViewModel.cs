@@ -93,30 +93,27 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 // reset distance
-                RaisePropertyChanged(() => DistanceString);
-                //RaisePropertyChanged(() => Distance);
+                NotifyPropertyChanged(nameof(DistanceString));
+                //NotifyPropertyChanged(nameof(Distance));
 
                 UpdateFeedback();
             }
         }
 
-        TimeUnits timeUnit = TimeUnits.Minutes;
+        TimeUnits _timeUnit = TimeUnits.Minutes;
         /// <summary>
         /// Type of time units
         /// </summary>
         public TimeUnits TimeUnit
         {
-            get
-            {
-                return timeUnit;
-            }
+            get => _timeUnit;
             set
             {
-                if (timeUnit == value)
+                if (_timeUnit == value)
                 {
                     return;
                 }
-                timeUnit = value;
+                _timeUnit = value;
 
                 double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
                 if (RateUnit != DistanceTypes.Meters)
@@ -127,7 +124,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTimeString);
+                    NotifyPropertyChanged(nameof(TravelTimeString));
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
                     if (HasPoint1)
@@ -139,10 +136,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
 
                 // Trigger validation to clear error messages as necessary
-                RaisePropertyChanged(() => RateTimeUnit);
-                RaisePropertyChanged(() => TimeUnit);
-                RaisePropertyChanged(() => TravelRateString);
-                RaisePropertyChanged(() => TravelTimeString);
+                NotifyPropertyChanged(nameof(RateTimeUnit));
+                NotifyPropertyChanged(nameof(TimeUnit));
+                NotifyPropertyChanged(nameof(TravelRateString));
+                NotifyPropertyChanged(nameof(TravelTimeString));
             }
         }
 
@@ -157,18 +154,18 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 {
                     case TimeUnits.Seconds:
                         {
-                            return travelTime;
+                            return _travelTime;
                         }
                     case TimeUnits.Minutes:
                         {
-                            return travelTime * 60.0;
+                            return _travelTime * 60.0;
                         }
                     case TimeUnits.Hours:
                         {
-                            return travelTime * 3600.0;
+                            return _travelTime * 3600.0;
                         }
                     default:
-                        return travelTime;
+                        return _travelTime;
                 }
             }
         }
@@ -233,16 +230,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        double travelTime = 0.0;
+        double _travelTime = 0.0;
         /// <summary>
         /// Property for time display
         /// </summary>
         public double TravelTime
         {
-            get
-            {
-                return travelTime;
-            }
+            get => _travelTime;
             set
             {
                 if (value < 0.0)
@@ -255,7 +249,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
                 }
 
-                travelTime = value;
+                _travelTime = value;
 
                 double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
                 if (RateUnit != DistanceTypes.Meters)
@@ -265,7 +259,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTimeString);
+                    NotifyPropertyChanged(() => TravelTimeString);
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
                     if (HasPoint1)
@@ -278,10 +272,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
 
                 // Trigger validation to clear error messages as necessary
-                RaisePropertyChanged(() => RateTimeUnit);
-                RaisePropertyChanged(() => TimeUnit);
-                RaisePropertyChanged(() => TravelRateString);
-                RaisePropertyChanged(() => TravelTimeString);
+                NotifyPropertyChanged(nameof(RateTimeUnit));
+                NotifyPropertyChanged(nameof(TimeUnit));
+                NotifyPropertyChanged(nameof(TravelRateString));
+                NotifyPropertyChanged(nameof(TravelTimeString));
             }
 
         }
@@ -337,22 +331,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
         }
 
-        double travelRate = 0.0;
+        double _travelRate = 0.0;
         /// <summary>
         /// Property of rate display
         /// </summary>
         public double TravelRate
         {
-            get
-            {
-                return travelRate;
-            }
+            get => _travelRate;
             set
             {
                 if (value < 0.0)
                     throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
 
-                travelRate = value;
+                _travelRate = value;
 
                 double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
                 if (RateUnit != DistanceTypes.Meters)
@@ -363,7 +354,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (distanceInMeters > DistanceLimit)
                 {
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
-                    RaisePropertyChanged(() => TravelRateString);
+                    NotifyPropertyChanged(nameof(TravelRateString));
                     ClearTempGraphics();
                     if (HasPoint1)
                         // Re-add the point as it was cleared by ClearTempGraphics() but we still want to see it
@@ -372,12 +363,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, true);
-                RaisePropertyChanged(() => TravelRateString);
+                NotifyPropertyChanged(nameof(TravelRateString));
 
                 // Trigger validation to clear error messages as necessary
-                RaisePropertyChanged(() => TravelTimeString);
-                RaisePropertyChanged(() => RateTimeUnit);
-                RaisePropertyChanged(() => TimeUnit);
+                NotifyPropertyChanged(nameof(TravelTimeString));
+                NotifyPropertyChanged(nameof(RateTimeUnit));
+                NotifyPropertyChanged(nameof(TimeUnit));
             }
         }
 
@@ -418,7 +409,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         }
 
 
-        DistanceTypes rateUnit = DistanceTypes.Meters;
+        DistanceTypes _rateUnit = DistanceTypes.Meters;
         public DistanceTypes RateUnit
         {
             get
@@ -446,22 +437,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             }
             set
             {
-                if (rateUnit == value)
+                if (_rateUnit == value)
                 {
                     return;
                 }
 
-                rateUnit = value;
+                _rateUnit = value;
 
                 double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
-                if (rateUnit != DistanceTypes.Meters)
+                if (_rateUnit != DistanceTypes.Meters)
                 {
                     // Prevent graphical glitches from excessively high inputs
-                    distanceInMeters = ConvertFromTo(rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
+                    distanceInMeters = ConvertFromTo(_rateUnit, DistanceTypes.Meters, TravelRateInSeconds * TravelTimeInSeconds);
                 }
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTimeString);
+                    NotifyPropertyChanged(nameof(TravelTimeString));
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
                     if (HasPoint1)
@@ -472,24 +463,21 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, (distanceInMeters < DistanceLimit));
 
-                RaisePropertyChanged(() => RateUnit);
+                NotifyPropertyChanged(nameof(RateUnit));
             }
         }
 
-        RateTimeTypes rateTimeUnit = RateTimeTypes.MilesHour;
+        RateTimeTypes _rateTimeUnit = RateTimeTypes.MilesHour;
         public RateTimeTypes RateTimeUnit
         {
-            get
-            {
-                return rateTimeUnit;
-            }
+            get => _rateTimeUnit;
             set
             {
-                if (rateTimeUnit == value)
+                if (_rateTimeUnit == value)
                 {
                     return;
                 }
-                rateTimeUnit = value;
+                _rateTimeUnit = value;
 
                 double distanceInMeters = TravelRateInSeconds * TravelTimeInSeconds;
                 if (RateUnit != DistanceTypes.Meters)
@@ -499,7 +487,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 if (distanceInMeters > DistanceLimit)
                 {
-                    RaisePropertyChanged(() => TravelTimeString);
+                    NotifyPropertyChanged(nameof(TravelTimeString));
                     UpdateDistance(TravelRateInSeconds * TravelTimeInSeconds, RateUnit, false);
                     ClearTempGraphics();
                     if (HasPoint1)
@@ -511,19 +499,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 UpdateDistance(TravelTimeInSeconds * TravelRateInSeconds, RateUnit, true);
 
                 // Trigger validation to clear error messages as necessary
-                RaisePropertyChanged(() => RateTimeUnit);
-                RaisePropertyChanged(() => TravelTimeString);
-                RaisePropertyChanged(() => TravelRateString);
+                NotifyPropertyChanged(nameof(RateTimeUnit));
+                NotifyPropertyChanged(nameof(TravelTimeString));
+                NotifyPropertyChanged(nameof(TravelRateString));
             }
         }
 
-        bool isDistanceCalcExpanded = false;
+        bool _isDistanceCalcExpanded = false;
         public bool IsDistanceCalcExpanded
         {
-            get { return isDistanceCalcExpanded; }
+            get => _isDistanceCalcExpanded;
             set
             {
-                isDistanceCalcExpanded = value;
+                _isDistanceCalcExpanded = value;
                 if (value == true)
                 {
                     TravelRate = 0.0;
@@ -540,7 +528,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (HasPoint1)
                     AddGraphicToMap(Point1, ColorFactory.Instance.GreenRGB, null, true, 5.0);
 
-                RaisePropertyChanged(() => IsDistanceCalcExpanded);
+                NotifyPropertyChanged(nameof(IsDistanceCalcExpanded));
             }
         }
 
@@ -634,7 +622,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 // Trigger update to clear exception highlighting if necessary
-                RaisePropertyChanged(() => LineDistanceType);
+                NotifyPropertyChanged(nameof(LineDistanceType));
             }
         }
 
