@@ -460,24 +460,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Also dynamically update the ring feedback
         /// </summary>
         /// <param name="obj"></param>
-        internal override void OnMouseMoveEvent(object obj)
+        internal override void OnSketchToolMouseMove(MapPoint mapPoint)
         {
             // only if we are the active tab
-            if (!IsActiveTab)
-                return;
-
-            var point = obj as MapPoint;
-
-            if (point == null)
+            if (!IsActiveTab || mapPoint == null)
                 return;
 
             if (!HasPoint1)
             {
-                Point1 = point;
+                Point1 = mapPoint;
             }
             else if (HasPoint1 && RingType == RingTypes.Interactive)
             {
-                Distance = GetGeodesicDistance(Point1, point);
+                Distance = GetGeodesicDistance(Point1, mapPoint);
 
                 // update ring feedback, distance
                 UpdateFeedbackWithGeoCircle();
@@ -494,8 +489,6 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (RingType == RingTypes.Interactive && IsToolActive)
                 IsToolActive = false;
         }
-
-        
 
         internal override void Reset(bool toolReset)
         {
