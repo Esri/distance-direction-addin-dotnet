@@ -1310,7 +1310,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 // Save the project, so layer stays in project
                 // Note: Must be called on Main/UI Thread
                 if (success)
-                    await ArcGIS.Desktop.Framework.FrameworkApplication.Current.Dispatcher.Invoke(async () =>
+                    await Utilities.StartOnUIThread(async () =>
                     {
                         bool success2 = await ArcGIS.Desktop.Core.Project.Current.SaveAsync();
                     });
