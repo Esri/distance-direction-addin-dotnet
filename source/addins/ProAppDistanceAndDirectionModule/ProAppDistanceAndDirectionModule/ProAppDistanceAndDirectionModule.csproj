@@ -119,6 +119,7 @@
     <Compile Include="Common\Helpers\StringValueAttribute.cs" />
     <Compile Include="Common\Helpers\UIHelpers.cs" />
     <Compile Include="Common\Helpers\Wpf.cs" />
+    <Compile Include="Events\SketchToolMouseMoveEvent.cs" />
     <Compile Include="Models\DistanceAndDirectionConfig.cs" />
     <Compile Include="Models\OutputDistanceModel.cs" />
     <Compile Include="Common\ValueConverters\EnumToFriendlyNameConverter.cs" />
