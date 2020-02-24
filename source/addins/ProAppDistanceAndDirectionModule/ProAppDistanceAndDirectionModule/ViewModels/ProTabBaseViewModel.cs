@@ -17,6 +17,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
 
 using ArcGIS.Core.Data;
@@ -29,7 +30,6 @@ using ArcGIS.Desktop.Framework;
 using ProAppDistanceAndDirectionModule.Common;
 using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
-using ProAppDistanceAndDirectionModule.ViewModels;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Core.Geoprocessing;
 
@@ -640,12 +640,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Calls CreateMapElement
         /// </summary>
         /// <param name="obj"></param>
-        internal virtual async void OnEnterKeyCommand(object obj)
+        internal virtual void OnEnterKeyCommand(object obj)
         {
-            var depends = obj as System.Windows.DependencyObject;
-
             // check all children of dependency object for validation errors
-            if (depends != null && !IsValid(depends))
+            if (obj is DependencyObject depends && !IsValid(depends))
                 return;
 
             if (!CanCreateElement)
@@ -655,7 +653,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (geom != null)
             {
-                await ZoomToExtent(geom.Extent);
+                var mapView = MapView.Active;
+                QueuedTask.Run(() => ZoomToExtent(mapView, geom.Extent));
             }
         }
 
@@ -784,9 +783,16 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
         #region Private Functions
 
-        private async Task ZoomToExtent(Envelope env)
+        /// <summary>
+        /// Must be called on MCT.
+        /// </summary>
+        /// <param name="mapView"></param>
+        /// <param name="env"></param>
+        private void ZoomToExtent(MapView mapView, Envelope env)
         {
-            if (env == null || MapView.Active == null || MapView.Active.Map == null)
+            ArcGIS.Core.Internal.Interop.ThrowOnWrongThread();
+
+            if (env == null || mapView == null)
                 return;
 
             double extentPercent = (env.XMax - env.XMin) > (env.YMax - env.YMin) ? (env.XMax - env.XMin) * .3 : (env.YMax - env.YMin) * .3;
@@ -795,11 +801,10 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             double ymax = env.YMax + extentPercent;
             double ymin = env.YMin - extentPercent;
 
-            //Create the envelope
-            var envelope = await QueuedTask.Run(() => ArcGIS.Core.Geometry.EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, MapView.Active.Map.SpatialReference));
+            var envelope = EnvelopeBuilder.CreateEnvelope(xmin, ymin, xmax, ymax, mapView.Map.SpatialReference);
 
             //Zoom the view to a given extent.
-            await MapView.Active.ZoomToAsync(envelope, TimeSpan.FromSeconds(0.5));
+            mapView.ZoomTo(envelope, TimeSpan.FromSeconds(0.5));
         }
 
         /// <summary>
