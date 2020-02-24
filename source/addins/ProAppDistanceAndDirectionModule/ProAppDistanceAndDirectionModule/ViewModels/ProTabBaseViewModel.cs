@@ -702,36 +702,34 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// <returns></returns>
         internal async Task<bool> IsValidPoint(MapPoint point)
         {
-            if ((point != null) && (MapView.Active != null) && (MapView.Active.Map != null))
+            // avoid chaining issues
+            var map = MapView.Active?.Map;
+
+            if ((point == null) || (map == null))
+                return false;
+
+            var env = await QueuedTask.Run(() => map.CalculateFullExtent());
+
+            if (env == null)
+                return false;
+
+            bool isValid = false;
+
+            try
             {
-                Envelope env = null;
-                await QueuedTask.Run(() =>
-                {
-                    env = MapView.Active.Map.CalculateFullExtent();
-                });
-
-                bool isValid = false;
-
-                if (env != null)
-                {
-                    try
-                    {
-                        // Workaround for 2.1, map point SR was not set to same as map
-                        Geometry geo = GeometryEngine.Instance.Project(point, env.SpatialReference);
-                        // Now check if point is within Map Extent
-                        isValid = GeometryEngine.Instance.Contains(env, geo);
-                    }
-                    catch (Exception ex)
-                    {
-                        // This just checks the point is in the map extent so allow the check to pass even if this excepts 
-                        isValid = true;
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                    }
-                }
-
-                return isValid;
+                // Workaround for 2.1, map point SR was not set to same as map
+                Geometry geo = GeometryEngine.Instance.Project(point, env.SpatialReference);
+                // Now check if point is within Map Extent
+                isValid = GeometryEngine.Instance.Contains(env, geo);
             }
-            return false;
+            catch (Exception ex)
+            {
+                // This just checks the point is in the map extent so allow the check to pass even if this excepts 
+                isValid = true;
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+
+            return isValid;
         }
 
         /// <summary>

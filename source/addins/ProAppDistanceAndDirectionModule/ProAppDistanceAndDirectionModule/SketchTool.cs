@@ -28,7 +28,6 @@ namespace ProAppDistanceAndDirectionModule
 {
     class SketchTool : MapTool
     {
-
         private const string NEW_MAP_POINT = "NEW_MAP_POINT";
         private const string TAB_ITEM_SELECTED = "TAB_ITEM_SELECTED";
         private const string MOUSE_DOUBLE_CLICK = "MOUSE_DOUBLE_CLICK";
@@ -40,6 +39,7 @@ namespace ProAppDistanceAndDirectionModule
         private const string LAYER_PACKAGE_LOADED = "LAYER_PACKAGE_LOADED";
 
         private readonly DebounceDispatcher _throttleMouse = new DebounceDispatcher();
+
         public SketchTool()
         {
             IsSketchTool = true;
@@ -47,20 +47,17 @@ namespace ProAppDistanceAndDirectionModule
             UseSnapping = true;
         }
 
-        public static string ToolId
-        {
-            // Important: this must match the Tool ID used in the DAML
-            get { return "ProAppDistanceAndDirectionModule_SketchTool"; }
-        }
+        // Important: this must match the Tool ID used in the DAML
+        public static string ToolId => "ProAppDistanceAndDirectionModule_SketchTool";
 
         // If the user presses Escape cancel the sketch
         protected override void OnToolKeyDown(MapViewKeyEventArgs k)
         {
-            if (k.Key == Key.Escape)
-            {
-                k.Handled = true;
-                SketchMouseEvents(null, KEYPRESS_ESCAPE);
-            }
+            if (k.Key != Key.Escape)
+                return;
+
+            k.Handled = true;
+            SketchMouseEvents(null, KEYPRESS_ESCAPE);
         }
 
         protected override Task<bool> OnSketchCompleteAsync(Geometry geometry)
@@ -82,7 +79,7 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
-                //lets limit how many times we call this
+                // lets limit how many times we call this
                 // take the latest event args every so often
                 // this will keep us from drawing too many feedback geometries
                 _throttleMouse.ThrottleAndFireAtInterval(150, async (args) =>
@@ -104,11 +101,11 @@ namespace ProAppDistanceAndDirectionModule
         {
             try
             {
-                MapPoint mp = await QueuedTask.Run(() =>
-                {
-                    return MapView.Active.ClientToMap(e.ClientPoint);
-                });
-                SketchMouseEvents(mp, MOUSE_DOUBLE_CLICK);
+                // avoid chaining issue
+                var mapView = MapView.Active;
+
+                MapPoint mp = await QueuedTask.Run(() => mapView.ClientToMap(e.ClientPoint));
+                SketchMouseEvents(mp, MOUSE_DOUBLE_CLICK); // TODO should be an event
             }
             catch(Exception ex)
             {
