@@ -25,6 +25,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
+using ProAppDistanceAndDirectionModule.Common.Helpers;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -399,7 +400,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             base.OnNewMapPointEvent(obj);
         }
 
-        internal override async void OnSketchToolMouseMove(MapPoint mapPoint)
+        internal override void OnSketchToolMouseMove(MapPoint mapPoint)
         {
             GeodeticCurveType curveType = DeriveCurveType(LineType);
             LinearUnit lu = DeriveUnit(LineDistanceType);
@@ -428,7 +429,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     return;
 
                 UpdateAzimuth(lineSegment.Angle);
-                await UpdateFeedbackWithGeoLine(lineSegment, curveType, lu);
+                ProHelper.NonAwaitCall(UpdateFeedbackWithGeoLine(lineSegment, curveType, lu));
             }
 
             base.OnSketchToolMouseMove(mapPoint);
