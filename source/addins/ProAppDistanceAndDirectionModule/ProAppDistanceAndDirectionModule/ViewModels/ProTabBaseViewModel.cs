@@ -147,13 +147,11 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         private bool _isToolActive = false;
         public virtual bool IsToolActive
         {
-            get
-            {
-                return _isToolActive;
-            }
+            get => _isToolActive;
 
             set
             {
+                _isToolActive = value;
                 if (_isToolActive)
                 {
                     FrameworkApplication.SetCurrentToolAsync(MAP_TOOL_NAME);
@@ -163,7 +161,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     DeactivateTool(MAP_TOOL_NAME);
                 }
 
-                SetProperty(ref _isToolActive, value);
+                NotifyPropertyChanged(nameof(IsToolActive));
             }
         }
 
