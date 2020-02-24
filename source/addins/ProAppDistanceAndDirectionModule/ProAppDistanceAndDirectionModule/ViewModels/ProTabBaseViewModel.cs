@@ -32,6 +32,7 @@ using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.Views;
 using ArcGIS.Desktop.Core;
 using ArcGIS.Desktop.Core.Geoprocessing;
+using ArcGIS.Desktop.Internal.Mapping;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
@@ -772,7 +773,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             if (FrameworkApplication.CurrentTool != null &&
                 FrameworkApplication.CurrentTool.Equals(toolname))
             {
-                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                Utilities.StartOnUIThread(() =>
                 {
                     FrameworkApplication.SetCurrentToolAsync(lastActiveToolName);
                 });
