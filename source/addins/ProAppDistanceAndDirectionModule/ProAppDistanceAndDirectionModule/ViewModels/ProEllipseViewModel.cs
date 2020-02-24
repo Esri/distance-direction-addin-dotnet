@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using ArcGIS.Core.CIM;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Core;
@@ -332,20 +331,19 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             {
                 // get major distance from polyline
                 MajorAxisDistance = GetGeodesicDistance(Point1, mapPoint);
+
                 // update bearing
-                var segment = QueuedTask.Run(() =>
+                LineSegment segment = null;
+
+                try
                 {
-                    try
-                    {
-                        var pointproj = GeometryEngine.Instance.Project(mapPoint, Point1.SpatialReference);
-                        return LineBuilder.CreateLineSegment(Point1, (MapPoint)pointproj);
-                    }
-                    catch (Exception ex)
-                    {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
-                        return null;
-                    }
-                }).Result;
+                    var pointproj = GeometryEngine.Instance.Project(mapPoint, Point1.SpatialReference);
+                    segment = LineBuilder.CreateLineSegment(Point1, (MapPoint)pointproj);
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
 
                 if (segment == null)
                     return;

@@ -459,7 +459,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         /// Override the mouse move event to dynamically update the center point
         /// Also dynamically update the ring feedback
         /// </summary>
-        /// <param name="obj"></param>
+        /// <param name="mapPoint"></param>
         internal override void OnSketchToolMouseMove(MapPoint mapPoint)
         {
             // only if we are the active tab
