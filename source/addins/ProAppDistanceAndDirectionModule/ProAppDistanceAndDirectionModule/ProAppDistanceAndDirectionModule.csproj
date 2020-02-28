@@ -230,12 +230,6 @@
     <AddInContent Include="Images\GenericButtonBlue32.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\coordinate-conversion-addin-dotnet\source\CoordinateConversion\CoordinateConversionLibrary\CoordinateConversionLibrary.csproj">
-      <Project>{67ffdfae-f8ec-45aa-a3f9-6109bcf5bbf4}</Project>
-      <Name>CoordinateConversionLibrary</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <AddInContent Include="Images\GenericButtonRed16.png" />
     <AddInContent Include="Images\GenericButtonRed32.png" />
   </ItemGroup>
@@ -271,9 +265,14 @@
     <Resource Include="Images\RowHandle.png" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\coordinate-conversion-addin-dotnet\source\CoordinateConversion\ProAppCoordConversionModule\ProAppCoordConversionModule.csproj">
+      <Project>{d91d391e-03a3-4376-8bbb-eaf6f0da1ebf}</Project>
+      <Name>ProAppCoordConversionModule</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <UsingTask AssemblyFile="C:\Program Files\ArcGIS\Pro\bin\proapp-sdk-MSBuild.dll" TaskName="proapp_sdk_MSBuild.PackageAddIn" />
   <UsingTask AssemblyFile="C:\Program Files\ArcGIS\Pro\bin\proapp-sdk-MSBuild.dll" TaskName="proapp_sdk_MSBuild.CleanAddIn" />

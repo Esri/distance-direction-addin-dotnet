@@ -247,12 +247,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
-                        CoordinateConversionLibrary.Models.CoordinateType ccType =
-                            CoordinateConversionLibrary.Helpers.ConversionUtils.
+                        ProAppCoordConversionModule.Models.CoordinateType ccType =
+                            ProAppCoordConversionModule.Helpers.ConversionUtils.
                                 GetCoordinateString(GetFormattedPoint(Point1), out outFormattedString);
 
                         // TRICKY: if point can't be formatted, then it is invalid/out of bounds
-                        if ((ccType == CoordinateConversionLibrary.Models.CoordinateType.Unknown) &&
+                        if ((ccType == ProAppCoordConversionModule.Models.CoordinateType.Unknown) &&
                                 (string.IsNullOrEmpty(outFormattedString)))
                             HasPoint1 = false;
 
@@ -280,8 +280,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 // try to convert string to an IPoint                
                 string outFormattedString = string.Empty;
-                CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(value, out outFormattedString);
-                MapPoint point = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetMapPointFromString(outFormattedString) : null;
+                ProAppCoordConversionModule.Models.CoordinateType ccType = ProAppCoordConversionModule.Helpers.ConversionUtils.GetCoordinateString(value, out outFormattedString);
+                MapPoint point = (ccType != ProAppCoordConversionModule.Models.CoordinateType.Unknown) ? GetMapPointFromString(outFormattedString) : null;
                 if (point != null)
                 {
                     // clear temp graphics
@@ -324,12 +324,12 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     {
                         // only format if the Point1 data was generated from a mouse click
                         string outFormattedString = string.Empty;
-                        CoordinateConversionLibrary.Models.CoordinateType ccType =
-                            CoordinateConversionLibrary.Helpers.ConversionUtils.
+                        ProAppCoordConversionModule.Models.CoordinateType ccType =
+                            ProAppCoordConversionModule.Helpers.ConversionUtils.
                                 GetCoordinateString(GetFormattedPoint(Point2), out outFormattedString);
 
                         // TRICKY: if point can't be formatted, then it is invalid/out of bounds
-                        if ((ccType == CoordinateConversionLibrary.Models.CoordinateType.Unknown) &&
+                        if ((ccType == ProAppCoordConversionModule.Models.CoordinateType.Unknown) &&
                                 (string.IsNullOrEmpty(outFormattedString)))
                             HasPoint2 = false;
 
@@ -365,8 +365,8 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
                 // try to convert string to a MapPoint
                 string outFormattedString = string.Empty;
-                CoordinateConversionLibrary.Models.CoordinateType ccType = CoordinateConversionLibrary.Helpers.ConversionUtils.GetCoordinateString(value, out outFormattedString);
-                MapPoint point = (ccType != CoordinateConversionLibrary.Models.CoordinateType.Unknown) ? GetMapPointFromString(outFormattedString) : null;
+                ProAppCoordConversionModule.Models.CoordinateType ccType = ProAppCoordConversionModule.Helpers.ConversionUtils.GetCoordinateString(value, out outFormattedString);
+                MapPoint point = (ccType != ProAppCoordConversionModule.Models.CoordinateType.Unknown) ? GetMapPointFromString(outFormattedString) : null;
                 if (point != null)
                 {
                     point2Formatted = value;
