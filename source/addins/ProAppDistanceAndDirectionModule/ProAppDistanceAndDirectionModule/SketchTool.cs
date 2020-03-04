@@ -31,14 +31,8 @@ namespace ProAppDistanceAndDirectionModule
 
         private const string NEW_MAP_POINT = "NEW_MAP_POINT";
         private const string MOUSE_MOVE_POINT = "MOUSE_MOVE_POINT";
-        private const string TAB_ITEM_SELECTED = "TAB_ITEM_SELECTED";
         private const string MOUSE_DOUBLE_CLICK = "MOUSE_DOUBLE_CLICK";
         private const string KEYPRESS_ESCAPE = "KEYPRESS_ESCAPE";
-        //private const string POINT_TEXT_KEYDOWN = "POINT_TEXT_KEYDOWN";
-        //private const string RADIUS_DIAMETER_KEYDOWN = "RADIUS_DIAMETER_KEYDOWN";
-        private const string TOC_ITEMS_CHANGED = "TOC_ITEMS_CHANGED";
-        private const string TEXTCHANGE_DELETE = "TEXTCHANGE_DELETE";
-        private const string LAYER_PACKAGE_LOADED = "LAYER_PACKAGE_LOADED";
 
         private readonly DebounceDispatcher _throttleMouse = new DebounceDispatcher();
         public SketchTool()
