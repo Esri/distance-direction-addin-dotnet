@@ -17,8 +17,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
-                <ResourceDictionary Source="../Common/MAResourceDictionary.xaml" />
+                <ResourceDictionary Source="../ProMAResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <ObjectDataProvider x:Key="coordinateTypes"
                             MethodName="GetValues"

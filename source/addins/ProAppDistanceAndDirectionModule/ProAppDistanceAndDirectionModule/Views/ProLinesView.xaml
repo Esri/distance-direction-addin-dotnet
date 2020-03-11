@@ -13,8 +13,7 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Common/MAResourceDictionary.xaml" />
-                <ResourceDictionary Source="../ProMAResourceDictionary.xaml"/>
+               <ResourceDictionary Source="../ProMAResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <ObjectDataProvider x:Key="lineData"
                                 MethodName="GetValues"
