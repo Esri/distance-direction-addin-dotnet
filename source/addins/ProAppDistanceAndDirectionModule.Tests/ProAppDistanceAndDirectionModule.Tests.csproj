@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ProAppDistanceAndDirectionModule.Tests</RootNamespace>
     <AssemblyName>ProAppDistanceAndDirectionModule.Tests</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -92,16 +92,6 @@
   <ItemGroup>
     <Compile Include="ProAppDistanceAndDirectionModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\DistanceAndDirectionLibrary\DistanceAndDirectionLibrary.csproj">
-      <Project>{23854fb8-98f1-443b-82fb-21718d39ef94}</Project>
-      <Name>DistanceAndDirectionLibrary</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ProAppDistanceAndDirectionModule\ProAppDistanceAndDirectionModule\ProAppDistanceAndDirectionModule.csproj">
-      <Project>{ab2934c1-011a-49fe-bd1c-9368cce0358e}</Project>
-      <Name>ProAppDistanceAndDirectionModule</Name>
-    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

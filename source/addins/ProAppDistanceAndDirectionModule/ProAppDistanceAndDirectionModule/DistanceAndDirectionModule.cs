@@ -21,6 +21,8 @@ namespace ProAppDistanceAndDirectionModule
     {
         private static DistanceAndDirectionModule _this = null;
 
+        private const string _dockPaneID = "ProAppDistanceAndDirectionModule_DistanceAndDirectionDockpane";
+
         /// <summary>
         /// Retrieve the singleton instance to this module here
         /// </summary>
@@ -45,6 +47,22 @@ namespace ProAppDistanceAndDirectionModule
         }
 
         #endregion Overrides
+
+        /// <summary>
+        /// Stores the instance of the Feature Selection dock pane viewmodel
+        /// </summary>
+        private static DistanceAndDirectionDockpaneViewModel _dockPane;
+        internal static DistanceAndDirectionDockpaneViewModel DistanceAndDirectionVM
+        {
+            get
+            {
+                if (_dockPane == null)
+                {
+                    _dockPane = FrameworkApplication.DockPaneManager.Find(_dockPaneID) as DistanceAndDirectionDockpaneViewModel;
+                }
+                return _dockPane;
+            }
+        }
 
     }
 }

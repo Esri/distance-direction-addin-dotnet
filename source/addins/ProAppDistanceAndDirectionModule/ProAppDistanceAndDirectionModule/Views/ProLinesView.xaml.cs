@@ -14,7 +14,7 @@
 
 using System.Windows.Controls;
 
-namespace DistanceAndDirectionLibrary.Views
+namespace ProAppDistanceAndDirectionModule.Views
 {
     /// <summary>
     /// Interaction logic for ProLinesView.xaml
@@ -26,9 +26,5 @@ namespace DistanceAndDirectionLibrary.Views
             InitializeComponent();
         }
 
-        private void TextBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            DistanceAndDirectionLibrary.Helpers.Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, null);
-        }  
     }
 }

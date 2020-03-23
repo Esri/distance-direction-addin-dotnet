@@ -20,8 +20,7 @@ using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
-using DistanceAndDirectionLibrary;
-using DistanceAndDirectionLibrary.Helpers;
+using ProAppDistanceAndDirectionModule.Common;
 using System;
 using System.Globalization;
 using System.Threading.Tasks;
@@ -35,15 +34,14 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
             {
                 await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
-                Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.AngledEllipse);
             });
 
-            // we may need this in the future, leave commented out for now
-            //Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
+            LayerPackageLoaded = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnLayerPackageLoaded);
 
             EllipseType = EllipseTypes.Semi;
         }
+
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand LayerPackageLoaded { get; set; }
 
         private void OnSketchComplete(object obj)
         {
@@ -108,13 +106,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
 
                 if (double.IsNaN(value))
                 {
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
-                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.MsgOutOfAOI,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.MsgOutOfAOI,
                         System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation);
 
                     // Reset the points/distance or MessageBox may pop-up indefinitely
@@ -179,7 +177,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -194,13 +192,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
 
                 if (double.IsNaN(value))
                 {
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
-                        DistanceAndDirectionLibrary.Properties.Resources.MsgOutOfAOI,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.MsgOutOfAOI,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.MsgOutOfAOI,
                         System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation);
 
                     // Reset the points/distance or MessageBox may pop-up indefinitely
@@ -262,7 +260,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -277,7 +275,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 if (value < 0.0)
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
 
                 azimuth = value;
                 RaisePropertyChanged(() => Azimuth);
@@ -311,7 +309,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 else
                 {
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
             }
         }
@@ -638,7 +636,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (!string.IsNullOrEmpty(message))
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
-                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+                    ProAppDistanceAndDirectionModule.Properties.Resources.ErrorFeatureCreateTitle);
             else
                 HasMapGraphics = true;
         }
@@ -656,7 +654,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             FeatureClass ellipseFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (ellipseFeatureClass == null)
             {
-                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                message = ProAppDistanceAndDirectionModule.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
                 return message;
             }
 

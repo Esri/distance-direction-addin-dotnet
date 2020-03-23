@@ -13,7 +13,7 @@
 // limitations under the License.
 
 using ArcGIS.Core.Geometry;
-using DistanceAndDirectionLibrary;
+using ProAppDistanceAndDirectionModule.Common;
 using ProAppDistanceAndDirectionModule.ViewModels;
 using System;
 using System.Collections.Generic;

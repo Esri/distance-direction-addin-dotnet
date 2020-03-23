@@ -20,8 +20,7 @@ using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
-using DistanceAndDirectionLibrary;
-using DistanceAndDirectionLibrary.Helpers;
+using ProAppDistanceAndDirectionModule.Common;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -39,14 +38,17 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             LineAzimuthType = AzimuthTypes.Degrees;
 
             ActivateToolCommand = new ArcGIS.Desktop.Framework.RelayCommand(async () =>
-                {
-                    await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
-                    Mediator.NotifyColleagues("SET_SKETCH_TOOL_TYPE", ArcGIS.Desktop.Mapping.SketchGeometryType.Line);
-                });
+            {
+                await FrameworkApplication.SetCurrentToolAsync("ProAppDistanceAndDirectionModule_SketchTool");
+                
+            });
 
-            Mediator.Register("SKETCH_COMPLETE", OnSketchComplete);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
+            LayerPackageLoaded = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnLayerPackageLoaded);
+                    
         }
+
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand LayerPackageLoaded { get; set; }
+
         LineFromTypes lineFromType = LineFromTypes.Points;
         public LineFromTypes LineFromType
         {
@@ -243,22 +245,22 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
 
                 if ((value == null) || (value < 0.0))
-                    throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEMustBePositive);
+                    throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEMustBePositive);
 
                 if (LineAzimuthType == AzimuthTypes.Degrees)
                 {
                     if (value > 360)
-                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                        throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
                 else if (LineAzimuthType == AzimuthTypes.Mils)
                 {
                     if (value > 6400)
-                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                        throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
                 else if (LineAzimuthType == AzimuthTypes.Gradians)
                 {
                     if (value > 400)
-                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                        throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                 }
                 AzimuthString = azimuth.Value.ToString("0.##");
                 RaisePropertyChanged(() => AzimuthString);
@@ -292,7 +294,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                     else
                     {
                         Azimuth = null;
-                        throw new ArgumentException(DistanceAndDirectionLibrary.Properties.Resources.AEInvalidInput);
+                        throw new ArgumentException(ProAppDistanceAndDirectionModule.Properties.Resources.AEInvalidInput);
                     }
                 }
             }
@@ -612,7 +614,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (!string.IsNullOrEmpty(message))
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
-                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+                    ProAppDistanceAndDirectionModule.Properties.Resources.ErrorFeatureCreateTitle);
             else
                 HasMapGraphics = true;
         }
@@ -630,7 +632,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             FeatureClass lineFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (lineFeatureClass == null)
             {
-                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                message = ProAppDistanceAndDirectionModule.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
                 return message;
             }
 

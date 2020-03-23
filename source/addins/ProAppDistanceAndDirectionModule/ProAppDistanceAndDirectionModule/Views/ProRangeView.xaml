@@ -1,10 +1,11 @@
-﻿<UserControl x:Class="DistanceAndDirectionLibrary.Views.ProRangeView"
+﻿<UserControl x:Class="ProAppDistanceAndDirectionModule.Views.ProRangeView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:DistanceAndDirectionLibrary;assembly=DistanceAndDirectionLibrary"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+             xmlns:local="clr-namespace:ProAppDistanceAndDirectionModule.Common"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:prop="clr-namespace:DistanceAndDirectionLibrary.Properties;assembly=DistanceAndDirectionLibrary"
+             xmlns:prop="clr-namespace:ProAppDistanceAndDirectionModule.Properties"
              xmlns:sys="clr-namespace:System;assembly=mscorlib" 
              d:DesignHeight="300"
              d:DesignWidth="300"
@@ -12,7 +13,6 @@
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/DistanceAndDirectionLibrary;component/MAResourceDictionary.xaml" />
                 <ResourceDictionary Source="../ProMAResourceDictionary.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             <ObjectDataProvider x:Key="ringFromData"
@@ -49,7 +49,15 @@
                              Text="{Binding Path=Point1Formatted,
                                             UpdateSourceTrigger=PropertyChanged,
                                             ValidatesOnExceptions=True}"
-                             Validation.ErrorTemplate="{StaticResource errorTemplate}" PreviewKeyDown="Input_Coords_KeyDown">
+                             Validation.ErrorTemplate="{StaticResource errorTemplate}" >
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="KeyDown">
+                                <i:InvokeCommandAction Command="{Binding PointTextBoxKeyDown}"
+                                                       CommandParameter="{Binding ElementName=mainControl,
+                                                                   Path=.}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
                         <TextBox.InputBindings>
                             <KeyBinding Key="Enter"
                                         Command="{Binding EnterKeyCommand}"
@@ -68,7 +76,7 @@
                                   Style="{StaticResource ProBorderedTButtonStyle}" >
                         <Image Width="18"
                                Height="18"
-                               Source="/DistanceAndDirectionLibrary;component/Images/Add_Point.png" />
+                               Source="/DistanceAndDirection;component/Images/Add_Point.png" />
                     </ToggleButton>
                 </Grid>
                 <TextBlock x:Name="NumberofRingsLabel"
@@ -244,7 +252,7 @@
                             Content="{x:Static prop:Resources.LabelClearGraphics}"
                             ToolTip="{x:Static prop:Resources.LabelClearGraphics}">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource TransparentButtonStyle}">
+                            <Style TargetType="Button" BasedOn="{StaticResource Esri_Button}">
                                 <Setter Property="IsEnabled" Value="False" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding HasMapGraphics}" Value="True">
@@ -261,7 +269,7 @@
                             Content="{x:Static prop:Resources.LabelSaveAs}"
                             ToolTip="{x:Static prop:Resources.LabelSaveAs}">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource TransparentButtonStyle}">
+                            <Style TargetType="Button" BasedOn="{StaticResource Esri_Button}">
                                 <Setter Property="IsEnabled" Value="False" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding HasMapGraphics}" Value="True">

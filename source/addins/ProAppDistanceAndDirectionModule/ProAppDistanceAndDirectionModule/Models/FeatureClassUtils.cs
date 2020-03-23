@@ -32,7 +32,7 @@ using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Mapping;
 
-using DistanceAndDirectionLibrary;
+using ProAppDistanceAndDirectionModule.Common;
 using System.Windows;
 using System.Text.RegularExpressions;
 
@@ -85,8 +85,8 @@ namespace ProAppDistanceAndDirectionModule.Models
                 if (ContainsInvalidChars(Path.GetFileName(saveItemDlg.FilePath)))
                 {
                     ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(
-                        DistanceAndDirectionLibrary.Properties.Resources.FeatureClassNameError,
-                        DistanceAndDirectionLibrary.Properties.Resources.DistanceDirectionLabel,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.FeatureClassNameError,
+                        ProAppDistanceAndDirectionModule.Properties.Resources.DistanceDirectionLabel,
                         System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Exclamation);
                     return null;
                 } 

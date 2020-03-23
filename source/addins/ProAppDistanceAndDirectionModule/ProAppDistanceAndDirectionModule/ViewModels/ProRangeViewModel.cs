@@ -19,11 +19,10 @@ using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Mapping;
-using DistanceAndDirectionLibrary;
-using DistanceAndDirectionLibrary.Helpers;
-using DistanceAndDirectionLibrary.Models;
-using DistanceAndDirectionLibrary.ViewModels;
-using DistanceAndDirectionLibrary.Views;
+
+using ProAppDistanceAndDirectionModule.Common;
+using ProAppDistanceAndDirectionModule.Models;
+using ProAppDistanceAndDirectionModule.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -38,10 +37,13 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
         public ProRangeViewModel()
         {
             OutputDistanceView = new ProOutputDistanceView();
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.MOUSE_DOUBLE_CLICK, OnMouseDoubleClick);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.TEXTCHANGE_DELETE, OnTextChangeEvent);
-            Mediator.Register(DistanceAndDirectionLibrary.Constants.LAYER_PACKAGE_LOADED, OnLayerPackageLoaded);
+            MouseDoubleClick = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnMouseDoubleClick);
+            LayerPackageLoaded = new ProAppDistanceAndDirectionModule.Common.RelayCommand(OnLayerPackageLoaded);
         }
+
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand LayerPackageLoaded { get; set; }
+
+        public ProAppDistanceAndDirectionModule.Common.RelayCommand MouseDoubleClick { get; set; }
         public ProOutputDistanceView OutputDistanceView { get; set; }
         #region Properties
 
@@ -93,7 +95,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 if (RingType == RingTypes.Fixed)
                 {
                     if (value < 1 || value > 180)
-                        throw new ArgumentException(string.Format(DistanceAndDirectionLibrary.Properties.Resources.AENumOfRings, 1, 180));
+                        throw new ArgumentException(string.Format(ProAppDistanceAndDirectionModule.Properties.Resources.AENumOfRings, 1, 180));
                 }
                 numberOfRings = value;
                 RaisePropertyChanged(() => NumberOfRings);
@@ -110,7 +112,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             set
             {
                 if (value < 0 || value > 180)
-                    throw new ArgumentException(string.Format(DistanceAndDirectionLibrary.Properties.Resources.AENumOfRadials, 0, 180));
+                    throw new ArgumentException(string.Format(ProAppDistanceAndDirectionModule.Properties.Resources.AENumOfRadials, 0, 180));
 
                 numberOfRadials = value;
                 RaisePropertyChanged(() => NumberOfRadials);
@@ -444,7 +446,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 }
                 if (flag)
                 {
-                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(DistanceAndDirectionLibrary.Properties.Resources.MsgRingValidDistances);
+                    ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(ProAppDistanceAndDirectionModule.Properties.Resources.MsgRingValidDistances);
                     return flag;
                 }
             }
@@ -496,28 +498,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
                 IsToolActive = false;
         }
 
-        private void OnTextChangeEvent(object obj)
-        {
-            if (OutputDistanceViewModel.OutputDistanceListItem != null && OutputDistanceViewModel.OutputDistanceListItem.Count > 1)
-            {
-                ObservableCollection<OutputDistanceModel> listOfDistances = new ObservableCollection<OutputDistanceModel>();
-                foreach (var item in OutputDistanceViewModel.OutputDistanceListItem)
-                {
-                    if (item.OutputDistance == "")
-                    {
-                        listOfDistances.Add(item);
-                    }
-                }
-
-                foreach (var item in listOfDistances)
-                {
-                    if (item.OutputDistance == "")
-                    {
-                        OutputDistanceViewModel.OutputDistanceListItem.Remove(item);
-                    }
-                }
-            }
-        }
+        
 
         internal override void Reset(bool toolReset)
         {
@@ -616,7 +597,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
 
             if (!string.IsNullOrEmpty(message))
                 ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(message,
-                    DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureCreateTitle);
+                    ProAppDistanceAndDirectionModule.Properties.Resources.ErrorFeatureCreateTitle);
             else
                 HasMapGraphics = true;
         }
@@ -634,7 +615,7 @@ namespace ProAppDistanceAndDirectionModule.ViewModels
             FeatureClass ringFeatureClass = await GetFeatureClass(addToMapIfNotPresent: true);
             if (ringFeatureClass == null)
             {
-                message = DistanceAndDirectionLibrary.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
+                message = ProAppDistanceAndDirectionModule.Properties.Resources.ErrorFeatureClassNotFound + this.GetLayerName();
                 return message;
             }
 

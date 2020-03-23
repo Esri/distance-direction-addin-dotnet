@@ -14,7 +14,7 @@
 
 using System.Windows.Controls;
 
-namespace DistanceAndDirectionLibrary.Views
+namespace ProAppDistanceAndDirectionModule.Views
 {
     /// <summary>
     /// Interaction logic for ProRangeView.xaml
@@ -24,11 +24,6 @@ namespace DistanceAndDirectionLibrary.Views
         public ProRangeView()
         {
             InitializeComponent();
-        }
-
-        private void Input_Coords_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
-        {
-            DistanceAndDirectionLibrary.Helpers.Mediator.NotifyColleagues(DistanceAndDirectionLibrary.Constants.POINT_TEXT_KEYDOWN, null);
         }
     }
 }

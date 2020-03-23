@@ -14,7 +14,7 @@
 
 using System.Windows;
 
-namespace DistanceAndDirectionLibrary.Views
+namespace ProAppDistanceAndDirectionModule.Views
 {
     /// <summary>
     /// Interaction logic for EditPropertiesView.xaml

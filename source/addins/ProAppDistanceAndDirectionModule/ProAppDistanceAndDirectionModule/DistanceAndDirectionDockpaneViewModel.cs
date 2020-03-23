@@ -14,11 +14,10 @@
 
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
-using DistanceAndDirectionLibrary;
-using DistanceAndDirectionLibrary.Helpers;
-using DistanceAndDirectionLibrary.Models;
-using DistanceAndDirectionLibrary.Views;
+using ProAppDistanceAndDirectionModule.Common;
+using ProAppDistanceAndDirectionModule.Models;
 using ProAppDistanceAndDirectionModule.ViewModels;
+using ProAppDistanceAndDirectionModule.Views;
 using System.Windows.Controls;
 
 namespace ProAppDistanceAndDirectionModule
@@ -72,7 +71,13 @@ namespace ProAppDistanceAndDirectionModule
                 selectedTab = value;
                 var tabItem = selectedTab as TabItem;
                 if ((tabItem.Content as UserControl).Content != null)
-                    Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
+                {
+                    //Mediator.NotifyColleagues(Constants.TAB_ITEM_SELECTED, ((tabItem.Content as UserControl).Content as UserControl).DataContext);
+                    ProTabBaseViewModel tbViewModel = ((tabItem.Content as UserControl).Content as UserControl).DataContext as ProTabBaseViewModel;
+                    tbViewModel.TabItemSelected.Execute(tbViewModel);
+                    //tbViewModel.IsActiveTab = true;
+                }
+            
             }
         }
 
@@ -82,7 +87,7 @@ namespace ProAppDistanceAndDirectionModule
         public ProCircleView CircleView { get; set; }
         public ProEllipseView EllipseView { get; set; }
         public ProRangeView RangeView { get; set; }
-        public GRSaveAsFormatView SelectSaveAsFormatView { get; set; }
+        public ProSaveAsFormatView SelectSaveAsFormatView { get; set; }
 
         #endregion
 

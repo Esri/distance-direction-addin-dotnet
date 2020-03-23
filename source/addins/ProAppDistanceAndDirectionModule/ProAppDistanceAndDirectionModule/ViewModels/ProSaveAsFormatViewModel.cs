@@ -15,11 +15,11 @@
   *   limitations under the License. 
   ******************************************************************************/
 
-using DistanceAndDirectionLibrary.ViewModels;
+using ProAppDistanceAndDirectionModule.Common;
 
 namespace ProAppDistanceAndDirectionModule.ViewModels
 {
-    class ProSaveAsFormatViewModel : BaseViewModel
+    class ProSaveAsFormatViewModel : NotificationObject
     {
 
         private bool featureShapeIsChecked = true;
