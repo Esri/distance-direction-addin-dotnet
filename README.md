@@ -1,4 +1,6 @@
 # Distance and Direction
+___Beginning at ArcGIS Pro 2.6 this functionality is installed with ArcGIS Pro. This repository will only be updated with critical fixes to ArcGIS Desktop.___
+
 
 The Distance and Direction component provides the ability to create geodesic features such as lines, circles, ellipses and range rings.
 
